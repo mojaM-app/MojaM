@@ -25,12 +25,25 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "./node_modules/cldr-data/main",
+                "output": "./assets/cldr-data/main"
+              },
+              {
+                "glob": "**/*",
+                "input": "./node_modules/cldr-data/supplemental",
+                "output": "./assets/cldr-data/supplemental"
+              }
             ],
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "globalize"
+            ]
           },
           "configurations": {
             "production": {

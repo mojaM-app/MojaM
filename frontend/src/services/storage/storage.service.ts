@@ -36,7 +36,7 @@ export abstract class StorageService {
     return null;
   }
 
-  public saveNumber(storageKey: string, numberToSave: number): void {
+  public saveNumber(storageKey: string, numberToSave: number | null): void {
     if (typeof numberToSave === 'number') {
       this.saveString(storageKey, numberToSave.toString());
     } else if (numberToSave) {
@@ -89,6 +89,6 @@ export abstract class StorageService {
 
   public abstract isItemSet(storageKey: string): boolean;
   public abstract removeItem(storageKey: string): void;
-  protected abstract setItemValue(storageKey: string, stringToSave: string): void;
+  protected abstract setItemValue(storageKey: string, stringToSave: string | null): void;
   protected abstract getItemValue(storageKey: string): string | null;
 }

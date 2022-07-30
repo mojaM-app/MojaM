@@ -2,7 +2,11 @@ import { StorageService } from './storage.service';
 
 export class LocalStorageService extends StorageService {
   public isItemSet(storageKey: string): boolean {
-    return storageKey && storageKey.length && storageKey in localStorage;
+    return (
+      storageKey !== null &&
+      storageKey?.length > 0 &&
+      storageKey in localStorage
+    );
   }
 
   public removeItem(storageKey: string): void {
@@ -12,7 +16,10 @@ export class LocalStorageService extends StorageService {
     localStorage.removeItem(storageKey);
   }
 
-  protected setItemValue(storageKey: string, stringToSave: string): void {
+  protected setItemValue(
+    storageKey: string,
+    stringToSave: string | null
+  ): void {
     if (!storageKey || !storageKey.length) {
       return;
     }
@@ -28,6 +35,7 @@ export class LocalStorageService extends StorageService {
     if (!this.isItemSet(storageKey)) {
       return null;
     }
+
     return localStorage.getItem(storageKey);
   }
 }

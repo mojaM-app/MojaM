@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -11,6 +11,9 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {MatSidenavModule} from '@angular/material/sidenav';
+import { TranslationInitService } from 'src/services/translate/translation-init.service';
+import { LocalStorageService } from 'src/services/storage/localstorage.service';
+import { PipesModule } from 'src/pipes/pipes.module';
 
 @NgModule({
   declarations: [
@@ -26,9 +29,20 @@ import {MatSidenavModule} from '@angular/material/sidenav';
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
-    MatSidenavModule
+    MatSidenavModule,
+    PipesModule
   ],
-  providers: [],
+  providers: [
+    LocalStorageService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory(translateInit : TranslationInitService){
+        return () => translateInit.initializeApp();
+      },
+      deps: [TranslationInitService],
+      multi: true,
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
