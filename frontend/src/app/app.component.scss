@@ -1,23 +1,35 @@
+@import "~@angular/material/theming";
+
 .container {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
+
+  .layout {
+    width: 100vw;
+    height: 100vh;
+
+    display: grid;
+    grid:
+      "header" auto
+      "main" 1fr
+      "footer" auto
+      / 1fr;
+  }
+
+  .header {
+    grid-area: header;
+  }
+  .main {
+    grid-area: main;
+  }
+  .footer {
+    grid-area: footer;
+  }
 }
 
-.layout {
-  width: 100vw;
-  height: 100vh;
-
-  display: grid;
-  grid:
-    "header" auto
-    "main" 1fr
-    "footer" auto
-    / 1fr;
+::ng-deep .mat-drawer-backdrop.mat-drawer-shown {
+  background-color: $white-87-opacity;
 }
-
-.header { grid-area: header; }
-.main { grid-area: main; }
-.footer { grid-area: footer; }

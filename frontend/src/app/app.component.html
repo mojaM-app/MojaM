@@ -1,9 +1,12 @@
 <mat-sidenav-container class="container mat-app-background">
   <mat-sidenav #sidenav mode="over" [opened]="false">
-    <button mat-icon-button color="accent" (click)="closeSidenav()">
-      <mat-icon>close</mat-icon>
-    </button>
-    Sidenav content
+    <mat-toolbar>
+      <button mat-icon-button color="accent" class="mr-1" (click)="closeSidenav()">
+        <mat-icon>close</mat-icon>
+      </button>
+      <span>{{ 'Shared/Menu' | gmessage }}</span>
+    </mat-toolbar>
+
   </mat-sidenav>
 
   <mat-sidenav-content>
