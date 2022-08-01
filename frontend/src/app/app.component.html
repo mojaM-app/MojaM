@@ -1,5 +1,5 @@
 <mat-sidenav-container class="container mat-app-background">
-  <mat-sidenav #sidenav mode="over" [opened]="false">
+  <mat-sidenav #sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile">
     <mat-toolbar>
       <button mat-icon-button color="accent" class="mr-1" (click)="closeSidenav()">
         <mat-icon>close</mat-icon>
