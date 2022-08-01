@@ -1,6 +1,9 @@
 <mat-toolbar>
-  <button mat-icon-button color="accent" class="mr-1" (click)="openSidenav()">
-    <mat-icon>menu</mat-icon>
-  </button>
- <span>{{ 'Shared/AppName' | gmessage }}</span>
+  <mat-toolbar-row>
+    <button mat-icon-button color="accent" class="mr-1" (click)="openSidenav()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span>{{ "Shared/AppName" | gmessage }}</span>
+    <span class="spacer"></span>
+  </mat-toolbar-row>
 </mat-toolbar>

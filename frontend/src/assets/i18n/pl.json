@@ -4,6 +4,11 @@
     "Menu": "Menu",
     "BtnOk": "OK"
   },
+  "Footer": {
+    "News": "Aktualności",
+    "Bulletin": "Biuletyn",
+    "Community": "Wspólnota"
+  },
   "Pipes": {
     "date-ago": {
       "just-now": "Teraz",
