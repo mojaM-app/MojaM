@@ -9,6 +9,9 @@
     "Bulletin": "Biuletyn",
     "Community": "Wspólnota"
   },
+  "Error404": {
+    "PageNotFound": "Strona nie istnieje"
+  },
   "Pipes": {
     "date-ago": {
       "just-now": "Teraz",
