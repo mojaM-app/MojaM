@@ -21,6 +21,7 @@
     "@angular/platform-browser-dynamic": "^14.0.0",
     "@angular/router": "^14.0.0",
     "@types/globalize": "^1.5.2",
+    "bootstrap": "^5.2.0",
     "cldr-data": "^36.0.1",
     "globalize": "^1.7.0",
     "guid-typescript": "^1.0.9",

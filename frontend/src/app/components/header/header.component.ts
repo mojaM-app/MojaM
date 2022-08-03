@@ -1,16 +1,29 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnInit,
+} from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, AfterViewInit {
   @Input() sidenav: MatSidenav | undefined;
 
-  constructor() {}
+  public constructor(private _changeDetectorRef: ChangeDetectorRef) {}
+
+  public ngAfterViewInit(): void {
+    this.sidenav?.openedChange.subscribe(() => {
+      this._changeDetectorRef.detectChanges();
+    });
+  }
 
   public ngOnInit(): void {}
 

@@ -1,6 +1,6 @@
 <mat-toolbar>
   <mat-toolbar-row>
-    <button mat-icon-button color="accent" class="mr-1" (click)="openSidenav()">
+    <button *ngIf="this.sidenav?.opened !== true" mat-icon-button color="accent" class="me-2" (click)="openSidenav()">
       <mat-icon>menu</mat-icon>
     </button>
     <span>{{ "Shared/AppName" | gmessage }}</span>
