@@ -6,21 +6,18 @@ import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import {MatCardModule} from '@angular/material/card';
-import {MatToolbarModule} from '@angular/material/toolbar';
-import {MatIconModule} from '@angular/material/icon';
-import {MatButtonModule} from '@angular/material/button';
-import {MatSidenavModule} from '@angular/material/sidenav';
+import { MatCardModule } from '@angular/material/card';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { TranslationInitService } from 'src/services/translate/translation-init.service';
 import { LocalStorageService } from 'src/services/storage/localstorage.service';
 import { PipesModule } from 'src/pipes/pipes.module';
+import { NotFoundComponent } from './components/static/not-found/not-found.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HeaderComponent,
-    FooterComponent
-  ],
+  declarations: [AppComponent, HeaderComponent, FooterComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -30,19 +27,20 @@ import { PipesModule } from 'src/pipes/pipes.module';
     MatIconModule,
     MatButtonModule,
     MatSidenavModule,
-    PipesModule
+    PipesModule,
+    NotFoundComponent,
   ],
   providers: [
     LocalStorageService,
     {
       provide: APP_INITIALIZER,
-      useFactory(translateInit : TranslationInitService){
+      useFactory(translateInit: TranslationInitService) {
         return () => translateInit.initializeApp();
       },
       deps: [TranslationInitService],
       multi: true,
-    }
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
