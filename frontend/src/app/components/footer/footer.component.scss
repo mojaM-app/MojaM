@@ -1,3 +1,33 @@
-.footer {
+@import "~bootstrap/scss/_functions";
+@import "~bootstrap/scss/_mixins";
+@import "~bootstrap/scss/_variables";
+
+.mat-toolbar {
   height: auto !important;
+
+  .footer-button {
+    display: flex;
+    flex-direction: column;
+    font-size: small;
+    line-height: unset;
+    font-weight: 100;
+  }
+}
+
+@include media-breakpoint-up(sm) {
+  .mat-toolbar {
+    .footer-button {
+      font-size: medium;
+      font-weight: 200;
+    }
+  }
+}
+
+@include media-breakpoint-up(md) {
+  .mat-toolbar {
+    .footer-button {
+      font-size: large;
+      font-weight: 400;
+    }
+  }
 }
