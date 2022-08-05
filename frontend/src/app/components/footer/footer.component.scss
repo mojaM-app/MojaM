@@ -11,6 +11,8 @@
     font-size: small;
     line-height: unset;
     font-weight: 100;
+    align-items: center;
+    padding: 0 0.5rem;
   }
 }
 
@@ -19,6 +21,7 @@
     .footer-button {
       font-size: medium;
       font-weight: 200;
+      padding: inherit;
     }
   }
 }
