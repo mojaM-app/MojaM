@@ -4,10 +4,31 @@
     "Menu": "Menu",
     "BtnOk": "OK"
   },
+  "Header": {},
   "Footer": {
     "News": "Aktualności",
     "Bulletin": "Biuletyn",
     "Community": "Wspólnota"
+  },
+  "Community": {
+    "Index": {
+      "Logo_Alt": "Wspólnota Miriam Odnowa w Duchu Świętym"
+    },
+    "Contact": {
+      "Title": "Kontakt"
+    },
+    "Meetings": {
+      "Title": "Spotkania"
+    },
+    "Mission": {
+      "Title": "Misja"
+    },
+    "Diaconie": {
+      "Title": "Diakonie"
+    },
+    "Structure": {
+      "Title": "Struktura"
+    }
   },
   "Error404": {
     "PageNotFound": "Strona nie istnieje"

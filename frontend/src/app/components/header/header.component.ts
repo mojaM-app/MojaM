@@ -20,7 +20,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   public constructor(private _changeDetectorRef: ChangeDetectorRef) {}
 
   public ngAfterViewInit(): void {
-    this.sidenav?.openedChange.subscribe(() => {
+    this.sidenav?.closedStart.subscribe(() => {
       this._changeDetectorRef.detectChanges();
     });
   }

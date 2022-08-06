@@ -1,0 +1,19 @@
+<div class="container-fluid m-0 p-0">
+  <div class="header">
+    <img
+      class="header-image"
+      src="/assets/images/community/community-logo.png"
+      alt="{{ 'Community/Index/Logo_Alt' | gmessage }}"
+      title="{{ 'Community/Index/Logo_Alt' | gmessage }}"
+    />
+  </div>
+  <div class="body mat-app-background px-1">
+    <app-community-contact></app-community-contact>
+    <mat-tab-group mat-align-tabs="center">
+      <mat-tab label="{{ 'Community/Meetings/Title' | gmessage }}"></mat-tab>
+      <mat-tab label="{{ 'Community/Mission/Title' | gmessage }}"></mat-tab>
+      <mat-tab label="{{ 'Community/Diaconie/Title' | gmessage }}"></mat-tab>
+      <mat-tab label="{{ 'Community/Structure/Title' | gmessage }}"></mat-tab>
+    </mat-tab-group>
+  </div>
+</div>
