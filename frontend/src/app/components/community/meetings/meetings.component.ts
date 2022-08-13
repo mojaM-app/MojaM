@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MissionService } from 'src/services/common/mission.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
 
@@ -13,7 +13,8 @@ export class MeetingsComponent implements OnInit {
 
   public constructor(
     private _missionService: MissionService,
-    private _spinnerService: SpinnerService
+    private _spinnerService: SpinnerService,
+    private _changeDetectorRef: ChangeDetectorRef
   ) {}
 
   public ngOnInit(): void {
@@ -22,6 +23,7 @@ export class MeetingsComponent implements OnInit {
       .pipe(this._spinnerService.waitForSubscription())
       .subscribe((result) => {
         this.content = result;
+        this._changeDetectorRef.detectChanges();
       });
   }
 }

@@ -14,7 +14,7 @@ export class MissionService extends BaseService {
 
   public getMeetings(): Observable<string> {
     const meetings = 'Wspólnota Miriam spotyka się w każdą środę';
-    return of(meetings).pipe(delay(1000));
+    return of<string>(meetings).pipe(delay(1000));
 
     //return this._http.get<string>(this.API_ROUTES.community.getMeetings());
   }
