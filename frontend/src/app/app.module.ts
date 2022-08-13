@@ -16,6 +16,7 @@ import { LocalStorageService } from 'src/services/storage/localstorage.service';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { NotFoundComponent } from './components/static/not-found/not-found.component';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent, FooterComponent],
@@ -30,6 +31,7 @@ import { HashLocationStrategy, LocationStrategy } from '@angular/common';
     MatSidenavModule,
     PipesModule,
     NotFoundComponent,
+    HttpClientModule,
   ],
   providers: [
     LocalStorageService,

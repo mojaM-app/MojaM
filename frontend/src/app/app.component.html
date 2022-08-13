@@ -1,12 +1,20 @@
 <mat-sidenav-container class="mat-drawer-container mat-app-background">
-  <mat-sidenav #sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile">
+  <mat-sidenav
+    #sidenav
+    [mode]="isMobile ? 'over' : 'side'"
+    [opened]="!isMobile"
+  >
     <mat-toolbar>
-      <button mat-icon-button color="accent" class="mr-1" (click)="closeSidenav()">
+      <button
+        mat-icon-button
+        color="accent"
+        class="mr-1"
+        (click)="closeSidenav()"
+      >
         <mat-icon>close</mat-icon>
       </button>
-      <span>{{ 'Shared/Menu' | gmessage }}</span>
+      <span>{{ "Shared/Menu" | gmessage }}</span>
     </mat-toolbar>
-
   </mat-sidenav>
 
   <mat-sidenav-content>
@@ -23,3 +31,16 @@
     </section>
   </mat-sidenav-content>
 </mat-sidenav-container>
+
+<ng-container *ngIf="showSpinner">
+  <svg class="spinner" viewBox="0 0 50 50">
+    <circle
+      class="path"
+      cx="25"
+      cy="25"
+      r="20"
+      fill="none"
+      stroke-width="5"
+    ></circle>
+  </svg>
+</ng-container>
