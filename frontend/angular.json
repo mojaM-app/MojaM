@@ -29,12 +29,12 @@
               {
                 "glob": "**/*",
                 "input": "./node_modules/cldr-data/main",
-                "output": "./assets/cldr-data/main"
+                "output": "/assets/cldr-data/main"
               },
               {
                 "glob": "**/*",
                 "input": "./node_modules/cldr-data/supplemental",
-                "output": "./assets/cldr-data/supplemental"
+                "output": "/assets/cldr-data/supplemental"
               }
             ],
             "styles": [
