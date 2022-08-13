@@ -4,6 +4,8 @@
 
 export const environment = {
   production: false,
+  backendUrl: 'https://localhost:5101',
+
   communityEmail: 'email@some.domain',
   communityWebPage: 'https://www.some.domain/',
   communityPhone: '+48 123 456 789',

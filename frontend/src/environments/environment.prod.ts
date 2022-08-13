@@ -1,5 +1,7 @@
 export const environment = {
   production: true,
+  backendUrl: 'https://localhost:5101',
+
   communityEmail: 'miriam.rzeszow@gmail.com',
   communityWebPage: 'https://www.miriam.rzeszow.pl/',
   communityPhone: '+48 884 315 151',

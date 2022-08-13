@@ -7,9 +7,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IndexComponent implements OnInit {
+  public constructor() {}
 
-
-  constructor() {}
-
-  ngOnInit(): void {}
+  public ngOnInit(): void {}
 }

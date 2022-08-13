@@ -10,10 +10,26 @@
   <div class="body mat-app-background px-1">
     <app-community-contact></app-community-contact>
     <mat-tab-group mat-align-tabs="center">
-      <mat-tab label="{{ 'Community/Meetings/Title' | gmessage }}"></mat-tab>
-      <mat-tab label="{{ 'Community/Mission/Title' | gmessage }}"></mat-tab>
-      <mat-tab label="{{ 'Community/Diaconie/Title' | gmessage }}"></mat-tab>
-      <mat-tab label="{{ 'Community/Structure/Title' | gmessage }}"></mat-tab>
+      <mat-tab label="{{ 'Community/Meetings/Title' | gmessage }}">
+        <ng-template matTabContent>
+          <app-community-meetings></app-community-meetings>
+        </ng-template>
+      </mat-tab>
+      <mat-tab label="{{ 'Community/Mission/Title' | gmessage }}">
+        <ng-template matTabContent>
+          <app-community-mission></app-community-mission>
+        </ng-template>
+      </mat-tab>
+      <mat-tab label="{{ 'Community/Diaconie/Title' | gmessage }}">
+        <ng-template matTabContent>
+          <app-community-diaconie></app-community-diaconie>
+        </ng-template>
+      </mat-tab>
+      <mat-tab label="{{ 'Community/Structure/Title' | gmessage }}">
+        <ng-template matTabContent>
+          <app-community-structure></app-community-structure>
+        </ng-template>
+      </mat-tab>
     </mat-tab-group>
   </div>
 </div>
