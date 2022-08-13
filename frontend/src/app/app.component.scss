@@ -10,7 +10,7 @@
   right: 0;
 
   .layout {
-    height: 100vh;
+    height: calc(100vh - calc(100vh - 100%));
 
     display: grid;
     grid:
