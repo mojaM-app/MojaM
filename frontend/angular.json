@@ -28,8 +28,8 @@
               "src/assets",
               {
                 "glob": "**/*",
-                "input": "./node_modules/cldr-data/main",
-                "output": "/assets/cldr-data/main"
+                "input": "./node_modules/cldr-data/main/pl",
+                "output": "/assets/cldr-data/main/pl"
               },
               {
                 "glob": "**/*",
