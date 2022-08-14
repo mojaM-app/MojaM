@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+} from '@angular/core';
 import { finalize } from 'rxjs';
 import { MissionService } from 'src/services/common/mission.service';
 
@@ -9,7 +14,7 @@ import { MissionService } from 'src/services/common/mission.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MeetingsComponent implements OnInit {
-  public isLoading : boolean = false;
+  public isLoading: boolean = false;
   public content: string | null = null;
 
   public constructor(
@@ -22,9 +27,11 @@ export class MeetingsComponent implements OnInit {
 
     this._missionService
       .getMeetings()
-      .pipe(finalize(() => {
-        this.isLoading = false;
-      }))
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
       .subscribe((result) => {
         this.content = result;
         this._changeDetectorRef.detectChanges();
