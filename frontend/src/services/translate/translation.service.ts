@@ -24,7 +24,7 @@ export class TranslationService {
       label: 'język polski',
       icon: 'assets/svg/languages/pl.svg',
       messages: () =>
-        fetch('/assets/i18n/pl.json')
+        fetch('./assets/i18n/pl.json')
           .then((response) => response.json())
           .then((messages) => ({ pl: messages })),
     },

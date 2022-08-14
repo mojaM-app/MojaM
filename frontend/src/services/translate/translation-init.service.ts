@@ -22,10 +22,10 @@ export class TranslationInitService {
     registerLocaleData(localePL, 'pl', localePlExtra);
 
     const promisses = [
-      fetch('/assets/cldr-data/supplemental/plurals.json').then((response) =>
+      fetch('./assets/cldr-data/supplemental/plurals.json').then((response) =>
         response.json()
       ),
-      fetch('/assets/cldr-data/supplemental/likelySubtags.json').then(
+      fetch('./assets/cldr-data/supplemental/likelySubtags.json').then(
         (response) => response.json()
       ),
     ];
