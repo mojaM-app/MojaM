@@ -17,6 +17,7 @@ import { PipesModule } from 'src/pipes/pipes.module';
 import { NotFoundComponent } from './components/static/not-found/not-found.component';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
+import { DirectivesModule } from 'src/directives/directives.module';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent, FooterComponent],
@@ -30,6 +31,7 @@ import { HttpClientModule } from '@angular/common/http';
     MatButtonModule,
     MatSidenavModule,
     PipesModule,
+    DirectivesModule,
     NotFoundComponent,
     HttpClientModule,
   ],

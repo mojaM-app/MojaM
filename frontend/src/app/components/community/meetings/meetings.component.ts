@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { finalize } from 'rxjs';
 import { MissionService } from 'src/services/common/mission.service';
-import { SpinnerService } from 'src/services/spinner/spinner.service';
 
 @Component({
   selector: 'app-community-meetings',
@@ -9,18 +9,22 @@ import { SpinnerService } from 'src/services/spinner/spinner.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MeetingsComponent implements OnInit {
+  public isLoading : boolean = false;
   public content: string | null = null;
 
   public constructor(
     private _missionService: MissionService,
-    private _spinnerService: SpinnerService,
     private _changeDetectorRef: ChangeDetectorRef
   ) {}
 
   public ngOnInit(): void {
+    this.isLoading = true;
+
     this._missionService
       .getMeetings()
-      .pipe(this._spinnerService.waitForSubscription())
+      .pipe(finalize(() => {
+        this.isLoading = false;
+      }))
       .subscribe((result) => {
         this.content = result;
         this._changeDetectorRef.detectChanges();

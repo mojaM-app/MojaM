@@ -6,13 +6,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { CommunityRoutingModule } from './community-routing.module';
 import { IndexComponent } from './index/index.component';
-import {MatTabsModule} from '@angular/material/tabs';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MeetingsComponent } from './meetings/meetings.component';
 import { MissionComponent } from './mission/mission.component';
 import { DiaconieComponent } from './diaconie/diaconie.component';
 import { StructureComponent } from './structure/structure.component';
 import { ContactComponent } from './contact/contact.component';
-
+import { DirectivesModule } from 'src/directives/directives.module';
 
 @NgModule({
   declarations: [
@@ -21,7 +21,7 @@ import { ContactComponent } from './contact/contact.component';
     MissionComponent,
     DiaconieComponent,
     StructureComponent,
-    ContactComponent
+    ContactComponent,
   ],
   imports: [
     CommonModule,
@@ -31,6 +31,7 @@ import { ContactComponent } from './contact/contact.component';
     MatButtonModule,
     MatTabsModule,
     PipesModule,
-  ]
+    DirectivesModule,
+  ],
 })
-export class CommunityModule { }
+export class CommunityModule {}
