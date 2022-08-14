@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+} from '@angular/core';
+import { finalize } from 'rxjs';
+import { DiaconieService } from 'src/services/common/community/diaconie.service';
 
 @Component({
   selector: 'app-community-diaconie',
@@ -7,7 +14,27 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DiaconieComponent implements OnInit {
-  public constructor() {}
+  public isLoading: boolean = false;
+  public content: string | null = null;
 
-  public ngOnInit(): void {}
+  public constructor(
+    private _service: DiaconieService,
+    private _changeDetectorRef: ChangeDetectorRef
+  ) {}
+
+  public ngOnInit(): void {
+    this.isLoading = true;
+
+    this._service
+      .get()
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe((result) => {
+        this.content = result;
+        this._changeDetectorRef.detectChanges();
+      });
+  }
 }

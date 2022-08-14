@@ -5,7 +5,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { finalize } from 'rxjs';
-import { MissionService } from 'src/services/common/mission.service';
+import { MeetingsService } from 'src/services/common/community/meetings.service';
 
 @Component({
   selector: 'app-community-meetings',
@@ -18,15 +18,15 @@ export class MeetingsComponent implements OnInit {
   public content: string | null = null;
 
   public constructor(
-    private _missionService: MissionService,
+    private _service: MeetingsService,
     private _changeDetectorRef: ChangeDetectorRef
   ) {}
 
   public ngOnInit(): void {
     this.isLoading = true;
 
-    this._missionService
-      .getMeetings()
+    this._service
+      .get()
       .pipe(
         finalize(() => {
           this.isLoading = false;
