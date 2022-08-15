@@ -40,7 +40,10 @@ export class TranslationService {
       this.currentLang = this.isValidLang(browserLang)
         ? browserLang
         : TranslationService.DefaultLang;
-      localStorage.setItem(TranslationService.StorageKey, this.currentLang);
+      this._localStorageService.saveString(
+        TranslationService.StorageKey,
+        this.currentLang
+      );
     }
   }
 
@@ -48,7 +51,10 @@ export class TranslationService {
     return this.getFormatter(key)(interpolateParams);
   }
 
-  public getTranslation(key: string, params?: unknown | (() => unknown)): Translation {
+  public getTranslation(
+    key: string,
+    params?: unknown | (() => unknown)
+  ): Translation {
     return Translation.FromService(this, key, params);
   }
 
@@ -79,7 +85,10 @@ export class TranslationService {
           .messages()
           .then((messages) => {
             Globalize.loadMessages(messages);
-            localStorage.setItem(TranslationService.StorageKey, lang);
+            this._localStorageService.saveString(
+              TranslationService.StorageKey,
+              lang
+            );
           })
           .catch((e) => {
             console.error(`There is no language module with ${lang} id`, e);
