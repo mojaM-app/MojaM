@@ -18,7 +18,7 @@ export class TranslationInitService {
     private _cultureService: CultureService,
   ) {}
 
-  initializeApp(): Promise<void> {
+  public initializeApp(): Promise<void> {
     registerLocaleData(localePL, 'pl', localePlExtra);
 
     const promisses = [

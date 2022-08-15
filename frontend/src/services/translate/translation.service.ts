@@ -16,7 +16,8 @@ interface LanguageData {
 export class TranslationService {
   private static readonly StorageKey = 'lang';
   private static readonly DefaultLang = 'pl';
-  currentLang: string | null = null;
+
+  public currentLang: string | null = null;
 
   public readonly langs: LanguageData[] = [
     {
@@ -43,15 +44,15 @@ export class TranslationService {
     }
   }
 
-  get(key: string, interpolateParams?: any): string {
+  public get(key: string, interpolateParams?: any): string {
     return this.getFormatter(key)(interpolateParams);
   }
 
-  getTranslation(key: string, params?: unknown | (() => unknown)): Translation {
+  public getTranslation(key: string, params?: unknown | (() => unknown)): Translation {
     return Translation.FromService(this, key, params);
   }
 
-  getFormatter(key: string): (...args: any[]) => string {
+  public getFormatter(key: string): (...args: any[]) => string {
     try {
       return Globalize(
         this.currentLang || TranslationService.DefaultLang
@@ -71,7 +72,7 @@ export class TranslationService {
     }
   }
 
-  switchLang(lang: string): Promise<void> {
+  public switchLang(lang: string): Promise<void> {
     for (const dt of this.langs) {
       if (dt.id === lang) {
         return dt
