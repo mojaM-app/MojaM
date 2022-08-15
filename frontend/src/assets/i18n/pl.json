@@ -1,7 +1,8 @@
 {
   "Shared": {
+    "MainMenuTitle": "Wspólnota Miriam",
     "AppName": "Moja Miriam",
-    "Menu": "Menu",
+    "Name": "Wspólnota Miriam Odnowa w Duchu Świętym",
     "BtnOk": "OK"
   },
   "Header": {},
@@ -10,10 +11,11 @@
     "Bulletin": "Biuletyn",
     "Community": "Wspólnota"
   },
+  "SideMenu": {
+    "DarkMode": "Ciemny motyw"
+  },
   "Community": {
-    "Index": {
-      "Logo_Alt": "Wspólnota Miriam Odnowa w Duchu Świętym"
-    },
+    "Index": {},
     "Contact": {
       "Title": "Kontakt"
     },

@@ -10,6 +10,24 @@
   left: 0;
   right: 0;
 
+  .second-row {
+    display: flex;
+    flex-direction: row;
+    padding: 1rem;
+
+    .menu-image {
+      max-width: 50px;
+    }
+
+    span {
+      white-space: normal;
+      font-size: 60%;
+      line-height: 1.2;
+      max-width: 200px;
+      padding-left: 1rem;
+    }
+  }
+
   .layout {
     height: calc(100vh - calc(100vh - 100%));
 
