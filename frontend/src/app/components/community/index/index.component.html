@@ -9,7 +9,14 @@
   </div>
   <div class="body px-1 mat-app-background">
     <app-community-contact></app-community-contact>
-    <mat-tab-group mat-align-tabs="center" animationDuration="250ms">
+    <mat-tab-group
+      #tabGroup
+      mat-align-tabs="center"
+      animationDuration="250ms"
+      [selectedIndex]="selectedTab"
+      (touchstart)="swipe($event, 'start')"
+      (touchend)="swipe($event, 'end')"
+    >
       <mat-tab label="{{ 'Community/Meetings/Title' | gmessage }}">
         <app-community-meetings></app-community-meetings>
       </mat-tab>
