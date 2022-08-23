@@ -14,15 +14,16 @@
         >
           <mat-icon>close</mat-icon>
         </button>
-        <span>{{ "Shared/AppName" | gmessage }}</span>
+        <span class="menu-title">{{ "Shared/AppName" | gmessage }}</span>
       </mat-toolbar-row>
       <mat-toolbar-row class="second-row primary-color">
-        <img
-          class="menu-image"
-          src="./assets/images/logo130x80.png"
-          alt="{{ 'Shared/Name' | gmessage }}"
-          title="{{ 'Shared/Name' | gmessage }}"
-        />
+        <div class="image-wrapper border-color-primary border border-2">
+          <img
+            src="./assets/images/logo130x80.png"
+            alt="{{ 'Shared/Name' | gmessage }}"
+            title="{{ 'Shared/Name' | gmessage }}"
+          />
+        </div>
         <span class="small">{{ "Shared/Name" | gmessage }}</span>
       </mat-toolbar-row>
     </mat-toolbar>

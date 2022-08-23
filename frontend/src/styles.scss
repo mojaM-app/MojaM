@@ -82,6 +82,13 @@ $my-dark-theme: mat.define-dark-theme(
   .link-color {
     color: mat.get-color-from-palette($my-light-accent, "default") !important;
   }
+
+  .border-color-primary {
+    border-color: mat.get-color-from-palette(
+      $my-light-primary,
+      "default"
+    ) !important;
+  }
 }
 
 .mat-dark-theme {
@@ -112,6 +119,13 @@ $my-dark-theme: mat.define-dark-theme(
 
   .link-color {
     color: mat.get-color-from-palette($my-dark-accent, "default") !important;
+  }
+
+  .border-color-primary {
+    border-color: mat.get-color-from-palette(
+      $my-dark-primary,
+      "default"
+    ) !important;
   }
 }
 
