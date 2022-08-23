@@ -51,7 +51,6 @@ export class AppComponent extends WithUnsubscribeOnDestroy() implements OnInit {
 
     this.registerSubscription(
       this._themeService.onThemeChanged$().subscribe((theme: string) => {
-        console.log('theme');
         this._themeName = theme;
         this._changeDetectorRef.detectChanges();
       })
