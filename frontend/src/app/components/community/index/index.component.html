@@ -13,7 +13,7 @@
       #tabGroup
       mat-align-tabs="center"
       animationDuration="250ms"
-      [selectedIndex]="selectedTab"
+      [(selectedIndex)]="selectedTab"
       (touchstart)="swipe($event, 'start')"
       (touchend)="swipe($event, 'end')"
     >
