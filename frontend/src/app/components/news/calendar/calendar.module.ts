@@ -6,6 +6,12 @@ import { RouterModule } from '@angular/router';
 import { CalendarComponent } from './calendar.component';
 import { CalendarRoutingModule } from './calendar.routing';
 import { NewsModule } from '../news.module';
+import { CalendarModule, DateAdapter } from 'angular-calendar';
+import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
+import { registerLocaleData } from '@angular/common';
+import localePl from '@angular/common/locales/pl';
+
+registerLocaleData(localePl);
 
 @NgModule({
   declarations: [CalendarComponent],
@@ -15,7 +21,11 @@ import { NewsModule } from '../news.module';
     MatToolbarModule,
     MatTabsModule,
     RouterModule,
-    NewsModule
+    NewsModule,
+    CalendarModule.forRoot({
+      provide: DateAdapter,
+      useFactory: adapterFactory,
+    }),
   ],
 })
-export class CalendarModule {}
+export class NewsCalendarModule {}
