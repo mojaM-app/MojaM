@@ -206,3 +206,8 @@ body {
     transform: rotate(360deg);
   }
 }
+
+.mat-tab-label.mat-tab-label-active,
+.mat-tab-link.mat-tab-label-active {
+  opacity: 1 !important;
+}

@@ -1,15 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { BaseNewsComponent } from '../base-news.component';
 
 @Component({
   selector: 'app-information',
   templateUrl: './information.component.html',
-  styleUrls: ['./information.component.scss']
+  styleUrls: ['./information.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InformationComponent implements OnInit {
+export class InformationComponent extends BaseNewsComponent implements OnInit {
 
-  constructor() { }
+  public constructor() {
+    super();
+  }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
   }
 
 }

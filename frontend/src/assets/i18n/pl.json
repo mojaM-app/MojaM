@@ -32,6 +32,17 @@
       "Title": "Struktura"
     }
   },
+  "News": {
+    "Information":{
+      "Title":"Informacje"
+    },
+    "Calendar":{
+      "Title":"Kalendarz"
+    },
+    "Announcements":{
+      "Title":"Ogłoszenia"
+    }
+  },
   "Error404": {
     "PageNotFound": "Strona nie istnieje"
   },

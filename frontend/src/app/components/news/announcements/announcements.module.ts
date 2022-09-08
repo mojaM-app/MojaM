@@ -1,24 +1,21 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NewsRoutingModule } from './news-routing.module';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { RouterModule } from '@angular/router';
-import { NewsHeaderComponent } from './header/header.component';
+import { AnnouncementsRoutingModule } from './announcements.routing';
+import { AnnouncementsComponent } from './announcements.component';
+import { NewsModule } from '../news.module';
 
 @NgModule({
-  declarations: [
-    NewsHeaderComponent
-  ],
+  declarations: [AnnouncementsComponent],
   imports: [
     CommonModule,
-    NewsRoutingModule,
+    AnnouncementsRoutingModule,
     MatToolbarModule,
     MatTabsModule,
     RouterModule,
+    NewsModule
   ],
-  exports:[
-    NewsHeaderComponent
-  ]
 })
-export class NewsModule {}
+export class AnnouncementsModule {}

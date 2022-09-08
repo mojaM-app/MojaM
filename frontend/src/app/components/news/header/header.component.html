@@ -1,0 +1,13 @@
+<nav mat-tab-nav-bar class="news-header">
+  <a
+    mat-tab-link
+    mat-align-tabs="center"
+    *ngFor="let tabItem of tabs"
+    [routerLink]="tabItem.route"
+    routerLinkActive
+    #rla="routerLinkActive"
+    [active]="rla.isActive"
+  >
+    <span id="navstepstext">{{ tabItem.label }}</span>
+  </a>
+</nav>
