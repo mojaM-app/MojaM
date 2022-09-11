@@ -14,8 +14,7 @@
       mat-align-tabs="center"
       animationDuration="250ms"
       [(selectedIndex)]="selectedTab"
-      (touchstart)="swipe($event, 'start')"
-      (touchend)="swipe($event, 'end')"
+      touch (swipeNext)="selectNextTab()" (swipePrev)="selectPrevTab()"
     >
       <mat-tab label="{{ 'Community/Meetings/Title' | gmessage }}">
         <app-community-meetings></app-community-meetings>
