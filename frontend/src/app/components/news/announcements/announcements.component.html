@@ -1,6 +1,5 @@
 <div
-(touchstart)="swipe($event, 'start')"
-(touchend)="swipe($event, 'end')">
+touch (swipeNext)="selectNextTab()" (swipePrev)="selectPrevTab()">
 <news-header #header></news-header>
 <p>announcements works!</p>
 </div>

@@ -9,7 +9,7 @@ import { CldrLocaleService } from './cldr-locale.service';
 export class CultureService {
   public static readonly DefaultCulture = 'pl';
 
-  public currentCulture: string | null = CultureService.DefaultCulture;
+  public currentCulture: string = CultureService.DefaultCulture;
   public timeFormat: string = 'HH:mm';
   public dateFormat: string = 'dd.MM.yyyy';
   public dateTimeFormat: string = this.dateFormat + ' ' + this.timeFormat;
@@ -22,7 +22,7 @@ export class CultureService {
   ) {
     this.currentCulture = this._localStorageService.loadString(
       CultureService.StorageKey
-    );
+    ) ?? CultureService.DefaultCulture;
 
     if (
       !this.currentCulture?.length ||

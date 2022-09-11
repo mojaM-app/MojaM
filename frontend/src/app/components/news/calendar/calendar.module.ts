@@ -8,10 +8,9 @@ import { CalendarRoutingModule } from './calendar.routing';
 import { NewsModule } from '../news.module';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
-import { registerLocaleData } from '@angular/common';
-import localePl from '@angular/common/locales/pl';
-
-registerLocaleData(localePl);
+import { MatIconModule } from '@angular/material/icon';
+import { PipesModule } from 'src/pipes/pipes.module';
+import { DirectivesModule } from 'src/directives/directives.module';
 
 @NgModule({
   declarations: [CalendarComponent],
@@ -20,8 +19,11 @@ registerLocaleData(localePl);
     CalendarRoutingModule,
     MatToolbarModule,
     MatTabsModule,
+    MatIconModule,
     RouterModule,
     NewsModule,
+    PipesModule,
+    DirectivesModule,
     CalendarModule.forRoot({
       provide: DateAdapter,
       useFactory: adapterFactory,

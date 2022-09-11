@@ -33,14 +33,22 @@
     }
   },
   "News": {
-    "Information":{
-      "Title":"Informacje"
+    "Information": {
+      "Title": "Informacje"
     },
-    "Calendar":{
-      "Title":"Kalendarz"
+    "Calendar": {
+      "Title": "Kalendarz",
+      "Today": "Dziś",
+      "Prev": "Poprzedni",
+      "Next": "Następny",
+      "CalendarView":{
+        "Month": "Miesiąc",
+        "Week": "Tydzień",
+        "Day": "Dzień"
+      }
     },
-    "Announcements":{
-      "Title":"Ogłoszenia"
+    "Announcements": {
+      "Title": "Ogłoszenia"
     }
   },
   "Error404": {

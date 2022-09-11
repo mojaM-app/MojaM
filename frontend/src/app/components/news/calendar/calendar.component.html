@@ -1,67 +1,95 @@
 <news-header
   #header
   class="news-header"
-  (touchstart)="swipe($event, 'start')"
-  (touchend)="swipe($event, 'end')"
+  touch (swipeNext)="selectNextTab()" (swipePrev)="selectPrevTab()"
 ></news-header>
 
-<div class="content">
-  <div class="row clearfix text-center">
-    <div class="col-md-4 d-md-block d-none">
+<div class="content"
+  touch (swipeNext)="setNextView()" (swipePrev)="setPrevView()">
+  <div class="row clearfix text-center calendar-header">
+    <div class="col-sm-4 d-sm-block d-none">
       <div class="btn-group">
-        <div
-          class="btn btn-primary"
+        <button
+          mat-stroked-button
+          color="accent"
+          class="mat-stroked-button mat-button-base mat-accent button"
+          (click)="setView(CalendarView.Month)"
+          [class.active]="view === CalendarView.Month"
+        >
+          <mat-icon>calendar_view_month</mat-icon>
+          <span class="d-none d-lg-inline mx-lg-2 lh-1">{{
+            "News/Calendar/CalendarView/Month" | gmessage
+          }}</span>
+        </button>
+        <button
+          mat-stroked-button
+          color="accent"
+          class="mat-stroked-button mat-button-base mat-accent button"
+          (click)="setView(CalendarView.Week)"
+          [class.active]="view === CalendarView.Week"
+        >
+          <mat-icon>calendar_view_week</mat-icon>
+          <span class="d-none d-lg-inline mx-lg-2 lh-1">{{
+            "News/Calendar/CalendarView/Week" | gmessage
+          }}</span>
+        </button>
+        <button
+          mat-stroked-button
+          color="accent"
+          class="mat-stroked-button mat-button-base mat-accent button"
+          (click)="setView(CalendarView.Day)"
+          [class.active]="view === CalendarView.Day"
+        >
+          <mat-icon>calendar_view_day</mat-icon>
+          <span class="d-none d-lg-inline mx-lg-2 lh-1">{{
+            "News/Calendar/CalendarView/Day" | gmessage
+          }}</span>
+        </button>
+      </div>
+    </div>
+    <div class="col-6 col-sm-4 d-inline-flex align-items-center justify-content-center">
+        {{ viewDate | calendarDate: view + "ViewTitle":cultureService.currentCulture:weekStartsOn }}
+    </div>
+    <div class="col-6 col-sm-4">
+      <div class="btn-group">
+        <button
+          mat-stroked-button
+          color="accent"
+          class="mat-stroked-button mat-button-base mat-accent button d-none d-sm-inline-flex"
           mwlCalendarPreviousView
           [view]="view"
           [(viewDate)]="viewDate"
         >
-          Previous
-        </div>
-        <div
-          class="btn btn-outline-secondary"
+          <mat-icon>arrow_back_ios_new</mat-icon>
+          <span class="d-none d-lg-inline mx-lg-2 lh-1">{{
+            "News/Calendar/Prev" | gmessage
+          }}</span>
+        </button>
+        <button
+          mat-stroked-button
+          color="accent"
+          class="mat-stroked-button mat-button-base mat-accent button"
           mwlCalendarToday
           [(viewDate)]="viewDate"
         >
-          Today
-        </div>
-        <div
-          class="btn btn-primary"
+          <mat-icon>today</mat-icon>
+          <span class="d-none d-md-inline mx-lg-2 lh-1">{{
+            "News/Calendar/Today" | gmessage
+          }}</span>
+        </button>
+        <button
+          mat-stroked-button
+          color="accent"
+          class="mat-stroked-button mat-button-base mat-accent button"
           mwlCalendarNextView
           [view]="view"
           [(viewDate)]="viewDate"
         >
-          Next
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4 d-sm-8">
-      <h3>
-        {{ viewDate | calendarDate: view + "ViewTitle":locale:weekStartsOn }}
-      </h3>
-    </div>
-    <div class="col-md-4 d-md-block d-none">
-      <div class="btn-group">
-        <div
-          class="btn btn-primary"
-          (click)="setView(CalendarView.Month)"
-          [class.active]="view === CalendarView.Month"
-        >
-          Month
-        </div>
-        <div
-          class="btn btn-primary"
-          (click)="setView(CalendarView.Week)"
-          [class.active]="view === CalendarView.Week"
-        >
-          Week
-        </div>
-        <div
-          class="btn btn-primary"
-          (click)="setView(CalendarView.Day)"
-          [class.active]="view === CalendarView.Day"
-        >
-          Day
-        </div>
+          <span class="d-none d-lg-inline mx-lg-2 lh-1">{{
+            "News/Calendar/Next" | gmessage
+          }}</span>
+          <mat-icon>arrow_forward_ios</mat-icon>
+        </button>
       </div>
     </div>
   </div>
@@ -71,7 +99,7 @@
       *ngSwitchCase="'month'"
       [viewDate]="viewDate"
       [events]="events"
-      [locale]="locale"
+      [locale]="cultureService.currentCulture"
       [weekStartsOn]="weekStartsOn"
       [weekendDays]="weekendDays"
     >
@@ -80,7 +108,7 @@
       *ngSwitchCase="'week'"
       [viewDate]="viewDate"
       [events]="events"
-      [locale]="locale"
+      [locale]="cultureService.currentCulture"
       [weekStartsOn]="weekStartsOn"
       [weekendDays]="weekendDays"
     >
@@ -89,7 +117,7 @@
       *ngSwitchCase="'day'"
       [viewDate]="viewDate"
       [events]="events"
-      [locale]="locale"
+      [locale]="cultureService.currentCulture"
     >
     </mwl-calendar-day-view>
   </div>
