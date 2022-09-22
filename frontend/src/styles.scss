@@ -89,6 +89,42 @@ $my-dark-theme: mat.define-dark-theme(
       "default"
     ) !important;
   }
+
+  .calendar-container {
+    .cal-month-view {
+      .cal-cell-row {
+        &:hover {
+          background-color: mat.get-color-from-palette(
+            $my-dark-primary,
+            200
+          ) !important;
+        }
+
+        .cal-cell {
+          &:hover,
+          .cal-has-events.cal-open {
+            background-color: mat.get-color-from-palette(
+              $my-dark-primary,
+              400
+            ) !important;
+          }
+
+          &.cal-day-cell {
+            &.cal-today:not(:hover) {
+              background-color: mat.get-color-from-palette(
+                $my-light-primary,
+                100
+              ) !important;
+            }
+          }
+
+          .cal-day-number {
+            opacity: 0.75 !important;
+          }
+        }
+      }
+    }
+  }
 }
 
 .mat-dark-theme {
@@ -126,6 +162,51 @@ $my-dark-theme: mat.define-dark-theme(
       $my-dark-primary,
       "default"
     ) !important;
+  }
+
+  .calendar-container {
+    .cal-month-view,
+    .cal-week-view {
+      background-color: mat.get-color-from-palette(
+        $my-dark-primary,
+        800
+      ) !important;
+    }
+
+    .cal-month-view {
+      .cal-cell-row {
+        &:hover {
+          background-color: mat.get-color-from-palette(
+            $my-dark-accent,
+            800
+          ) !important;
+        }
+
+        .cal-cell {
+          &:hover,
+          .cal-has-events.cal-open {
+            background-color: mat.get-color-from-palette(
+              $my-dark-accent,
+              900
+            ) !important;
+          }
+
+          &.cal-day-cell {
+            &.cal-today:not(:hover) {
+              background-color: mat.get-color-from-palette(
+                $my-dark-primary,
+                700
+              ) !important;
+            }
+          }
+
+          .cal-day-number {
+            color: mat.get-color-from-palette($my-dark-primary, 200) !important;
+            opacity: 1 !important;
+          }
+        }
+      }
+    }
   }
 }
 

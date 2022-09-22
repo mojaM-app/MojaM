@@ -7,7 +7,7 @@
 <div class="content"
   touch (swipeNext)="setNextView()" (swipePrev)="setPrevView()">
   <div class="row clearfix text-center calendar-header">
-    <div class="col-sm-4 d-sm-block d-none">
+    <div class="col-md-4 col-sm-3 d-sm-block d-none text-start">
       <div class="btn-group">
         <button
           mat-stroked-button
@@ -47,10 +47,10 @@
         </button>
       </div>
     </div>
-    <div class="col-6 col-sm-4 d-inline-flex align-items-center justify-content-center">
+    <div class="col-md-4 col-sm-6 col-10 d-inline-flex align-items-center justify-content-center">
         {{ viewDate | calendarDate: view + "ViewTitle":cultureService.currentCulture:weekStartsOn }}
     </div>
-    <div class="col-6 col-sm-4">
+    <div class="col-md-4 col-sm-3 col-2 text-end">
       <div class="btn-group">
         <button
           mat-stroked-button
@@ -80,7 +80,7 @@
         <button
           mat-stroked-button
           color="accent"
-          class="mat-stroked-button mat-button-base mat-accent button"
+          class="mat-stroked-button mat-button-base mat-accent button d-none d-sm-inline-flex"
           mwlCalendarNextView
           [view]="view"
           [(viewDate)]="viewDate"

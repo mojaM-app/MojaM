@@ -24,7 +24,7 @@
         width: auto;
         padding: 0.25rem;
 
-        .mat-icon{
+        .mat-icon {
           width: auto;
         }
       }
@@ -36,6 +36,17 @@
       overflow: auto;
       height: 100%;
       width: 100%;
+
+      &::ng-deep {
+        .cal-month-view .cal-header .cal-cell,
+        .cal-week-view .cal-header b,
+        .cal-week-view .cal-hour .cal-time {
+          font-style: normal;
+          font-weight: 500;
+        }
+
+
+      }
     }
   }
 }
