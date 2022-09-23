@@ -91,6 +91,14 @@ $my-dark-theme: mat.define-dark-theme(
   }
 
   .calendar-container {
+    .cal-month-view,
+    .cal-month-view .cal-cell-row.cal-header:hover,
+    .cal-month-view .cal-cell-row.cal-header:hover,
+    .cal-month-view .cal-cell-row.cal-header .cal-cell:hover,
+    .cal-week-view {
+      background-color: white !important;
+    }
+
     .cal-month-view {
       .cal-cell-row {
         &:hover {
@@ -122,6 +130,38 @@ $my-dark-theme: mat.define-dark-theme(
             opacity: 0.75 !important;
           }
         }
+      }
+    }
+
+    .cal-week-view {
+      .cal-day-headers {
+        .cal-header:not(.cal-today):hover,
+        .cal-drag-over {
+          background-color: white;
+        }
+
+        .cal-header.cal-today {
+          background-color: mat.get-color-from-palette(
+            $my-light-primary,
+            100
+          ) !important;
+        }
+      }
+
+      .cal-hour-odd {
+        background-color: mat.get-color-from-palette(
+          $my-dark-primary,
+          100
+        ) !important;
+      }
+
+      .cal-time-events
+        .cal-day-columns:not(.cal-resize-active)
+        .cal-hour-segment:hover {
+        background-color: mat.get-color-from-palette(
+          $my-dark-primary,
+          400
+        ) !important;
       }
     }
   }
@@ -166,6 +206,9 @@ $my-dark-theme: mat.define-dark-theme(
 
   .calendar-container {
     .cal-month-view,
+    .cal-month-view .cal-cell-row.cal-header:hover,
+    .cal-month-view .cal-cell-row.cal-header:hover,
+    .cal-month-view .cal-cell-row.cal-header .cal-cell:hover,
     .cal-week-view {
       background-color: mat.get-color-from-palette(
         $my-dark-primary,
@@ -174,7 +217,7 @@ $my-dark-theme: mat.define-dark-theme(
     }
 
     .cal-month-view {
-      .cal-cell-row {
+      .cal-cell-row:not(.cal-header) {
         &:hover {
           background-color: mat.get-color-from-palette(
             $my-dark-accent,
@@ -192,19 +235,74 @@ $my-dark-theme: mat.define-dark-theme(
           }
 
           &.cal-day-cell {
+            .cal-day-number {
+              color: mat.get-color-from-palette(
+                $my-dark-primary,
+                200
+              ) !important;
+              opacity: 1 !important;
+            }
+
             &.cal-today:not(:hover) {
               background-color: mat.get-color-from-palette(
                 $my-dark-primary,
                 700
               ) !important;
             }
-          }
 
-          .cal-day-number {
-            color: mat.get-color-from-palette($my-dark-primary, 200) !important;
-            opacity: 1 !important;
+            &.cal-weekend {
+              .cal-day-number {
+                color: mat.get-color-from-palette(
+                  $my-dark-warn,
+                  600
+                ) !important;
+              }
+            }
           }
         }
+      }
+    }
+
+    .cal-week-view {
+      .cal-day-headers {
+        .cal-header:not(.cal-today):hover,
+        .cal-drag-over {
+          background-color: mat.get-color-from-palette(
+            $my-dark-primary,
+            800
+          ) !important;
+        }
+
+        .cal-header.cal-today {
+          background-color: mat.get-color-from-palette(
+            $my-dark-primary,
+            700
+          ) !important;
+        }
+
+        .cal-header.cal-weekend {
+          color: mat.get-color-from-palette($my-dark-warn, 600) !important;
+          span {
+            color: mat.get-color-from-palette($my-dark-warn, 600) !important;
+            opacity: 0.9;
+          }
+        }
+      }
+
+      .cal-hour-odd {
+        background-color: mat.get-color-from-palette(
+          $my-dark-primary,
+          900
+        ) !important;
+      }
+
+      .cal-time-events
+        .cal-day-columns:not(.cal-resize-active)
+        .cal-hour-segment:hover {
+        background-color: mat.get-color-from-palette(
+          $my-dark-accent,
+          900
+        ) !important;
       }
     }
   }
