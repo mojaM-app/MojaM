@@ -13,6 +13,7 @@ import { DiaconieComponent } from './diaconie/diaconie.component';
 import { StructureComponent } from './structure/structure.component';
 import { ContactComponent } from './contact/contact.component';
 import { DirectivesModule } from 'src/directives/directives.module';
+import { RegulationsComponent } from './regulations/regulations.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { DirectivesModule } from 'src/directives/directives.module';
     DiaconieComponent,
     StructureComponent,
     ContactComponent,
+    RegulationsComponent,
   ],
   imports: [
     CommonModule,
