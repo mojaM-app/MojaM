@@ -10,6 +10,8 @@ export class BaseService {
       getMission: () => `${this.API_ROUTES.community.path}/mission/`,
 
       getStructure: () => `${this.API_ROUTES.community.path}/structure/`,
+
+      getRegulations: () => `${this.API_ROUTES.community.path}/regulations/`,
     },
   };
 }
