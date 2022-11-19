@@ -36,7 +36,7 @@ export class ThemeService {
       ThemeService.StorageKey
     );
 
-    if (!this.isValidLang(this._currentTheme)) {
+    if (!this.isValidThemeName(this._currentTheme)) {
       this._currentTheme = ThemeService.DefaultTheme;
       this._localStorageService.saveString(
         ThemeService.StorageKey,
@@ -72,10 +72,10 @@ export class ThemeService {
     return this._currentTheme === ThemeService.DarkThemeName;
   }
 
-  private isValidLang(theme: string | null): boolean {
+  private isValidThemeName(theme: string | null): boolean {
     return (
       theme !== null &&
-      theme?.length > 0 &&
+      theme.length > 0 &&
       this.themes.findIndex((element) => element.class === theme) !== -1
     );
   }
