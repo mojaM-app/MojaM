@@ -1,0 +1,46 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run All Tasks",
+			"command": "echo",
+			"type": "shell",
+			"args": [
+				"echo1"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"dependsOn": [
+				"backend",
+				"frontend"
+			],
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "frontend",
+			"type": "shell",
+			"windows": {
+				"command": "cd frontend/; if ($?) { node --max_old_space_size=8192 ./node_modules/@angular/cli/bin/ng serve }"
+			},
+			"osx": {
+				"command": "cd frontend/ && node --max_old_space_size=8192 ./node_modules/@angular/cli/bin/ng serve frontend"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "backend",
+			"type": "shell",
+			"windows": {
+				"command": "cd backend/; if ($?) { npm start }"
+			},
+			"osx": {
+				"command": "cd backend/ && npm start"
+			},
+			"problemMatcher": []
+		}
+	]
+}
