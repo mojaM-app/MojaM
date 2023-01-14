@@ -1,17 +1,19 @@
+import { environment } from "src/environments/environment";
+
 export class BaseService {
 
   protected readonly API_ROUTES = {
     community: {
       path: 'community',
-      getMeetings: () => `${this.API_ROUTES.community.path}/meetings/`,
+      getMeetings: () => `${environment.backendUrl}/${this.API_ROUTES.community.path}/meetings`,
 
-      getDiaconie: () => `${this.API_ROUTES.community.path}/diaconie/`,
+      getDiaconie: () => `${environment.backendUrl}/${this.API_ROUTES.community.path}/diaconie`,
 
-      getMission: () => `${this.API_ROUTES.community.path}/mission/`,
+      getMission: () => `${environment.backendUrl}/${this.API_ROUTES.community.path}/mission`,
 
-      getStructure: () => `${this.API_ROUTES.community.path}/structure/`,
+      getStructure: () => `${environment.backendUrl}/${this.API_ROUTES.community.path}/structure`,
 
-      getRegulations: () => `${this.API_ROUTES.community.path}/regulations/`,
+      getRegulations: () => `${environment.backendUrl}/${this.API_ROUTES.community.path}/regulations`,
     },
   };
 }
