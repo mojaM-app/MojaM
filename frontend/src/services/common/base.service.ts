@@ -5,15 +5,20 @@ export class BaseService {
   protected readonly API_ROUTES = {
     community: {
       path: 'community',
-      getMeetings: () => `${environment.backendUrl}/${this.API_ROUTES.community.path}/meetings`,
+      getMeetings: () : string => `${environment.backendUrl}/${this.API_ROUTES.community.path}/meetings`,
 
-      getDiaconie: () => `${environment.backendUrl}/${this.API_ROUTES.community.path}/diaconie`,
+      getDiaconie: (): string => `${environment.backendUrl}/${this.API_ROUTES.community.path}/diaconie`,
 
-      getMission: () => `${environment.backendUrl}/${this.API_ROUTES.community.path}/mission`,
+      getMission: (): string => `${environment.backendUrl}/${this.API_ROUTES.community.path}/mission`,
 
-      getStructure: () => `${environment.backendUrl}/${this.API_ROUTES.community.path}/structure`,
+      getStructure: (): string => `${environment.backendUrl}/${this.API_ROUTES.community.path}/structure`,
 
-      getRegulations: () => `${environment.backendUrl}/${this.API_ROUTES.community.path}/regulations`,
+      getRegulations: (): string => `${environment.backendUrl}/${this.API_ROUTES.community.path}/regulations`,
     },
+    news:
+    {
+      path: 'news',
+      getAnnouncements: () : string => `${environment.backendUrl}/${this.API_ROUTES.news.path}/announcements`,
+    }
   };
 }

@@ -1,5 +1,10 @@
-<div
-touch (swipeNext)="selectNextTab()" (swipePrev)="selectPrevTab()">
-<news-header #header></news-header>
-<p>announcements works!</p>
+<div touch (swipeNext)="selectNextTab()" (swipePrev)="selectPrevTab()">
+  <news-header #header></news-header>
+  <div class="container" [loading]="announcements===null">
+    <ng-container *ngIf="announcements?.length">
+      <ul class="list-group list-group-flush mat-app-background">
+        <li class="list-group-item mat-app-background" *ngFor="let announcement of announcements" [innerHtml]="announcement"></li>
+      </ul>
+    </ng-container>
+  </div>
 </div>
