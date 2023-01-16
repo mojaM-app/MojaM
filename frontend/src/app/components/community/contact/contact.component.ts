@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./contact.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ContactComponent implements OnInit {
+export class ContactComponent {
   get communityEmail(): string {
     return environment.communityEmail;
   }
@@ -20,10 +20,4 @@ export class ContactComponent implements OnInit {
   get communityAddress(): string {
     return environment.communityAddress;
   }
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
 }

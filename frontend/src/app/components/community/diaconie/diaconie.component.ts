@@ -30,11 +30,11 @@ export class DiaconieComponent implements OnInit {
       .pipe(
         finalize(() => {
           this.isLoading = false;
+          this._changeDetectorRef.detectChanges();
         })
       )
       .subscribe((result) => {
         this.content = result;
-        this._changeDetectorRef.detectChanges();
       });
   }
 }
