@@ -46,7 +46,7 @@ export class LoadingDirective implements OnInit, OnChanges {
   }
 
   ngOnChanges(simpleChanges: SimpleChanges) {
-    if (simpleChanges['appLoading']) {
+    if (simpleChanges['loading']) {
       const container = this.targetEl.nativeElement;
       const div = container.querySelector('.' + this.uid);
       if (div) {
