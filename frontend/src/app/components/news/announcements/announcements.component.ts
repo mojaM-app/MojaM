@@ -1,13 +1,11 @@
 import {
-  AfterViewInit,
-  ApplicationRef,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  Input,
   OnInit,
 } from '@angular/core';
-import { BehaviorSubject, finalize } from 'rxjs';
+import { finalize } from 'rxjs';
+import { Announcements } from 'src/models/news/announcements/announcements';
 import { AnnouncementsService } from 'src/services/common/news/announcements.service';
 import { BaseNewsComponent } from '../base-news.component';
 
@@ -22,6 +20,7 @@ export class AnnouncementsComponent
   implements OnInit
 {
   public announcements: string[] | null = null;
+  public announcementsDate: Date | null = null;
 
   public constructor(
     private _service: AnnouncementsService,
@@ -38,12 +37,9 @@ export class AnnouncementsComponent
           this._changeDetectorRef.detectChanges();
         })
       )
-      .subscribe((result: string[]) => {
-        if (result?.length) {
-          this.announcements = result;
-        } else {
-          this.announcements = [];
-        }
+      .subscribe((result: Announcements) => {
+        this.announcements = result?.announcements ?? [];
+        this.announcementsDate = result?.date;
       });
   }
 }

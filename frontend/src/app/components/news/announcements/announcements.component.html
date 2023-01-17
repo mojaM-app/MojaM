@@ -1,6 +1,9 @@
 <div touch (swipeNext)="selectNextTab()" (swipePrev)="selectPrevTab()">
   <news-header #header></news-header>
   <div class="container" [loading]="announcements===null">
+    <ng-container *ngIf="announcementsDate">
+      <span class="small"> {{ 'News/Announcements/AnnouncementsOfTheDay' | gmessage }} {{ announcementsDate | gdate:"short" }}</span>
+    </ng-container>
     <ng-container *ngIf="announcements?.length">
       <ul class="list-group list-group-flush mat-app-background">
         <li class="list-group-item mat-app-background" *ngFor="let announcement of announcements" [innerHtml]="announcement"></li>

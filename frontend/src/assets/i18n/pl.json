@@ -51,7 +51,8 @@
       }
     },
     "Announcements": {
-      "Title": "Ogłoszenia"
+      "Title": "Ogłoszenia",
+      "AnnouncementsOfTheDay" : "Ogłoszenia z dnia"
     }
   },
   "Error404": {

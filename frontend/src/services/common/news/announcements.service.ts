@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { map } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
+import { Announcements } from 'src/models/news/announcements/announcements';
 import { BaseService } from '../base.service';
 
 @Injectable({
@@ -11,7 +13,13 @@ export class AnnouncementsService extends BaseService {
     super();
   }
 
-  public get(): Observable<string[]> {
-    return this._http.get<string[]>(this.API_ROUTES.news.getAnnouncements());
+  public get(): Observable<Announcements> {
+    return this._http.get<Announcements>(this.API_ROUTES.news.getAnnouncements())
+    .pipe(
+      map(resp => {
+        resp.date = new Date(resp.date);
+        return resp;
+      })
+    );
   }
 }
