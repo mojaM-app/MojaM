@@ -28,6 +28,15 @@ export class TranslationInitService {
       fetch('./assets/cldr-data/supplemental/likelySubtags.json').then(
         (response) => response.json()
       ),
+      fetch('./assets/cldr-data/main/pl/numbers.json').then(
+        (response) => response.json()
+      ),
+      fetch('./assets/cldr-data/main/pl/ca-gregorian.json').then(
+        (response) => response.json()
+      ),
+      fetch('./assets/cldr-data/main/pl/currencies.json').then(
+        (response) => response.json()
+      ),
     ];
 
     for (const dt of this._translate.langs) {
@@ -43,6 +52,10 @@ export class TranslationInitService {
 
       const subtags = modules[1];
       Globalize.load(subtags);
+
+      Globalize.load(modules[2]);
+      Globalize.load(modules[3]);
+      Globalize.load(modules[4]);
 
       const messages = modules[promisses.length - 1];
       if (messages) {
