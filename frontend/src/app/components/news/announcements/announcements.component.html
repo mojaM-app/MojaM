@@ -1,13 +1,27 @@
-<div touch (swipeNext)="selectNextTab()" (swipePrev)="selectPrevTab()">
+<div
+  class="content-container"
+  touch
+  (swipeNext)="selectNextTab()"
+  (swipePrev)="selectPrevTab()"
+>
   <news-header #header></news-header>
-  <div class="container" [loading]="announcements===null">
+  <div class="content" [loading]="announcements === null">
     <ng-container *ngIf="announcementsDate">
-      <span class="small"> {{ 'News/Announcements/AnnouncementsOfTheDay' | gmessage }} {{ announcementsDate | gdate:"short" }}</span>
+      <h5 class="p-0 py-2 m-0 text-center">
+        {{ "News/Announcements/AnnouncementsOfTheDay" | gmessage }}
+        {{ announcementsDate | gdate : "short" }}
+      </h5>
     </ng-container>
     <ng-container *ngIf="announcements?.length">
-      <ul class="list-group list-group-flush mat-app-background">
-        <li class="list-group-item mat-app-background" *ngFor="let announcement of announcements" [innerHtml]="announcement"></li>
-      </ul>
+      <div class="announcement-list">
+        <ul class="list-group list-group-flush mat-app-background">
+          <li
+            class="list-group-item mat-app-background"
+            *ngFor="let announcement of announcements"
+            [innerHtml]="announcement"
+          ></li>
+        </ul>
+      </div>
     </ng-container>
   </div>
 </div>
