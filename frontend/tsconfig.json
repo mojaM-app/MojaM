@@ -20,7 +20,6 @@
     "module": "es2020",
     "allowJs": true,
     "checkJs": false,
-    "suppressImplicitAnyIndexErrors": true,
     "typeRoots": [
       "node_modules/@types"
     ],

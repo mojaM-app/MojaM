@@ -4,7 +4,9 @@ import { Subscription } from 'rxjs';
 export class Empty {}
 export type Constructor<T = Empty> = new (...args: any[]) => T;
 
-export function WithUnsubscribeOnDestroy<T extends Constructor = Constructor<Empty>>(Base: T = Empty as T) {
+export function WithUnsubscribeOnDestroy<
+  T extends Constructor = Constructor<Empty>,
+>(Base: T = Empty as T) {
   return class extends Base implements OnDestroy {
     private _subscriptions: Subscription = new Subscription();
 

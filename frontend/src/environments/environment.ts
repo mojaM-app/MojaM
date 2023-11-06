@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  backendUrl: 'http://localhost:5101',
+  backendUrl: 'http://localhost:5001',
 
   communityEmail: 'email@some.domain',
   communityWebPage: 'https://www.some.domain/',

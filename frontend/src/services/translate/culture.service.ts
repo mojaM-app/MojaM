@@ -10,8 +10,8 @@ export class CultureService {
   public static readonly DefaultCulture = 'pl';
 
   public currentCulture: string = CultureService.DefaultCulture;
-  public timeFormat: string = 'HH:mm';
-  public dateFormat: string = 'dd.MM.yyyy';
+  public timeFormat = 'HH:mm';
+  public dateFormat = 'dd.MM.yyyy';
   public dateTimeFormat: string = this.dateFormat + ' ' + this.timeFormat;
 
   private static readonly StorageKey = 'culture';
@@ -20,9 +20,9 @@ export class CultureService {
     private _cldrLocaleService: CldrLocaleService,
     private _localStorageService: LocalStorageService
   ) {
-    this.currentCulture = this._localStorageService.loadString(
-      CultureService.StorageKey
-    ) ?? CultureService.DefaultCulture;
+    this.currentCulture =
+      this._localStorageService.loadString(CultureService.StorageKey) ??
+      CultureService.DefaultCulture;
 
     if (
       !this.currentCulture?.length ||

@@ -5,7 +5,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { finalize } from 'rxjs';
-import { Announcements } from 'src/models/news/announcements/announcements';
+import { IAnnouncements } from 'src/interfaces/news/announcements/announcements';
 import { AnnouncementsService } from 'src/services/common/news/announcements.service';
 import { BaseNewsComponent } from '../base-news.component';
 
@@ -37,7 +37,7 @@ export class AnnouncementsComponent
           this._changeDetectorRef.detectChanges();
         })
       )
-      .subscribe((result: Announcements) => {
+      .subscribe((result: IAnnouncements) => {
         this.announcements = result?.announcements ?? [];
         this.announcementsDate = result?.date;
       });

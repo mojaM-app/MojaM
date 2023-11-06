@@ -64,7 +64,7 @@ export class ThemeService {
   }
 
   public onOffDarkMode(on: boolean): void {
-    const theme = !!on ? ThemeService.DarkThemeName : ThemeService.DefaultTheme;
+    const theme = on ? ThemeService.DarkThemeName : ThemeService.DefaultTheme;
     this.switchTheme(theme);
   }
 
@@ -76,7 +76,7 @@ export class ThemeService {
     return (
       theme !== null &&
       theme.length > 0 &&
-      this.themes.findIndex((element) => element.class === theme) !== -1
+      this.themes.findIndex(element => element.class === theme) !== -1
     );
   }
 

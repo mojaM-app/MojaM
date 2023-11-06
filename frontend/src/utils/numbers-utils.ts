@@ -9,7 +9,11 @@ export class NumbersUtils {
     }
 
     if (typeof value === 'string') {
-      if (value === null || value === undefined || !(value + '').trim().length) {
+      if (
+        value === null ||
+        value === undefined ||
+        !(value + '').trim().length
+      ) {
         return null;
       }
 

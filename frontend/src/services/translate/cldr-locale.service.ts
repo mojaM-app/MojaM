@@ -24,7 +24,7 @@ class CldrPackAdapter implements CldrPack {
   }
 
   public cldrDataLanguagesJson(): Promise<any> {
-    return fetch(this.data.cldrDataLanguagesJson).then((response) =>
+    return fetch(this.data.cldrDataLanguagesJson).then(response =>
       response.json()
     );
   }

@@ -25,9 +25,9 @@ export class TranslationService {
       label: 'język polski',
       icon: 'assets/svg/languages/pl.svg',
       messages: () =>
-        fetch(`./assets/i18n/pl.json?${(new Date()).getTime()}`)
-          .then((response) => response.json())
-          .then((messages) => ({ pl: messages })),
+        fetch(`./assets/i18n/pl.json?${new Date().getTime()}`)
+          .then(response => response.json())
+          .then(messages => ({ pl: messages })),
     },
   ];
 
@@ -83,14 +83,14 @@ export class TranslationService {
       if (dt.id === lang) {
         return dt
           .messages()
-          .then((messages) => {
+          .then(messages => {
             Globalize.loadMessages(messages);
             this._localStorageService.saveString(
               TranslationService.StorageKey,
               lang
             );
           })
-          .catch((e) => {
+          .catch(e => {
             console.error(`There is no language module with ${lang} id`, e);
           });
       }
@@ -119,7 +119,7 @@ export class TranslationService {
     return (
       lang !== null &&
       lang?.length > 0 &&
-      this.langs.findIndex((element) => element.id === lang) !== -1
+      this.langs.findIndex(element => element.id === lang) !== -1
     );
   }
 }
