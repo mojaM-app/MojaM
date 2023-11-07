@@ -89,9 +89,6 @@ export abstract class StorageService {
 
   public abstract isItemSet(storageKey: string): boolean;
   public abstract removeItem(storageKey: string): void;
-  protected abstract setItemValue(
-    storageKey: string,
-    stringToSave: string | null
-  ): void;
+  protected abstract setItemValue(storageKey: string, stringToSave: string | null): void;
   protected abstract getItemValue(storageKey: string): string | null;
 }

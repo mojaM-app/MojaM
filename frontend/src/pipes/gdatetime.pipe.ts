@@ -4,10 +4,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { CultureService } from 'src/services/translate/culture.service';
 
 @Pipe({
-  name: 'gdatetime'
+  name: 'gdatetime',
 })
 export class GdatetimePipe implements PipeTransform {
-  public constructor(private _cultureService: CultureService) { }
+  public constructor(private _cultureService: CultureService) {}
 
   public transform(value: Date, style?: string): string | null {
     if (value instanceof Date) {

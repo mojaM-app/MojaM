@@ -5,13 +5,7 @@ import { TouchDirective } from './touch.directive';
 
 @NgModule({
   imports: [CommonModule],
-  declarations: [
-    LoadingDirective,
-    TouchDirective,
-  ],
-  exports: [
-    LoadingDirective,
-    TouchDirective
-  ],
+  declarations: [LoadingDirective, TouchDirective],
+  exports: [LoadingDirective, TouchDirective],
 })
 export class DirectivesModule {}

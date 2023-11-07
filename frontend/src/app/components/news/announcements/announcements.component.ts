@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { finalize } from 'rxjs';
 import { IAnnouncements } from 'src/interfaces/news/announcements/announcements';
 import { AnnouncementsService } from 'src/services/common/news/announcements.service';
@@ -15,10 +10,7 @@ import { BaseNewsComponent } from '../base-news.component';
   styleUrls: ['./announcements.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AnnouncementsComponent
-  extends BaseNewsComponent
-  implements OnInit
-{
+export class AnnouncementsComponent extends BaseNewsComponent implements OnInit {
   public announcements: string[] | null = null;
   public announcementsDate: Date | null = null;
 

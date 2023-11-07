@@ -20,15 +20,9 @@
     "module": "es2020",
     "allowJs": true,
     "checkJs": false,
-    "typeRoots": [
-      "node_modules/@types"
-    ],
     "lib": [
       "es2020",
       "dom"
-    ],
-    "types": [
-      "node",
     ],
     "paths": {
       "cldr": [

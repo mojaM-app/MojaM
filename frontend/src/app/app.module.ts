@@ -19,7 +19,7 @@ import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { SideMenuComponent } from './components/side-menu/side-menu.component';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent, FooterComponent, SideMenuComponent],

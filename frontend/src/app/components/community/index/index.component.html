@@ -4,8 +4,7 @@
       class="header-image"
       src="./assets/images/community/community-logo.png"
       alt="{{ 'Shared/Name' | gmessage }}"
-      title="{{ 'Shared/Name' | gmessage }}"
-    />
+      title="{{ 'Shared/Name' | gmessage }}" />
   </div>
   <div class="body px-1 mat-app-background">
     <app-community-contact></app-community-contact>
@@ -14,8 +13,9 @@
       mat-align-tabs="center"
       animationDuration="250ms"
       [(selectedIndex)]="selectedTab"
-      touch (swipeNext)="selectNextTab()" (swipePrev)="selectPrevTab()"
-    >
+      touch
+      (swipeNext)="selectNextTab()"
+      (swipePrev)="selectPrevTab()">
       <mat-tab label="{{ 'Community/Meetings/Title' | gmessage }}">
         <app-community-meetings></app-community-meetings>
       </mat-tab>

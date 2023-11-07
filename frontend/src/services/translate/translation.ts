@@ -10,27 +10,16 @@ export class Translation {
     return new Translation(value, null);
   }
 
-  static FromFormatter(
-    formatter: (...args: any[]) => string,
-    params?: unknown | (() => unknown)
-  ): Translation {
+  static FromFormatter(formatter: (...args: any[]) => string, params?: unknown | (() => unknown)): Translation {
     return new Translation(null, () => {
-      return typeof params === 'function'
-        ? formatter(params())
-        : formatter(params);
+      return typeof params === 'function' ? formatter(params()) : formatter(params);
     });
   }
 
-  static FromService(
-    translate: TranslationService,
-    key: string,
-    params?: unknown | (() => unknown)
-  ): Translation {
+  static FromService(translate: TranslationService, key: string, params?: unknown | (() => unknown)): Translation {
     return new Translation(null, () => {
       const formatter = translate.getFormatter(key);
-      return typeof params === 'function'
-        ? formatter(params())
-        : formatter(params);
+      return typeof params === 'function' ? formatter(params()) : formatter(params);
     });
   }
 

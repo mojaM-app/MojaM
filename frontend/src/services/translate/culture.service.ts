@@ -21,18 +21,11 @@ export class CultureService {
     private _localStorageService: LocalStorageService
   ) {
     this.currentCulture =
-      this._localStorageService.loadString(CultureService.StorageKey) ??
-      CultureService.DefaultCulture;
+      this._localStorageService.loadString(CultureService.StorageKey) ?? CultureService.DefaultCulture;
 
-    if (
-      !this.currentCulture?.length ||
-      !this._cldrLocaleService.getCldrLocale(this.currentCulture)
-    ) {
+    if (!this.currentCulture?.length || !this._cldrLocaleService.getCldrLocale(this.currentCulture)) {
       this.currentCulture = CultureService.DefaultCulture;
-      this._localStorageService.saveString(
-        CultureService.StorageKey,
-        this.currentCulture
-      );
+      this._localStorageService.saveString(CultureService.StorageKey, this.currentCulture);
     }
   }
 
@@ -51,9 +44,7 @@ export class CultureService {
   public initDateTimeFormats(): void {
     const loc = Globalize.locale();
 
-    const dateTimeFormats = loc?.main(
-      'dates/calendars/gregorian/dateTimeFormats'
-    );
+    const dateTimeFormats = loc?.main('dates/calendars/gregorian/dateTimeFormats');
 
     if (dateTimeFormats) {
       const availableFormats = dateTimeFormats.availableFormats;

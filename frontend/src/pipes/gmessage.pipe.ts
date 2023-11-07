@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { TranslationService } from 'src/services/translate/translation.service';
 
 @Pipe({
-  name: 'gmessage'
+  name: 'gmessage',
 })
 export class GmessagePipe implements PipeTransform {
   public constructor(private _translationService: TranslationService) {}

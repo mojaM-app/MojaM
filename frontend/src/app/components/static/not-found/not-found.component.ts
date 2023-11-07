@@ -6,6 +6,6 @@ import { PipesModule } from 'src/pipes/pipes.module';
   templateUrl: './not-found.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [PipesModule]
+  imports: [PipesModule],
 })
 export class NotFoundComponent {}

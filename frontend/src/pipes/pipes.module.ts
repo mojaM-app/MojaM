@@ -9,21 +9,7 @@ import { GtimePipe } from './gtime.pipe';
 
 @NgModule({
   imports: [CommonModule],
-  declarations: [
-    GdatePipe,
-    GdatetimePipe,
-    GmessagePipe,
-    GnumberPipe,
-    GtimePipe,
-    DateAgoPipe,
-  ],
-  exports: [
-    GdatePipe,
-    GdatetimePipe,
-    GmessagePipe,
-    GnumberPipe,
-    GtimePipe,
-    DateAgoPipe,
-  ],
+  declarations: [GdatePipe, GdatetimePipe, GmessagePipe, GnumberPipe, GtimePipe, DateAgoPipe],
+  exports: [GdatePipe, GdatetimePipe, GmessagePipe, GnumberPipe, GtimePipe, DateAgoPipe],
 })
 export class PipesModule {}

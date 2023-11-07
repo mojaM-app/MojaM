@@ -8,9 +8,6 @@ export class DeviceService {
   constructor(private _deviceDetectorService: DeviceDetectorService) {}
 
   public isMobile(): boolean {
-    return (
-      this._deviceDetectorService.isMobile() ||
-      this._deviceDetectorService.isTablet()
-    );
+    return this._deviceDetectorService.isMobile() || this._deviceDetectorService.isTablet();
   }
 }

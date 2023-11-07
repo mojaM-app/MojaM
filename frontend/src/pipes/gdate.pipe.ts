@@ -4,7 +4,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { CultureService } from 'src/services/translate/culture.service';
 
 @Pipe({
-  name: 'gdate'
+  name: 'gdate',
 })
 export class GdatePipe implements PipeTransform {
   public constructor(private _cultureService: CultureService) {}

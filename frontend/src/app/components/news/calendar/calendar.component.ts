@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Injectable,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Injectable } from '@angular/core';
 import {
   CalendarDateFormatter,
   CalendarEvent,
@@ -22,12 +17,7 @@ import { Subscription } from 'rxjs';
 @Injectable()
 export class CustomDateFormatter extends CalendarDateFormatter {
   readonly breakpoint$ = this.breakpointObserver
-    .observe([
-      Breakpoints.Large,
-      Breakpoints.Medium,
-      Breakpoints.Small,
-      '(min-width: 500px)',
-    ])
+    .observe([Breakpoints.Large, Breakpoints.Medium, Breakpoints.Small, '(min-width: 500px)'])
     .pipe(distinctUntilChanged());
 
   readonly subscription: Subscription;
@@ -41,15 +31,12 @@ export class CustomDateFormatter extends CalendarDateFormatter {
   ) {
     super(dateAdapter);
 
-    this.subscription = this.breakpoint$.subscribe((value) => {
+    this.subscription = this.breakpoint$.subscribe(value => {
       return this.breakpointChanged(value);
     });
   }
 
-  public override monthViewColumnHeader({
-    date,
-    locale,
-  }: DateFormatterParams): string {
+  public override monthViewColumnHeader({ date, locale }: DateFormatterParams): string {
     return date.toLocaleDateString(locale, {
       weekday: this.weekday,
       hourCycle: 'h24',
@@ -70,11 +57,7 @@ export class CustomDateFormatter extends CalendarDateFormatter {
   }
 
   public override dayViewHour({ date, locale }: DateFormatterParams): string {
-    return formatDate(
-      date,
-      'HH:mm',
-      locale ?? this._cultureService.currentCulture
-    );
+    return formatDate(date, 'HH:mm', locale ?? this._cultureService.currentCulture);
   }
 
   override weekViewColumnHeader({ date, locale }: DateFormatterParams): string {
@@ -111,7 +94,7 @@ export class CustomDateFormatter extends CalendarDateFormatter {
     },
   ],
 })
-export class CalendarComponent extends BaseNewsComponent implements OnInit {
+export class CalendarComponent extends BaseNewsComponent {
   CalendarView = CalendarView;
   public view: CalendarView = CalendarView.Month;
   public viewDate = new Date();
@@ -126,8 +109,6 @@ export class CalendarComponent extends BaseNewsComponent implements OnInit {
     super();
   }
 
-  public ngOnInit(): void {}
-
   public setView(view: CalendarView): void {
     this.view = view;
   }
@@ -140,7 +121,7 @@ export class CalendarComponent extends BaseNewsComponent implements OnInit {
     this.setNewViewDate(true);
   }
 
-  private setNewViewDate(moveBack: boolean = false): void {
+  private setNewViewDate(moveBack = false): void {
     const addFn: any = {
       day: this.dateAdapter.addDays,
       week: this.dateAdapter.addWeeks,

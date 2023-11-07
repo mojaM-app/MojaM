@@ -29,7 +29,10 @@ export class NewsHeaderComponent {
     },
   ];
 
-  constructor(private _router: Router, private _translationService : TranslationService) {}
+  constructor(
+    private _router: Router,
+    private _translationService: TranslationService
+  ) {}
 
   public setNextTab(): void {
     const activeTab = this.getActiveTabIndex();
@@ -45,10 +48,10 @@ export class NewsHeaderComponent {
   }
 
   private getActiveTabIndex(): number {
-    const curentUrl = this._router.url?.toLowerCase();
+    const currentUrl = this._router.url?.toLowerCase();
     for (let index = 0; index < this.tabs.length; index++) {
       const tab: NewsTabItem = this.tabs[index];
-      if (curentUrl.indexOf(tab.route) !== -1) {
+      if (currentUrl.indexOf(tab.route) !== -1) {
         return index;
       }
     }

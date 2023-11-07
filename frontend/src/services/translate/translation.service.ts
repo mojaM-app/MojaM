@@ -32,18 +32,11 @@ export class TranslationService {
   ];
 
   public constructor(private _localStorageService: LocalStorageService) {
-    this.currentLang = this._localStorageService.loadString(
-      TranslationService.StorageKey
-    );
+    this.currentLang = this._localStorageService.loadString(TranslationService.StorageKey);
     if (!this.isValidLang(this.currentLang)) {
       const browserLang = navigator.language;
-      this.currentLang = this.isValidLang(browserLang)
-        ? browserLang
-        : TranslationService.DefaultLang;
-      this._localStorageService.saveString(
-        TranslationService.StorageKey,
-        this.currentLang
-      );
+      this.currentLang = this.isValidLang(browserLang) ? browserLang : TranslationService.DefaultLang;
+      this._localStorageService.saveString(TranslationService.StorageKey, this.currentLang);
     }
   }
 
@@ -51,18 +44,13 @@ export class TranslationService {
     return this.getFormatter(key)(interpolateParams);
   }
 
-  public getTranslation(
-    key: string,
-    params?: unknown | (() => unknown)
-  ): Translation {
+  public getTranslation(key: string, params?: unknown | (() => unknown)): Translation {
     return Translation.FromService(this, key, params);
   }
 
   public getFormatter(key: string): (...args: any[]) => string {
     try {
-      return Globalize(
-        this.currentLang || TranslationService.DefaultLang
-      ).messageFormatter(key);
+      return Globalize(this.currentLang || TranslationService.DefaultLang).messageFormatter(key);
     } catch (ex) {
       if ((ex as any)?.code === 'E_MISSING_MESSAGE') {
         return () => {
@@ -85,10 +73,7 @@ export class TranslationService {
           .messages()
           .then(messages => {
             Globalize.loadMessages(messages);
-            this._localStorageService.saveString(
-              TranslationService.StorageKey,
-              lang
-            );
+            this._localStorageService.saveString(TranslationService.StorageKey, lang);
           })
           .catch(e => {
             console.error(`There is no language module with ${lang} id`, e);
@@ -104,9 +89,7 @@ export class TranslationService {
 
   private tryGetFormatter(key: string): ((...args: any[]) => string) | null {
     try {
-      return Globalize(
-        this.currentLang || TranslationService.DefaultLang
-      ).messageFormatter(key);
+      return Globalize(this.currentLang || TranslationService.DefaultLang).messageFormatter(key);
     } catch (ex) {
       if ((ex as any)?.code === 'E_MISSING_MESSAGE') {
         return null;
@@ -116,10 +99,6 @@ export class TranslationService {
   }
 
   private isValidLang(lang: string | null): boolean {
-    return (
-      lang !== null &&
-      lang?.length > 0 &&
-      this.langs.findIndex(element => element.id === lang) !== -1
-    );
+    return lang !== null && lang?.length > 0 && this.langs.findIndex(element => element.id === lang) !== -1;
   }
 }
