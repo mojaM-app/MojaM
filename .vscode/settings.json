@@ -1,0 +1,15 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "editor.formatOnSave": false,
+  "eslint.workingDirectories": ["frontend", "backend"],
+
+  "files.exclude": {
+    "node_modules": true
+  },
+  // The folders to exclude when doing a full text search in the workspace.
+  "search.exclude": {
+    "node_modules": true
+  }
+}
