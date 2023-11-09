@@ -1,5 +1,5 @@
 import { OnInit, OnChanges, Directive, Input, HostBinding, Renderer2, ElementRef, SimpleChanges } from '@angular/core';
-import { GuidUtils } from 'src/utils/guid-utils';
+import { Guid } from 'guid-typescript';
 
 @Directive({
   selector: '[loading]',
@@ -18,7 +18,7 @@ export class LoadingDirective implements OnInit, OnChanges {
   ) {}
 
   public ngOnInit() {
-    this.uid = 'loading-container-' + GuidUtils.new();
+    this.uid = 'loading-container-' + Guid.create();
 
     const loadingContainer = this.renderer.createElement('div');
     this.renderer.setStyle(loadingContainer, 'display', this.loading ? 'flex' : 'none');
