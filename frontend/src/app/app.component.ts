@@ -1,17 +1,18 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, OnInit, ViewChild } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DeviceService } from 'src/services/device/device.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
 import { ThemeService } from 'src/services/theme/theme.service';
-import { WithUnsubscribeOnDestroy } from 'src/utils/with-unsubscribe-on-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppComponent extends WithUnsubscribeOnDestroy() implements OnInit {
+export class AppComponent implements OnInit {
   @ViewChild('sidenav') public sidenav: MatSidenav | undefined;
 
   private _themeName: string | null = null;
@@ -30,24 +31,25 @@ export class AppComponent extends WithUnsubscribeOnDestroy() implements OnInit {
     private _spinnerService: SpinnerService,
     private _themeService: ThemeService
   ) {
-    super();
     this.isMobile = deviceService.isMobile();
   }
 
   public ngOnInit(): void {
-    this.registerSubscription(
-      this._spinnerService.onStateChanged$().subscribe((state: boolean) => {
+    this._spinnerService
+      .onStateChanged$()
+      .pipe(untilDestroyed(this))
+      .subscribe((state: boolean) => {
         this.showSpinner = state;
         this._changeDetectorRef.detectChanges();
-      })
-    );
+      });
 
-    this.registerSubscription(
-      this._themeService.onThemeChanged$().subscribe((theme: string) => {
+    this._themeService
+      .onThemeChanged$()
+      .pipe(untilDestroyed(this))
+      .subscribe((theme: string) => {
         this._themeName = theme;
         this._changeDetectorRef.detectChanges();
-      })
-    );
+      });
   }
 
   public closeSidenav(): void {
