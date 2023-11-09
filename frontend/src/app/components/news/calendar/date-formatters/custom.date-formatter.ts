@@ -1,9 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  CalendarDateFormatter,
-  DateAdapter,
-  DateFormatterParams,
-} from 'angular-calendar';
+import { CalendarDateFormatter, DateAdapter, DateFormatterParams } from 'angular-calendar';
 import { CultureService } from 'src/services/translate/culture.service';
 import { formatDate } from '@angular/common';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
@@ -13,12 +9,7 @@ import { Subscription } from 'rxjs';
 @Injectable()
 export class CustomDateFormatter extends CalendarDateFormatter {
   readonly breakpoint$ = this.breakpointObserver
-    .observe([
-      Breakpoints.Large,
-      Breakpoints.Medium,
-      Breakpoints.Small,
-      '(min-width: 500px)',
-    ])
+    .observe([Breakpoints.Large, Breakpoints.Medium, Breakpoints.Small, '(min-width: 500px)'])
     .pipe(distinctUntilChanged());
 
   readonly subscription: Subscription;
@@ -32,15 +23,12 @@ export class CustomDateFormatter extends CalendarDateFormatter {
   ) {
     super(dateAdapter);
 
-    this.subscription = this.breakpoint$.subscribe((value) => {
+    this.subscription = this.breakpoint$.subscribe(value => {
       return this.breakpointChanged(value);
     });
   }
 
-  public override monthViewColumnHeader({
-    date,
-    locale,
-  }: DateFormatterParams): string {
+  public override monthViewColumnHeader({ date, locale }: DateFormatterParams): string {
     return date.toLocaleDateString(locale, {
       weekday: this.weekday,
       hourCycle: 'h24',
@@ -61,11 +49,7 @@ export class CustomDateFormatter extends CalendarDateFormatter {
   }
 
   public override dayViewHour({ date, locale }: DateFormatterParams): string {
-    return formatDate(
-      date,
-      'HH:mm',
-      locale ?? this._cultureService.currentCulture
-    );
+    return formatDate(date, 'HH:mm', locale ?? this._cultureService.currentCulture);
   }
 
   override weekViewColumnHeader({ date, locale }: DateFormatterParams): string {
