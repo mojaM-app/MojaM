@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { BaseNewsComponent } from '../base-news.component';
 
 @Component({
@@ -7,13 +7,8 @@ import { BaseNewsComponent } from '../base-news.component';
   styleUrls: ['./information.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InformationComponent extends BaseNewsComponent implements OnInit {
-
+export class InformationComponent extends BaseNewsComponent {
   public constructor() {
     super();
   }
-
-  public ngOnInit(): void {
-  }
-
 }

@@ -3,7 +3,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { CultureService } from 'src/services/translate/culture.service';
 
 @Pipe({
-  name: 'gtime'
+  name: 'gtime',
 })
 export class GtimePipe implements PipeTransform {
   public constructor(private _cultureService: CultureService) {}

@@ -8,17 +8,10 @@ describe('DeviceDetectorService', () => {
   let deviceDetectorSpy: jasmine.SpyObj<DeviceDetectorService>;
 
   beforeEach(() => {
-    deviceDetectorSpy =
-      jasmine.createSpyObj<DeviceDetectorService>('DeviceDetectorService', [
-        'isMobile',
-        'isTablet',
-      ]);
+    deviceDetectorSpy = jasmine.createSpyObj<DeviceDetectorService>('DeviceDetectorService', ['isMobile', 'isTablet']);
 
     TestBed.configureTestingModule({
-      providers: [
-        DeviceService,
-        { provide: DeviceDetectorService, useValue: deviceDetectorSpy },
-      ],
+      providers: [DeviceService, { provide: DeviceDetectorService, useValue: deviceDetectorSpy }],
     });
     service = TestBed.inject(DeviceService);
   });

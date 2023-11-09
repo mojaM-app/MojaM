@@ -1,11 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { finalize } from 'rxjs';
-import { Announcements } from 'src/models/news/announcements/announcements';
+import { IAnnouncements } from 'src/interfaces/news/announcements/announcements';
 import { AnnouncementsService } from 'src/services/common/news/announcements.service';
 import { BaseNewsComponent } from '../base-news.component';
 
@@ -15,10 +10,7 @@ import { BaseNewsComponent } from '../base-news.component';
   styleUrls: ['./announcements.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AnnouncementsComponent
-  extends BaseNewsComponent
-  implements OnInit
-{
+export class AnnouncementsComponent extends BaseNewsComponent implements OnInit {
   public announcements: string[] | null = null;
   public announcementsDate: Date | null = null;
 
@@ -37,7 +29,7 @@ export class AnnouncementsComponent
           this._changeDetectorRef.detectChanges();
         })
       )
-      .subscribe((result: Announcements) => {
+      .subscribe((result: IAnnouncements) => {
         this.announcements = result?.announcements ?? [];
         this.announcementsDate = result?.date;
       });

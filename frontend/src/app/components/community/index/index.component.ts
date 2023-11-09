@@ -11,9 +11,7 @@ export class IndexComponent {
   @ViewChild('tabGroup', { static: true })
   public tabGroup: MatTabGroup | null = null;
 
-  public selectedTab: number = 0;
-
-  public constructor() {}
+  public selectedTab = 0;
 
   public selectNextTab(): void {
     if (this.selectedTab < (this.tabGroup?._tabs?.length ?? 0) - 1) {

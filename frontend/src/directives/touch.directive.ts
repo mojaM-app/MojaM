@@ -12,8 +12,6 @@ export class TouchDirective {
   private swipeCoord?: [number, number];
   private swipeTime?: number;
 
-  public constructor() {}
-
   @HostListener('touchstart', ['$event']) public onTouchStart(e: TouchEvent): void {
     this.swipe(e, 'start');
   }
@@ -23,20 +21,14 @@ export class TouchDirective {
   }
 
   private swipe(e: TouchEvent, when: string): void {
-    const coord: [number, number] = [
-      e.changedTouches[0].clientX,
-      e.changedTouches[0].clientY,
-    ];
+    const coord: [number, number] = [e.changedTouches[0].clientX, e.changedTouches[0].clientY];
     const time = new Date().getTime();
 
     if (when === 'start') {
       this.swipeCoord = coord;
       this.swipeTime = time;
     } else if (when === 'end' && this.swipeCoord) {
-      const direction = [
-        coord[0] - this.swipeCoord[0],
-        coord[1] - this.swipeCoord[1],
-      ];
+      const direction = [coord[0] - this.swipeCoord[0], coord[1] - this.swipeCoord[1]];
       const duration = time - (this.swipeTime ?? 0);
 
       if (

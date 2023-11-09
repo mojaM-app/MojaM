@@ -1,8 +1,8 @@
-import { Component, ViewChild } from "@angular/core";
-import { NewsHeaderComponent } from "./header/header.component";
+import { Component, ViewChild } from '@angular/core';
+import { NewsHeaderComponent } from './header/header.component';
 
 @Component({
-  template: ''
+  template: '',
 })
 export abstract class BaseNewsComponent {
   @ViewChild('header')

@@ -1,7 +1,13 @@
 import { OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { Injectable } from '@angular/core';
 
-export class Empty {}
+@Injectable()
+export abstract class Empty implements OnDestroy {
+  public abstract ngOnDestroy(): void;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Constructor<T = Empty> = new (...args: any[]) => T;
 
 export function WithUnsubscribeOnDestroy<T extends Constructor = Constructor<Empty>>(Base: T = Empty as T) {

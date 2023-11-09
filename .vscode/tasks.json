@@ -35,10 +35,10 @@
 			"label": "backend",
 			"type": "shell",
 			"windows": {
-				"command": "cd backend/; if ($?) { npm start }"
+				"command": "cd backend/; if ($?) { npm run dev }"
 			},
 			"osx": {
-				"command": "cd backend/ && npm start"
+				"command": "cd backend/ && npm run dev"
 			},
 			"problemMatcher": []
 		}

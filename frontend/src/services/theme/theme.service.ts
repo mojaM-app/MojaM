@@ -16,9 +16,7 @@ export class ThemeService {
   private static readonly StorageKey = 'theme';
 
   private _currentTheme: string | null = null;
-  private readonly _themChanged = new BehaviorSubject<string>(
-    ThemeService.DefaultTheme
-  );
+  private readonly _themChanged = new BehaviorSubject<string>(ThemeService.DefaultTheme);
 
   public readonly themes: ThemeData[] = [
     {
@@ -32,16 +30,11 @@ export class ThemeService {
   ];
 
   public constructor(private _localStorageService: LocalStorageService) {
-    this._currentTheme = this._localStorageService.loadString(
-      ThemeService.StorageKey
-    );
+    this._currentTheme = this._localStorageService.loadString(ThemeService.StorageKey);
 
     if (!this.isValidThemeName(this._currentTheme)) {
       this._currentTheme = ThemeService.DefaultTheme;
-      this._localStorageService.saveString(
-        ThemeService.StorageKey,
-        this._currentTheme
-      );
+      this._localStorageService.saveString(ThemeService.StorageKey, this._currentTheme);
     }
 
     this.setTheme(this._currentTheme);
@@ -64,7 +57,7 @@ export class ThemeService {
   }
 
   public onOffDarkMode(on: boolean): void {
-    const theme = !!on ? ThemeService.DarkThemeName : ThemeService.DefaultTheme;
+    const theme = on ? ThemeService.DarkThemeName : ThemeService.DefaultTheme;
     this.switchTheme(theme);
   }
 
@@ -73,11 +66,7 @@ export class ThemeService {
   }
 
   private isValidThemeName(theme: string | null): boolean {
-    return (
-      theme !== null &&
-      theme.length > 0 &&
-      this.themes.findIndex((element) => element.class === theme) !== -1
-    );
+    return theme !== null && theme.length > 0 && this.themes.findIndex(element => element.class === theme) !== -1;
   }
 
   private setTheme(theme: string | null): void {

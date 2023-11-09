@@ -5,15 +5,15 @@ const routes: Routes = [
   { path: '', redirectTo: 'information', pathMatch: 'full' },
   {
     path: 'announcements',
-    loadChildren: () => import('./announcements/announcements.module').then((m) => m.AnnouncementsModule),
+    loadChildren: () => import('./announcements/announcements.module').then(m => m.AnnouncementsModule),
   },
   {
     path: 'calendar',
-    loadChildren: () => import('./calendar/calendar.module').then((m) => m.NewsCalendarModule),
+    loadChildren: () => import('./calendar/calendar.module').then(m => m.NewsCalendarModule),
   },
   {
     path: 'information',
-    loadChildren: () => import('./information/information.module').then((m) => m.InformationModule),
+    loadChildren: () => import('./information/information.module').then(m => m.InformationModule),
   },
 ];
 

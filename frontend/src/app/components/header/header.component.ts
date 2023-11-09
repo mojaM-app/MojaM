@@ -1,11 +1,4 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnInit,
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { ThemeService } from 'src/services/theme/theme.service';
 import { WithUnsubscribeOnDestroy } from 'src/utils/with-unsubscribe-on-destroy';
@@ -19,7 +12,7 @@ import { WithUnsubscribeOnDestroy } from 'src/utils/with-unsubscribe-on-destroy'
 export class HeaderComponent extends WithUnsubscribeOnDestroy() implements OnInit, AfterViewInit {
   @Input() sidenav: MatSidenav | undefined;
 
-  public headerImageName: string = 'logo_black';
+  public headerImageName = 'logo_black';
 
   public constructor(
     private _changeDetectorRef: ChangeDetectorRef,

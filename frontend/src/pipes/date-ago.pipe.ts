@@ -14,7 +14,6 @@ interface ICachedFormatter {
   pure: true,
 })
 export class DateAgoPipe implements PipeTransform {
-
   private static formatters: ICachedFormatter[] = [
     { key: 'Pipes/date-ago/years', interval: 31536000, lang: '-', func: () => null },
     { key: 'Pipes/date-ago/months', interval: 2592000, lang: '-', func: () => null },
@@ -44,10 +43,7 @@ export class DateAgoPipe implements PipeTransform {
         formatter.lang = this.translate.currentLang;
       }
 
-      const elapsed =
-        formatter.interval > 0
-          ? Math.floor(seconds / formatter.interval)
-          : seconds;
+      const elapsed = formatter.interval > 0 ? Math.floor(seconds / formatter.interval) : seconds;
 
       return formatter.func(elapsed);
     }

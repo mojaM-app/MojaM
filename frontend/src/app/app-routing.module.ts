@@ -5,30 +5,20 @@ const routes: Routes = [
   { path: '', redirectTo: 'news', pathMatch: 'full' },
   {
     path: 'news',
-    loadChildren: () =>
-      import('./components/news/news.module').then((m) => m.NewsModule),
+    loadChildren: () => import('./components/news/news.module').then(m => m.NewsModule),
   },
   {
     path: 'bulletin',
-    loadChildren: () =>
-      import('./components/bulletin/bulletin.module').then(
-        (m) => m.BulletinModule
-      ),
+    loadChildren: () => import('./components/bulletin/bulletin.module').then(m => m.BulletinModule),
   },
   {
     path: 'community',
-    loadChildren: () =>
-      import('./components/community/community.module').then(
-        (m) => m.CommunityModule
-      ),
+    loadChildren: () => import('./components/community/community.module').then(m => m.CommunityModule),
   },
 
   {
     path: 'not-found',
-    loadComponent: () =>
-      import('./components/static/not-found/not-found.component').then(
-        (m) => m.NotFoundComponent
-      ),
+    loadComponent: () => import('./components/static/not-found/not-found.component').then(m => m.NotFoundComponent),
   },
   { path: '**', redirectTo: '/not-found' },
 ];

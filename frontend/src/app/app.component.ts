@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  HostBinding,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, OnInit, ViewChild } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { DeviceService } from 'src/services/device/device.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
@@ -23,8 +16,8 @@ export class AppComponent extends WithUnsubscribeOnDestroy() implements OnInit {
 
   private _themeName: string | null = null;
 
-  public isMobile: boolean = true;
-  public showSpinner: boolean = false;
+  public isMobile = true;
+  public showSpinner = false;
 
   @HostBinding('class')
   public get themeName() {

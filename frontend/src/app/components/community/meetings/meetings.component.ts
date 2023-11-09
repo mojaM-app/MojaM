@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { finalize } from 'rxjs';
 import { MeetingsService } from 'src/services/common/community/meetings.service';
 
@@ -14,7 +9,7 @@ import { MeetingsService } from 'src/services/common/community/meetings.service'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MeetingsComponent implements OnInit {
-  public isLoading: boolean = false;
+  public isLoading = false;
   public content: string | null = null;
 
   public constructor(
@@ -33,7 +28,7 @@ export class MeetingsComponent implements OnInit {
           this._changeDetectorRef.detectChanges();
         })
       )
-      .subscribe((result) => {
+      .subscribe(result => {
         this.content = result;
       });
   }

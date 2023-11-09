@@ -3,7 +3,7 @@ import * as Globalize from 'globalize';
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'gnumber'
+  name: 'gnumber',
 })
 export class GnumberPipe implements PipeTransform {
   public transform(value: number, style?: string, maximumFractionDigits?: number): string | null {

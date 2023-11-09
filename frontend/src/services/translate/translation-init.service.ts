@@ -15,28 +15,18 @@ import { TranslationService } from './translation.service';
 export class TranslationInitService {
   public constructor(
     private _translate: TranslationService,
-    private _cultureService: CultureService,
+    private _cultureService: CultureService
   ) {}
 
   public initializeApp(): Promise<void> {
     registerLocaleData(localePL, 'pl', localePlExtra);
 
     const promisses = [
-      fetch('./assets/cldr-data/supplemental/plurals.json').then((response) =>
-        response.json()
-      ),
-      fetch('./assets/cldr-data/supplemental/likelySubtags.json').then(
-        (response) => response.json()
-      ),
-      fetch('./assets/cldr-data/main/pl/numbers.json').then(
-        (response) => response.json()
-      ),
-      fetch('./assets/cldr-data/main/pl/ca-gregorian.json').then(
-        (response) => response.json()
-      ),
-      fetch('./assets/cldr-data/main/pl/currencies.json').then(
-        (response) => response.json()
-      ),
+      fetch('./assets/cldr-data/supplemental/plurals.json').then(response => response.json()),
+      fetch('./assets/cldr-data/supplemental/likelySubtags.json').then(response => response.json()),
+      fetch('./assets/cldr-data/main/pl/numbers.json').then(response => response.json()),
+      fetch('./assets/cldr-data/main/pl/ca-gregorian.json').then(response => response.json()),
+      fetch('./assets/cldr-data/main/pl/currencies.json').then(response => response.json()),
     ];
 
     for (const dt of this._translate.langs) {
@@ -46,7 +36,7 @@ export class TranslationInitService {
       }
     }
 
-    return Promise.all(promisses).then((modules) => {
+    return Promise.all(promisses).then(modules => {
       const plurals = modules[0];
       Globalize.load(plurals);
 
@@ -62,9 +52,7 @@ export class TranslationInitService {
         Globalize.loadMessages(messages);
       }
 
-      Globalize.locale(
-        this._cultureService.currentCulture || CultureService.DefaultCulture
-      );
+      Globalize.locale(this._cultureService.currentCulture || CultureService.DefaultCulture);
       this._cultureService.initDateTimeFormats();
     });
   }

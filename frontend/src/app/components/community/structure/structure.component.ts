@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { finalize } from 'rxjs';
 import { StructureService } from 'src/services/common/community/structure.service';
 
@@ -14,7 +9,7 @@ import { StructureService } from 'src/services/common/community/structure.servic
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StructureComponent implements OnInit {
-  public isLoading: boolean = false;
+  public isLoading = false;
   public content: string | null = null;
 
   public constructor(
@@ -33,7 +28,7 @@ export class StructureComponent implements OnInit {
           this._changeDetectorRef.detectChanges();
         })
       )
-      .subscribe((result) => {
+      .subscribe(result => {
         this.content = result;
       });
   }
