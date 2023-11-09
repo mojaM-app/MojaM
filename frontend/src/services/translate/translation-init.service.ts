@@ -23,15 +23,15 @@ export class TranslationInitService {
 
     const promises = [
       fetch('./assets/cldr-data/supplemental/plurals.json').then(response => response.json()),
-      fetch('./assets/cldr-data/supplemental/likelySubTags.json').then(response => response.json()),
+      fetch('./assets/cldr-data/supplemental/likelySubtags.json').then(response => response.json()),
       fetch('./assets/cldr-data/main/pl/numbers.json').then(response => response.json()),
       fetch('./assets/cldr-data/main/pl/ca-gregorian.json').then(response => response.json()),
       fetch('./assets/cldr-data/main/pl/currencies.json').then(response => response.json()),
     ];
 
-    for (const dt of this._translate.langs) {
-      if (dt.id === this._translate.currentLang) {
-        promises.push(dt.messages());
+    for (const ld of this._translate.langs) {
+      if (ld.id === this._translate.currentLang) {
+        promises.push(ld.messages());
         break;
       }
     }
