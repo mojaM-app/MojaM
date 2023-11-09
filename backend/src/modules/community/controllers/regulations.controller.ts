@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
-import { CommunityService } from '@modules/news/services/community.service';
+import { CommunityService } from '@/modules/community/services/community.service';
 import { events } from '@events/events';
 
 export class RegulationsController {
