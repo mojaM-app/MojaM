@@ -21,9 +21,9 @@ export class TranslationInitService {
   public initializeApp(): Promise<void> {
     registerLocaleData(localePL, 'pl', localePlExtra);
 
-    const promisses = [
+    const promises = [
       fetch('./assets/cldr-data/supplemental/plurals.json').then(response => response.json()),
-      fetch('./assets/cldr-data/supplemental/likelySubtags.json').then(response => response.json()),
+      fetch('./assets/cldr-data/supplemental/likelySubTags.json').then(response => response.json()),
       fetch('./assets/cldr-data/main/pl/numbers.json').then(response => response.json()),
       fetch('./assets/cldr-data/main/pl/ca-gregorian.json').then(response => response.json()),
       fetch('./assets/cldr-data/main/pl/currencies.json').then(response => response.json()),
@@ -31,23 +31,23 @@ export class TranslationInitService {
 
     for (const dt of this._translate.langs) {
       if (dt.id === this._translate.currentLang) {
-        promisses.push(dt.messages());
+        promises.push(dt.messages());
         break;
       }
     }
 
-    return Promise.all(promisses).then(modules => {
+    return Promise.all(promises).then(modules => {
       const plurals = modules[0];
       Globalize.load(plurals);
 
-      const subtags = modules[1];
-      Globalize.load(subtags);
+      const subTags = modules[1];
+      Globalize.load(subTags);
 
       Globalize.load(modules[2]);
       Globalize.load(modules[3]);
       Globalize.load(modules[4]);
 
-      const messages = modules[promisses.length - 1];
+      const messages = modules[promises.length - 1];
       if (messages) {
         Globalize.loadMessages(messages);
       }

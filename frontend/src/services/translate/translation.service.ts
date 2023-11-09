@@ -1,14 +1,9 @@
 import * as Globalize from 'globalize';
 import { LocalStorageService } from '../storage/localstorage.service';
 import { Injectable } from '@angular/core';
-import { Translation } from './translation';
-
-interface LanguageData {
-  id: string;
-  label: string;
-  icon: string;
-  messages: () => Promise<{ [key: string]: any }>;
-}
+import { Translation } from './classes/translation';
+import { ILanguageData } from './interfaces/ILanguageData';
+import { SupportedLanguages } from './classes/SupportedLanguages';
 
 @Injectable({
   providedIn: 'root',
@@ -19,17 +14,7 @@ export class TranslationService {
 
   public currentLang: string | null = null;
 
-  public readonly langs: LanguageData[] = [
-    {
-      id: 'pl',
-      label: 'język polski',
-      icon: 'assets/svg/languages/pl.svg',
-      messages: () =>
-        fetch(`./assets/i18n/pl.json?${new Date().getTime()}`)
-          .then(response => response.json())
-          .then(messages => ({ pl: messages })),
-    },
-  ];
+  public readonly langs: ILanguageData[] = SupportedLanguages.Get();
 
   public constructor(private _localStorageService: LocalStorageService) {
     this.currentLang = this._localStorageService.loadString(TranslationService.StorageKey);
@@ -67,9 +52,9 @@ export class TranslationService {
   }
 
   public switchLang(lang: string): Promise<void> {
-    for (const dt of this.langs) {
-      if (dt.id === lang) {
-        return dt
+    for (const ld of this.langs) {
+      if (ld.id === lang) {
+        return ld
           .messages()
           .then(messages => {
             Globalize.loadMessages(messages);

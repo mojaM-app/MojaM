@@ -3,18 +3,19 @@ import { CalendarDateFormatter, DateAdapter, DateFormatterParams } from 'angular
 import { CultureService } from 'src/services/translate/culture.service';
 import { formatDate } from '@angular/common';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { distinctUntilChanged } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { distinctUntilChanged, tap } from 'rxjs/operators';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Injectable()
 export class CustomDateFormatter extends CalendarDateFormatter {
   readonly breakpoint$ = this.breakpointObserver
     .observe([Breakpoints.Large, Breakpoints.Medium, Breakpoints.Small, '(min-width: 500px)'])
-    .pipe(distinctUntilChanged());
+    .pipe(
+      distinctUntilChanged()
+    );
 
-  readonly subscription: Subscription;
-
-  private weekday: 'long' | 'short' | 'narrow' = 'narrow';
+  private _weekday: 'long' | 'short' | 'narrow' = 'narrow';
 
   constructor(
     dateAdapter: DateAdapter,
@@ -23,14 +24,18 @@ export class CustomDateFormatter extends CalendarDateFormatter {
   ) {
     super(dateAdapter);
 
-    this.subscription = this.breakpoint$.subscribe(value => {
-      return this.breakpointChanged(value);
+    this.breakpoint$
+    .pipe(
+      untilDestroyed(this)
+    )
+    .subscribe(value => {
+      this.breakpointChanged(value);
     });
   }
 
   public override monthViewColumnHeader({ date, locale }: DateFormatterParams): string {
     return date.toLocaleDateString(locale, {
-      weekday: this.weekday,
+      weekday: this._weekday,
       hourCycle: 'h24',
     });
   }
@@ -56,19 +61,15 @@ export class CustomDateFormatter extends CalendarDateFormatter {
     return this.monthViewColumnHeader({ date, locale });
   }
 
-  public ngOnDestroy(): void {
-    this.subscription.unsubscribe();
-  }
-
   private breakpointChanged(arg: any): void {
     if (this.breakpointObserver.isMatched(Breakpoints.Large)) {
-      this.weekday = 'long';
+      this._weekday = 'long';
     } else if (this.breakpointObserver.isMatched(Breakpoints.Medium)) {
-      this.weekday = 'short';
+      this._weekday = 'short';
     } else if (this.breakpointObserver.isMatched(Breakpoints.Small)) {
-      this.weekday = 'short';
+      this._weekday = 'short';
     } else if (this.breakpointObserver.isMatched('(min-width: 500px)')) {
-      this.weekday = 'narrow';
+      this._weekday = 'narrow';
     }
   }
 }
