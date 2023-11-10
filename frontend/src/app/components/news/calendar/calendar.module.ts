@@ -11,6 +11,7 @@ import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { MatIconModule } from '@angular/material/icon';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { DirectivesModule } from 'src/directives/directives.module';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [CalendarComponent],
@@ -20,6 +21,7 @@ import { DirectivesModule } from 'src/directives/directives.module';
     MatToolbarModule,
     MatTabsModule,
     MatIconModule,
+    MatButtonModule,
     RouterModule,
     NewsModule,
     PipesModule,
