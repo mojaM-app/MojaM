@@ -1,4 +1,4 @@
-<nav mat-tab-nav-bar class="news-header">
+<nav mat-tab-nav-bar class="news-header" [tabPanel]="tabPanel">
   <a
     mat-tab-link
     mat-align-tabs="center"
@@ -10,3 +10,6 @@
     <span id="navstepstext">{{ tabItem.label }}</span>
   </a>
 </nav>
+
+<mat-tab-nav-panel #tabPanel>
+</mat-tab-nav-panel>
