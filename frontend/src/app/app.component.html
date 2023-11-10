@@ -2,8 +2,8 @@
   <mat-sidenav #sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile">
     <mat-toolbar>
       <mat-toolbar-row class="first-row">
-        <button mat-icon-button color="accent" class="mr-1" (click)="closeSidenav()">
-          <mat-icon>close</mat-icon>
+        <button mat-icon-button color="accent" class="mr-1 header-button" (click)="closeSidenav()">
+          <mat-icon class="icon">close</mat-icon>
         </button>
         <span class="menu-title">{{ 'Shared/AppName' | gmessage }}</span>
       </mat-toolbar-row>
