@@ -10,12 +10,15 @@
     <app-community-contact></app-community-contact>
     <mat-tab-group
       #tabGroup
+      dynamicHeight
       mat-align-tabs="center"
       animationDuration="250ms"
       [(selectedIndex)]="selectedTab"
       touch
       (swipeNext)="selectNextTab()"
-      (swipePrev)="selectPrevTab()">
+      (swipePrev)="selectPrevTab()"
+      (selectedTabChange)="selectedTabChange()"
+      (click)="tabClick()">
       <mat-tab label="{{ 'Community/Meetings/Title' | gmessage }}">
         <app-community-meetings></app-community-meetings>
       </mat-tab>

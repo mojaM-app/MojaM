@@ -24,4 +24,20 @@ export class IndexComponent {
       this.selectedTab--;
     }
   }
+
+  public selectedTabChange(): void {
+    this.scrollTab();
+  }
+
+  public tabClick() : void {
+    this.scrollTab();
+  }
+
+  private scrollTab(){
+    let ntvEl = this.tabGroup?._elementRef?.nativeElement as any;
+
+    if (ntvEl) {
+      ntvEl.scrollIntoView();
+    }
+  }
 }

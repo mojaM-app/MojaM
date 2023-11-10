@@ -8,7 +8,7 @@ import { NewsHeaderComponent } from './header/header.component';
 
 @NgModule({
   declarations: [NewsHeaderComponent],
-  imports: [CommonModule, NewsRoutingModule, MatToolbarModule, MatTabsModule, RouterModule],
+  imports: [CommonModule, NewsRoutingModule, MatToolbarModule, MatTabsModule, RouterModule, MatTabsModule],
   exports: [NewsHeaderComponent],
 })
 export class NewsModule {}
