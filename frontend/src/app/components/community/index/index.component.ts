@@ -29,10 +29,6 @@ export class IndexComponent {
     this.scrollTab();
   }
 
-  public tabClick() : void {
-    this.scrollTab();
-  }
-
   private scrollTab(){
     let ntvEl = this.tabGroup?._elementRef?.nativeElement as any;
 
