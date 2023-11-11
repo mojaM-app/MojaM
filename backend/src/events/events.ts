@@ -21,10 +21,10 @@ export const events = {
       retrieved: 'onMissionRetrieved',
     },
     structure: {
-      retrieved: 'onRetrieved',
+      retrieved: 'onStructureRetrieved',
     },
     regulations: {
-      retrieved: 'onRetrieved',
+      retrieved: 'onRegulationsRetrieved',
     },
   },
 };
