@@ -27,4 +27,13 @@ export const events = {
       retrieved: 'onRegulationsRetrieved',
     },
   },
+  users: {
+    userRetrieved: 'onUserRetrieved',
+    userCreated: 'onUserCreated',
+    userDeleted: 'onUserDeleted',
+  },
+  permissions: {
+    permissionAdded: 'onPermissionAdded',
+    permissionDeleted: 'onPermissionDeleted',
+  },
 };

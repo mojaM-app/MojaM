@@ -2,7 +2,7 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Run All Tasks",
+			"label": "run frontend and backend",
 			"command": "echo",
 			"type": "shell",
 			"args": [
@@ -21,7 +21,7 @@
 			]
 		},
 		{
-			"label": "frontend",
+			"label": "run frontend",
 			"type": "shell",
 			"windows": {
 				"command": "cd frontend/; if ($?) { node --max_old_space_size=8192 ./node_modules/@angular/cli/bin/ng serve }"
@@ -32,13 +32,46 @@
 			"problemMatcher": []
 		},
 		{
-			"label": "backend",
+			"label": "run backend",
 			"type": "shell",
 			"windows": {
 				"command": "cd backend/; if ($?) { npm run dev }"
 			},
 			"osx": {
 				"command": "cd backend/ && npm run dev"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "run prisma migration",
+			"type": "shell",
+			"windows": {
+				"command": "cd backend/; if ($?) { npm run prisma:migrate }"
+			},
+			"osx": {
+				"command": "cd backend/ && npm run prisma:migrate"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "run backend tests",
+			"type": "shell",
+			"windows": {
+				"command": "cd backend/; if ($?) { npm run test }"
+			},
+			"osx": {
+				"command": "cd backend/ && npm run test"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "show backend test coverage",
+			"type": "shell",
+			"windows": {
+				"command": "cd backend/; if ($?) { npm run test:coverage }"
+			},
+			"osx": {
+				"command": "cd backend/ && npm run test:coverage"
 			},
 			"problemMatcher": []
 		}

@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from 'express';
-import { Container } from 'typedi';
-import { CalendarService } from '@modules/news/services/calendar.service';
 import { events } from '@events/events';
 import { GetCalendarEventsDto } from '@modules/news/dtos/calendar.dto';
+import { CalendarService } from '@modules/news/services/calendar.service';
+import { NextFunction, Request, Response } from 'express';
+import { Container } from 'typedi';
 
 export class CalendarController {
   public calendarService = Container.get(CalendarService);

@@ -1,16 +1,19 @@
-import express, { Router } from 'express';
 import { Routes } from '@interfaces/routes.interface';
 import { DiaconieController } from '@modules/community/controllers/diaconie.controller';
 import { MeetingsController } from '@modules/community/controllers/meetings.controller';
 import { MissionController } from '@modules/community/controllers/mission.controller';
 import { RegulationsController } from '@modules/community/controllers/regulations.controller';
 import { StructureController } from '@modules/community/controllers/structure.controller';
+import express, { Router } from 'express';
 
 class StructureRout implements Routes {
   public path = '/structure';
   public controller: StructureController = new StructureController();
 
-  public constructor(public router: Router, private _parentPath: string) {
+  public constructor(
+    public router: Router,
+    private _parentPath: string,
+  ) {
     this.initializeRoutes();
   }
 
@@ -23,7 +26,10 @@ class RegulationsRout implements Routes {
   public path = '/regulations';
   public controller: RegulationsController = new RegulationsController();
 
-  public constructor(public router: Router, private _parentPath: string) {
+  public constructor(
+    public router: Router,
+    private _parentPath: string,
+  ) {
     this.initializeRoutes();
   }
 
@@ -36,7 +42,10 @@ class MissionRout implements Routes {
   public path = '/mission';
   public controller: MissionController = new MissionController();
 
-  public constructor(public router: Router, private _parentPath: string) {
+  public constructor(
+    public router: Router,
+    private _parentPath: string,
+  ) {
     this.initializeRoutes();
   }
 
@@ -49,7 +58,10 @@ class MeetingsRout implements Routes {
   public path = '/meetings';
   public controller: MeetingsController = new MeetingsController();
 
-  public constructor(public router: Router, private _parentPath: string) {
+  public constructor(
+    public router: Router,
+    private _parentPath: string,
+  ) {
     this.initializeRoutes();
   }
 
@@ -62,7 +74,10 @@ class DiaconieRout implements Routes {
   public path = '/diaconie';
   public controller: DiaconieController = new DiaconieController();
 
-  public constructor(public router: Router, private _parentPath: string) {
+  public constructor(
+    public router: Router,
+    private _parentPath: string,
+  ) {
     this.initializeRoutes();
   }
 

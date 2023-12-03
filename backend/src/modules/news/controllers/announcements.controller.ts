@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from 'express';
-import { Container } from 'typedi';
-import { AnnouncementsService } from '@modules/news/services/announcements.service';
 import { events } from '@events/events';
 import { GetAnnouncementsDto } from '@modules/news/dtos/announcements.dto';
+import { AnnouncementsService } from '@modules/news/services/announcements.service';
+import { NextFunction, Request, Response } from 'express';
+import { Container } from 'typedi';
 
 export class AnnouncementsController {
   public announcementsService = Container.get(AnnouncementsService);

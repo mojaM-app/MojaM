@@ -1,9 +1,10 @@
-import { Service } from 'typedi';
+import { BaseService } from '@modules/common/base.service';
 import { GetAnnouncementsDto } from '@modules/news/dtos/announcements.dto';
 import { toUtcDate } from '@utils/date.utils';
+import { Service } from 'typedi';
 
 @Service()
-export class AnnouncementsService {
+export class AnnouncementsService extends BaseService {
   // public announcements = new PrismaClient().announcements;
 
   public async get(): Promise<GetAnnouncementsDto> {

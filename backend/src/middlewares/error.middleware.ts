@@ -1,14 +1,22 @@
 import { NextFunction, Request, Response } from 'express';
 import { logger } from '@utils/logger';
 import { HttpException } from '@exceptions/HttpException';
+import { TranslatableHttpException } from '@/exceptions/TranslatableHttpException';
 
 export const ErrorMiddleware = (error: HttpException, req: Request, res: Response, next: NextFunction) => {
   try {
-    const status: number = error.status || 500;
-    const message: string = error.message || 'Something went wrong';
+    const data: { message: string; args?: (string | number)[] } = {
+      message: error.message || 'Something went wrong',
+    };
 
-    logger.error(`[${req.method}] ${req.path} >> StatusCode:: ${status}, Message:: ${message}`);
-    res.status(status).json({ message });
+    if (error instanceof TranslatableHttpException) {
+      data.args = error.args;
+    }
+
+    const status: number = error.status || 500;
+    const args: string = JSON.stringify(data.args ?? []);
+    logger.error(`[${req.method}] ${req.path} >> StatusCode:: ${status}, Message:: ${data.message}::${args}`);
+    res.status(status).json({ data });
   } catch (error) {
     next(error);
   }

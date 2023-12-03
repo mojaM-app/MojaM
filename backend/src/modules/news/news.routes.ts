@@ -1,14 +1,17 @@
-import express, { Router } from 'express';
 import { Routes } from '@interfaces/routes.interface';
-import { InformationController } from '@modules/news/controllers/information.controller';
 import { AnnouncementsController } from '@modules/news/controllers/announcements.controller';
 import { CalendarController } from '@modules/news/controllers/calendar.controller';
+import { InformationController } from '@modules/news/controllers/information.controller';
+import express, { Router } from 'express';
 
 class InformationRout implements Routes {
   public path = '/information';
   public controller: InformationController = new InformationController();
 
-  public constructor(public router: Router, private _parentPath: string) {
+  public constructor(
+    public router: Router,
+    private _parentPath: string,
+  ) {
     this.initializeRoutes();
   }
 
@@ -21,7 +24,10 @@ class AnnouncementsRout implements Routes {
   public path = '/announcements';
   public controller: AnnouncementsController = new AnnouncementsController();
 
-  public constructor(public router: Router, private _parentPath: string) {
+  public constructor(
+    public router: Router,
+    private _parentPath: string,
+  ) {
     this.initializeRoutes();
   }
 
@@ -34,7 +40,10 @@ class CalendarRout implements Routes {
   public path = '/calendar';
   public controller: CalendarController = new CalendarController();
 
-  public constructor(public router: Router, private _parentPath: string) {
+  public constructor(
+    public router: Router,
+    private _parentPath: string,
+  ) {
     this.initializeRoutes();
   }
 

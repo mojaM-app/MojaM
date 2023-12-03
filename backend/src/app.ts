@@ -1,4 +1,7 @@
-import 'reflect-metadata';
+import { CREDENTIALS, LOG_FORMAT, NODE_ENV, ORIGIN, PORT } from '@config';
+import { Routes } from '@interfaces/routes.interface';
+import { ErrorMiddleware } from '@middlewares/error.middleware';
+import { logger, stream } from '@utils/logger';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -6,10 +9,8 @@ import express from 'express';
 import helmet from 'helmet';
 import hpp from 'hpp';
 import morgan from 'morgan';
-import { NODE_ENV, PORT, LOG_FORMAT, ORIGIN, CREDENTIALS } from '@config';
-import { Routes } from '@interfaces/routes.interface';
-import { ErrorMiddleware } from '@middlewares/error.middleware';
-import { logger, stream } from '@utils/logger';
+import 'reflect-metadata';
+import { error_keys } from './exceptions/error.keys';
 
 export class App {
   public app: express.Application;
@@ -20,8 +21,6 @@ export class App {
     this.app = express();
     this.env = NODE_ENV || 'development';
     this.port = PORT || 5100;
-
-    console.log(this);
 
     this.initializeMiddlewares();
     this.initializeRoutes(routes);
@@ -55,6 +54,10 @@ export class App {
   private initializeRoutes(routes: Routes[]) {
     routes.forEach(route => {
       this.app.use('/', route.router);
+    });
+
+    this.app.use(function (req, res) {
+      res.status(404).json({ message: error_keys.general.Page_Does_Not_Exist });
     });
   }
 
