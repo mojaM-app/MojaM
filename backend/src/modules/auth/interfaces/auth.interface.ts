@@ -1,8 +1,8 @@
+import { IUser } from '@modules/users/interfaces/user.interface';
 import { Request } from 'express';
-import { User } from '@modules/users/interfaces/users.interface';
 
 export interface DataStoredInToken {
-  id: number;
+  id: string;
 }
 
 export interface TokenData {
@@ -11,5 +11,5 @@ export interface TokenData {
 }
 
 export interface RequestWithUser extends Request {
-  user: User;
+  user: IUser;
 }

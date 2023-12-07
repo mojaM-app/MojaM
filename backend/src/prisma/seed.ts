@@ -1,4 +1,4 @@
-import { SystemPermission } from '@/modules/permissions/system-permission.enum';
+import { SystemPermission } from '@modules/permissions/system-permission.enum';
 import { PrismaClient } from '@prisma/client';
 import { generateRandomEmail, generateRandomNumber, generateRandomString } from './../utils/tests.utils';
 

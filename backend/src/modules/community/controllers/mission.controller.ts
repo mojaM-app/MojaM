@@ -1,5 +1,5 @@
-import { CommunityService } from '@/modules/community/services/community.service';
 import { events } from '@events/events';
+import { CommunityService } from '@modules/community/services/community.service';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
 
