@@ -2,7 +2,7 @@ import { App } from '@/app';
 import { events } from '@events/events';
 import { error_keys } from '@exceptions/error.keys';
 import { PermissionsRoute } from '@modules/permissions/permissions.routes';
-import { IUser } from '@modules/users/interfaces/user.interface';
+import { IUser } from '@modules/users/interfaces/IUser';
 import { generateValidUser } from '@modules/users/tests/user-tests.helpers';
 import { UsersRoute } from '@modules/users/users.routes';
 import { Guid } from 'guid-typescript';
@@ -80,17 +80,20 @@ describe('DELETE /users', () => {
     //   expect(deletedUserUuid).toBe(newUserDto.uuid);
     // });
 
-    test('DELETE/users should respond with a status code of 500 when user not exist', async () => {
+    test('DELETE/users should respond with a status code of 400 when user not exist', async () => {
+      const userId: string = Guid.EMPTY;
       const deleteResponse = await request(app.getServer())
-        .delete(usersRoute.path + '/' + Guid.EMPTY)
+        .delete(usersRoute.path + '/' + userId)
         .send();
       expect(deleteResponse.statusCode).toBe(400);
       expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = deleteResponse.body;
       expect(typeof body).toBe('object');
       const data = body.data;
-      const { message: deleteMessage }: { message: string } = data;
+      const { message: deleteMessage, args: deleteArgs }: { message: string; args: string[] } = data;
       expect(deleteMessage).toBe(error_keys.users.create.User_Does_Not_Exist);
+      expect(deleteArgs.length).toBe(1);
+      expect(deleteArgs[0]).toBe(userId);
     });
 
     test('DELETE/users should respond with a status code of 404 when user Id is not GUID', async () => {

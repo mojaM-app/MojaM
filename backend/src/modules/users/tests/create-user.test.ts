@@ -1,7 +1,7 @@
 import { App } from '@/app';
 import { events } from '@events/events';
 import { CreateUserDto } from '@modules/users/dtos/create-user.dto';
-import { IUser } from '@modules/users/interfaces/user.interface';
+import { IUser } from '@modules/users/interfaces/IUser';
 import { UsersRoute } from '@modules/users/users.routes';
 import request from 'supertest';
 
@@ -56,7 +56,6 @@ describe('POST /users', () => {
       const bodyData = [
         <CreateUserDto>{ ...user, password: null },
         <CreateUserDto>{ ...user, password: undefined },
-        <CreateUserDto>{ ...user, password: undefined },
         <CreateUserDto>{ ...user, password: '' },
         <CreateUserDto>{ ...user, password: 'paasssword' },
         <CreateUserDto>{ ...user, password: 'P@sswo2!' },
@@ -74,7 +73,6 @@ describe('POST /users', () => {
 
       const bodyData = [
         <CreateUserDto>{ ...user, email: null },
-        <CreateUserDto>{ ...user, email: undefined },
         <CreateUserDto>{ ...user, email: undefined },
         <CreateUserDto>{ ...user, email: '' },
         <CreateUserDto>{ ...user, email: '  ' },
@@ -125,7 +123,6 @@ describe('POST /users', () => {
 
       const bodyData = [
         <CreateUserDto>{ ...user, phone: null },
-        <CreateUserDto>{ ...user, phone: undefined },
         <CreateUserDto>{ ...user, phone: undefined },
         <CreateUserDto>{ ...user, phone: '' },
         <CreateUserDto>{ ...user, phone: '  ' },

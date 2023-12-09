@@ -5,7 +5,9 @@ export const error_keys = {
     Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted: 'Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted',
   },
   users: {
-    login: {},
+    login: {
+      Invalid_Login_Or_Password: 'Invalid_Login_Or_Password',
+    },
     create: {
       Invalid_Phone: 'Invalid_Phone',
       Phone_To_Long: 'Phone_To_Long',

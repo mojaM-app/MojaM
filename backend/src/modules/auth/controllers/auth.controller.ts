@@ -1,31 +1,19 @@
+import { events } from '@events/events';
+import { LoginDto } from '@modules/auth/dtos/login.dto';
+import { AuthService } from '@modules/auth/services/auth.service';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
-import { RequestWithUser } from '@modules/auth/interfaces/auth.interface';
-import { IUser } from '@modules/users/interfaces/user.interface';
-import { AuthService } from '@modules/auth/services/auth.service';
-import { LoginDto } from '@modules/auth/dtos/login.dto';
 
 export class AuthController {
   public authService = Container.get(AuthService);
-
-  // public signUp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  //   try {
-  //     const userData: IUser = req.body;
-  //     const signUpUserData: IUser = await this.authService.signup(userData);
-
-  //     res.status(201).json({ data: signUpUserData, message: 'signup' });
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // };
 
   public logIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const loginData: LoginDto = req.body;
       const { cookie, user } = await this.authService.login(loginData);
 
-      res.setHeader('Set-Cookie', [cookie]);
-      res.status(200).json({ data: user, message: 'login' });
+      res.setHeader('Set-Cookie', cookie);
+      res.status(200).json({ data: user, message: events.users.userLoggedIn });
     } catch (error) {
       next(error);
     }

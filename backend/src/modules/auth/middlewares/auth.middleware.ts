@@ -1,14 +1,15 @@
 import { SECRET_KEY } from '@config';
 import { HttpException } from '@exceptions/HttpException';
-import { DataStoredInToken, RequestWithUser } from '@modules/auth/interfaces/auth.interface';
 import { PrismaClient } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 import { verify } from 'jsonwebtoken';
+import { DataStoredInToken } from '../interfaces/DataStoredInToken';
+import { RequestWithUser } from '../interfaces/RequestWithUser';
 
 const getAuthorization = (req: Request) => {
-  const coockie: any = req.cookies['Authorization'];
-  if (coockie) {
-    return coockie;
+  const cookie: any = req.cookies['Authorization'];
+  if (cookie) {
+    return cookie;
   }
 
   const header: string | undefined = req.header('Authorization');
@@ -19,14 +20,14 @@ const getAuthorization = (req: Request) => {
   return null;
 };
 
-export const AuthMiddleware = async (req: RequestWithUser, res: Response, next: NextFunction) => {
+export const verifyToken = async (req: RequestWithUser, res: Response, next: NextFunction) => {
   try {
-    const Authorization = getAuthorization(req);
+    const authorization = getAuthorization(req);
 
-    if (Authorization) {
-      const { id } = (await verify(Authorization, SECRET_KEY)) as DataStoredInToken;
+    if (authorization) {
+      const { id } = (await verify(authorization, SECRET_KEY)) as DataStoredInToken;
       const users = new PrismaClient().user;
-      const findUser = await users.findUnique({ where: { id: Number(id) } });
+      const findUser = await users.findUnique({ where: { uuid: id } });
 
       if (findUser) {
         req.user = findUser;

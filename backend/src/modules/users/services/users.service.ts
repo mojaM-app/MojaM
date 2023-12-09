@@ -20,7 +20,7 @@ export class UserService extends BaseService {
     const user: User = await this._dbContext.user.findUnique({ where: { id: userId } });
 
     if (!user) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorConflict, error_keys.users.create.User_Does_Not_Exist, [userGuid.toString()]);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.create.User_Does_Not_Exist, [userGuid.toString()]);
     }
 
     return user;
@@ -30,7 +30,7 @@ export class UserService extends BaseService {
     const existedUser: User = await this._dbContext.user.findUnique({ where: { email_phone: { email: userData.email, phone: userData.phone } } });
 
     if (existedUser) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorConflict, error_keys.users.create.User_Already_Exists, [
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.create.User_Already_Exists, [
         userData.email,
         userData.phone,
       ]);

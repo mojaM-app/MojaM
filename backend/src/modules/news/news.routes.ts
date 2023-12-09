@@ -3,6 +3,7 @@ import { AnnouncementsController } from '@modules/news/controllers/announcements
 import { CalendarController } from '@modules/news/controllers/calendar.controller';
 import { InformationController } from '@modules/news/controllers/information.controller';
 import express, { Router } from 'express';
+import { verifyToken } from '../auth/middlewares/auth.middleware';
 
 class InformationRout implements Routes {
   public path = '/information';
@@ -16,7 +17,7 @@ class InformationRout implements Routes {
   }
 
   public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, this.controller.get);
+    this.router.get(`${this._parentPath}${this.path}`, verifyToken, this.controller.get);
   }
 }
 
@@ -32,7 +33,7 @@ class AnnouncementsRout implements Routes {
   }
 
   public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, this.controller.get);
+    this.router.get(`${this._parentPath}${this.path}`, verifyToken, this.controller.get);
   }
 }
 
@@ -48,7 +49,7 @@ class CalendarRout implements Routes {
   }
 
   public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, this.controller.get);
+    this.router.get(`${this._parentPath}${this.path}`, verifyToken, this.controller.get);
   }
 }
 

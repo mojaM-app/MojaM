@@ -1,13 +1,14 @@
 import { events } from '@events/events';
+import { RequestWithUser } from '@modules/auth/interfaces/RequestWithUser';
 import { GetInformationDto } from '@modules/news/dtos/information.dto';
 import { InformationService } from '@modules/news/services/information.service';
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
 
 export class InformationController {
   public informationService = Container.get(InformationService);
 
-  public get = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public get = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
       const data: GetInformationDto = await this.informationService.get();
 

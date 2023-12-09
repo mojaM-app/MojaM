@@ -4,6 +4,7 @@ import { UsersController } from '@modules/users/controllers/users.controller';
 import { CreateUserDto } from '@modules/users/dtos/create-user.dto';
 import { REGEX_GUID_PATTERN } from '@utils/constants';
 import express from 'express';
+import { verifyToken } from '../auth/middlewares/auth.middleware';
 
 export class UsersRoute implements Routes {
   public path = '/users';
@@ -15,10 +16,10 @@ export class UsersRoute implements Routes {
   }
 
   private initializeRoutes() {
-    //this.router.get(`${this.path}`, this.usersController.getUsers);
-    this.router.get(`${this.path}/:id(${REGEX_GUID_PATTERN})`, this.usersController.getById);
-    this.router.post(`${this.path}`, ValidationMiddleware(CreateUserDto), this.usersController.create);
-    //this.router.put(`${this.path}/:id(${REGEX_INT_PATTERN)`, ValidationMiddleware(UpdateUserDto, true), this.usersController.updateUser);
-    this.router.delete(`${this.path}/:id(${REGEX_GUID_PATTERN})`, this.usersController.delete);
+    //this.router.get(`${this.path}`,verifyToken, this.usersController.getUsers);
+    this.router.get(`${this.path}/:id(${REGEX_GUID_PATTERN})`, verifyToken, this.usersController.getById);
+    this.router.post(`${this.path}`, ValidationMiddleware(CreateUserDto), verifyToken, this.usersController.create);
+    //this.router.put(`${this.path}/:id(${REGEX_INT_PATTERN)`, ValidationMiddleware(UpdateUserDto, true),verifyToken, this.usersController.updateUser);
+    this.router.delete(`${this.path}/:id(${REGEX_GUID_PATTERN})`, verifyToken, this.usersController.delete);
   }
 }

@@ -1,13 +1,14 @@
 import { events } from '@events/events';
+import { RequestWithUser } from '@modules/auth/interfaces/RequestWithUser';
 import { GetCalendarEventsDto } from '@modules/news/dtos/calendar.dto';
 import { CalendarService } from '@modules/news/services/calendar.service';
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
 
 export class CalendarController {
   public calendarService = Container.get(CalendarService);
 
-  public get = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public get = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
       const data: GetCalendarEventsDto = await this.calendarService.get();
 

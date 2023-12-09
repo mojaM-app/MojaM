@@ -1,13 +1,14 @@
 import { events } from '@events/events';
+import { RequestWithUser } from '@modules/auth/interfaces/RequestWithUser';
 import { PermissionService } from '@modules/permissions/services/permissions.service';
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Response } from 'express';
 import { Guid } from 'guid-typescript';
 import { Container } from 'typedi';
 
 export class PermissionsController {
   public permissionService = Container.get(PermissionService);
 
-  public add = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public add = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { userGuid, permissionId } = this.getRequestParams(req);
       const result: boolean = await this.permissionService.add(userGuid, permissionId);
@@ -17,7 +18,7 @@ export class PermissionsController {
     }
   };
 
-  public delete = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public delete = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { userGuid, permissionId } = this.getRequestParams(req);
       const result: boolean = await this.permissionService.delete(userGuid, permissionId);
@@ -27,7 +28,7 @@ export class PermissionsController {
     }
   };
 
-  private getRequestParams(req: Request): { userGuid: Guid; permissionId: number } {
+  private getRequestParams(req: RequestWithUser): { userGuid: Guid; permissionId: number } {
     const userGuid: Guid = Guid.parse(req.params.userId);
     const permissionId: number = Number.parseInt(req.params.permissionId);
     return { userGuid, permissionId };

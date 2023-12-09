@@ -11,4 +11,3 @@ const generateValidUser = (): CreateUserDto => {
 };
 
 export { generateValidUser };
-
