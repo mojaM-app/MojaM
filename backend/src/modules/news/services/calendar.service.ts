@@ -4,7 +4,7 @@ import { Service } from 'typedi';
 
 @Service()
 export class CalendarService extends BaseService {
-  //public users = new PrismaClient().user;
+  //public users = DBClient.getDbContext().user;
 
   public async get(): Promise<GetCalendarEventsDto> {
     return {};

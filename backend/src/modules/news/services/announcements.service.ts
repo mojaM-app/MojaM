@@ -5,7 +5,7 @@ import { Service } from 'typedi';
 
 @Service()
 export class AnnouncementsService extends BaseService {
-  // public announcements = new PrismaClient().announcements;
+  //public announcements = DBClient.getDbContext().announcements;
 
   public async get(): Promise<GetAnnouncementsDto> {
     const announcements = [

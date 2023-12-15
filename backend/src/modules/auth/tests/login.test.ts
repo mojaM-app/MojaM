@@ -2,36 +2,42 @@ import { App } from '@/app';
 import { events } from '@events/events';
 import { error_keys } from '@exceptions/error.keys';
 import { AuthRoute } from '@modules/auth/auth.routes';
+import { PermissionsRoute } from '@modules/permissions/permissions.routes';
+import { SystemPermission } from '@modules/permissions/system-permission.enum';
 import { IUser } from '@modules/users/interfaces/IUser';
 import { generateValidUser } from '@modules/users/tests/user-tests.helpers';
 import { UsersRoute } from '@modules/users/users.routes';
+import { getAdminLoginData, getJwtToken } from '@utils/tests.utils';
 import { NextFunction } from 'express';
 import request from 'supertest';
 import { LoginDto } from '../dtos/login.dto';
 import { RequestWithUser } from '../interfaces/RequestWithUser';
-import { verifyToken } from '../middlewares/auth.middleware';
+import { setIdentity } from '../middlewares/set-identity.middleware';
 
 describe('POST /login', () => {
   const usersRoute = new UsersRoute();
   const authRoute = new AuthRoute();
-  const app = new App([usersRoute, authRoute]);
+  const permissionsRoute = new PermissionsRoute();
+  const app = new App([usersRoute, authRoute, permissionsRoute]);
+
+  let token: string;
+  beforeAll(async () => {
+    const { email: login, password } = getAdminLoginData();
+
+    const loginResponse = await request(app.getServer())
+      .post(authRoute.loginPath)
+      .send(<LoginDto>{ login, password });
+
+    token = loginResponse.statusCode === 200 ? getJwtToken(loginResponse) : '';
+  });
 
   describe('when login data are valid', () => {
-    it('(login via phone and password) response should have the Set-Cookie header with the Authorization token when login data are correct', async () => {
-      const user = generateValidUser();
-      const login = user.phone;
-      const createResponse = await request(app.getServer()).post(usersRoute.path).send(user);
-      let body = createResponse.body;
-      expect(typeof body).toBe('object');
-      expect(createResponse.statusCode).toBe(201);
-      const { data: newUserDto, message: createMessage, args: createArgs } = body;
-      expect(newUserDto?.uuid).toBeDefined();
-      expect(createMessage).toBe(events.users.userCreated);
-      expect(createArgs).toBeUndefined();
-
-      const loginData: LoginDto = { login: login, password: user.password };
-      const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
-      body = loginResponse.body;
+    it('(login via email and password) response should have the Set-Cookie header with the Authorization token when login data are correct', async () => {
+      const { email: login, password } = getAdminLoginData();
+      const loginResponse = await request(app.getServer())
+        .post(authRoute.loginPath)
+        .send(<LoginDto>{ login, password });
+      const body = loginResponse.body;
       expect(typeof body).toBe('object');
       expect(loginResponse.statusCode).toBe(200);
       const headers = loginResponse.headers;
@@ -39,7 +45,7 @@ describe('POST /login', () => {
       const { data: userLoggedIn, message: loginMessage, args: loginArgs } = body;
       expect(loginMessage).toBe(events.users.userLoggedIn);
       expect(loginArgs).toBeUndefined();
-      expect(userLoggedIn.phone).toBe(login);
+      expect(userLoggedIn.email).toBe(login);
       const cookies = headers['set-cookie'];
       expect(Array.isArray(cookies)).toBe(true);
       expect(cookies.length).toBe(1);
@@ -53,14 +59,10 @@ describe('POST /login', () => {
         },
       };
       const next: NextFunction = jest.fn();
-      await verifyToken(req as any, {} as any, next);
-      expect((req as RequestWithUser).user.uuid).toEqual(newUserDto.uuid);
+      await setIdentity(req as any, {} as any, next);
+      expect((req as RequestWithUser).user.uuid).toEqual(userLoggedIn.uuid);
+      expect((req as RequestWithUser).permissions).toContain(SystemPermission.EditUserProfile);
       expect(next).toHaveBeenCalled();
-
-      const deleteResponse = await request(app.getServer())
-        .delete(usersRoute.path + '/' + userLoggedIn.uuid)
-        .send();
-      expect(deleteResponse.statusCode).toBe(200);
     });
   });
 
@@ -73,14 +75,14 @@ describe('POST /login', () => {
       expect(user1.phone).toBe(user2.phone);
       expect(user1.email).not.toBe(user2.email);
 
-      const createUser1Response = await request(app.getServer()).post(usersRoute.path).send(user1);
+      const createUser1Response = await request(app.getServer()).post(usersRoute.path).send(user1).set('Authorization', `Bearer ${token}`);
       expect(createUser1Response.statusCode).toBe(201);
       const { data: newUser1Dto, message: createUser1Message } = createUser1Response.body;
       expect(newUser1Dto?.uuid).toBeDefined();
       expect(createUser1Message).toBe(events.users.userCreated);
       expect(newUser1Dto.phone).toBe(login);
 
-      const createUser2Response = await request(app.getServer()).post(usersRoute.path).send(user2);
+      const createUser2Response = await request(app.getServer()).post(usersRoute.path).send(user2).set('Authorization', `Bearer ${token}`);
       expect(createUser2Response.statusCode).toBe(201);
       const { data: newUser2Dto, message: createUser2Message } = createUser2Response.body;
       expect(newUser2Dto?.uuid).toBeDefined();
@@ -96,17 +98,19 @@ describe('POST /login', () => {
       const body = loginResponse.body;
       expect(typeof body).toBe('object');
       const data = body.data;
-      const { message: deleteMessage, args: deleteArgs }: { message: string; args: string[] } = data;
-      expect(deleteMessage).toBe(error_keys.users.login.Invalid_Login_Or_Password);
-      expect(deleteArgs).toBeUndefined();
+      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      expect(loginMessage).toBe(error_keys.users.login.Invalid_Login_Or_Password);
+      expect(loginArgs).toBeUndefined();
 
       let deleteResponse = await request(app.getServer())
         .delete(usersRoute.path + '/' + newUser1Dto.uuid)
-        .send();
+        .send()
+        .set('Authorization', `Bearer ${token}`);
       expect(deleteResponse.statusCode).toBe(200);
       deleteResponse = await request(app.getServer())
         .delete(usersRoute.path + '/' + newUser2Dto.uuid)
-        .send();
+        .send()
+        .set('Authorization', `Bearer ${token}`);
       expect(deleteResponse.statusCode).toBe(200);
     });
 
@@ -118,14 +122,14 @@ describe('POST /login', () => {
       expect(user1.email).toBe(user2.email);
       expect(user1.phone).not.toBe(user2.phone);
 
-      const createUser1Response = await request(app.getServer()).post(usersRoute.path).send(user1);
+      const createUser1Response = await request(app.getServer()).post(usersRoute.path).send(user1).set('Authorization', `Bearer ${token}`);
       expect(createUser1Response.statusCode).toBe(201);
       const { data: newUser1Dto, message: createUser1Message } = createUser1Response.body;
       expect(newUser1Dto?.uuid).toBeDefined();
       expect(createUser1Message).toBe(events.users.userCreated);
       expect(newUser1Dto.email).toBe(login);
 
-      const createUser2Response = await request(app.getServer()).post(usersRoute.path).send(user2);
+      const createUser2Response = await request(app.getServer()).post(usersRoute.path).send(user2).set('Authorization', `Bearer ${token}`);
       expect(createUser2Response.statusCode).toBe(201);
       const { data: newUser2Dto, message: createUser2Message } = createUser2Response.body;
       expect(newUser2Dto?.uuid).toBeDefined();
@@ -141,17 +145,19 @@ describe('POST /login', () => {
       const body = loginResponse.body;
       expect(typeof body).toBe('object');
       const data = body.data;
-      const { message: deleteMessage, args: deleteArgs }: { message: string; args: string[] } = data;
-      expect(deleteMessage).toBe(error_keys.users.login.Invalid_Login_Or_Password);
-      expect(deleteArgs).toBeUndefined();
+      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      expect(loginMessage).toBe(error_keys.users.login.Invalid_Login_Or_Password);
+      expect(loginArgs).toBeUndefined();
 
       let deleteResponse = await request(app.getServer())
         .delete(usersRoute.path + '/' + newUser1Dto.uuid)
-        .send();
+        .send()
+        .set('Authorization', `Bearer ${token}`);
       expect(deleteResponse.statusCode).toBe(200);
       deleteResponse = await request(app.getServer())
         .delete(usersRoute.path + '/' + newUser2Dto.uuid)
-        .send();
+        .send()
+        .set('Authorization', `Bearer ${token}`);
       expect(deleteResponse.statusCode).toBe(200);
     });
   });
@@ -173,7 +179,7 @@ describe('POST /login', () => {
     it('POST /login should respond with a status code of 400 when password is invalid', async () => {
       const user = generateValidUser();
 
-      const createResponse = await request(app.getServer()).post(usersRoute.path).send(user);
+      const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${token}`);
       expect(createResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createResponse.body;
       expect(newUserDto?.uuid).toBeDefined();
@@ -197,7 +203,8 @@ describe('POST /login', () => {
 
       const deleteResponse = await request(app.getServer())
         .delete(usersRoute.path + '/' + newUserDto.uuid)
-        .send();
+        .send()
+        .set('Authorization', `Bearer ${token}`);
       expect(deleteResponse.statusCode).toBe(200);
     });
 
@@ -210,9 +217,9 @@ describe('POST /login', () => {
       const body = loginResponse.body;
       expect(typeof body).toBe('object');
       const data = body.data;
-      const { message: deleteMessage, args: deleteArgs }: { message: string; args: string[] } = data;
-      expect(deleteMessage).toBe(error_keys.users.login.Invalid_Login_Or_Password);
-      expect(deleteArgs).toBeUndefined();
+      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      expect(loginMessage).toBe(error_keys.users.login.Invalid_Login_Or_Password);
+      expect(loginArgs).toBeUndefined();
     });
 
     it('POST /login should respond with a status code of 400 when user with given phone not exist', async () => {
@@ -224,9 +231,63 @@ describe('POST /login', () => {
       const body = loginResponse.body;
       expect(typeof body).toBe('object');
       const data = body.data;
-      const { message: deleteMessage, args: deleteArgs }: { message: string; args: string[] } = data;
-      expect(deleteMessage).toBe(error_keys.users.login.Invalid_Login_Or_Password);
-      expect(deleteArgs).toBeUndefined();
+      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      expect(loginMessage).toBe(error_keys.users.login.Invalid_Login_Or_Password);
+      expect(loginArgs).toBeUndefined();
+    });
+
+    it('POST /login (via email) should respond with a status code of 400 when password is incorrect', async () => {
+      const user = generateValidUser();
+
+      const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${token}`);
+      expect(createResponse.statusCode).toBe(201);
+      const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createResponse.body;
+      expect(newUserDto?.uuid).toBeDefined();
+      expect(createMessage).toBe(events.users.userCreated);
+
+      const loginData: LoginDto = { login: newUserDto.email, password: 'some_different_P@ssword!' };
+      const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
+      expect(loginResponse.statusCode).toBe(400);
+      expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = loginResponse.body;
+      expect(typeof body).toBe('object');
+      const data = body.data;
+      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      expect(loginMessage).toBe(error_keys.users.login.Invalid_Login_Or_Password);
+      expect(loginArgs).toBeUndefined();
+
+      const deleteResponse = await request(app.getServer())
+        .delete(usersRoute.path + '/' + newUserDto.uuid)
+        .send()
+        .set('Authorization', `Bearer ${token}`);
+      expect(deleteResponse.statusCode).toBe(200);
+    });
+
+    it('POST /login (via phone) should respond with a status code of 400 when password is incorrect', async () => {
+      const user = generateValidUser();
+
+      const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${token}`);
+      expect(createResponse.statusCode).toBe(201);
+      const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createResponse.body;
+      expect(newUserDto?.uuid).toBeDefined();
+      expect(createMessage).toBe(events.users.userCreated);
+
+      const loginData: LoginDto = { login: newUserDto.phone, password: 'some_different_P@ssword!' };
+      const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
+      expect(loginResponse.statusCode).toBe(400);
+      expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = loginResponse.body;
+      expect(typeof body).toBe('object');
+      const data = body.data;
+      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      expect(loginMessage).toBe(error_keys.users.login.Invalid_Login_Or_Password);
+      expect(loginArgs).toBeUndefined();
+
+      const deleteResponse = await request(app.getServer())
+        .delete(usersRoute.path + '/' + newUserDto.uuid)
+        .send()
+        .set('Authorization', `Bearer ${token}`);
+      expect(deleteResponse.statusCode).toBe(200);
     });
   });
 });

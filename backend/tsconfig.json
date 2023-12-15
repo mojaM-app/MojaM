@@ -29,7 +29,7 @@
       "@modules/*": ["modules/*"],
       "@interfaces/*": ["interfaces/*"],
       "@events/*": ["events/*"],
-      "@mojam/mojam-app-shared": ["../common/index.ts"]
+      "@prisma/*": ["prisma/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.json", ".env"],

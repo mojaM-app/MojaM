@@ -5,7 +5,7 @@ import { Service } from 'typedi';
 
 @Service()
 export class PermissionService extends BaseService {
-  public async add(userGuid: Guid, permissionId: number): Promise<boolean> {
+  public async add(userGuid: Guid, permissionId: number, currentUserId: number): Promise<boolean> {
     const userId: number = await this.getUserId(userGuid);
     if (!userId) {
       return false;
@@ -30,7 +30,7 @@ export class PermissionService extends BaseService {
         },
         assignedAt: new Date(),
         assignedBy: {
-          connect: { id: userId },
+          connect: { id: currentUserId },
         },
       },
     });

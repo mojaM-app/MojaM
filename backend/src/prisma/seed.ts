@@ -1,15 +1,16 @@
 import { SystemPermission } from '@modules/permissions/system-permission.enum';
 import { PrismaClient } from '@prisma/client';
-import { generateRandomEmail, generateRandomNumber, generateRandomString } from './../utils/tests.utils';
+import { hash } from 'bcrypt';
+import { generateRandomNumber, getAdminLoginData } from './../utils/tests.utils';
 
 const prisma = new PrismaClient();
 
 const seedSystemPermission = async (prisma: PrismaClient) => {
   await prisma.systemPermission.upsert({
-    where: { id: 100 },
+    where: { id: 10 },
     update: {},
     create: {
-      id: 100,
+      id: 10,
       name: 'UserList',
       description: 'User list permission group',
     },
@@ -20,7 +21,7 @@ const seedSystemPermission = async (prisma: PrismaClient) => {
     update: {},
     create: {
       id: SystemPermission.PreviewUserList,
-      parentId: 100,
+      parentId: 10,
       name: 'PreviewUserList',
       description: 'Permission that allows preview User list',
     },
@@ -31,9 +32,20 @@ const seedSystemPermission = async (prisma: PrismaClient) => {
     update: {},
     create: {
       id: SystemPermission.PreviewUserProfile,
-      parentId: 100,
+      parentId: 10,
       name: 'PreviewUserProfile',
       description: 'Permission that allows preview any User profile',
+    },
+  });
+
+  await prisma.systemPermission.upsert({
+    where: { id: SystemPermission.AddUser },
+    update: {},
+    create: {
+      id: SystemPermission.AddUser,
+      parentId: 10,
+      name: 'AddUser',
+      description: 'Permission that allows add new User (without password)',
     },
   });
 
@@ -42,87 +54,104 @@ const seedSystemPermission = async (prisma: PrismaClient) => {
     update: {},
     create: {
       id: SystemPermission.EditUserProfile,
-      parentId: 100,
+      parentId: 10,
       name: 'EditUserProfile',
       description: 'Permission that allows edit any User profile information (without password)',
     },
   });
 
   await prisma.systemPermission.upsert({
-    where: { id: SystemPermission.DeactivateUserProfile },
+    where: { id: SystemPermission.DeactivateUser },
     update: {},
     create: {
-      id: SystemPermission.DeactivateUserProfile,
-      parentId: 100,
-      name: 'DeactivateUserProfile',
+      id: SystemPermission.DeactivateUser,
+      parentId: 10,
+      name: 'DeactivateUser',
       description: 'Permission that allows deactivate User',
     },
   });
 
   await prisma.systemPermission.upsert({
-    where: { id: SystemPermission.ActivateUserProfile },
+    where: { id: SystemPermission.ActivateUser },
     update: {},
     create: {
-      id: SystemPermission.ActivateUserProfile,
-      parentId: 100,
-      name: 'ActivateUserProfile',
+      id: SystemPermission.ActivateUser,
+      parentId: 10,
+      name: 'ActivateUser',
       description: 'Permission that allows activate User',
     },
   });
 
   await prisma.systemPermission.upsert({
-    where: { id: SystemPermission.DeleteUserProfile },
+    where: { id: SystemPermission.DeleteUser },
     update: {},
     create: {
-      id: SystemPermission.DeleteUserProfile,
-      parentId: 100,
-      name: 'DeleteUserProfile',
+      id: SystemPermission.DeleteUser,
+      parentId: 10,
+      name: 'DeleteUser',
       description: 'Permission that allows delete User (user is not deleted, is anonymized)',
     },
   });
 
   await prisma.systemPermission.upsert({
-    where: { id: SystemPermission.UnlockUserProfile },
+    where: { id: SystemPermission.UnlockUser },
     update: {},
     create: {
-      id: SystemPermission.UnlockUserProfile,
-      parentId: 100,
-      name: 'UnlockUserProfile',
+      id: SystemPermission.UnlockUser,
+      parentId: 10,
+      name: 'UnlockUser',
       description: 'Permission that allows unlock User (when user locks his profile by entering the wrong login or password several times)',
     },
   });
 };
 
 const seedUsers = async (prisma: PrismaClient) => {
-  let email: string = generateRandomEmail();
-  let phone: string = generateRandomNumber(9);
+  const adminLoginData = getAdminLoginData();
+  let email: string = adminLoginData.email;
+  let phone: string = adminLoginData.phone;
+  let password = await hash(adminLoginData.password, 10);
   await prisma.user.upsert({
     where: { email_phone: { email: email, phone: phone } },
     update: {},
     create: {
       email: email,
       phone: phone,
-      password: 'pass',
+      password: password,
       isActive: true,
-      firstName: generateRandomString(10),
-      lastName: generateRandomString(10),
+      firstName: 'has full access',
+      lastName: 'only for tests',
     },
   });
 
-  const user = await prisma.user.findFirst();
+  const user = await prisma.user.findUnique({ where: { email_phone: { email: email, phone: phone } } });
 
-  email = generateRandomEmail();
+  const permissions = await prisma.systemPermission.findMany({ where: { id: { gte: 100 } } });
+  for await (const permission of permissions) {
+    await prisma.userSystemPermission.upsert({
+      where: { userId_permissionId: { userId: user.id, permissionId: permission.id } },
+      update: {},
+      create: {
+        permissionId: permission.id,
+        userId: user.id,
+        assignedAt: new Date(),
+        assignedById: user.id,
+      },
+    });
+  }
+
+  email = 'user1';
   phone = generateRandomNumber(9);
+  password = await hash('p@ss', 10);
   await prisma.user.upsert({
     where: { email_phone: { email: email, phone: phone } },
     update: {},
     create: {
       email: email,
       phone: phone,
-      password: 'pass',
+      password: password,
       isActive: true,
-      firstName: generateRandomString(10),
-      lastName: generateRandomString(10),
+      firstName: 'only for tests',
+      lastName: 'only for tests',
       systemPermissions: {
         createMany: {
           data: [

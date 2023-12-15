@@ -5,7 +5,7 @@ import { MissionController } from '@modules/community/controllers/mission.contro
 import { RegulationsController } from '@modules/community/controllers/regulations.controller';
 import { StructureController } from '@modules/community/controllers/structure.controller';
 import express, { Router } from 'express';
-import { verifyToken } from '../auth/middlewares/auth.middleware';
+import { setIdentity } from '../auth/middlewares/set-identity.middleware';
 
 class StructureRout implements Routes {
   public path = '/structure';
@@ -19,7 +19,7 @@ class StructureRout implements Routes {
   }
 
   public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, verifyToken, this.controller.get);
+    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this.controller.get);
   }
 }
 
@@ -35,7 +35,7 @@ class RegulationsRout implements Routes {
   }
 
   public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, verifyToken, this.controller.get);
+    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this.controller.get);
   }
 }
 
@@ -51,7 +51,7 @@ class MissionRout implements Routes {
   }
 
   public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, verifyToken, this.controller.get);
+    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this.controller.get);
   }
 }
 
@@ -67,7 +67,7 @@ class MeetingsRout implements Routes {
   }
 
   public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, verifyToken, this.controller.get);
+    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this.controller.get);
   }
 }
 
@@ -83,7 +83,7 @@ class DiaconieRout implements Routes {
   }
 
   public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, verifyToken, this.controller.get);
+    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this.controller.get);
   }
 }
 

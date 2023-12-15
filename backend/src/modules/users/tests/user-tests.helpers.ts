@@ -5,7 +5,7 @@ const generateValidUser = (): CreateUserDto => {
   return <CreateUserDto>{
     email: generateRandomEmail(),
     password: generateRandomPassword(),
-    phone: generateRandomNumber(9),
+    phone: '88' + generateRandomNumber(7),
     firstName: generateRandomString(10),
   };
 };

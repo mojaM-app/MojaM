@@ -1,5 +1,6 @@
 import { error_keys } from '@exceptions/error.keys';
-import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString, IsStrongPassword, IsStrongPasswordOptions, MaxLength } from 'class-validator';
+import { VALIDATOR_SETTINGS } from '@utils/constants';
+import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString, IsStrongPassword, MaxLength } from 'class-validator';
 
 export class CreateUserDto {
   @IsString({
@@ -14,7 +15,7 @@ export class CreateUserDto {
       message: error_keys.users.create.Invalid_Email,
     },
   )
-  @MaxLength(320, {
+  @MaxLength(VALIDATOR_SETTINGS.EMAIL_MAX_LENGTH, {
     message: error_keys.users.create.Email_To_Long,
   })
   public email: string;
@@ -25,10 +26,10 @@ export class CreateUserDto {
   @IsNotEmpty({
     message: error_keys.users.create.Invalid_Phone,
   })
-  @IsPhoneNumber('PL', {
+  @IsPhoneNumber(VALIDATOR_SETTINGS.PHONE_COUNTRY_CODE, {
     message: error_keys.users.create.Invalid_Phone,
   })
-  @MaxLength(30, {
+  @MaxLength(VALIDATOR_SETTINGS.PHONE_MAX_LENGTH, {
     message: error_keys.users.create.Phone_To_Long,
   })
   public phone: string;
@@ -39,10 +40,10 @@ export class CreateUserDto {
   @IsNotEmpty({
     message: error_keys.users.create.Invalid_Password,
   })
-  @MaxLength(50, {
+  @MaxLength(VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH, {
     message: error_keys.users.create.Password_To_Long,
   })
-  @IsStrongPassword(<IsStrongPasswordOptions>{ minLength: 9, minLowercase: 1, minUppercase: 1, minNumbers: 0, minSymbols: 0 }, {
+  @IsStrongPassword(VALIDATOR_SETTINGS.IS_STRONG_PASSWORD_OPTIONS, {
     message: error_keys.users.create.Invalid_Password,
   })
   public password: string;

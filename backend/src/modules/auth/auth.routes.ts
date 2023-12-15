@@ -1,5 +1,5 @@
 import { Routes } from '@interfaces/routes.interface';
-import { ValidationMiddleware } from '@middlewares/validation.middleware';
+import { validateData } from '@middlewares/validate-data.middleware';
 import { AuthController } from '@modules/auth/controllers/auth.controller';
 import express from 'express';
 import { LoginDto } from './dtos/login.dto';
@@ -15,7 +15,7 @@ export class AuthRoute implements Routes {
   }
 
   private initializeRoutes() {
-    this.router.post(this.loginPath, ValidationMiddleware(LoginDto), this.authController.logIn);
+    this.router.post(this.loginPath, validateData(LoginDto), this.authController.logIn);
     //this.router.post(`${this.path}logout`, verifyToken, this.authController.logOut);
   }
 }

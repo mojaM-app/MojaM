@@ -1,5 +1,6 @@
-import { error_keys } from '@exceptions/error.keys';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
+import { error_keys } from '@exceptions/error.keys';
+import DBClient from '@prisma/DBClient';
 import { PrismaClient, User } from '@prisma/client';
 import { Guid } from 'guid-typescript';
 import StatusCode from 'status-code-enum';
@@ -8,7 +9,7 @@ export class BaseService {
   protected readonly _dbContext: PrismaClient;
 
   constructor() {
-    this._dbContext = new PrismaClient();
+    this._dbContext = DBClient.getDbContext();
   }
 
   protected async getUserId(userGuid: Guid): Promise<number | null> {

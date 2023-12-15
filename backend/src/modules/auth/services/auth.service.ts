@@ -1,7 +1,8 @@
-import { SECRET_KEY } from '@config';
+import { SECRET_AUDIENCE, SECRET_ISSUER, SECRET_KEY } from '@config';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import { error_keys } from '@exceptions/error.keys';
 import { BaseService } from '@modules/common/base.service';
+import { SystemPermission } from '@modules/permissions/system-permission.enum';
 import UsersHelper from '@modules/users/helpers/users.helper';
 import { IUser } from '@modules/users/interfaces/IUser';
 import { User } from '@prisma/client';
@@ -34,7 +35,11 @@ export class AuthService extends BaseService {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.login.Invalid_Login_Or_Password);
     }
 
-    const tokenData = this.createToken(user);
+    const permissions = await this._dbContext.userSystemPermission.findMany({ where: { userId: user.id } });
+    const tokenData = this.createToken(
+      user,
+      permissions.map(m => m.permissionId),
+    );
     const cookie = this.createCookie(tokenData);
 
     return { cookie, user: UsersHelper.UserToIUser(user) };
@@ -47,12 +52,21 @@ export class AuthService extends BaseService {
   //   return findUser;
   // }
 
-  public createToken(user: IUser): TokenData {
-    const dataStoredInToken: DataStoredInToken = { id: user.uuid, permissions: [] };
-    const secretKey: string = SECRET_KEY;
+  public createToken(user: IUser, permissions: SystemPermission[]): TokenData {
+    const dataStoredInToken: DataStoredInToken = { id: user.uuid, permissions: permissions || [] };
+
     const expiresIn: number = 10 * 60; //expressed in seconds
 
-    return { expiresIn, token: sign(dataStoredInToken, secretKey, { expiresIn }) };
+    return {
+      expiresIn,
+      token: sign(dataStoredInToken, SECRET_KEY, {
+        expiresIn: expiresIn,
+        notBefore: '0', // Cannot use before now, can be configured to be deferred.
+        algorithm: 'HS256',
+        audience: SECRET_AUDIENCE,
+        issuer: SECRET_ISSUER,
+      }),
+    };
   }
 
   public createCookie(tokenData: TokenData): string {

@@ -7,6 +7,9 @@ export const error_keys = {
   users: {
     login: {
       Invalid_Login_Or_Password: 'Invalid_Login_Or_Password',
+      Wrong_Authentication_Token: 'Wrong_Authentication_Token',
+      User_Not_Authenticated: 'User_Not_Authenticated',
+      User_Not_Authorized: 'User_Not_Authorized',
     },
     create: {
       Invalid_Phone: 'Invalid_Phone',

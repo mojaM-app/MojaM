@@ -1,6 +1,8 @@
-import { IUser } from '@modules/users/interfaces/IUser';
+import { SystemPermission } from '@modules/permissions/system-permission.enum';
+import { User } from '@prisma/client';
 import { Request } from 'express';
 
 export interface RequestWithUser extends Request {
-  user: IUser;
+  user: User;
+  permissions: SystemPermission[];
 }

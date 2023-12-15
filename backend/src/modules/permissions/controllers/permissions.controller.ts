@@ -10,8 +10,8 @@ export class PermissionsController {
 
   public add = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { userGuid, permissionId } = this.getRequestParams(req);
-      const result: boolean = await this.permissionService.add(userGuid, permissionId);
+      const { userGuid, permissionId, currentUserId } = this.getRequestParams(req);
+      const result: boolean = await this.permissionService.add(userGuid, permissionId, currentUserId);
       res.status(201).json({ data: result, message: events.permissions.permissionAdded });
     } catch (error) {
       next(error);
@@ -28,9 +28,10 @@ export class PermissionsController {
     }
   };
 
-  private getRequestParams(req: RequestWithUser): { userGuid: Guid; permissionId: number } {
+  private getRequestParams(req: RequestWithUser): { userGuid: Guid; permissionId: number; currentUserId: number } {
     const userGuid: Guid = Guid.parse(req.params.userId);
     const permissionId: number = Number.parseInt(req.params.permissionId);
-    return { userGuid, permissionId };
+    const currentUserId: number = req.user.id;
+    return { userGuid, permissionId, currentUserId };
   }
 }

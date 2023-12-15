@@ -2,7 +2,7 @@ import { Routes } from '@interfaces/routes.interface';
 import { PermissionsController } from '@modules/permissions/controllers/permissions.controller';
 import { REGEX_GUID_PATTERN, REGEX_INT_PATTERN } from '@utils/constants';
 import express from 'express';
-import { verifyToken } from '../auth/middlewares/auth.middleware';
+import { setIdentity } from '../auth/middlewares/set-identity.middleware';
 
 export class PermissionsRoute implements Routes {
   public path = '/permissions';
@@ -14,10 +14,10 @@ export class PermissionsRoute implements Routes {
   }
 
   private initializeRoutes() {
-    this.router.post(`${this.path}/:userId(${REGEX_GUID_PATTERN})/:permissionId(${REGEX_INT_PATTERN})`, verifyToken, this.permissionsController.add);
+    this.router.post(`${this.path}/:userId(${REGEX_GUID_PATTERN})/:permissionId(${REGEX_INT_PATTERN})`, setIdentity, this.permissionsController.add);
     this.router.delete(
       `${this.path}/:userId(${REGEX_GUID_PATTERN})/:permissionId(${REGEX_INT_PATTERN})`,
-      verifyToken,
+      setIdentity,
       this.permissionsController.delete,
     );
   }

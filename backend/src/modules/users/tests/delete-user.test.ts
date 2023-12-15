@@ -1,23 +1,38 @@
 import { App } from '@/app';
 import { events } from '@events/events';
 import { error_keys } from '@exceptions/error.keys';
+import { AuthRoute } from '@modules/auth/auth.routes';
+import { LoginDto } from '@modules/auth/dtos/login.dto';
 import { PermissionsRoute } from '@modules/permissions/permissions.routes';
 import { IUser } from '@modules/users/interfaces/IUser';
 import { generateValidUser } from '@modules/users/tests/user-tests.helpers';
 import { UsersRoute } from '@modules/users/users.routes';
+import { getAdminLoginData, getJwtToken } from '@utils/tests.utils';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
 
 describe('DELETE /users', () => {
   const usersRoute = new UsersRoute();
   const permissionsRoute = new PermissionsRoute();
-  const app = new App([usersRoute, permissionsRoute]);
+  const authRoute = new AuthRoute();
+  const app = new App([authRoute, usersRoute, permissionsRoute]);
+
+  let token: string;
+  beforeAll(async () => {
+    const { email: login, password } = getAdminLoginData();
+
+    const loginResponse = await request(app.getServer())
+      .post(authRoute.loginPath)
+      .send(<LoginDto>{ login, password });
+
+    token = loginResponse.statusCode === 200 ? getJwtToken(loginResponse) : '';
+  });
 
   describe('user deletion', () => {
     test('DELETE/users should respond with a status code of 200', async () => {
       const user = generateValidUser();
 
-      const createResponse = await request(app.getServer()).post(usersRoute.path).send(user);
+      const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${token}`);
       expect(createResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createResponse.body;
       expect(newUserDto?.uuid).toBeDefined();
