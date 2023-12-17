@@ -11,6 +11,7 @@ import hpp from 'hpp';
 import morgan from 'morgan';
 import 'reflect-metadata';
 import { error_keys } from './exceptions/error.keys';
+import { AuthRoute } from './modules/auth/auth.routes';
 
 export class App {
   public app: express.Application;
@@ -52,6 +53,9 @@ export class App {
   }
 
   private initializeRoutes(routes: Routes[]) {
+    //auth rout is added always
+    this.addAuthRoute();
+
     routes.forEach(route => {
       this.app.use('/', route.router);
     });
@@ -59,6 +63,11 @@ export class App {
     this.app.use(function (req, res) {
       res.status(404).json({ message: error_keys.general.Page_Does_Not_Exist });
     });
+  }
+
+  private addAuthRoute(): void {
+    const authRoute = new AuthRoute();
+    this.app.use('/', authRoute.router);
   }
 
   private initializeErrorHandling() {

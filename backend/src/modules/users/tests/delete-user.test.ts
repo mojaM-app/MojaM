@@ -1,7 +1,6 @@
 import { App } from '@/app';
 import { events } from '@events/events';
 import { error_keys } from '@exceptions/error.keys';
-import { AuthRoute } from '@modules/auth/auth.routes';
 import { LoginDto } from '@modules/auth/dtos/login.dto';
 import { PermissionsRoute } from '@modules/permissions/permissions.routes';
 import { IUser } from '@modules/users/interfaces/IUser';
@@ -14,8 +13,7 @@ import request from 'supertest';
 describe('DELETE/users should respond with a status code of 200', () => {
   const usersRoute = new UsersRoute();
   const permissionsRoute = new PermissionsRoute();
-  const authRoute = new AuthRoute();
-  const app = new App([authRoute, usersRoute, permissionsRoute]);
+  const app = new App([usersRoute, permissionsRoute]);
 
   let adminAuthToken: string;
   beforeAll(async () => {
@@ -48,8 +46,7 @@ describe('DELETE/users should respond with a status code of 200', () => {
 
 describe('DELETE/users should respond with a status code of 403', () => {
   const usersRoute = new UsersRoute();
-  const authRoute = new AuthRoute();
-  const app = new App([usersRoute, authRoute]);
+  const app = new App([usersRoute]);
 
   let adminAuthToken: string;
   beforeAll(async () => {
@@ -108,8 +105,7 @@ describe('DELETE/users should respond with a status code of 403', () => {
 describe('DELETE/users should respond with a status code of 400', () => {
   const usersRoute = new UsersRoute();
   const permissionsRoute = new PermissionsRoute();
-  const authRoute = new AuthRoute();
-  const app = new App([authRoute, usersRoute, permissionsRoute]);
+  const app = new App([usersRoute, permissionsRoute]);
 
   let adminAuthToken: string;
   beforeAll(async () => {
@@ -139,8 +135,7 @@ describe('DELETE/users should respond with a status code of 400', () => {
 describe('DELETE/users should respond with a status code of 404', () => {
   const usersRoute = new UsersRoute();
   const permissionsRoute = new PermissionsRoute();
-  const authRoute = new AuthRoute();
-  const app = new App([authRoute, usersRoute, permissionsRoute]);
+  const app = new App([usersRoute, permissionsRoute]);
 
   let adminAuthToken: string;
   beforeAll(async () => {
@@ -165,8 +160,7 @@ describe('DELETE/users should respond with a status code of 404', () => {
 
 describe('DELETE/users should respond with a status code of 401', () => {
   const usersRoute = new UsersRoute();
-  const authRoute = new AuthRoute();
-  const app = new App([usersRoute, authRoute]);
+  const app = new App([usersRoute]);
 
   let adminAuthToken: string;
   beforeAll(async () => {

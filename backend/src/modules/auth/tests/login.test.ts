@@ -18,7 +18,7 @@ describe('POST /login', () => {
   const usersRoute = new UsersRoute();
   const authRoute = new AuthRoute();
   const permissionsRoute = new PermissionsRoute();
-  const app = new App([usersRoute, authRoute, permissionsRoute]);
+  const app = new App([usersRoute, permissionsRoute]);
 
   let adminAuthToken: string;
   beforeAll(async () => {
