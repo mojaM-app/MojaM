@@ -1,5 +1,5 @@
-import DBClient from '@/prisma/DBClient';
 import { SECRET_AUDIENCE, SECRET_ISSUER, SECRET_KEY } from '@config';
+import DBClient from '@db/DBClient';
 import { UnauthorizedException } from '@exceptions/UnauthorizedException';
 import { error_keys } from '@exceptions/error.keys';
 import { NextFunction, Request, Response } from 'express';

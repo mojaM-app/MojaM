@@ -29,7 +29,7 @@
       "@modules/*": ["modules/*"],
       "@interfaces/*": ["interfaces/*"],
       "@events/*": ["events/*"],
-      "@prisma/*": ["prisma/*"]
+      "@db/*": ["prisma/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.json", ".env"],

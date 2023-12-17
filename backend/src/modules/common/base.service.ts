@@ -1,6 +1,6 @@
+import DBClient from '@db/DBClient';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import { error_keys } from '@exceptions/error.keys';
-import DBClient from '@prisma/DBClient';
 import { PrismaClient, User } from '@prisma/client';
 import { Guid } from 'guid-typescript';
 import StatusCode from 'status-code-enum';
