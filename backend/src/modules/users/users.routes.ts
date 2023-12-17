@@ -23,11 +23,19 @@ export class UsersRoute implements Routes {
     this.router.get(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity], this.usersController.getById);
     this.router.post(`${this.path}`, [validateData(CreateUserDto), setIdentity, this.checkCreatePermission], this.usersController.create);
     //this.router.put(`${this.path}/:id(${REGEX_INT_PATTERN)`, ValidationMiddleware(UpdateUserDto, true),verifyToken, this.usersController.updateUser);
-    this.router.delete(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity], this.usersController.delete);
+    this.router.delete(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity, this.checkDeletePermission], this.usersController.delete);
   }
 
   checkCreatePermission = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     if (req.permissions?.includes(SystemPermission.AddUser) !== true) {
+      next(new ForbiddenException());
+    } else {
+      next();
+    }
+  };
+
+  checkDeletePermission = async (req: RequestWithUser, res: Response, next: NextFunction) => {
+    if (req.permissions?.includes(SystemPermission.DeleteUser) !== true) {
       next(new ForbiddenException());
     } else {
       next();

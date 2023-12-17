@@ -45,11 +45,4 @@ const getAdminLoginData = (): { email: string; phone: string; password: string }
   return { email: 'admin@domain.com', phone: '123456789', password: 'P@ssWord!1' };
 };
 
-const getJwtToken = (response: any): string => {
-  const headers = response.headers;
-  const cookies = headers['set-cookie'];
-  const cookie = cookies[0];
-  return cookie.split(';')[0].split('=')[1];
-};
-
-export { generateRandomEmail, generateRandomNumber, generateRandomPassword, generateRandomString, getAdminLoginData, getJwtToken };
+export { generateRandomEmail, generateRandomNumber, generateRandomPassword, generateRandomString, getAdminLoginData };

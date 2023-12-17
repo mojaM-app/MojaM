@@ -5,9 +5,9 @@ import { AuthRoute } from '@modules/auth/auth.routes';
 import { PermissionsRoute } from '@modules/permissions/permissions.routes';
 import { SystemPermission } from '@modules/permissions/system-permission.enum';
 import { IUser } from '@modules/users/interfaces/IUser';
-import { generateValidUser } from '@modules/users/tests/user-tests.helpers';
+import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
 import { UsersRoute } from '@modules/users/users.routes';
-import { getAdminLoginData, getJwtToken } from '@utils/tests.utils';
+import { getAdminLoginData } from '@utils/tests.utils';
 import { NextFunction } from 'express';
 import request from 'supertest';
 import { LoginDto } from '../dtos/login.dto';
@@ -20,15 +20,11 @@ describe('POST /login', () => {
   const permissionsRoute = new PermissionsRoute();
   const app = new App([usersRoute, authRoute, permissionsRoute]);
 
-  let token: string;
+  let adminAuthToken: string;
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    const loginResponse = await request(app.getServer())
-      .post(authRoute.loginPath)
-      .send(<LoginDto>{ login, password });
-
-    token = loginResponse.statusCode === 200 ? getJwtToken(loginResponse) : '';
+    adminAuthToken = (await loginAs(app, <LoginDto>{ login, password })).authToken;
   });
 
   describe('when login data are valid', () => {
@@ -64,6 +60,39 @@ describe('POST /login', () => {
       expect((req as RequestWithUser).permissions).toContain(SystemPermission.EditUserProfile);
       expect(next).toHaveBeenCalled();
     });
+
+    it('(login via phone and password) response should have the Set-Cookie header with the Authorization token when login data are correct', async () => {
+      const { phone: login, password } = getAdminLoginData();
+      const loginResponse = await request(app.getServer())
+        .post(authRoute.loginPath)
+        .send(<LoginDto>{ login, password });
+      const body = loginResponse.body;
+      expect(typeof body).toBe('object');
+      expect(loginResponse.statusCode).toBe(200);
+      const headers = loginResponse.headers;
+      expect(headers['content-type']).toEqual(expect.stringContaining('json'));
+      const { data: userLoggedIn, message: loginMessage, args: loginArgs } = body;
+      expect(loginMessage).toBe(events.users.userLoggedIn);
+      expect(loginArgs).toBeUndefined();
+      expect(userLoggedIn.phone).toBe(login);
+      const cookies = headers['set-cookie'];
+      expect(Array.isArray(cookies)).toBe(true);
+      expect(cookies.length).toBe(1);
+      const cookie = cookies[0];
+      expect(cookie).toBeDefined();
+      expect(cookie.length).toBeGreaterThan(1);
+      const token = cookie.split(';')[0].split('=')[1];
+      const req = {
+        cookies: {
+          Authorization: token,
+        },
+      };
+      const next: NextFunction = jest.fn();
+      await setIdentity(req as any, {} as any, next);
+      expect((req as RequestWithUser).user.uuid).toEqual(userLoggedIn.uuid);
+      expect((req as RequestWithUser).permissions).toContain(SystemPermission.EditUserProfile);
+      expect(next).toHaveBeenCalled();
+    });
   });
 
   describe('when exist more then one user with same login', () => {
@@ -75,14 +104,14 @@ describe('POST /login', () => {
       expect(user1.phone).toBe(user2.phone);
       expect(user1.email).not.toBe(user2.email);
 
-      const createUser1Response = await request(app.getServer()).post(usersRoute.path).send(user1).set('Authorization', `Bearer ${token}`);
+      const createUser1Response = await request(app.getServer()).post(usersRoute.path).send(user1).set('Authorization', `Bearer ${adminAuthToken}`);
       expect(createUser1Response.statusCode).toBe(201);
       const { data: newUser1Dto, message: createUser1Message } = createUser1Response.body;
       expect(newUser1Dto?.uuid).toBeDefined();
       expect(createUser1Message).toBe(events.users.userCreated);
       expect(newUser1Dto.phone).toBe(login);
 
-      const createUser2Response = await request(app.getServer()).post(usersRoute.path).send(user2).set('Authorization', `Bearer ${token}`);
+      const createUser2Response = await request(app.getServer()).post(usersRoute.path).send(user2).set('Authorization', `Bearer ${adminAuthToken}`);
       expect(createUser2Response.statusCode).toBe(201);
       const { data: newUser2Dto, message: createUser2Message } = createUser2Response.body;
       expect(newUser2Dto?.uuid).toBeDefined();
@@ -105,12 +134,12 @@ describe('POST /login', () => {
       let deleteResponse = await request(app.getServer())
         .delete(usersRoute.path + '/' + newUser1Dto.uuid)
         .send()
-        .set('Authorization', `Bearer ${token}`);
+        .set('Authorization', `Bearer ${adminAuthToken}`);
       expect(deleteResponse.statusCode).toBe(200);
       deleteResponse = await request(app.getServer())
         .delete(usersRoute.path + '/' + newUser2Dto.uuid)
         .send()
-        .set('Authorization', `Bearer ${token}`);
+        .set('Authorization', `Bearer ${adminAuthToken}`);
       expect(deleteResponse.statusCode).toBe(200);
     });
 
@@ -122,14 +151,14 @@ describe('POST /login', () => {
       expect(user1.email).toBe(user2.email);
       expect(user1.phone).not.toBe(user2.phone);
 
-      const createUser1Response = await request(app.getServer()).post(usersRoute.path).send(user1).set('Authorization', `Bearer ${token}`);
+      const createUser1Response = await request(app.getServer()).post(usersRoute.path).send(user1).set('Authorization', `Bearer ${adminAuthToken}`);
       expect(createUser1Response.statusCode).toBe(201);
       const { data: newUser1Dto, message: createUser1Message } = createUser1Response.body;
       expect(newUser1Dto?.uuid).toBeDefined();
       expect(createUser1Message).toBe(events.users.userCreated);
       expect(newUser1Dto.email).toBe(login);
 
-      const createUser2Response = await request(app.getServer()).post(usersRoute.path).send(user2).set('Authorization', `Bearer ${token}`);
+      const createUser2Response = await request(app.getServer()).post(usersRoute.path).send(user2).set('Authorization', `Bearer ${adminAuthToken}`);
       expect(createUser2Response.statusCode).toBe(201);
       const { data: newUser2Dto, message: createUser2Message } = createUser2Response.body;
       expect(newUser2Dto?.uuid).toBeDefined();
@@ -152,12 +181,12 @@ describe('POST /login', () => {
       let deleteResponse = await request(app.getServer())
         .delete(usersRoute.path + '/' + newUser1Dto.uuid)
         .send()
-        .set('Authorization', `Bearer ${token}`);
+        .set('Authorization', `Bearer ${adminAuthToken}`);
       expect(deleteResponse.statusCode).toBe(200);
       deleteResponse = await request(app.getServer())
         .delete(usersRoute.path + '/' + newUser2Dto.uuid)
         .send()
-        .set('Authorization', `Bearer ${token}`);
+        .set('Authorization', `Bearer ${adminAuthToken}`);
       expect(deleteResponse.statusCode).toBe(200);
     });
   });
@@ -179,7 +208,7 @@ describe('POST /login', () => {
     it('POST /login should respond with a status code of 400 when password is invalid', async () => {
       const user = generateValidUser();
 
-      const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${token}`);
+      const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAuthToken}`);
       expect(createResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createResponse.body;
       expect(newUserDto?.uuid).toBeDefined();
@@ -204,7 +233,7 @@ describe('POST /login', () => {
       const deleteResponse = await request(app.getServer())
         .delete(usersRoute.path + '/' + newUserDto.uuid)
         .send()
-        .set('Authorization', `Bearer ${token}`);
+        .set('Authorization', `Bearer ${adminAuthToken}`);
       expect(deleteResponse.statusCode).toBe(200);
     });
 
@@ -239,7 +268,7 @@ describe('POST /login', () => {
     it('POST /login (via email) should respond with a status code of 400 when password is incorrect', async () => {
       const user = generateValidUser();
 
-      const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${token}`);
+      const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAuthToken}`);
       expect(createResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createResponse.body;
       expect(newUserDto?.uuid).toBeDefined();
@@ -259,14 +288,14 @@ describe('POST /login', () => {
       const deleteResponse = await request(app.getServer())
         .delete(usersRoute.path + '/' + newUserDto.uuid)
         .send()
-        .set('Authorization', `Bearer ${token}`);
+        .set('Authorization', `Bearer ${adminAuthToken}`);
       expect(deleteResponse.statusCode).toBe(200);
     });
 
     it('POST /login (via phone) should respond with a status code of 400 when password is incorrect', async () => {
       const user = generateValidUser();
 
-      const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${token}`);
+      const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAuthToken}`);
       expect(createResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createResponse.body;
       expect(newUserDto?.uuid).toBeDefined();
@@ -286,7 +315,7 @@ describe('POST /login', () => {
       const deleteResponse = await request(app.getServer())
         .delete(usersRoute.path + '/' + newUserDto.uuid)
         .send()
-        .set('Authorization', `Bearer ${token}`);
+        .set('Authorization', `Bearer ${adminAuthToken}`);
       expect(deleteResponse.statusCode).toBe(200);
     });
   });
