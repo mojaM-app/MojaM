@@ -4,7 +4,6 @@ class DBClient {
   public prisma: PrismaClient;
   private static instance: DBClient;
   private constructor() {
-    console.warn('new PrismaClient instantiated');
     this.prisma = new PrismaClient();
   }
 

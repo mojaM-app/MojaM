@@ -23,9 +23,8 @@ const getJwtToken = (response: any): string => {
 };
 
 const loginAs = async (app: App, user: { login: string; password: string }): Promise<{ userLoggedIn: IUser; authToken: string }> => {
-  const authRoute = new AuthRoute();
   const loginDto: LoginDto = { login: user.login, password: user.password };
-  const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginDto);
+  const loginResponse = await request(app.getServer()).post(new AuthRoute().loginPath).send(loginDto);
   const authToken = loginResponse.statusCode === 200 ? getJwtToken(loginResponse) : '';
   return { userLoggedIn: loginResponse.body.data, authToken: authToken };
 };
