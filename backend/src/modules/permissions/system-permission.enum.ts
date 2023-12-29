@@ -7,4 +7,7 @@ export const enum SystemPermission {
   ActivateUser = 105,
   DeleteUser = 106,
   UnlockUser = 107,
+
+  AddPermission = 200,
+  DeletePermission = 201,
 }

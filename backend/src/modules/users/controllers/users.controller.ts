@@ -9,11 +9,15 @@ import { Container } from 'typedi';
 import UsersHelper from '../helpers/users.helper';
 
 export class UsersController {
-  public userService = Container.get(UserService);
+  private readonly _userService: UserService | undefined = undefined;
+
+  public constructor() {
+    this._userService = Container.get(UserService);
+  }
 
   // public getUsers = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
   //   try {
-  //     const findAllUsersData: IUser[] = await this.userService.findAllUser();
+  //     const findAllUsersData: IUser[] = await this._userService.findAllUser();
 
   //     res.status(200).json({ data: findAllUsersData, message: 'findAll' });
   //   } catch (error) {
@@ -24,7 +28,7 @@ export class UsersController {
   public getById = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userGuid: Guid = Guid.parse(req.params.id);
-      const user: User = await this.userService.get(userGuid);
+      const user: User = await this._userService.get(userGuid);
 
       res.status(200).json({ data: UsersHelper.UserToIUser(user), message: events.users.userRetrieved });
     } catch (error) {
@@ -35,7 +39,7 @@ export class UsersController {
   public create = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userData: CreateUserDto = req.body;
-      const user: User = await this.userService.create(userData);
+      const user: User = await this._userService.create(userData);
       res.status(201).json({ data: UsersHelper.UserToIUser(user), message: events.users.userCreated });
     } catch (error) {
       next(error);
@@ -46,7 +50,7 @@ export class UsersController {
   //   try {
   //     const userId = Number(req.params.id);
   //     const userData: IUser = req.body;
-  //     const updateUserData: IUser = await this.userService.updateUser(userId, userData);
+  //     const updateUserData: IUser = await this._userService.updateUser(userId, userData);
   //     res.status(200).json({ data: updateUserData, message: 'updated' });
   //   } catch (error) {
   //     next(error);
@@ -56,7 +60,7 @@ export class UsersController {
   public delete = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userGuid: Guid = Guid.parse(req.params.id);
-      const data: string = await this.userService.delete(userGuid);
+      const data: string = await this._userService.delete(userGuid);
       res.status(200).json({ data: data, message: events.users.userDeleted });
     } catch (error) {
       next(error);

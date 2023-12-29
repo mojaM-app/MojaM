@@ -6,12 +6,15 @@ import { Guid } from 'guid-typescript';
 import { Container } from 'typedi';
 
 export class PermissionsController {
-  public permissionService = Container.get(PermissionService);
+  private _permissionService: PermissionService | undefined = undefined;
+  constructor() {
+    this._permissionService = Container.get(PermissionService);
+  }
 
   public add = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { userGuid, permissionId, currentUserId } = this.getRequestParams(req);
-      const result: boolean = await this.permissionService.add(userGuid, permissionId, currentUserId);
+      const result: boolean = await this._permissionService.add(userGuid, permissionId, currentUserId);
       res.status(201).json({ data: result, message: events.permissions.permissionAdded });
     } catch (error) {
       next(error);
@@ -21,7 +24,7 @@ export class PermissionsController {
   public delete = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { userGuid, permissionId } = this.getRequestParams(req);
-      const result: boolean = await this.permissionService.delete(userGuid, permissionId);
+      const result: boolean = await this._permissionService.delete(userGuid, permissionId);
       res.status(200).json({ data: result, message: events.permissions.permissionDeleted });
     } catch (error) {
       next(error);

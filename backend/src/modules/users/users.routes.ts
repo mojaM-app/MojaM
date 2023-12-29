@@ -12,18 +12,19 @@ import { SystemPermission } from '../permissions/system-permission.enum';
 export class UsersRoute implements Routes {
   public path = '/users';
   public router = express.Router();
-  public usersController: UsersController = new UsersController();
+  private readonly _usersController: UsersController | undefined = undefined;
 
-  constructor() {
+  public constructor() {
+    this._usersController = new UsersController();
     this.initializeRoutes();
   }
 
   private initializeRoutes() {
     //this.router.get(`${this.path}`,verifyToken, this.usersController.getUsers);
-    this.router.get(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity], this.usersController.getById);
-    this.router.post(`${this.path}`, [validateData(CreateUserDto), setIdentity, this.checkCreatePermission], this.usersController.create);
-    //this.router.put(`${this.path}/:id(${REGEX_INT_PATTERN)`, ValidationMiddleware(UpdateUserDto, true),verifyToken, this.usersController.updateUser);
-    this.router.delete(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity, this.checkDeletePermission], this.usersController.delete);
+    this.router.get(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity], this._usersController.getById);
+    this.router.post(`${this.path}`, [validateData(CreateUserDto), setIdentity, this.checkCreatePermission], this._usersController.create);
+    //this.router.put(`${this.path}/:id(${REGEX_INT_PATTERN)`, ValidationMiddleware(UpdateUserDto, true),verifyToken, this._usersController.update);
+    this.router.delete(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity, this.checkDeletePermission], this._usersController.delete);
   }
 
   checkCreatePermission = async (req: RequestWithUser, res: Response, next: NextFunction) => {

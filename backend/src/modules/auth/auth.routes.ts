@@ -8,14 +8,16 @@ export class AuthRoute implements Routes {
   public path = '/';
   public loginPath = `${this.path}login`;
   public router = express.Router();
-  public authController: AuthController = new AuthController();
 
-  constructor() {
+  private readonly _authController: AuthController | undefined = undefined;
+
+  public constructor() {
+    this._authController = new AuthController();
     this.initializeRoutes();
   }
 
   private initializeRoutes() {
-    this.router.post(this.loginPath, validateData(LoginDto), this.authController.logIn);
-    //this.router.post(`${this.path}logout`, verifyToken, this.authController.logOut);
+    this.router.post(this.loginPath, validateData(LoginDto), this._authController.logIn);
+    //this.router.post(`${this.path}logout`, verifyToken, this._authController.logOut);
   }
 }

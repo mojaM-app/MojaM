@@ -9,81 +9,86 @@ import { setIdentity } from '../auth/middlewares/set-identity.middleware';
 
 class StructureRout implements Routes {
   public path = '/structure';
-  public controller: StructureController = new StructureController();
+  private readonly _controller: StructureController | undefined = undefined;
 
   public constructor(
     public router: Router,
     private _parentPath: string,
   ) {
+    this._controller = new StructureController();
     this.initializeRoutes();
   }
 
   public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this.controller.get);
+    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this._controller.get);
   }
 }
 
 class RegulationsRout implements Routes {
   public path = '/regulations';
-  public controller: RegulationsController = new RegulationsController();
+  private readonly _controller: RegulationsController | undefined = undefined;
 
   public constructor(
     public router: Router,
     private _parentPath: string,
   ) {
+    this._controller = new RegulationsController();
     this.initializeRoutes();
   }
 
   public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this.controller.get);
+    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this._controller.get);
   }
 }
 
 class MissionRout implements Routes {
   public path = '/mission';
-  public controller: MissionController = new MissionController();
+  private readonly _controller: MissionController | undefined = undefined;
 
   public constructor(
     public router: Router,
     private _parentPath: string,
   ) {
+    this._controller = new MissionController();
     this.initializeRoutes();
   }
 
   public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this.controller.get);
+    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this._controller.get);
   }
 }
 
 class MeetingsRout implements Routes {
   public path = '/meetings';
-  public controller: MeetingsController = new MeetingsController();
+  private readonly _controller: MeetingsController | undefined = undefined;
 
   public constructor(
     public router: Router,
     private _parentPath: string,
   ) {
+    this._controller = new MeetingsController();
     this.initializeRoutes();
   }
 
   public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this.controller.get);
+    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this._controller.get);
   }
 }
 
 class DiaconieRout implements Routes {
   public path = '/diaconie';
-  public controller: DiaconieController = new DiaconieController();
+  private readonly _controller: DiaconieController | undefined = undefined;
 
   public constructor(
     public router: Router,
     private _parentPath: string,
   ) {
+    this._controller = new DiaconieController();
     this.initializeRoutes();
   }
 
   public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this.controller.get);
+    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this._controller.get);
   }
 }
 

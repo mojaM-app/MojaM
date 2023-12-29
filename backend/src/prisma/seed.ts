@@ -103,6 +103,38 @@ const seedSystemPermission = async (prisma: PrismaClient) => {
       description: 'Permission that allows unlock User (when user locks his profile by entering the wrong login or password several times)',
     },
   });
+
+  await prisma.systemPermission.upsert({
+    where: { id: 20 },
+    update: {},
+    create: {
+      id: 20,
+      name: 'PermissionAdministration',
+      description: 'Permissions administration permission group',
+    },
+  });
+
+  await prisma.systemPermission.upsert({
+    where: { id: SystemPermission.AddPermission },
+    update: {},
+    create: {
+      id: SystemPermission.AddPermission,
+      parentId: 20,
+      name: 'AddPermission',
+      description: 'Permission that allows to add permissions to other users',
+    },
+  });
+
+  await prisma.systemPermission.upsert({
+    where: { id: SystemPermission.DeletePermission },
+    update: {},
+    create: {
+      id: SystemPermission.DeletePermission,
+      parentId: 20,
+      name: 'DeletePermission',
+      description: 'Permission that allows to remove permissions from other users',
+    },
+  });
 };
 
 const seedUsers = async (prisma: PrismaClient) => {
