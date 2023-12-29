@@ -18,7 +18,11 @@ export class BaseService {
   }
 
   protected async getUserId(userGuid: Guid): Promise<number | null> {
-    const uuid = userGuid.toString();
+    const uuid = userGuid?.toString();
+
+    if (!uuid?.length) {
+      return null;
+    }
 
     const cachedUserId = await this.getUserIdFromCache(uuid);
     if (cachedUserId) {

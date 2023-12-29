@@ -16,7 +16,12 @@ export class UserService extends BaseService {
   // }
 
   public async get(userGuid: Guid): Promise<User> {
-    const userId = await this.getUserId(userGuid);
+    const userId: number | null = await this.getUserId(userGuid);
+
+    if (!userId) {
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.create.User_Does_Not_Exist, [userGuid.toString()]);
+    }
+
     const user: User = await this._dbContext.user.findUnique({ where: { id: userId } });
 
     if (!user) {
