@@ -1,11 +1,11 @@
 import { ForbiddenException } from '@exceptions/ForbiddenException';
 import { Routes } from '@interfaces/routes.interface';
+import { RequestWithUser } from '@modules/auth/interfaces/RequestWithUser';
+import { setIdentity } from '@modules/auth/middlewares/set-identity.middleware';
 import { PermissionsController } from '@modules/permissions/controllers/permissions.controller';
+import { SystemPermission } from '@modules/permissions/system-permission.enum';
 import { REGEX_GUID_PATTERN, REGEX_INT_PATTERN } from '@utils/constants';
 import express, { NextFunction, Response } from 'express';
-import { RequestWithUser } from '../auth/interfaces/RequestWithUser';
-import { setIdentity } from '../auth/middlewares/set-identity.middleware';
-import { SystemPermission } from './system-permission.enum';
 
 export class PermissionsRoute implements Routes {
   public path = '/permissions';

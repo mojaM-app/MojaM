@@ -1,11 +1,15 @@
 import { SECRET_AUDIENCE, SECRET_ISSUER, SECRET_KEY } from '@config';
-import DBClient from '@db/DBClient';
 import { UnauthorizedException } from '@exceptions/UnauthorizedException';
 import { error_keys } from '@exceptions/error.keys';
+import { DataStoredInToken } from '@modules/auth/interfaces/DataStoredInToken';
+import { RequestWithUser } from '@modules/auth/interfaces/RequestWithUser';
+import { PermissionRepository } from '@modules/permissions/repositories/permission.repository';
+import { UserRepository } from '@modules/users/repositories/user.repository';
+import { User } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
+import { Guid } from 'guid-typescript';
 import { verify } from 'jsonwebtoken';
-import { DataStoredInToken } from '../interfaces/DataStoredInToken';
-import { RequestWithUser } from '../interfaces/RequestWithUser';
+import Container from 'typedi';
 
 const getAuthorization = (req: Request): string => {
   const cookie: any = req.cookies['Authorization'];
@@ -34,14 +38,17 @@ export const setIdentity = async (req: RequestWithUser, res: Response, next: Nex
         audience: SECRET_AUDIENCE,
         issuer: SECRET_ISSUER,
       }).payload as DataStoredInToken;
-      const dbContext = DBClient.getDbContext();
-      const users = dbContext.user;
-      const user = await users.findUnique({ where: { uuid: id } });
+      const userRepository = Container.get(UserRepository);
+      const user = await userRepository.getByUuid(Guid.parse(id));
 
       if (user) {
-        req.user = user;
-        const userPermissions = dbContext.userSystemPermission;
-        req.permissions = (await userPermissions.findMany({ where: { userId: user.id } })).map(m => m.permissionId);
+        req.user = <User>{
+          id: user.id,
+          uuid: user.uuid,
+        };
+
+        const permissionRepository = Container.get(PermissionRepository);
+        req.permissions = await permissionRepository.getUserPermissions(user.id);
 
         next();
       } else {

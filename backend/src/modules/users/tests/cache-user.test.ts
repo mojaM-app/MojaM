@@ -2,11 +2,11 @@ import { App } from '@/app';
 import DBClient from '@db/DBClient';
 import { LoginDto } from '@modules/auth/dtos/login.dto';
 import { SystemPermission } from '@modules/permissions/system-permission.enum';
+import { loginAs } from '@modules/users/tests/user-tests.helpers';
 import { UsersRoute } from '@modules/users/users.routes';
 import { Prisma, User } from '@prisma/client';
 import { getAdminLoginData } from '@utils/tests.utils';
 import request from 'supertest';
-import { loginAs } from './user-tests.helpers';
 
 describe('Cache user data tests', () => {
   let usersRoute: UsersRoute;
@@ -42,7 +42,7 @@ describe('Cache user data tests', () => {
       },
       userSystemPermission: {
         findMany: () => {
-          return [{ userId: 1, permissionId: SystemPermission.AddUser }];
+          return [{ userId: 1, permissionId: SystemPermission.PreviewUserProfile }];
         },
       },
     };

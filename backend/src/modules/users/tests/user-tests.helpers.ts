@@ -2,9 +2,9 @@ import { App } from '@/app';
 import { AuthRoute } from '@modules/auth/auth.routes';
 import { LoginDto } from '@modules/auth/dtos/login.dto';
 import { CreateUserDto } from '@modules/users/dtos/create-user.dto';
+import { IUser } from '@modules/users/interfaces/IUser';
 import { generateRandomEmail, generateRandomNumber, generateRandomPassword, generateRandomString } from '@utils/tests.utils';
 import request from 'supertest';
-import { IUser } from '../interfaces/IUser';
 
 const generateValidUser = (): CreateUserDto => {
   return <CreateUserDto>{

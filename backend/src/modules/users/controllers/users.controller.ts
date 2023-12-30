@@ -1,12 +1,12 @@
 import { events } from '@events/events';
 import { RequestWithUser } from '@modules/auth/interfaces/RequestWithUser';
 import { CreateUserDto } from '@modules/users/dtos/create-user.dto';
+import UsersHelper from '@modules/users/helpers/users.helper';
 import { UserService } from '@modules/users/services/users.service';
 import { User } from '@prisma/client';
 import { NextFunction, Response } from 'express';
 import { Guid } from 'guid-typescript';
 import { Container } from 'typedi';
-import UsersHelper from '../helpers/users.helper';
 
 export class UsersController {
   private readonly _userService: UserService | undefined = undefined;
@@ -25,12 +25,12 @@ export class UsersController {
   //   }
   // };
 
-  public getById = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
+  public getUserProfile = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userGuid: Guid = Guid.parse(req.params.id);
       const user: User = await this._userService.get(userGuid);
 
-      res.status(200).json({ data: UsersHelper.UserToIUser(user), message: events.users.userRetrieved });
+      res.status(200).json({ data: UsersHelper.UserToIUserProfile(user), message: events.users.userRetrieved });
     } catch (error) {
       next(error);
     }

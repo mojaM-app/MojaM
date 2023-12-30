@@ -4,11 +4,11 @@ import { error_keys } from '@exceptions/error.keys';
 import { LoginDto } from '@modules/auth/dtos/login.dto';
 import { CreateUserDto } from '@modules/users/dtos/create-user.dto';
 import { IUser } from '@modules/users/interfaces/IUser';
+import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
 import { UsersRoute } from '@modules/users/users.routes';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
-import { generateValidUser, loginAs } from './user-tests.helpers';
 
 describe('POST/users should respond with a status code of 201', () => {
   const usersRoute = new UsersRoute();

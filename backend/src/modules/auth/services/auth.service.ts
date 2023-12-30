@@ -1,29 +1,34 @@
 import { SECRET_AUDIENCE, SECRET_ISSUER, SECRET_KEY } from '@config';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import { error_keys } from '@exceptions/error.keys';
+import { LoginDto } from '@modules/auth/dtos/login.dto';
+import { DataStoredInToken } from '@modules/auth/interfaces/DataStoredInToken';
+import { TokenData } from '@modules/auth/interfaces/TokenData';
 import { BaseService } from '@modules/common/base.service';
+import { PermissionRepository } from '@modules/permissions/repositories/permission.repository';
 import { SystemPermission } from '@modules/permissions/system-permission.enum';
 import UsersHelper from '@modules/users/helpers/users.helper';
 import { IUser } from '@modules/users/interfaces/IUser';
+import { UserRepository } from '@modules/users/repositories/user.repository';
 import { User } from '@prisma/client';
 import { compare } from 'bcrypt';
-import { isEmail } from 'class-validator';
 import { sign } from 'jsonwebtoken';
 import StatusCode from 'status-code-enum';
-import { Service } from 'typedi';
-import { LoginDto } from '../dtos/login.dto';
-import { DataStoredInToken } from '../interfaces/DataStoredInToken';
-import { TokenData } from '../interfaces/TokenData';
+import { Container, Service } from 'typedi';
 
 @Service()
 export class AuthService extends BaseService {
+  private readonly _userRepository: UserRepository | undefined = undefined;
+  private readonly _permissionRepository: PermissionRepository | undefined = undefined;
+
+  public constructor() {
+    super();
+    this._userRepository = Container.get(UserRepository);
+    this._permissionRepository = Container.get(PermissionRepository);
+  }
+
   public async login(loginData: LoginDto): Promise<{ cookie: string; user: IUser }> {
-    let users: User[];
-    if (isEmail(loginData.login)) {
-      users = await this._dbContext.user.findMany({ where: { email: loginData.login } });
-    } else {
-      users = await this._dbContext.user.findMany({ where: { phone: loginData.login } });
-    }
+    const users: User[] = await this._userRepository.findManyByLogin(loginData.login);
 
     if (users?.length !== 1) {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.login.Invalid_Login_Or_Password);
@@ -35,14 +40,10 @@ export class AuthService extends BaseService {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.login.Invalid_Login_Or_Password);
     }
 
-    const permissions = await this._dbContext.userSystemPermission.findMany({ where: { userId: user.id } });
-    const tokenData = this.createToken(
-      user,
-      permissions.map(m => m.permissionId),
-    );
-    const cookie = this.createCookie(tokenData);
+    const userPermissions = await this._permissionRepository.getUserPermissions(user.id);
+    const tokenData = this.createToken(user, userPermissions);
 
-    return { cookie, user: UsersHelper.UserToIUser(user) };
+    return { cookie: this.createCookie(tokenData), user: UsersHelper.UserToIUser(user) };
   }
 
   // public async logout(userData: IUser): Promise<IUser> {

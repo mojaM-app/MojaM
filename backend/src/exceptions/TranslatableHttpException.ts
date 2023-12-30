@@ -1,5 +1,5 @@
+import { HttpException } from '@exceptions/HttpException';
 import StatusCode from 'status-code-enum';
-import { HttpException } from './HttpException';
 
 export class TranslatableHttpException extends HttpException {
   public args: (string | number)[];

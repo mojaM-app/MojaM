@@ -1,7 +1,7 @@
 import { SystemPermission } from '@modules/permissions/system-permission.enum';
 import { PrismaClient } from '@prisma/client';
+import { generateRandomNumber, getAdminLoginData } from '@utils/tests.utils';
 import { hash } from 'bcrypt';
-import { generateRandomNumber, getAdminLoginData } from './../utils/tests.utils';
 
 const prisma = new PrismaClient();
 

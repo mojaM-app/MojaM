@@ -2,6 +2,9 @@ import { App } from '@/app';
 import { events } from '@events/events';
 import { error_keys } from '@exceptions/error.keys';
 import { AuthRoute } from '@modules/auth/auth.routes';
+import { LoginDto } from '@modules/auth/dtos/login.dto';
+import { RequestWithUser } from '@modules/auth/interfaces/RequestWithUser';
+import { setIdentity } from '@modules/auth/middlewares/set-identity.middleware';
 import { PermissionsRoute } from '@modules/permissions/permissions.routes';
 import { SystemPermission } from '@modules/permissions/system-permission.enum';
 import { IUser } from '@modules/users/interfaces/IUser';
@@ -10,9 +13,6 @@ import { UsersRoute } from '@modules/users/users.routes';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { NextFunction } from 'express';
 import request from 'supertest';
-import { LoginDto } from '../dtos/login.dto';
-import { RequestWithUser } from '../interfaces/RequestWithUser';
-import { setIdentity } from '../middlewares/set-identity.middleware';
 
 describe('POST /login', () => {
   const usersRoute = new UsersRoute();

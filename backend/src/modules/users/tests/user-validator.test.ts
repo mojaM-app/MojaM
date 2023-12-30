@@ -1,7 +1,7 @@
+import { CreateUserDto } from '@modules/users/dtos/create-user.dto';
+import { generateValidUser } from '@modules/users/tests/user-tests.helpers';
 import { plainToInstance } from 'class-transformer';
 import { ValidationError, validateSync } from 'class-validator';
-import { CreateUserDto } from '../dtos/create-user.dto';
-import { generateValidUser } from './user-tests.helpers';
 
 describe('user validator test', () => {
   describe('CreateUserDto validator test', () => {

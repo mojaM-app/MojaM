@@ -1,8 +1,8 @@
 import { Routes } from '@interfaces/routes.interface';
 import { validateData } from '@middlewares/validate-data.middleware';
 import { AuthController } from '@modules/auth/controllers/auth.controller';
+import { LoginDto } from '@modules/auth/dtos/login.dto';
 import express from 'express';
-import { LoginDto } from './dtos/login.dto';
 
 export class AuthRoute implements Routes {
   public path = '/';

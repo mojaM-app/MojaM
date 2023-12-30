@@ -1,11 +1,11 @@
 import { Routes } from '@interfaces/routes.interface';
+import { setIdentity } from '@modules/auth/middlewares/set-identity.middleware';
 import { DiaconieController } from '@modules/community/controllers/diaconie.controller';
 import { MeetingsController } from '@modules/community/controllers/meetings.controller';
 import { MissionController } from '@modules/community/controllers/mission.controller';
 import { RegulationsController } from '@modules/community/controllers/regulations.controller';
 import { StructureController } from '@modules/community/controllers/structure.controller';
 import express, { Router } from 'express';
-import { setIdentity } from '../auth/middlewares/set-identity.middleware';
 
 class StructureRout implements Routes {
   public path = '/structure';
