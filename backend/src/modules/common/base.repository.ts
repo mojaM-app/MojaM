@@ -1,14 +1,14 @@
-import DBClient from '@db/DBClient';
-import { CacheService } from '@modules/common/cache.service';
+import DbClient from '@db/DbClient';
+import { CacheService } from '@modules/common';
 import { PrismaClient } from '@prisma/client';
 import { Container } from 'typedi';
 
-export class BaseRepository {
+export abstract class BaseRepository {
   protected readonly _dbContext: PrismaClient;
   protected readonly _cacheService: CacheService;
 
   public constructor() {
-    this._dbContext = DBClient.getDbContext();
+    this._dbContext = DbClient.getDbContext();
     this._cacheService = Container.get(CacheService);
   }
 }

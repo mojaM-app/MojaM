@@ -14,20 +14,20 @@ model User {
   id                  Int       @id @default(autoincrement()) @map("Id") @db.Int
   uuid                String    @unique(map: "UQ_User_Uuid") @default(uuid()) @map("Uuid") @db.VarChar(36)
   email               String    @map("Email") @db.VarChar(320)
-  emailConfirmed      Boolean   @default(false) @map("EmailConfirmed")
+  emailConfirmed      Boolean   @default(false) @map("EmailConfirmed") @db.TinyInt()
   phone               String    @map("Phone") @db.VarChar(30)
-  phoneConfirmed      Boolean   @default(false) @map("PhoneConfirmed")
+  phoneConfirmed      Boolean   @default(false) @map("PhoneConfirmed") @db.TinyInt()
   password            String    @map("Password") @db.VarChar(1024)
   firstName           String?   @map("FirstName") @db.VarChar(255)
   lastName            String?   @map("LastName") @db.VarChar(255)
   birthDay            DateTime? @map("BirthDay") @db.Date
   joiningYear         DateTime? @map("JoiningYear") @db.Date
-  isActive            Boolean   @default(true) @map("IsActive")
+  isActive            Boolean   @default(true) @map("IsActive") @db.TinyInt()
   createdAt           DateTime  @default(now()) @map("CreatedAt") @db.Timestamp(0)
   updatedAt           DateTime? @map("UpdatedAt") @db.Timestamp(0)
   lastLoginAt         DateTime? @map("LastLoginAt") @db.Timestamp(0)
   failedLoginAttempts Int       @default(0) @map("FailedLoginAttempts") @db.Int
-  isLockedOut         Boolean   @default(false) @map("IsLockedOut")
+  isLockedOut         Boolean   @default(false) @map("IsLockedOut") @db.TinyInt()
 
   systemPermissions UserSystemPermission[] @relation("User")
   assignedSystemPermissions UserSystemPermission[] @relation("AssignedBy")

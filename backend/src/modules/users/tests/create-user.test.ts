@@ -1,11 +1,9 @@
 import { App } from '@/app';
-import { events } from '@events/events';
-import { error_keys } from '@exceptions/error.keys';
-import { LoginDto } from '@modules/auth/dtos/login.dto';
-import { CreateUserDto } from '@modules/users/dtos/create-user.dto';
-import { IUser } from '@modules/users/interfaces/IUser';
+import { events } from '@events';
+import { error_keys } from '@exceptions';
+import { LoginDto } from '@modules/auth';
+import { CreateUserDto, IUser, UsersRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
-import { UsersRoute } from '@modules/users/users.routes';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
@@ -97,7 +95,7 @@ describe('POST/users should respond with a status code of 403', () => {
     expect(response.statusCode).toBe(403);
     const body = response.body;
     expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(error_keys.users.login.User_Not_Authenticated);
+    expect(body.data.message).toBe(error_keys.login.User_Not_Authenticated);
   });
 
   test('when user have no permission', async () => {
@@ -120,7 +118,7 @@ describe('POST/users should respond with a status code of 403', () => {
     expect(createUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = createUserResponse.body;
     expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(error_keys.users.login.User_Not_Authenticated);
+    expect(body.data.message).toBe(error_keys.login.User_Not_Authenticated);
 
     const deleteResponse = await request(app.getServer())
       .delete(usersRoute.path + '/' + user.uuid)
@@ -150,6 +148,6 @@ describe('POST/users should respond with a status code of 401', () => {
     expect(response.statusCode).toBe(401);
     const body = response.body;
     expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(error_keys.users.login.Wrong_Authentication_Token);
+    expect(body.data.message).toBe(error_keys.login.Wrong_Authentication_Token);
   });
 });

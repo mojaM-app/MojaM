@@ -1,10 +1,6 @@
-import { Routes } from '@interfaces/routes.interface';
-import { setIdentity } from '@modules/auth/middlewares/set-identity.middleware';
-import { DiaconieController } from '@modules/community/controllers/diaconie.controller';
-import { MeetingsController } from '@modules/community/controllers/meetings.controller';
-import { MissionController } from '@modules/community/controllers/mission.controller';
-import { RegulationsController } from '@modules/community/controllers/regulations.controller';
-import { StructureController } from '@modules/community/controllers/structure.controller';
+import { Routes } from '@interfaces';
+import { setIdentity } from '@modules/auth';
+import { DiaconieController, MeetingsController, MissionController, RegulationsController, StructureController } from '@modules/community';
 import express, { Router } from 'express';
 
 class StructureRout implements Routes {

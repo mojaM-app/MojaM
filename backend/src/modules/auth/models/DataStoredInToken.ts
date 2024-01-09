@@ -1,4 +1,4 @@
-import { SystemPermission } from '@modules/permissions/system-permission.enum';
+import { SystemPermission } from '@modules/permissions';
 
 export interface DataStoredInToken {
   id: string | undefined;

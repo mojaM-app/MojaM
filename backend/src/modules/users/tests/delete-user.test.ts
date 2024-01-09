@@ -1,11 +1,10 @@
 import { App } from '@/app';
-import { events } from '@events/events';
-import { error_keys } from '@exceptions/error.keys';
-import { LoginDto } from '@modules/auth/dtos/login.dto';
-import { PermissionsRoute } from '@modules/permissions/permissions.routes';
-import { IUser } from '@modules/users/interfaces/IUser';
+import { events } from '@events';
+import { error_keys } from '@exceptions';
+import { LoginDto } from '@modules/auth';
+import { PermissionsRoute } from '@modules/permissions';
+import { IUser, UsersRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
-import { UsersRoute } from '@modules/users/users.routes';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
@@ -63,7 +62,7 @@ describe('DELETE/users should respond with a status code of 403', () => {
     expect(response.statusCode).toBe(403);
     const body = response.body;
     expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(error_keys.users.login.User_Not_Authenticated);
+    expect(body.data.message).toBe(error_keys.login.User_Not_Authenticated);
   });
 
   test('when user have no permission', async () => {
@@ -86,7 +85,7 @@ describe('DELETE/users should respond with a status code of 403', () => {
     expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = deleteResponse.body;
     expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(error_keys.users.login.User_Not_Authenticated);
+    expect(body.data.message).toBe(error_keys.login.User_Not_Authenticated);
 
     deleteResponse = await request(app.getServer())
       .delete(usersRoute.path + '/' + user.uuid)
@@ -126,7 +125,7 @@ describe('DELETE/users should respond with a status code of 400', () => {
     expect(typeof body).toBe('object');
     const data = body.data;
     const { message: deleteMessage, args: deleteArgs }: { message: string; args: string[] } = data;
-    expect(deleteMessage).toBe(error_keys.users.create.User_Does_Not_Exist);
+    expect(deleteMessage).toBe(error_keys.users.User_Does_Not_Exist);
     expect(deleteArgs.length).toBe(1);
     expect(deleteArgs[0]).toBe(userId);
   });
@@ -178,6 +177,6 @@ describe('DELETE/users should respond with a status code of 401', () => {
     expect(response.statusCode).toBe(401);
     const body = response.body;
     expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(error_keys.users.login.Wrong_Authentication_Token);
+    expect(body.data.message).toBe(error_keys.login.Wrong_Authentication_Token);
   });
 });

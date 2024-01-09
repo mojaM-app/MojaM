@@ -28,10 +28,10 @@ export const events = {
     },
   },
   users: {
+    userLoggedIn: 'onUserLoggedIn',
     userRetrieved: 'onUserRetrieved',
     userCreated: 'onUserCreated',
     userDeleted: 'onUserDeleted',
-    userLoggedIn: 'onUserLoggedIn',
   },
   permissions: {
     permissionAdded: 'onPermissionAdded',

@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { User } from '@db/DbModels';
 import { CacheContainer } from 'node-ts-cache';
 import { MemoryStorage } from 'node-ts-cache-storage-memory';
 import { Service } from 'typedi';

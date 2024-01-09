@@ -1,5 +1,5 @@
-import { BaseService } from '@modules/common/base.service';
-import { GetInformationDto } from '@modules/news/dtos/information.dto';
+import { BaseService } from '@modules/common';
+import { GetInformationDto } from '@modules/news';
 import { Service } from 'typedi';
 
 @Service()

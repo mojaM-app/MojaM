@@ -1,7 +1,6 @@
-import { Routes } from '@interfaces/routes.interface';
-import { validateData } from '@middlewares/validate-data.middleware';
-import { AuthController } from '@modules/auth/controllers/auth.controller';
-import { LoginDto } from '@modules/auth/dtos/login.dto';
+import { Routes } from '@interfaces';
+import { validateData } from '@middlewares';
+import { AuthController, LoginDto } from '@modules/auth';
 import express from 'express';
 
 export class AuthRoute implements Routes {

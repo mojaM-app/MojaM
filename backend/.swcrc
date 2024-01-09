@@ -22,12 +22,15 @@
     "paths": {
       "@/*": ["*"],
       "@config": ["config"],
+      "@events": ["events"],
+      "@exceptions": ["exceptions"],
       "@exceptions/*": ["exceptions/*"],
-      "@middlewares/*": ["middlewares/*"],
+      "@interfaces": ["interfaces"],
+      "@middlewares": ["middlewares"],
+      "@utils": ["utils"],
       "@utils/*": ["utils/*"],
       "@modules/*": ["modules/*"],
-      "@interfaces/*": ["interfaces/*"],
-      "@events/*": ["events/*"]
+      "@db/*": ["prisma/*"]
     }
   },
   "module": {

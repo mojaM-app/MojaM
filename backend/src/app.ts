@@ -1,9 +1,9 @@
 import { CREDENTIALS, LOG_FORMAT, NODE_ENV, ORIGIN, PORT } from '@config';
-import { error_keys } from '@exceptions/error.keys';
-import { Routes } from '@interfaces/routes.interface';
-import { ErrorMiddleware } from '@middlewares/error.middleware';
-import { AuthRoute } from '@modules/auth/auth.routes';
-import { logger, stream } from '@utils/logger';
+import { error_keys } from '@exceptions';
+import { Routes } from '@interfaces';
+import { ErrorMiddleware } from '@middlewares';
+import { AuthRoute } from '@modules/auth';
+import { logger, stream } from '@utils';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';

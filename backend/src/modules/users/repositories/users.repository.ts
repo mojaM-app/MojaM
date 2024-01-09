@@ -1,8 +1,8 @@
+import { User } from '@db/DbModels';
+import { error_keys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
-import { error_keys } from '@exceptions/error.keys';
-import { BaseRepository } from '@modules/common/base.repository';
-import { CreateUserDto } from '@modules/users/dtos/create-user.dto';
-import { User } from '@prisma/client';
+import { BaseRepository } from '@modules/common';
+import { ActivateUserPayload, CreateUserDto, CreateUserPayload, DeleteUserPayload, UpdateUserDto, UpdateUserPayload } from '@modules/users';
 import { hash } from 'bcrypt';
 import { isEmail } from 'class-validator';
 import { Guid } from 'guid-typescript';
@@ -10,7 +10,7 @@ import StatusCode from 'status-code-enum';
 import { Service } from 'typedi';
 
 @Service()
-export class UserRepository extends BaseRepository {
+export class UsersRepository extends BaseRepository {
   public constructor() {
     super();
   }
@@ -84,14 +84,15 @@ export class UserRepository extends BaseRepository {
     return !!existedUser;
   }
 
-  public async create(userData: CreateUserDto): Promise<User> {
+  public async create(payload: CreateUserPayload): Promise<User> {
+    const userData: CreateUserDto = payload.userData;
     const hashedPassword = await hash(userData.password, 10);
     const newUser: User = await this._dbContext.user.create({ data: { ...userData, password: hashedPassword } });
     return newUser;
   }
 
-  public async checkIfCanBeDeleted(userId: number): Promise<Array<string>> {
-    const relatedData: Array<string> = [];
+  public async checkIfCanBeDeleted(userId: number): Promise<string[]> {
+    const relatedData: string[] = [];
 
     if ((await this._dbContext.userSystemPermission.count({ where: { assignedById: userId } })) > 0) {
       relatedData.push('SystemPermission_AssignedBy');
@@ -100,9 +101,42 @@ export class UserRepository extends BaseRepository {
     return relatedData;
   }
 
-  public async delete(userId: number): Promise<User> {
-    const deletedUser = await this._dbContext.user.delete({ where: { id: userId } });
+  public async delete(payload: DeleteUserPayload): Promise<User> {
+    const deletedUser = await this._dbContext.user.delete({ where: { id: payload.userId } });
 
     return deletedUser;
+  }
+
+  public async activate(payload: ActivateUserPayload): Promise<User> {
+    const updatePayload = new UpdateUserPayload(
+      payload.userId,
+      <UpdateUserDto>{
+        isActive: true,
+      },
+      payload.currentUserId,
+    );
+
+    return await this.update(updatePayload);
+  }
+
+  public async deactivate(payload: ActivateUserPayload): Promise<User> {
+    const updatePayload = new UpdateUserPayload(
+      payload.userId,
+      <UpdateUserDto>{
+        isActive: false,
+      },
+      payload.currentUserId,
+    );
+
+    return await this.update(updatePayload);
+  }
+
+  public async update(payload: UpdateUserPayload): Promise<User> {
+    const updatedUser: User = await this._dbContext.user.update({
+      where: { id: payload.userId },
+      data: payload.userData,
+    });
+
+    return updatedUser;
   }
 }

@@ -1,4 +1,4 @@
-import { HttpException } from '@exceptions/HttpException';
+import { BadRequestException } from '@exceptions';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject, ValidationError } from 'class-validator';
 import { NextFunction, Request, Response } from 'express';
@@ -13,7 +13,7 @@ export const validateData = (type: any, skipMissingProperties = false, whitelist
       })
       .catch((errors: ValidationError[]) => {
         const message = errors.map((error: ValidationError) => [...new Set(Object.values(error.constraints))]).join(', ');
-        next(new HttpException(400, message));
+        next(new BadRequestException(message));
       });
   };
 };

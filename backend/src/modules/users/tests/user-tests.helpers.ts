@@ -1,8 +1,6 @@
 import { App } from '@/app';
-import { AuthRoute } from '@modules/auth/auth.routes';
-import { LoginDto } from '@modules/auth/dtos/login.dto';
-import { CreateUserDto } from '@modules/users/dtos/create-user.dto';
-import { IUser } from '@modules/users/interfaces/IUser';
+import { AuthRoute, LoginDto } from '@modules/auth';
+import { CreateUserDto, IUser } from '@modules/users';
 import { generateRandomEmail, generateRandomNumber, generateRandomPassword, generateRandomString } from '@utils/tests.utils';
 import request from 'supertest';
 
@@ -26,7 +24,8 @@ const loginAs = async (app: App, user: { login: string; password: string }): Pro
   const loginDto: LoginDto = { login: user.login, password: user.password };
   const loginResponse = await request(app.getServer()).post(new AuthRoute().loginPath).send(loginDto);
   const authToken = loginResponse.statusCode === 200 ? getJwtToken(loginResponse) : '';
-  return { userLoggedIn: loginResponse.body.data, authToken: authToken };
+  const userLoggedIn = loginResponse.statusCode === 200 ? loginResponse.body.data : null;
+  return { userLoggedIn: userLoggedIn, authToken: authToken };
 };
 
 export { generateValidUser, loginAs };

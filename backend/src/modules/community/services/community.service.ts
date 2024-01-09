@@ -1,4 +1,4 @@
-import { BaseService } from '@modules/common/base.service';
+import { BaseService } from '@modules/common';
 import { Service } from 'typedi';
 
 @Service()

@@ -1,21 +1,29 @@
+import { User } from '@db/DbModels';
+import { error_keys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
-import { error_keys } from '@exceptions/error.keys';
-import { BaseService } from '@modules/common/base.service';
-import { CreateUserDto } from '@modules/users/dtos/create-user.dto';
-import { UserRepository } from '@modules/users/repositories/user.repository';
-import { User } from '@prisma/client';
-
+import { BaseService } from '@modules/common';
+import {
+  ActivateUserPayload,
+  ActivateUserReqDto,
+  CreateUserDto,
+  CreateUserPayload,
+  DeactivateUserPayload,
+  DeactivateUserReqDto,
+  DeleteUserPayload,
+  DeleteUserReqDto,
+  UsersRepository,
+} from '@modules/users';
 import { Guid } from 'guid-typescript';
 import StatusCode from 'status-code-enum';
 import { Container, Service } from 'typedi';
 
 @Service()
-export class UserService extends BaseService {
-  private readonly _userRepository: UserRepository | undefined = undefined;
+export class UsersService extends BaseService {
+  private readonly _userRepository: UsersRepository | undefined = undefined;
 
   public constructor() {
     super();
-    this._userRepository = Container.get(UserRepository);
+    this._userRepository = Container.get(UsersRepository);
   }
 
   // public async findAllUser(): Promise<IUser[]> {
@@ -27,23 +35,21 @@ export class UserService extends BaseService {
     const user: User = await this._userRepository.getByUuid(userGuid);
 
     if (!user) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.create.User_Does_Not_Exist, [userGuid.toString()]);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.User_Does_Not_Exist, [userGuid.toString()]);
     }
 
     return user;
   }
 
-  public async create(userData: CreateUserDto): Promise<User> {
+  public async create(payload: CreateUserPayload): Promise<User> {
+    const userData: CreateUserDto = payload.userData;
     const userExists = await this._userRepository.checkIfExists({ email: userData.email, phone: userData.phone });
 
     if (userExists) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.create.User_Already_Exists, [
-        userData.email,
-        userData.phone,
-      ]);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.User_Already_Exists, [userData.email, userData.phone]);
     }
 
-    return await this._userRepository.create(userData);
+    return await this._userRepository.create(payload);
   }
 
   // public async updateUser(userId: number, userData: UpdateUserDto): Promise<IUser> {
@@ -55,11 +61,11 @@ export class UserService extends BaseService {
   //   return updateUserData;
   // }
 
-  public async delete(userGuid: Guid): Promise<string> {
-    const user: User = await this._userRepository.getByUuid(userGuid);
+  public async delete(reqDto: DeleteUserReqDto): Promise<string> {
+    const user: User = await this._userRepository.getByUuid(reqDto.userGuid);
 
     if (!user) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.create.User_Does_Not_Exist, [userGuid.toString()]);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.User_Does_Not_Exist, [reqDto.userGuid.toString()]);
     }
 
     const relatedData: Array<string> = await this._userRepository.checkIfCanBeDeleted(user.id);
@@ -68,12 +74,36 @@ export class UserService extends BaseService {
       throw new TranslatableHttpException(
         StatusCode.ClientErrorBadRequest,
         error_keys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted,
-        [userGuid.toString()].concat(relatedData),
+        [reqDto.userGuid.toString()].concat(relatedData),
       );
     }
 
-    const deletedUser = await this._userRepository.delete(user.id);
+    const deletedUser = await this._userRepository.delete(new DeleteUserPayload(user.id, reqDto));
 
     return deletedUser.uuid;
+  }
+
+  public async activate(reqDto: ActivateUserReqDto): Promise<boolean> {
+    const user: User = await this._userRepository.getByUuid(reqDto.userGuid);
+
+    if (!user) {
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.User_Does_Not_Exist, [reqDto.userGuid.toString()]);
+    }
+
+    const activatedUser = await this._userRepository.activate(new ActivateUserPayload(user.id, reqDto));
+
+    return !!activatedUser;
+  }
+
+  public async deactivate(reqDto: DeactivateUserReqDto): Promise<boolean> {
+    const user: User = await this._userRepository.getByUuid(reqDto.userGuid);
+
+    if (!user) {
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.User_Does_Not_Exist, [reqDto.userGuid.toString()]);
+    }
+
+    const deactivatedUser = await this._userRepository.deactivate(new DeactivateUserPayload(user.id, reqDto));
+
+    return !!deactivatedUser;
   }
 }

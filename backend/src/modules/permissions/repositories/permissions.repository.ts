@@ -1,10 +1,10 @@
-import { BaseRepository } from '@modules/common/base.repository';
-import { SystemPermission } from '@modules/permissions/system-permission.enum';
-import { UserSystemPermission } from '@prisma/client';
+import { UserSystemPermission } from '@db/DbModels';
+import { BaseRepository } from '@modules/common';
+import { AddPermissionPayload, DeletePermissionsPayload, SystemPermission } from '@modules/permissions';
 import { Service } from 'typedi';
 
 @Service()
-export class PermissionRepository extends BaseRepository {
+export class PermissionsRepository extends BaseRepository {
   public constructor() {
     super();
   }
@@ -19,8 +19,8 @@ export class PermissionRepository extends BaseRepository {
     return permissions.map(m => m.permissionId);
   }
 
-  public async add(userId: number, permissionId: number, currentUserId: number): Promise<boolean> {
-    const where = { userId_permissionId: { userId: userId, permissionId: permissionId } };
+  public async add(payload: AddPermissionPayload): Promise<boolean> {
+    const where = { userId_permissionId: { userId: payload.userId, permissionId: payload.permissionId } };
 
     const permission: UserSystemPermission = await this._dbContext.userSystemPermission.findUnique({
       where: where,
@@ -33,14 +33,14 @@ export class PermissionRepository extends BaseRepository {
     await this._dbContext.userSystemPermission.create({
       data: {
         user: {
-          connect: { id: userId },
+          connect: { id: payload.userId },
         },
         permission: {
-          connect: { id: permissionId },
+          connect: { id: payload.permissionId },
         },
         assignedAt: new Date(),
         assignedBy: {
-          connect: { id: currentUserId },
+          connect: { id: payload.currentUserId },
         },
       },
     });
@@ -48,12 +48,12 @@ export class PermissionRepository extends BaseRepository {
     return true;
   }
 
-  public async delete(userId: number, permissionId?: number): Promise<boolean> {
+  public async delete(payload: DeletePermissionsPayload): Promise<boolean> {
     let where;
-    if (permissionId) {
-      where = { userId_permissionId: { userId: userId, permissionId: permissionId } };
+    if (payload.permissionId) {
+      where = { userId_permissionId: { userId: payload.userId, permissionId: payload.permissionId } };
     } else {
-      where = { userId: userId };
+      where = { userId: payload.userId };
     }
 
     const count: number = await this._dbContext.userSystemPermission.count({
@@ -65,6 +65,7 @@ export class PermissionRepository extends BaseRepository {
     }
 
     await this._dbContext.userSystemPermission.delete({ where: where });
+
     return true;
   }
 }

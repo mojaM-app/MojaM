@@ -1,15 +1,10 @@
 import { App } from '@/app';
-import { events } from '@events/events';
-import { error_keys } from '@exceptions/error.keys';
-import { AuthRoute } from '@modules/auth/auth.routes';
-import { LoginDto } from '@modules/auth/dtos/login.dto';
-import { RequestWithUser } from '@modules/auth/interfaces/RequestWithUser';
-import { setIdentity } from '@modules/auth/middlewares/set-identity.middleware';
-import { PermissionsRoute } from '@modules/permissions/permissions.routes';
-import { SystemPermission } from '@modules/permissions/system-permission.enum';
-import { IUser } from '@modules/users/interfaces/IUser';
+import { events } from '@events';
+import { error_keys } from '@exceptions';
+import { AuthRoute, LoginDto, RequestWithIdentity, setIdentity } from '@modules/auth';
+import { PermissionsRoute } from '@modules/permissions';
+import { IUser, UsersRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
-import { UsersRoute } from '@modules/users/users.routes';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { NextFunction } from 'express';
 import request from 'supertest';
@@ -56,8 +51,8 @@ describe('POST /login', () => {
       };
       const next: NextFunction = jest.fn();
       await setIdentity(req as any, {} as any, next);
-      expect((req as RequestWithUser).user.uuid).toEqual(userLoggedIn.uuid);
-      expect((req as RequestWithUser).permissions).toContain(SystemPermission.EditUserProfile);
+      expect((req as RequestWithIdentity).identity.userUuid).toEqual(userLoggedIn.uuid);
+      expect((req as RequestWithIdentity).identity.hasPermissionToEditUserProfile()).toBeTruthy();
       expect(next).toHaveBeenCalled();
     });
 
@@ -89,8 +84,8 @@ describe('POST /login', () => {
       };
       const next: NextFunction = jest.fn();
       await setIdentity(req as any, {} as any, next);
-      expect((req as RequestWithUser).user.uuid).toEqual(userLoggedIn.uuid);
-      expect((req as RequestWithUser).permissions).toContain(SystemPermission.EditUserProfile);
+      expect((req as RequestWithIdentity).identity.userUuid).toEqual(userLoggedIn.uuid);
+      expect((req as RequestWithIdentity).identity.hasPermissionToEditUserProfile()).toBeTruthy();
       expect(next).toHaveBeenCalled();
     });
   });
@@ -128,7 +123,7 @@ describe('POST /login', () => {
       expect(typeof body).toBe('object');
       const data = body.data;
       const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
-      expect(loginMessage).toBe(error_keys.users.login.Invalid_Login_Or_Password);
+      expect(loginMessage).toBe(error_keys.login.Invalid_Login_Or_Password);
       expect(loginArgs).toBeUndefined();
 
       let deleteResponse = await request(app.getServer())
@@ -175,7 +170,7 @@ describe('POST /login', () => {
       expect(typeof body).toBe('object');
       const data = body.data;
       const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
-      expect(loginMessage).toBe(error_keys.users.login.Invalid_Login_Or_Password);
+      expect(loginMessage).toBe(error_keys.login.Invalid_Login_Or_Password);
       expect(loginArgs).toBeUndefined();
 
       let deleteResponse = await request(app.getServer())
@@ -247,7 +242,7 @@ describe('POST /login', () => {
       expect(typeof body).toBe('object');
       const data = body.data;
       const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
-      expect(loginMessage).toBe(error_keys.users.login.Invalid_Login_Or_Password);
+      expect(loginMessage).toBe(error_keys.login.Invalid_Login_Or_Password);
       expect(loginArgs).toBeUndefined();
     });
 
@@ -261,7 +256,7 @@ describe('POST /login', () => {
       expect(typeof body).toBe('object');
       const data = body.data;
       const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
-      expect(loginMessage).toBe(error_keys.users.login.Invalid_Login_Or_Password);
+      expect(loginMessage).toBe(error_keys.login.Invalid_Login_Or_Password);
       expect(loginArgs).toBeUndefined();
     });
 
@@ -282,7 +277,7 @@ describe('POST /login', () => {
       expect(typeof body).toBe('object');
       const data = body.data;
       const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
-      expect(loginMessage).toBe(error_keys.users.login.Invalid_Login_Or_Password);
+      expect(loginMessage).toBe(error_keys.login.Invalid_Login_Or_Password);
       expect(loginArgs).toBeUndefined();
 
       const deleteResponse = await request(app.getServer())
@@ -309,7 +304,7 @@ describe('POST /login', () => {
       expect(typeof body).toBe('object');
       const data = body.data;
       const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
-      expect(loginMessage).toBe(error_keys.users.login.Invalid_Login_Or_Password);
+      expect(loginMessage).toBe(error_keys.login.Invalid_Login_Or_Password);
       expect(loginArgs).toBeUndefined();
 
       const deleteResponse = await request(app.getServer())
@@ -317,6 +312,70 @@ describe('POST /login', () => {
         .send()
         .set('Authorization', `Bearer ${adminAuthToken}`);
       expect(deleteResponse.statusCode).toBe(200);
+    });
+  });
+
+  describe('when user is not active', () => {
+    it('POST /login should respond with a status code of 400 when user is not active', async () => {
+      const user = generateValidUser();
+
+      const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAuthToken}`);
+      expect(createResponse.statusCode).toBe(201);
+      const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createResponse.body;
+      expect(newUserDto?.uuid).toBeDefined();
+      expect(createMessage).toBe(events.users.userCreated);
+
+      const deactivateResponse = await request(app.getServer())
+        .post(usersRoute.path + '/' + newUserDto.uuid + '/' + usersRoute.deactivatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAuthToken}`);
+      expect(deactivateResponse.statusCode).toBe(200);
+
+      const loginData: LoginDto = { login: newUserDto.email, password: user.password };
+      const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
+      expect(loginResponse.statusCode).toBe(400);
+      expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = loginResponse.body;
+      expect(typeof body).toBe('object');
+      const data = body.data;
+      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      expect(loginMessage).toBe(error_keys.login.User_Is_Not_Active);
+      expect(loginArgs).toBeUndefined();
+
+      const deleteResponse = await request(app.getServer())
+        .delete(usersRoute.path + '/' + newUserDto.uuid)
+        .send()
+        .set('Authorization', `Bearer ${adminAuthToken}`);
+      expect(deleteResponse.statusCode).toBe(200);
+    });
+  });
+
+  describe('when user is deleted', () => {
+    it('POST /login should respond with a status code of 400 when user is deleted', async () => {
+      const user = generateValidUser();
+
+      const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAuthToken}`);
+      expect(createResponse.statusCode).toBe(201);
+      const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createResponse.body;
+      expect(newUserDto?.uuid).toBeDefined();
+      expect(createMessage).toBe(events.users.userCreated);
+
+      const deleteResponse = await request(app.getServer())
+        .delete(usersRoute.path + '/' + newUserDto.uuid)
+        .send()
+        .set('Authorization', `Bearer ${adminAuthToken}`);
+      expect(deleteResponse.statusCode).toBe(200);
+
+      const loginData: LoginDto = { login: newUserDto.email, password: user.password };
+      const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
+      expect(loginResponse.statusCode).toBe(400);
+      expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = loginResponse.body;
+      expect(typeof body).toBe('object');
+      const data = body.data;
+      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      expect(loginMessage).toBe(error_keys.login.Invalid_Login_Or_Password);
+      expect(loginArgs).toBeUndefined();
     });
   });
 });

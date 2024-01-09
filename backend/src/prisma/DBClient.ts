@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
-class DBClient {
-  private static instance: DBClient;
+class DbClient {
+  private static instance: DbClient;
 
   private readonly _prisma: PrismaClient;
 
@@ -10,16 +10,16 @@ class DBClient {
   }
 
   private static getInstance = () => {
-    if (!DBClient.instance) {
-      DBClient.instance = new DBClient();
+    if (!DbClient.instance) {
+      DbClient.instance = new DbClient();
     }
 
-    return DBClient.instance;
+    return DbClient.instance;
   };
 
   public static getDbContext(): PrismaClient {
-    return DBClient.getInstance()._prisma;
+    return DbClient.getInstance()._prisma;
   }
 }
 
-export default DBClient;
+export default DbClient;

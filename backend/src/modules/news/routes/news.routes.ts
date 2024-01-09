@@ -1,8 +1,6 @@
-import { Routes } from '@interfaces/routes.interface';
-import { setIdentity } from '@modules/auth/middlewares/set-identity.middleware';
-import { AnnouncementsController } from '@modules/news/controllers/announcements.controller';
-import { CalendarController } from '@modules/news/controllers/calendar.controller';
-import { InformationController } from '@modules/news/controllers/information.controller';
+import { Routes } from '@interfaces';
+import { setIdentity } from '@modules/auth';
+import { AnnouncementsController, CalendarController, InformationController } from '@modules/news';
 import express, { Router } from 'express';
 
 class InformationRout implements Routes {

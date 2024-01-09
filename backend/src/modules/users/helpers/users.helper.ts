@@ -1,6 +1,5 @@
-import { IUser } from '@modules/users/interfaces/IUser';
-import { IUserProfile } from '@modules/users/interfaces/IUserProfile';
-import { User } from '@prisma/client';
+import { User } from '@db/DbModels';
+import { IUser, IUserProfile } from '@modules/users';
 
 export default class UsersHelper {
   public static UserToIUser(user: User): IUser {

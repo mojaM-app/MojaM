@@ -1,11 +1,8 @@
 import { SECRET_AUDIENCE, SECRET_ISSUER, SECRET_KEY } from '@config';
-import { UnauthorizedException } from '@exceptions/UnauthorizedException';
-import { error_keys } from '@exceptions/error.keys';
-import { DataStoredInToken } from '@modules/auth/interfaces/DataStoredInToken';
-import { RequestWithUser } from '@modules/auth/interfaces/RequestWithUser';
-import { PermissionRepository } from '@modules/permissions/repositories/permission.repository';
-import { UserRepository } from '@modules/users/repositories/user.repository';
-import { User } from '@prisma/client';
+import { UnauthorizedException, error_keys } from '@exceptions';
+import { DataStoredInToken, Identity, RequestWithIdentity } from '@modules/auth';
+import { PermissionRepository } from '@modules/permissions';
+import { UsersRepository } from '@modules/users';
 import { NextFunction, Request, Response } from 'express';
 import { Guid } from 'guid-typescript';
 import { verify } from 'jsonwebtoken';
@@ -25,7 +22,7 @@ const getAuthorization = (req: Request): string => {
   return null;
 };
 
-export const setIdentity = async (req: RequestWithUser, res: Response, next: NextFunction) => {
+export const setIdentity = async (req: RequestWithIdentity, res: Response, next: NextFunction) => {
   try {
     const authorization = getAuthorization(req);
     if (authorization && authorization.length) {
@@ -38,28 +35,22 @@ export const setIdentity = async (req: RequestWithUser, res: Response, next: Nex
         audience: SECRET_AUDIENCE,
         issuer: SECRET_ISSUER,
       }).payload as DataStoredInToken;
-      const userRepository = Container.get(UserRepository);
+      const userRepository = Container.get(UsersRepository);
       const user = await userRepository.getByUuid(Guid.parse(id));
 
       if (user) {
-        req.user = <User>{
-          id: user.id,
-          uuid: user.uuid,
-        };
-
         const permissionRepository = Container.get(PermissionRepository);
-        req.permissions = await permissionRepository.getUserPermissions(user.id);
-
+        const permissions = await permissionRepository.getUserPermissions(user.id);
+        req.identity = new Identity(user, permissions);
         next();
       } else {
-        next(new UnauthorizedException(error_keys.users.login.Wrong_Authentication_Token));
+        next(new UnauthorizedException(error_keys.login.Wrong_Authentication_Token));
       }
     } else {
-      req.user = null;
-      req.permissions = [];
+      req.identity = new Identity(undefined, []);
       next();
     }
   } catch (error) {
-    next(new UnauthorizedException(error_keys.users.login.Wrong_Authentication_Token));
+    next(new UnauthorizedException(error_keys.login.Wrong_Authentication_Token));
   }
 };

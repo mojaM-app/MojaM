@@ -1,9 +1,9 @@
 import { App } from '@/app';
-import DBClient from '@db/DBClient';
-import { LoginDto } from '@modules/auth/dtos/login.dto';
-import { SystemPermission } from '@modules/permissions/system-permission.enum';
+import DbClient from '@db/DbClient';
+import { LoginDto } from '@modules/auth';
+import { SystemPermission } from '@modules/permissions';
+import { UsersRoute } from '@modules/users';
 import { loginAs } from '@modules/users/tests/user-tests.helpers';
-import { UsersRoute } from '@modules/users/users.routes';
 import { Prisma, User } from '@prisma/client';
 import { getAdminLoginData } from '@utils/tests.utils';
 import request from 'supertest';
@@ -19,8 +19,10 @@ describe('Cache user data tests', () => {
 
     findUniqueFn = jest.fn().mockImplementation(() => {
       return {
+        _is_from_mock_: true,
         id: 1,
         uuid: adminUuid,
+        isActive: true,
       } as unknown as Prisma.Prisma__UserClient<User>;
     });
 
@@ -33,21 +35,23 @@ describe('Cache user data tests', () => {
         findMany: () => {
           return [
             {
+              _is_from_mock_: true,
               id: 1,
               uuid: '625edee9-851c-4dfd-a0a5-d676f362e1ca',
               password: '$2b$10$p5Cm0dCkOXiHuW7H3DH4ueq0gS3CNCjMMMiygNujs5Z/6DI2NcaLm',
+              isActive: true,
             },
           ];
         },
       },
       userSystemPermission: {
         findMany: () => {
-          return [{ userId: 1, permissionId: SystemPermission.PreviewUserProfile }];
+          return [{ _is_from_mock_: true, userId: 1, permissionId: SystemPermission.PreviewUserProfile }];
         },
       },
     };
 
-    DBClient.getDbContext = jest.fn().mockImplementation(() => {
+    DbClient.getDbContext = jest.fn().mockImplementation(() => {
       return dbMock;
     });
 

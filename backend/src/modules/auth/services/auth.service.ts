@@ -1,16 +1,12 @@
 import { SECRET_AUDIENCE, SECRET_ISSUER, SECRET_KEY } from '@config';
+import { User } from '@db/DbModels';
+import { error_keys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
-import { error_keys } from '@exceptions/error.keys';
-import { LoginDto } from '@modules/auth/dtos/login.dto';
-import { DataStoredInToken } from '@modules/auth/interfaces/DataStoredInToken';
-import { TokenData } from '@modules/auth/interfaces/TokenData';
-import { BaseService } from '@modules/common/base.service';
-import { PermissionRepository } from '@modules/permissions/repositories/permission.repository';
-import { SystemPermission } from '@modules/permissions/system-permission.enum';
+import { DataStoredInToken, LoginDto, TokenData } from '@modules/auth';
+import { BaseService } from '@modules/common';
+import { PermissionRepository, SystemPermission } from '@modules/permissions';
+import { IUser, UsersRepository } from '@modules/users';
 import UsersHelper from '@modules/users/helpers/users.helper';
-import { IUser } from '@modules/users/interfaces/IUser';
-import { UserRepository } from '@modules/users/repositories/user.repository';
-import { User } from '@prisma/client';
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import StatusCode from 'status-code-enum';
@@ -18,12 +14,12 @@ import { Container, Service } from 'typedi';
 
 @Service()
 export class AuthService extends BaseService {
-  private readonly _userRepository: UserRepository | undefined = undefined;
+  private readonly _userRepository: UsersRepository | undefined = undefined;
   private readonly _permissionRepository: PermissionRepository | undefined = undefined;
 
   public constructor() {
     super();
-    this._userRepository = Container.get(UserRepository);
+    this._userRepository = Container.get(UsersRepository);
     this._permissionRepository = Container.get(PermissionRepository);
   }
 
@@ -31,13 +27,17 @@ export class AuthService extends BaseService {
     const users: User[] = await this._userRepository.findManyByLogin(loginData.login);
 
     if (users?.length !== 1) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.login.Invalid_Login_Or_Password);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.login.Invalid_Login_Or_Password);
     }
 
     const user: User = users[0];
     const isPasswordMatching: boolean = await compare(loginData.password, user.password);
     if (!isPasswordMatching) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.login.Invalid_Login_Or_Password);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.login.Invalid_Login_Or_Password);
+    }
+
+    if (user.isActive !== true) {
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.login.User_Is_Not_Active);
     }
 
     const userPermissions = await this._permissionRepository.getUserPermissions(user.id);

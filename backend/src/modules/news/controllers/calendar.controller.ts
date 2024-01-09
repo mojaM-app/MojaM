@@ -1,16 +1,21 @@
-import { events } from '@events/events';
-import { RequestWithUser } from '@modules/auth/interfaces/RequestWithUser';
-import { GetCalendarEventsDto } from '@modules/news/dtos/calendar.dto';
-import { CalendarService } from '@modules/news/services/calendar.service';
+import { events } from '@events';
+import { RequestWithIdentity } from '@modules/auth';
+import { BaseController } from '@modules/common';
+import { CalendarService, GetCalendarEventsDto } from '@modules/news';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
 
-export class CalendarController {
-  public calendarService = Container.get(CalendarService);
+export class CalendarController extends BaseController {
+  private readonly _calendarService: CalendarService | undefined = undefined;
 
-  public get = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
+  public constructor() {
+    super();
+    this._calendarService = Container.get(CalendarService);
+  }
+
+  public get = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const data: GetCalendarEventsDto = await this.calendarService.get();
+      const data: GetCalendarEventsDto = await this._calendarService.get();
 
       res.status(200).json({ data: data, message: events.news.calendar.retrieved });
     } catch (error) {

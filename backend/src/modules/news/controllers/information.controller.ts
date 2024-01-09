@@ -1,16 +1,21 @@
-import { events } from '@events/events';
-import { RequestWithUser } from '@modules/auth/interfaces/RequestWithUser';
-import { GetInformationDto } from '@modules/news/dtos/information.dto';
-import { InformationService } from '@modules/news/services/information.service';
+import { events } from '@events';
+import { RequestWithIdentity } from '@modules/auth';
+import { BaseController } from '@modules/common';
+import { GetInformationDto, InformationService } from '@modules/news';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
 
-export class InformationController {
-  public informationService = Container.get(InformationService);
+export class InformationController extends BaseController {
+  private readonly _informationService: InformationService | undefined = undefined;
 
-  public get = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
+  public constructor() {
+    super();
+    this._informationService = Container.get(InformationService);
+  }
+
+  public get = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const data: GetInformationDto = await this.informationService.get();
+      const data: GetInformationDto = await this._informationService.get();
 
       res.status(200).json({ data: data, message: events.news.information.retrieved });
     } catch (error) {

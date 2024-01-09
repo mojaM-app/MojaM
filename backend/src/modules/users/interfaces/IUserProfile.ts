@@ -1,4 +1,4 @@
-import { IUser } from '@modules/users/interfaces/IUser';
+import { IUser } from './IUser';
 
 export interface IUserProfile extends IUser {
   firstName?: string;

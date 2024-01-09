@@ -1,11 +1,11 @@
-import { BaseService } from '@modules/common/base.service';
-import { GetAnnouncementsDto } from '@modules/news/dtos/announcements.dto';
-import { toUtcDate } from '@utils/date.utils';
+import { BaseService } from '@modules/common';
+import { GetAnnouncementsDto } from '@modules/news';
+import { toUtcDate } from '@utils';
 import { Service } from 'typedi';
 
 @Service()
 export class AnnouncementsService extends BaseService {
-  //public announcements = DBClient.getDbContext().announcements;
+  //public announcements = DbClient.getDbContext().announcements;
 
   public async get(): Promise<GetAnnouncementsDto> {
     const announcements = [

@@ -1,10 +1,8 @@
-import { ForbiddenException } from '@exceptions/ForbiddenException';
-import { Routes } from '@interfaces/routes.interface';
-import { RequestWithUser } from '@modules/auth/interfaces/RequestWithUser';
-import { setIdentity } from '@modules/auth/middlewares/set-identity.middleware';
-import { PermissionsController } from '@modules/permissions/controllers/permissions.controller';
-import { SystemPermission } from '@modules/permissions/system-permission.enum';
-import { REGEX_GUID_PATTERN, REGEX_INT_PATTERN } from '@utils/constants';
+import { ForbiddenException } from '@exceptions';
+import { Routes } from '@interfaces';
+import { RequestWithIdentity, setIdentity } from '@modules/auth';
+import { PermissionsController } from '@modules/permissions';
+import { REGEX_GUID_PATTERN, REGEX_INT_PATTERN } from '@utils';
 import express, { NextFunction, Response } from 'express';
 
 export class PermissionsRoute implements Routes {
@@ -30,16 +28,16 @@ export class PermissionsRoute implements Routes {
     );
   }
 
-  checkAddPermission = async (req: RequestWithUser, res: Response, next: NextFunction) => {
-    if (req.permissions?.includes(SystemPermission.AddPermission) !== true) {
+  private checkAddPermission = async (req: RequestWithIdentity, res: Response, next: NextFunction) => {
+    if (req.identity.hasPermissionToAddPermission() !== true) {
       next(new ForbiddenException());
     } else {
       next();
     }
   };
 
-  checkDeletePermission = async (req: RequestWithUser, res: Response, next: NextFunction) => {
-    if (req.permissions?.includes(SystemPermission.DeletePermission) !== true) {
+  private checkDeletePermission = async (req: RequestWithIdentity, res: Response, next: NextFunction) => {
+    if (req.identity.hasPermissionToDeletePermission() !== true) {
       next(new ForbiddenException());
     } else {
       next();

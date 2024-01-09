@@ -1,11 +1,16 @@
-import { events } from '@events/events';
-import { LoginDto } from '@modules/auth/dtos/login.dto';
-import { AuthService } from '@modules/auth/services/auth.service';
+import { events } from '@events';
+import { AuthService, LoginDto } from '@modules/auth';
+import { BaseController } from '@modules/common';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
 
-export class AuthController {
-  public authService = Container.get(AuthService);
+export class AuthController extends BaseController {
+  private readonly authService: AuthService | undefined = undefined;
+
+  public constructor() {
+    super();
+    this.authService = Container.get(AuthService);
+  }
 
   public logIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {

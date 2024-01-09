@@ -1,18 +1,19 @@
-import { events } from '@events/events';
-import { RequestWithUser } from '@modules/auth/interfaces/RequestWithUser';
-import { CreateUserDto } from '@modules/users/dtos/create-user.dto';
+import { User } from '@db/DbModels';
+import { events } from '@events';
+import { RequestWithIdentity } from '@modules/auth';
+import { BaseController } from '@modules/common';
+import { ActivateUserReqDto, CreateUserDto, CreateUserPayload, DeactivateUserReqDto, DeleteUserReqDto, UsersService } from '@modules/users';
 import UsersHelper from '@modules/users/helpers/users.helper';
-import { UserService } from '@modules/users/services/users.service';
-import { User } from '@prisma/client';
-import { NextFunction, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { Guid } from 'guid-typescript';
 import { Container } from 'typedi';
 
-export class UsersController {
-  private readonly _userService: UserService | undefined = undefined;
+export class UsersController extends BaseController {
+  private readonly _userService: UsersService | undefined = undefined;
 
   public constructor() {
-    this._userService = Container.get(UserService);
+    super();
+    this._userService = Container.get(UsersService);
   }
 
   // public getUsers = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
@@ -25,21 +26,20 @@ export class UsersController {
   //   }
   // };
 
-  public getUserProfile = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
+  public getUserProfile = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userGuid: Guid = Guid.parse(req.params.id);
+      const userGuid: Guid = this.getUserGuid(req);
       const user: User = await this._userService.get(userGuid);
-
       res.status(200).json({ data: UsersHelper.UserToIUserProfile(user), message: events.users.userRetrieved });
     } catch (error) {
       next(error);
     }
   };
 
-  public create = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
+  public create = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userData: CreateUserDto = req.body;
-      const user: User = await this._userService.create(userData);
+      const user: User = await this._userService.create(new CreateUserPayload(userData, req.identity.userId));
       res.status(201).json({ data: UsersHelper.UserToIUser(user), message: events.users.userCreated });
     } catch (error) {
       next(error);
@@ -57,13 +57,38 @@ export class UsersController {
   //   }
   // };
 
-  public delete = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
+  public delete = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userGuid: Guid = Guid.parse(req.params.id);
-      const data: string = await this._userService.delete(userGuid);
+      const userGuid: Guid = this.getUserGuid(req);
+      const reqDto = new DeleteUserReqDto(userGuid, req.identity.userId);
+      const data: string = await this._userService.delete(reqDto);
       res.status(200).json({ data: data, message: events.users.userDeleted });
     } catch (error) {
       next(error);
     }
   };
+
+  public activate = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userGuid: Guid = this.getUserGuid(req);
+      const data: boolean = await this._userService.activate(new ActivateUserReqDto(userGuid, req.identity.userId));
+      res.status(200).json({ data: data, message: events.users.userDeleted });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public deactivate = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userGuid: Guid = this.getUserGuid(req);
+      const data: boolean = await this._userService.deactivate(new DeactivateUserReqDto(userGuid, req.identity.userId));
+      res.status(200).json({ data: data, message: events.users.userDeleted });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  private getUserGuid(req: Request): Guid | undefined {
+    return req.params?.id?.length ? Guid.parse(req.params.id) : undefined;
+  }
 }
