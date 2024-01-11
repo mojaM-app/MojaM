@@ -3,7 +3,7 @@ import { toNumber } from './numbers.utils';
 
 /* eslint-disable @typescript-eslint/no-empty-function */
 describe('numbers.utils', () => {
-  describe('parse', () => {
+  describe('toNumber', () => {
     it('Check if number is correct if we provide a number argument', () => {
       expect(toNumber(0)).toBe(0);
       expect(toNumber(-0)).toBe(0);
