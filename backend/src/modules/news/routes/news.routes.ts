@@ -9,14 +9,14 @@ class InformationRout implements Routes {
 
   public constructor(
     public router: Router,
-    private _parentPath: string,
+    private readonly _parentPath: string
   ) {
     this._controller = new InformationController();
     this.initializeRoutes();
   }
 
-  public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this._controller.get);
+  public initializeRoutes(): void {
+    this.router.get(`${this._parentPath}${this.path}`, [setIdentity], this._controller.get);
   }
 }
 
@@ -26,14 +26,14 @@ class AnnouncementsRout implements Routes {
 
   public constructor(
     public router: Router,
-    private _parentPath: string,
+    private readonly _parentPath: string
   ) {
     this._controller = new AnnouncementsController();
     this.initializeRoutes();
   }
 
-  public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this._controller.get);
+  public initializeRoutes(): void {
+    this.router.get(`${this._parentPath}${this.path}`, [setIdentity], this._controller.get);
   }
 }
 
@@ -43,14 +43,14 @@ class CalendarRout implements Routes {
 
   public constructor(
     public router: Router,
-    private _parentPath: string,
+    private readonly _parentPath: string
   ) {
     this._controller = new CalendarController();
     this.initializeRoutes();
   }
 
-  public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this._controller.get);
+  public initializeRoutes(): void {
+    this.router.get(`${this._parentPath}${this.path}`, [setIdentity], this._controller.get);
   }
 }
 
@@ -62,7 +62,7 @@ export class NewsRoute implements Routes {
     this.initializeRoutes();
   }
 
-  private initializeRoutes() {
+  private initializeRoutes(): void {
     const informationRout: InformationRout = new InformationRout(this.router, this.path);
     informationRout.initializeRoutes();
 

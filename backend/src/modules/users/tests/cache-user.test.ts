@@ -17,13 +17,13 @@ describe('Cache user data tests', () => {
   beforeAll(async () => {
     jest.resetAllMocks();
 
-    findUniqueFn = jest.fn().mockImplementation(() => {
-      return {
+    findUniqueFn = jest.fn().mockImplementation(async () => {
+      return await ({
         _is_from_mock_: true,
         id: 1,
         uuid: adminUuid,
-        isActive: true,
-      } as unknown as Prisma.Prisma__UserClient<User>;
+        isActive: true
+      } as unknown as Prisma.Prisma__UserClient<User>);
     });
 
     const dbMock = {
@@ -39,16 +39,16 @@ describe('Cache user data tests', () => {
               id: 1,
               uuid: '625edee9-851c-4dfd-a0a5-d676f362e1ca',
               password: '$2b$10$p5Cm0dCkOXiHuW7H3DH4ueq0gS3CNCjMMMiygNujs5Z/6DI2NcaLm',
-              isActive: true,
-            },
+              isActive: true
+            }
           ];
-        },
+        }
       },
       userSystemPermission: {
         findMany: () => {
           return [{ _is_from_mock_: true, userId: 1, permissionId: SystemPermission.PreviewUserProfile }];
-        },
-      },
+        }
+      }
     };
 
     DbClient.getDbContext = jest.fn().mockImplementation(() => {
@@ -59,7 +59,7 @@ describe('Cache user data tests', () => {
 
     usersRoute = new UsersRoute();
     app = new App([usersRoute]);
-    const adminAuth = await loginAs(app, <LoginDto>{ login, password });
+    const adminAuth = await loginAs(app, ({ login, password } satisfies LoginDto));
     adminAuthToken = adminAuth.authToken;
     adminUuid = adminAuth.userLoggedIn.uuid;
   });

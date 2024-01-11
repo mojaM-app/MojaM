@@ -18,14 +18,14 @@ describe('DELETE/users should respond with a status code of 200', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, <LoginDto>{ login, password })).authToken;
+    adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
   });
 
   test('when data are valid and user has permission', async () => {
     const user = generateValidUser();
     const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAuthToken}`);
     expect(createResponse.statusCode).toBe(201);
-    const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createResponse.body;
+    const { data: newUserDto, message: createMessage }: { data: IUser, message: string } = createResponse.body;
     expect(newUserDto?.uuid).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
 
@@ -37,7 +37,7 @@ describe('DELETE/users should respond with a status code of 200', () => {
     expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     const body = deleteResponse.body;
     expect(typeof body).toBe('object');
-    const { data: deletedUserUuid, message: deleteMessage }: { data: string; message: string } = body;
+    const { data: deletedUserUuid, message: deleteMessage }: { data: string, message: string } = body;
     expect(deleteMessage).toBe(events.users.userDeleted);
     expect(deletedUserUuid).toBe(newUserDto.uuid);
   });
@@ -51,7 +51,7 @@ describe('DELETE/users should respond with a status code of 403', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, <LoginDto>{ login, password })).authToken;
+    adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
   });
 
   test('when token is not set', async () => {
@@ -71,12 +71,12 @@ describe('DELETE/users should respond with a status code of 403', () => {
     expect(response.statusCode).toBe(201);
     let body = response.body;
     expect(typeof body).toBe('object');
-    const { data: user, message: createMessage }: { data: IUser; message: string } = body;
+    const { data: user, message: createMessage }: { data: IUser, message: string } = body;
     expect(user?.uuid).toBeDefined();
     expect(user?.email).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
 
-    const newUserAuthToken = (await loginAs(app, <LoginDto>{ login: requestData.email, password: requestData.password })).authToken;
+    const newUserAuthToken = (await loginAs(app, ({ login: requestData.email, password: requestData.password } satisfies LoginDto))).authToken;
     let deleteResponse = await request(app.getServer())
       .delete(usersRoute.path + '/' + user.uuid)
       .send()
@@ -95,7 +95,7 @@ describe('DELETE/users should respond with a status code of 403', () => {
     expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = deleteResponse.body;
     expect(typeof body).toBe('object');
-    const { data: deletedUserUuid, message: deleteMessage }: { data: string; message: string } = body;
+    const { data: deletedUserUuid, message: deleteMessage }: { data: string, message: string } = body;
     expect(deleteMessage).toBe(events.users.userDeleted);
     expect(deletedUserUuid).toBe(user.uuid);
   });
@@ -110,7 +110,7 @@ describe('DELETE/users should respond with a status code of 400', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, <LoginDto>{ login, password })).authToken;
+    adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
   });
 
   test('DELETE/users should respond with a status code of 400 when user not exist', async () => {
@@ -124,7 +124,7 @@ describe('DELETE/users should respond with a status code of 400', () => {
     const body = deleteResponse.body;
     expect(typeof body).toBe('object');
     const data = body.data;
-    const { message: deleteMessage, args: deleteArgs }: { message: string; args: string[] } = data;
+    const { message: deleteMessage, args: deleteArgs }: { message: string, args: string[] } = data;
     expect(deleteMessage).toBe(error_keys.users.User_Does_Not_Exist);
     expect(deleteArgs.length).toBe(1);
     expect(deleteArgs[0]).toBe(userId);
@@ -140,7 +140,7 @@ describe('DELETE/users should respond with a status code of 404', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, <LoginDto>{ login, password })).authToken;
+    adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
   });
 
   test('DELETE/users should respond with a status code of 404 when user Id is not GUID', async () => {
@@ -165,7 +165,7 @@ describe('DELETE/users should respond with a status code of 401', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, <LoginDto>{ login, password })).authToken;
+    adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
   });
 
   test('when token is invalid', async () => {

@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 class DbClient {
-  private static instance: DbClient;
+  private static instance: DbClient = undefined;
 
   private readonly _prisma: PrismaClient;
 
@@ -9,8 +9,8 @@ class DbClient {
     this._prisma = new PrismaClient();
   }
 
-  private static getInstance = () => {
-    if (!DbClient.instance) {
+  private static readonly getInstance = (): DbClient => {
+    if (DbClient.instance === undefined) {
       DbClient.instance = new DbClient();
     }
 

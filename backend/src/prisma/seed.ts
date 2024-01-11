@@ -143,19 +143,19 @@ const seedUsers = async (prisma: PrismaClient) => {
   let phone: string = adminLoginData.phone;
   let password = await hash(adminLoginData.password, 10);
   await prisma.user.upsert({
-    where: { email_phone: { email: email, phone: phone } },
+    where: { email_phone: { email, phone } },
     update: {},
     create: {
-      email: email,
-      phone: phone,
-      password: password,
+      email,
+      phone,
+      password,
       isActive: true,
       firstName: 'has full access',
       lastName: 'only for tests',
     },
   });
 
-  const user = await prisma.user.findUnique({ where: { email_phone: { email: email, phone: phone } } });
+  const user = await prisma.user.findUnique({ where: { email_phone: { email, phone } } });
 
   const permissions = await prisma.systemPermission.findMany({ where: { id: { gte: 100 } } });
   for await (const permission of permissions) {
@@ -175,12 +175,12 @@ const seedUsers = async (prisma: PrismaClient) => {
   phone = generateRandomNumber(9);
   password = await hash('p@ss', 10);
   await prisma.user.upsert({
-    where: { email_phone: { email: email, phone: phone } },
+    where: { email_phone: { email, phone } },
     update: {},
     create: {
-      email: email,
-      phone: phone,
-      password: password,
+      email,
+      phone,
+      password,
       isActive: true,
       firstName: 'only for tests',
       lastName: 'only for tests',
@@ -204,7 +204,7 @@ const seedUsers = async (prisma: PrismaClient) => {
   });
 };
 
-async function main() {
+async function main(): Promise<void> {
   await seedSystemPermission(prisma);
 
   await seedUsers(prisma);

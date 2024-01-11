@@ -11,7 +11,7 @@ import {
   DeactivateUserReqDto,
   DeleteUserPayload,
   DeleteUserReqDto,
-  UsersRepository,
+  UsersRepository
 } from '@modules/users';
 import { Guid } from 'guid-typescript';
 import StatusCode from 'status-code-enum';
@@ -68,13 +68,13 @@ export class UsersService extends BaseService {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.User_Does_Not_Exist, [reqDto.userGuid.toString()]);
     }
 
-    const relatedData: Array<string> = await this._userRepository.checkIfCanBeDeleted(user.id);
+    const relatedData: string[] = await this._userRepository.checkIfCanBeDeleted(user.id);
 
     if (relatedData.length > 0) {
       throw new TranslatableHttpException(
         StatusCode.ClientErrorBadRequest,
         error_keys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted,
-        [reqDto.userGuid.toString()].concat(relatedData),
+        [reqDto.userGuid.toString()].concat(relatedData)
       );
     }
 

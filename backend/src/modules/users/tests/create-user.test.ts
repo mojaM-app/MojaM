@@ -16,7 +16,7 @@ describe('POST/users should respond with a status code of 201', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, <LoginDto>{ login, password })).authToken;
+    adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
   });
 
   test('when data are valid and user has permission', async () => {
@@ -26,7 +26,7 @@ describe('POST/users should respond with a status code of 201', () => {
     expect(createResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     const body = createResponse.body;
     expect(typeof body).toBe('object');
-    const { data: user, message: createMessage }: { data: IUser; message: string } = body;
+    const { data: user, message: createMessage }: { data: IUser, message: string } = body;
     expect(user?.uuid).toBeDefined();
     expect(Guid.isGuid(user.uuid)).toBe(true);
     expect(user?.email).toBeDefined();
@@ -50,31 +50,72 @@ describe('POST/users should respond with a status code of 400', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, <LoginDto>{ login, password })).authToken;
+    adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
   });
 
   test('when password is invalid', async () => {
-    const requestData = <CreateUserDto>{ email: 'email@domain.com', phone: '123456789', password: 'paasssword' };
+    const requestData = { email: 'email@domain.com', phone: '123456789', password: 'paasssword' } satisfies CreateUserDto;
     const response = await request(app.getServer()).post(usersRoute.path).send(requestData).set('Authorization', `Bearer ${adminAuthToken}`);
     expect(response.statusCode).toBe(400);
-    const errors = (<string>response.body.data.message)?.split(',');
-    expect(errors.filter(x => x.indexOf('Password') === -1).length).toBe(0);
+    const errors = (response.body.data.message as string)?.split(',');
+    expect(errors.filter(x => !x.includes('Password')).length).toBe(0);
   });
 
   test('when email is invalid', async () => {
-    const requestData = <CreateUserDto>{ password: 'strongPassword1@', phone: '123456789', email: 'invalid email' };
+    const requestData = { password: 'strongPassword1@', phone: '123456789', email: 'invalid email' } satisfies CreateUserDto;
     const response = await request(app.getServer()).post(usersRoute.path).send(requestData).set('Authorization', `Bearer ${adminAuthToken}`);
     expect(response.statusCode).toBe(400);
-    const errors = (<string>response.body.data.message)?.split(',');
-    expect(errors.filter(x => x.indexOf('Email') === -1).length).toBe(0);
+    const errors = (response.body.data.message as string)?.split(',');
+    expect(errors.filter(x => !x.includes('Email')).length).toBe(0);
   });
 
   test('when phone is invalid', async () => {
-    const requestData = <CreateUserDto>{ email: 'email@domain.com', password: 'strongPassword1@', phone: 'invalid phone' };
+    const requestData = { email: 'email@domain.com', password: 'strongPassword1@', phone: 'invalid phone' } satisfies CreateUserDto;
     const response = await request(app.getServer()).post(usersRoute.path).send(requestData).set('Authorization', `Bearer ${adminAuthToken}`);
     expect(response.statusCode).toBe(400);
-    const errors = (<string>response.body.data.message)?.split(',');
-    expect(errors.filter(x => x.indexOf('Phone') === -1).length).toBe(0);
+    const errors = (response.body.data.message as string)?.split(',');
+    expect(errors.filter(x => !x.includes('Phone')).length).toBe(0);
+  });
+
+  test('when exist user with same email and phone', async () => {
+    const requestData = generateValidUser();
+    const createResponse1 = await request(app.getServer()).post(usersRoute.path).send(requestData).set('Authorization', `Bearer ${adminAuthToken}`);
+    expect(createResponse1.statusCode).toBe(201);
+    const { data: user, message: createMessage }: { data: IUser, message: string } = createResponse1.body;
+    expect(createMessage).toBe(events.users.userCreated);
+
+    const createResponse2 = await request(app.getServer()).post(usersRoute.path).send(requestData).set('Authorization', `Bearer ${adminAuthToken}`);
+    expect(createResponse2.statusCode).toBe(400);
+    const body = createResponse2.body;
+    expect(typeof body).toBe('object');
+    expect(body.data.message).toBe(error_keys.users.User_Already_Exists);
+
+    const deleteResponse = await request(app.getServer())
+      .delete(usersRoute.path + '/' + user.uuid)
+      .send()
+      .set('Authorization', `Bearer ${adminAuthToken}`);
+    expect(deleteResponse.statusCode).toBe(200);
+  });
+
+  test('when exist user with same email and phone (different letters size)', async () => {
+    const requestData = generateValidUser();
+    const createResponse1 = await request(app.getServer()).post(usersRoute.path).send(requestData).set('Authorization', `Bearer ${adminAuthToken}`);
+    expect(createResponse1.statusCode).toBe(201);
+    const { data: user, message: createMessage }: { data: IUser, message: string } = createResponse1.body;
+    expect(createMessage).toBe(events.users.userCreated);
+
+    requestData.email = requestData.email.toUpperCase();
+    const createResponse2 = await request(app.getServer()).post(usersRoute.path).send(requestData).set('Authorization', `Bearer ${adminAuthToken}`);
+    expect(createResponse2.statusCode).toBe(400);
+    const body = createResponse2.body;
+    expect(typeof body).toBe('object');
+    expect(body.data.message).toBe(error_keys.users.User_Already_Exists);
+
+    const deleteResponse = await request(app.getServer())
+      .delete(usersRoute.path + '/' + user.uuid)
+      .send()
+      .set('Authorization', `Bearer ${adminAuthToken}`);
+    expect(deleteResponse.statusCode).toBe(200);
   });
 });
 
@@ -86,7 +127,7 @@ describe('POST/users should respond with a status code of 403', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, <LoginDto>{ login, password })).authToken;
+    adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
   });
 
   test('when token is not set', async () => {
@@ -104,12 +145,12 @@ describe('POST/users should respond with a status code of 403', () => {
     expect(newUserResponse.statusCode).toBe(201);
     let body = newUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: user, message: createMessage }: { data: IUser; message: string } = body;
+    const { data: user, message: createMessage }: { data: IUser, message: string } = body;
     expect(user?.uuid).toBeDefined();
     expect(user?.email).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
 
-    const newUserAuthToken = (await loginAs(app, <LoginDto>{ login: requestData.email, password: requestData.password })).authToken;
+    const newUserAuthToken = (await loginAs(app, ({ login: requestData.email, password: requestData.password } satisfies LoginDto))).authToken;
     const createUserResponse = await request(app.getServer())
       .post(usersRoute.path)
       .send(generateValidUser())
@@ -136,7 +177,7 @@ describe('POST/users should respond with a status code of 401', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, <LoginDto>{ login, password })).authToken;
+    adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
   });
 
   test('when token is invalid', async () => {

@@ -28,20 +28,20 @@ export class App {
     this.initializeErrorHandling();
   }
 
-  public listen() {
+  public listen(): void {
     this.app.listen(this.port, () => {
-      logger.info(`=================================`);
+      logger.info('=================================');
       logger.info(`======= ENV: ${this.env} =======`);
       logger.info(`App listening on the port ${this.port}`);
-      logger.info(`=================================`);
+      logger.info('=================================');
     });
   }
 
-  public getServer() {
+  public getServer(): express.Application {
     return this.app;
   }
 
-  private initializeMiddlewares() {
+  private initializeMiddlewares(): void {
     this.app.use(morgan(LOG_FORMAT, { stream }));
     this.app.use(cors({ origin: ORIGIN, credentials: CREDENTIALS }));
     this.app.use(hpp());
@@ -52,8 +52,8 @@ export class App {
     this.app.use(cookieParser());
   }
 
-  private initializeRoutes(routes: Routes[]) {
-    //auth rout is added always
+  private initializeRoutes(routes: Routes[]): void {
+    // auth rout is added always
     this.addAuthRoute();
 
     routes.forEach(route => {
@@ -70,7 +70,7 @@ export class App {
     this.app.use('/', authRoute.router);
   }
 
-  private initializeErrorHandling() {
+  private initializeErrorHandling(): void {
     this.app.use(ErrorMiddleware);
   }
 }

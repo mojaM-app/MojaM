@@ -1,16 +1,15 @@
 import { App } from '@/app';
 import { AuthRoute, LoginDto } from '@modules/auth';
 import { CreateUserDto, IUser } from '@modules/users';
-import { generateRandomEmail, generateRandomNumber, generateRandomPassword, generateRandomString } from '@utils/tests.utils';
+import { generateRandomEmail, generateRandomNumber, generateRandomPassword } from '@utils/tests.utils';
 import request from 'supertest';
 
 const generateValidUser = (): CreateUserDto => {
-  return <CreateUserDto>{
+  return {
     email: generateRandomEmail(),
     password: generateRandomPassword(),
-    phone: '88' + generateRandomNumber(7),
-    firstName: generateRandomString(10),
-  };
+    phone: '88' + generateRandomNumber(7)
+  } satisfies CreateUserDto;
 };
 
 const getJwtToken = (response: any): string => {
@@ -20,12 +19,12 @@ const getJwtToken = (response: any): string => {
   return cookie.split(';')[0].split('=')[1];
 };
 
-const loginAs = async (app: App, user: { login: string; password: string }): Promise<{ userLoggedIn: IUser; authToken: string }> => {
+const loginAs = async (app: App, user: { login: string, password: string }): Promise<{ userLoggedIn: IUser, authToken: string }> => {
   const loginDto: LoginDto = { login: user.login, password: user.password };
   const loginResponse = await request(app.getServer()).post(new AuthRoute().loginPath).send(loginDto);
   const authToken = loginResponse.statusCode === 200 ? getJwtToken(loginResponse) : '';
   const userLoggedIn = loginResponse.statusCode === 200 ? loginResponse.body.data : null;
-  return { userLoggedIn: userLoggedIn, authToken: authToken };
+  return { userLoggedIn, authToken };
 };
 
 export { generateValidUser, loginAs };

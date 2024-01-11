@@ -1,1 +1,1 @@
-export { User, UserSystemPermission } from '@prisma/client';
+export type { User, UserSystemPermission } from '@prisma/client';

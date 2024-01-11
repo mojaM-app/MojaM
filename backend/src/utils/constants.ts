@@ -13,13 +13,13 @@ export const VALIDATOR_SETTINGS: {
 } = {
   EMAIL_MAX_LENGTH: 100,
   PASSWORD_MAX_LENGTH: 50,
-  IS_STRONG_PASSWORD_OPTIONS: <IsStrongPasswordOptions>{
+  IS_STRONG_PASSWORD_OPTIONS: {
     minLength: 9,
     minLowercase: 1,
     minUppercase: 1,
     minNumbers: 0,
     minSymbols: 0,
-  },
+  } satisfies IsStrongPasswordOptions,
   PHONE_MAX_LENGTH: 16,
   PHONE_COUNTRY_CODE: 'PL',
 };

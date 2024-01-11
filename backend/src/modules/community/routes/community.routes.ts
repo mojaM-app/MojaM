@@ -9,14 +9,14 @@ class StructureRout implements Routes {
 
   public constructor(
     public router: Router,
-    private _parentPath: string,
+    private readonly _parentPath: string
   ) {
     this._controller = new StructureController();
     this.initializeRoutes();
   }
 
-  public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this._controller.get);
+  public initializeRoutes(): void {
+    this.router.get(`${this._parentPath}${this.path}`, [setIdentity], this._controller.get);
   }
 }
 
@@ -26,14 +26,14 @@ class RegulationsRout implements Routes {
 
   public constructor(
     public router: Router,
-    private _parentPath: string,
+    private readonly _parentPath: string
   ) {
     this._controller = new RegulationsController();
     this.initializeRoutes();
   }
 
-  public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this._controller.get);
+  public initializeRoutes(): void {
+    this.router.get(`${this._parentPath}${this.path}`, [setIdentity], this._controller.get);
   }
 }
 
@@ -43,14 +43,14 @@ class MissionRout implements Routes {
 
   public constructor(
     public router: Router,
-    private _parentPath: string,
+    private readonly _parentPath: string
   ) {
     this._controller = new MissionController();
     this.initializeRoutes();
   }
 
-  public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this._controller.get);
+  public initializeRoutes(): void {
+    this.router.get(`${this._parentPath}${this.path}`, [setIdentity], this._controller.get);
   }
 }
 
@@ -60,14 +60,14 @@ class MeetingsRout implements Routes {
 
   public constructor(
     public router: Router,
-    private _parentPath: string,
+    private readonly _parentPath: string
   ) {
     this._controller = new MeetingsController();
     this.initializeRoutes();
   }
 
-  public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this._controller.get);
+  public initializeRoutes(): void {
+    this.router.get(`${this._parentPath}${this.path}`, [setIdentity], this._controller.get);
   }
 }
 
@@ -77,14 +77,14 @@ class DiaconieRout implements Routes {
 
   public constructor(
     public router: Router,
-    private _parentPath: string,
+    private readonly _parentPath: string
   ) {
     this._controller = new DiaconieController();
     this.initializeRoutes();
   }
 
-  public initializeRoutes() {
-    this.router.get(`${this._parentPath}${this.path}`, setIdentity, this._controller.get);
+  public initializeRoutes(): void {
+    this.router.get(`${this._parentPath}${this.path}`, [setIdentity], this._controller.get);
   }
 }
 
@@ -96,7 +96,7 @@ export class CommunityRoute implements Routes {
     this.initializeRoutes();
   }
 
-  private initializeRoutes() {
+  private initializeRoutes(): void {
     const diaconieRout: DiaconieRout = new DiaconieRout(this.router, this.path);
     diaconieRout.initializeRoutes();
 
