@@ -17,7 +17,7 @@ export const ErrorMiddleware = async (error: HttpException, req: Request, res: R
     const args: string = JSON.stringify(data.args ?? []);
     logger.error(`[${req.method}] ${req.path} >> StatusCode:: ${status}, Message:: ${data.message}::${args}`);
     res.status(status).json({ data });
-  } catch (error) {
-    next(error);
+  } catch (ex) {
+    next(ex);
   }
 };
