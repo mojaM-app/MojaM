@@ -1,4 +1,4 @@
-import { arraysEquals } from './arrays.utils';
+import { arraysEquals, isArray } from './arrays.utils';
 
 describe('arrays.utils', () => {
   describe('arrayEquals', () => {
@@ -131,6 +131,25 @@ describe('arrays.utils', () => {
           ]
         )
       ).toBe(false);
+    });
+  });
+
+  describe('isArray', () => {
+    it('should return true for valid arrays', () => {
+      expect(isArray([])).toBe(true);
+      expect(isArray([1, 2, 3])).toBe(true);
+      expect(isArray(['a', 'b', 'c'])).toBe(true);
+      expect(isArray([null, undefined])).toBe(true);
+      expect(isArray([{}, {}])).toBe(true);
+    });
+
+    it('should return false for invalid arrays', () => {
+      expect(isArray(null)).toBe(false);
+      expect(isArray(undefined)).toBe(false);
+      expect(isArray(123)).toBe(false);
+      expect(isArray('abc')).toBe(false);
+      expect(isArray({})).toBe(false);
+      expect(isArray(() => {})).toBe(false);
     });
   });
 });

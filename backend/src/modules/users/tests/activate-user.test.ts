@@ -86,6 +86,45 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
       .set('Authorization', `Bearer ${adminAuthToken}`);
     expect(deleteUserResponse.statusCode).toBe(200);
   });
+
+  test('when data are valid, user has permission and activatedUser is not active', async () => {
+    const user = generateValidUser();
+    const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAuthToken}`);
+    expect(createUserResponse.statusCode).toBe(201);
+    const { data: newUserDto, message: createMessage }: { data: IUser, message: string } = createUserResponse.body;
+    expect(newUserDto?.uuid).toBeDefined();
+    expect(createMessage).toBe(events.users.userCreated);
+
+    const deactivateUserResponse = await request(app.getServer())
+      .post(usersRoute.path + '/' + newUserDto.uuid + '/' + usersRoute.deactivatePath)
+      .send()
+      .set('Authorization', `Bearer ${adminAuthToken}`);
+    expect(deactivateUserResponse.statusCode).toBe(200);
+    expect(deactivateUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+    let body = deactivateUserResponse.body;
+    expect(typeof body).toBe('object');
+    const { data: result1, message: message1 }: { data: boolean, message: string } = body;
+    expect(message1).toBe(events.users.userDeactivated);
+    expect(result1).toBe(true);
+
+    const activateUserResponse = await request(app.getServer())
+      .post(usersRoute.path + '/' + newUserDto.uuid + '/' + usersRoute.activatePath)
+      .send()
+      .set('Authorization', `Bearer ${adminAuthToken}`);
+    expect(activateUserResponse.statusCode).toBe(200);
+    expect(activateUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+    body = activateUserResponse.body;
+    expect(typeof body).toBe('object');
+    const { data: result2, message: message2 }: { data: boolean, message: string } = body;
+    expect(message2).toBe(events.users.userActivated);
+    expect(result2).toBe(true);
+
+    const deleteUserResponse = await request(app.getServer())
+      .delete(usersRoute.path + '/' + newUserDto.uuid)
+      .send()
+      .set('Authorization', `Bearer ${adminAuthToken}`);
+    expect(deleteUserResponse.statusCode).toBe(200);
+  });
 });
 
 describe('POST/users/:id/activate should respond with a status code of 403', () => {
