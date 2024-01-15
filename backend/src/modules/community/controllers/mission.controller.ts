@@ -6,7 +6,7 @@ import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
 
 export class MissionController extends BaseController {
-  private _communityService: CommunityService | undefined = undefined;
+  private readonly _communityService: CommunityService;
   constructor() {
     super();
     this._communityService = Container.get(CommunityService);
@@ -15,8 +15,7 @@ export class MissionController extends BaseController {
   public get = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const data: string = await this._communityService.getMission();
-
-      res.status(200).json({ data: data, message: events.community.mission.retrieved });
+      res.status(200).json({ data, message: events.community.mission.retrieved });
     } catch (error) {
       next(error);
     }

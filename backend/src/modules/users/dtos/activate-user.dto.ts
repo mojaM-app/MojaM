@@ -1,22 +1,10 @@
-import { BasePayload, BaseReqDto } from '@modules/common';
-import { Guid } from 'guid-typescript';
+import { BaseReqDto } from '@modules/common';
 
 export class ActivateUserReqDto extends BaseReqDto {
-  userGuid: Guid;
+  userGuid: string | undefined;
 
-  constructor(userGuid: Guid, currentUserId: number | undefined) {
-    super();
+  constructor(userGuid: string | undefined, currentUserId: number | undefined) {
+    super(currentUserId);
     this.userGuid = userGuid;
-    this.currentUserId = currentUserId;
-  }
-}
-
-export class ActivateUserPayload extends BasePayload {
-  userId: number;
-
-  constructor(userId: number, req: ActivateUserReqDto) {
-    super();
-    this.userId = userId;
-    this.currentUserId = req.currentUserId;
   }
 }

@@ -1,42 +1,30 @@
 import { BaseService } from '@modules/common';
-import {
-  AddPermissionPayload,
-  AddPermissionReqDto,
-  DeletePermissionsPayload,
-  DeletePermissionsReqDto,
-  PermissionRepository,
-} from '@modules/permissions';
-import { UsersRepository } from '@modules/users';
+import { AddPermissionReqDto, DeletePermissionsReqDto, PermissionsRepository } from '@modules/permissions';
+import { isGuid, isNullOrUndefined, isPositiveNumber } from '@utils';
 import { Container, Service } from 'typedi';
 
 @Service()
 export class PermissionsService extends BaseService {
-  private readonly _userRepository: UsersRepository | undefined = undefined;
-  private readonly _permissionRepository: PermissionRepository | undefined = undefined;
+  private readonly _permissionRepository: PermissionsRepository;
 
   public constructor() {
     super();
-    this._userRepository = Container.get(UsersRepository);
-    this._permissionRepository = Container.get(PermissionRepository);
+    this._permissionRepository = Container.get(PermissionsRepository);
   }
 
   public async add(reqDto: AddPermissionReqDto): Promise<boolean> {
-    const userId: number = await this._userRepository.getIdByUuid(reqDto.userGuid);
-
-    if (!userId) {
+    if (!isGuid(reqDto.userGuid) || !isPositiveNumber(reqDto.permissionId)) {
       return false;
     }
 
-    return await this._permissionRepository.add(new AddPermissionPayload(userId, reqDto));
+    return await this._permissionRepository.add(reqDto);
   }
 
   public async delete(reqDto: DeletePermissionsReqDto): Promise<boolean> {
-    const userId: number = await this._userRepository.getIdByUuid(reqDto.userGuid);
-
-    if (!userId) {
+    if (!isGuid(reqDto.userGuid) || (!isNullOrUndefined(reqDto.permissionId) && !isPositiveNumber(reqDto.permissionId))) {
       return false;
     }
 
-    return await this._permissionRepository.delete(new DeletePermissionsPayload(userId, reqDto));
+    return await this._permissionRepository.delete(reqDto);
   }
 }

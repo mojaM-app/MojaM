@@ -11,7 +11,7 @@ export class UsersRoute implements Routes {
   public deactivatePath = 'deactivate';
   public activatePath = 'activate';
   public router = express.Router();
-  private readonly _usersController: UsersController | undefined = undefined;
+  private readonly _usersController: UsersController;
 
   public constructor() {
     this._usersController = new UsersController();

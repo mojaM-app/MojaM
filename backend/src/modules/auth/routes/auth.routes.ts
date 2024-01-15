@@ -8,7 +8,7 @@ export class AuthRoute implements Routes {
   public loginPath = `${this.path}login`;
   public router = express.Router();
 
-  private readonly _authController: AuthController | undefined = undefined;
+  private readonly _authController: AuthController;
 
   public constructor() {
     this._authController = new AuthController();

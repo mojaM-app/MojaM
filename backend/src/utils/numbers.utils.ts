@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/strict-boolean-expressions */
-/* eslint-disable eqeqeq */
-
 const toNumber = (value: any): number | null => {
   if (value === null || value === undefined) {
     return null;
@@ -15,12 +12,13 @@ const toNumber = (value: any): number | null => {
   }
 
   if (typeof value === 'string') {
-    if (!(value + '').trim().length) {
+    if ((value + '').trim().length === 0) {
       return null;
     }
 
     value = (value + '').trim().replace(',', '.').replace(/\s/g, '');
 
+    // eslint-disable-next-line eqeqeq
     return value == value * 1 ? toNumber(value * 1) : null;
   }
 
@@ -31,4 +29,8 @@ const isNumber = (value: any): boolean => {
   return toNumber(value) !== null;
 }
 
-export { isNumber, toNumber };
+const isPositiveNumber = (value: any): boolean => {
+  return (toNumber(value) ?? 0) > 0;
+}
+
+export { isNumber, isPositiveNumber, toNumber };

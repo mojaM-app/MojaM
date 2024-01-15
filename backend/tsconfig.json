@@ -19,6 +19,8 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "importHelpers": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
     "baseUrl": "src",
     "paths": {
       "@/*": ["*"],

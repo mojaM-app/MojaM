@@ -1,26 +1,12 @@
-import { BasePayload, BaseReqDto } from '@modules/common';
-import { Guid } from 'guid-typescript';
+import { BaseReqDto } from '@modules/common';
 
 export class AddPermissionReqDto extends BaseReqDto {
-  userGuid: Guid;
-  permissionId: number;
+  userGuid: string | undefined;
+  permissionId: number | undefined;
 
-  constructor(userGuid: Guid, permissionId: number, currentUserId: number | undefined) {
-    super();
+  constructor(userGuid: string | undefined, permissionId: number | undefined, currentUserId: number | undefined) {
+    super(currentUserId);
     this.userGuid = userGuid;
     this.permissionId = permissionId;
-    this.currentUserId = currentUserId;
-  }
-}
-
-export class AddPermissionPayload extends BasePayload {
-  userId: number;
-  permissionId: number;
-
-  constructor(userId: number, req: AddPermissionReqDto) {
-    super();
-    this.userId = userId;
-    this.permissionId = req.permissionId;
-    this.currentUserId = req.currentUserId;
   }
 }

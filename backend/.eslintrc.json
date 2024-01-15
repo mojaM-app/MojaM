@@ -18,6 +18,13 @@
     "@typescript-eslint/space-before-function-paren": "off",
     "@typescript-eslint/member-delimiter-style": "off",
     "comma-dangle": "off",
-    "@typescript-eslint/comma-dangle": "off"
+    "@typescript-eslint/comma-dangle": "off",
+    "@typescript-eslint/no-misused-promises": [
+      "error",
+      {
+        "checksVoidReturn": false
+      }
+    ],
+    "@typescript-eslint/no-non-null-assertion": "warn"
   }
 }

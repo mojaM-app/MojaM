@@ -5,7 +5,7 @@ import { generateRandomNumber, getAdminLoginData } from './../utils/tests.utils'
 
 const prisma = new PrismaClient();
 
-const seedSystemPermission = async (prisma: PrismaClient) => {
+const seedSystemPermission = async (prisma: PrismaClient): Promise<void> => {
   await prisma.systemPermission.upsert({
     where: { id: 10 },
     update: {},
@@ -137,7 +137,7 @@ const seedSystemPermission = async (prisma: PrismaClient) => {
   });
 };
 
-const seedUsers = async (prisma: PrismaClient) => {
+const seedUsers = async (prisma: PrismaClient): Promise<void> => {
   const adminLoginData = getAdminLoginData();
   let email: string = adminLoginData.email;
   let phone: string = adminLoginData.phone;
@@ -160,13 +160,13 @@ const seedUsers = async (prisma: PrismaClient) => {
   const permissions = await prisma.systemPermission.findMany({ where: { id: { gte: 100 } } });
   for await (const permission of permissions) {
     await prisma.userSystemPermission.upsert({
-      where: { userId_permissionId: { userId: user.id, permissionId: permission.id } },
+      where: { userId_permissionId: { userId: user!.id, permissionId: permission.id } },
       update: {},
       create: {
         permissionId: permission.id,
-        userId: user.id,
+        userId: user!.id,
         assignedAt: new Date(),
-        assignedById: user.id,
+        assignedById: user!.id,
       },
     });
   }
@@ -190,12 +190,12 @@ const seedUsers = async (prisma: PrismaClient) => {
             {
               permissionId: SystemPermission.PreviewUserList,
               assignedAt: new Date(),
-              assignedById: user.id,
+              assignedById: user!.id,
             },
             {
               permissionId: SystemPermission.PreviewUserProfile,
               assignedAt: new Date(),
-              assignedById: user.id,
+              assignedById: user!.id,
             },
           ],
         },

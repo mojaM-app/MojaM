@@ -5,7 +5,7 @@ import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
 
 export class AuthController extends BaseController {
-  private readonly authService: AuthService | undefined = undefined;
+  private readonly authService: AuthService;
 
   public constructor() {
     super();

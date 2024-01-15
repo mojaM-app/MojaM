@@ -19,11 +19,11 @@ const getJwtToken = (response: any): string => {
   return cookie.split(';')[0].split('=')[1];
 };
 
-const loginAs = async (app: App, user: { login: string, password: string }): Promise<{ userLoggedIn: IUser, authToken: string }> => {
+const loginAs = async (app: App, user: { login: string | null | undefined, password: string | null | undefined }): Promise<{ userLoggedIn: IUser | undefined, authToken: string | undefined }> => {
   const loginDto: LoginDto = { login: user.login, password: user.password };
   const loginResponse = await request(app.getServer()).post(new AuthRoute().loginPath).send(loginDto);
-  const authToken = loginResponse.statusCode === 200 ? getJwtToken(loginResponse) : '';
-  const userLoggedIn = loginResponse.statusCode === 200 ? loginResponse.body.data : null;
+  const userLoggedIn = loginResponse.statusCode === 200 ? loginResponse.body.data : undefined;
+  const authToken = loginResponse.statusCode === 200 ? getJwtToken(loginResponse) : undefined;
   return { userLoggedIn, authToken };
 };
 

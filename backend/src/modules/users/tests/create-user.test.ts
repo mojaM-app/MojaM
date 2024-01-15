@@ -1,22 +1,23 @@
+/* eslint-disable no-prototype-builtins */
 import { App } from '@/app';
 import { events } from '@events';
 import { error_keys } from '@exceptions';
 import { LoginDto } from '@modules/auth';
 import { CreateUserDto, IUser, UsersRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
+import { isGuid } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
-import { Guid } from 'guid-typescript';
 import request from 'supertest';
 
 describe('POST/users should respond with a status code of 201', () => {
   const usersRoute = new UsersRoute();
   const app = new App([usersRoute]);
 
-  let adminAuthToken: string;
+  let adminAuthToken: string | undefined;
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
+    adminAuthToken = (await loginAs(app, { login, password } satisfies LoginDto)).authToken;
   });
 
   test('when data are valid and user has permission', async () => {
@@ -26,9 +27,9 @@ describe('POST/users should respond with a status code of 201', () => {
     expect(createResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     const body = createResponse.body;
     expect(typeof body).toBe('object');
-    const { data: user, message: createMessage }: { data: IUser, message: string } = body;
+    const { data: user, message: createMessage }: { data: IUser; message: string } = body;
     expect(user?.uuid).toBeDefined();
-    expect(Guid.isGuid(user.uuid)).toBe(true);
+    expect(isGuid(user.uuid)).toBe(true);
     expect(user?.email).toBeDefined();
     expect(user?.phone).toBeDefined();
     expect(user.hasOwnProperty('id')).toBe(false);
@@ -46,11 +47,11 @@ describe('POST/users should respond with a status code of 400', () => {
   const usersRoute = new UsersRoute();
   const app = new App([usersRoute]);
 
-  let adminAuthToken: string;
+  let adminAuthToken: string | undefined;
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
+    adminAuthToken = (await loginAs(app, { login, password } satisfies LoginDto)).authToken;
   });
 
   test('when password is invalid', async () => {
@@ -81,7 +82,7 @@ describe('POST/users should respond with a status code of 400', () => {
     const requestData = generateValidUser();
     const createResponse1 = await request(app.getServer()).post(usersRoute.path).send(requestData).set('Authorization', `Bearer ${adminAuthToken}`);
     expect(createResponse1.statusCode).toBe(201);
-    const { data: user, message: createMessage }: { data: IUser, message: string } = createResponse1.body;
+    const { data: user, message: createMessage }: { data: IUser; message: string } = createResponse1.body;
     expect(createMessage).toBe(events.users.userCreated);
 
     const createResponse2 = await request(app.getServer()).post(usersRoute.path).send(requestData).set('Authorization', `Bearer ${adminAuthToken}`);
@@ -101,10 +102,10 @@ describe('POST/users should respond with a status code of 400', () => {
     const requestData = generateValidUser();
     const createResponse1 = await request(app.getServer()).post(usersRoute.path).send(requestData).set('Authorization', `Bearer ${adminAuthToken}`);
     expect(createResponse1.statusCode).toBe(201);
-    const { data: user, message: createMessage }: { data: IUser, message: string } = createResponse1.body;
+    const { data: user, message: createMessage }: { data: IUser; message: string } = createResponse1.body;
     expect(createMessage).toBe(events.users.userCreated);
 
-    requestData.email = requestData.email.toUpperCase();
+    requestData.email = requestData.email?.toUpperCase();
     const createResponse2 = await request(app.getServer()).post(usersRoute.path).send(requestData).set('Authorization', `Bearer ${adminAuthToken}`);
     expect(createResponse2.statusCode).toBe(400);
     const body = createResponse2.body;
@@ -123,11 +124,11 @@ describe('POST/users should respond with a status code of 403', () => {
   const usersRoute = new UsersRoute();
   const app = new App([usersRoute]);
 
-  let adminAuthToken: string;
+  let adminAuthToken: string | undefined;
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
+    adminAuthToken = (await loginAs(app, { login, password } satisfies LoginDto)).authToken;
   });
 
   test('when token is not set', async () => {
@@ -145,12 +146,12 @@ describe('POST/users should respond with a status code of 403', () => {
     expect(newUserResponse.statusCode).toBe(201);
     let body = newUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: user, message: createMessage }: { data: IUser, message: string } = body;
+    const { data: user, message: createMessage }: { data: IUser; message: string } = body;
     expect(user?.uuid).toBeDefined();
     expect(user?.email).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
 
-    const newUserAuthToken = (await loginAs(app, ({ login: requestData.email, password: requestData.password } satisfies LoginDto))).authToken;
+    const newUserAuthToken = (await loginAs(app, { login: requestData.email, password: requestData.password } satisfies LoginDto)).authToken;
     const createUserResponse = await request(app.getServer())
       .post(usersRoute.path)
       .send(generateValidUser())
@@ -173,11 +174,11 @@ describe('POST/users should respond with a status code of 401', () => {
   const usersRoute = new UsersRoute();
   const app = new App([usersRoute]);
 
-  let adminAuthToken: string;
+  let adminAuthToken: string | undefined;
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
+    adminAuthToken = (await loginAs(app, { login, password } satisfies LoginDto)).authToken;
   });
 
   test('when token is invalid', async () => {

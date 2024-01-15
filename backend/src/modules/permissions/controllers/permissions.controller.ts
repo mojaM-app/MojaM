@@ -1,23 +1,23 @@
 import { events } from '@events';
 import { RequestWithIdentity } from '@modules/auth';
 import { BaseController } from '@modules/common';
-import { AddPermissionReqDto, DeletePermissionsReqDto, PermissionService } from '@modules/permissions';
+import { AddPermissionReqDto, DeletePermissionsReqDto, PermissionsService } from '@modules/permissions';
+import { isGuid, toNumber } from '@utils';
 import { NextFunction, Response } from 'express';
-import { Guid } from 'guid-typescript';
 import { Container } from 'typedi';
 
 export class PermissionsController extends BaseController {
-  private _permissionService: PermissionService | undefined = undefined;
+  private readonly _permissionService: PermissionsService;
   constructor() {
     super();
-    this._permissionService = Container.get(PermissionService);
+    this._permissionService = Container.get(PermissionsService);
   }
 
   public add = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { userGuid, permissionId, currentUserId } = this.getRequestParams(req);
       const reqDto = new AddPermissionReqDto(userGuid, permissionId, currentUserId);
-      const result: boolean = await this._permissionService.add(reqDto);
+      const result = await this._permissionService.add(reqDto);
       res.status(201).json({ data: result, message: events.permissions.permissionAdded });
     } catch (error) {
       next(error);
@@ -28,17 +28,21 @@ export class PermissionsController extends BaseController {
     try {
       const { userGuid, permissionId, currentUserId } = this.getRequestParams(req);
       const reqDto = new DeletePermissionsReqDto(userGuid, permissionId, currentUserId);
-      const result: boolean = await this._permissionService.delete(reqDto);
+      const result = await this._permissionService.delete(reqDto);
       res.status(200).json({ data: result, message: events.permissions.permissionDeleted });
     } catch (error) {
       next(error);
     }
   };
 
-  private getRequestParams(req: RequestWithIdentity): { userGuid: Guid; permissionId: number | undefined; currentUserId: number | undefined } {
-    const userGuid: Guid = Guid.parse(req.params.userId);
-    const permissionId: number | undefined = req.params?.permissionId?.length ? Number.parseInt(req.params.permissionId) : undefined;
-    const currentUserId: number | undefined = this.getCurrentUserId(req);
+  private getRequestParams(req: RequestWithIdentity): {
+    userGuid: string | undefined;
+    permissionId: number | undefined;
+    currentUserId: number | undefined;
+  } {
+    const userGuid = isGuid(req?.params?.userId) ? req.params.userId : undefined;
+    const permissionId = toNumber(req?.params?.permissionId) ?? undefined;
+    const currentUserId = this.getCurrentUserId(req);
     return { userGuid, permissionId, currentUserId };
   }
 }

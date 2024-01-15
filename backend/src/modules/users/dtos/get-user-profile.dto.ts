@@ -1,6 +1,6 @@
 import { BaseReqDto } from '@modules/common';
 
-export class DeactivateUserReqDto extends BaseReqDto {
+export class GetUserProfileReqDto extends BaseReqDto {
   userGuid: string | undefined;
 
   constructor(userGuid: string | undefined, currentUserId: number | undefined) {

@@ -8,7 +8,7 @@ import express, { NextFunction, Response } from 'express';
 export class PermissionsRoute implements Routes {
   public path = '/permissions';
   public router = express.Router();
-  private readonly _permissionsController: PermissionsController | undefined = undefined;
+  private readonly _permissionsController: PermissionsController;
 
   public constructor() {
     this._permissionsController = new PermissionsController();
@@ -19,12 +19,12 @@ export class PermissionsRoute implements Routes {
     this.router.post(
       `${this.path}/:userId(${REGEX_GUID_PATTERN})/:permissionId(${REGEX_INT_PATTERN})`,
       [setIdentity, this.checkAddPermission],
-      this._permissionsController.add
+      this._permissionsController.add,
     );
     this.router.delete(
       `${this.path}/:userId(${REGEX_GUID_PATTERN})/:permissionId(${REGEX_INT_PATTERN})`,
       [setIdentity, this.checkDeletePermission],
-      this._permissionsController.delete
+      this._permissionsController.delete,
     );
   }
 

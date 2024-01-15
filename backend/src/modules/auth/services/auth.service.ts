@@ -4,9 +4,10 @@ import { error_keys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import { DataStoredInToken, LoginDto, TokenData } from '@modules/auth';
 import { BaseService } from '@modules/common';
-import { PermissionRepository, SystemPermission } from '@modules/permissions';
+import { PermissionsRepository, SystemPermission } from '@modules/permissions';
 import { IUser, UsersRepository } from '@modules/users';
 import UsersHelper from '@modules/users/helpers/users.helper';
+import { isNullOrEmptyString } from '@utils';
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import StatusCode from 'status-code-enum';
@@ -14,16 +15,20 @@ import { Container, Service } from 'typedi';
 
 @Service()
 export class AuthService extends BaseService {
-  private readonly _userRepository: UsersRepository | undefined = undefined;
-  private readonly _permissionRepository: PermissionRepository | undefined = undefined;
+  private readonly _userRepository: UsersRepository;
+  private readonly _permissionRepository: PermissionsRepository;
 
   public constructor() {
     super();
     this._userRepository = Container.get(UsersRepository);
-    this._permissionRepository = Container.get(PermissionRepository);
+    this._permissionRepository = Container.get(PermissionsRepository);
   }
 
   public async login(loginData: LoginDto): Promise<{ cookie: string; user: IUser }> {
+    if (isNullOrEmptyString(loginData?.login) || isNullOrEmptyString(loginData?.password)) {
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.login.Invalid_Login_Or_Password);
+    }
+
     const users: User[] = await this._userRepository.findManyByLogin(loginData.login);
 
     if (users?.length !== 1) {
@@ -31,12 +36,12 @@ export class AuthService extends BaseService {
     }
 
     const user: User = users[0];
-    const isPasswordMatching: boolean = await compare(loginData.password, user.password);
+    const isPasswordMatching: boolean = await compare(loginData.password ?? '', user.password);
     if (!isPasswordMatching) {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.login.Invalid_Login_Or_Password);
     }
 
-    if (user.isActive !== true) {
+    if (!user.isActive) {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.login.User_Is_Not_Active);
     }
 
@@ -54,14 +59,14 @@ export class AuthService extends BaseService {
   // }
 
   public createToken(user: IUser, permissions: SystemPermission[]): TokenData {
-    const dataStoredInToken: DataStoredInToken = { id: user.uuid, permissions: permissions || [] };
+    const dataStoredInToken: DataStoredInToken = { id: user.uuid, permissions };
 
-    const expiresIn: number = 10 * 60; //expressed in seconds
+    const expiresIn: number = 10 * 60; // expressed in seconds
 
     return {
       expiresIn,
-      token: sign(dataStoredInToken, SECRET_KEY, {
-        expiresIn: expiresIn,
+      token: sign(dataStoredInToken, SECRET_KEY!, {
+        expiresIn,
         notBefore: '0', // Cannot use before now, can be configured to be deferred.
         algorithm: 'HS256',
         audience: SECRET_AUDIENCE,

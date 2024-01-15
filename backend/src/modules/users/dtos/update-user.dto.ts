@@ -1,17 +1,16 @@
-import { BasePayload } from '@modules/common';
+import { BaseReqDto } from '@modules/common';
 
 export class UpdateUserDto {
   public isActive?: boolean;
 }
 
-export class UpdateUserPayload extends BasePayload {
+export class UpdateUserReqDto extends BaseReqDto {
   userId: number;
   userData: UpdateUserDto;
 
   constructor(userId: number, userData: UpdateUserDto, currentUserId: number | undefined) {
-    super();
+    super(currentUserId);
     this.userId = userId;
     this.userData = userData;
-    this.currentUserId = currentUserId;
   }
 }

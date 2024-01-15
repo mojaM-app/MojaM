@@ -1,5 +1,5 @@
 import { error_keys } from '@exceptions';
-import { BasePayload } from '@modules/common';
+import { BaseReqDto } from '@modules/common';
 import { VALIDATOR_SETTINGS } from '@utils';
 import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString, IsStrongPassword, MaxLength } from 'class-validator';
 
@@ -50,12 +50,11 @@ export class CreateUserDto {
   public password: string;
 }
 
-export class CreateUserPayload extends BasePayload {
+export class CreateUserReqDto extends BaseReqDto {
   userData: CreateUserDto;
 
   constructor(userData: CreateUserDto, currentUserId: number | undefined) {
-    super();
+    super(currentUserId);
     this.userData = userData;
-    this.currentUserId = currentUserId;
   }
 }

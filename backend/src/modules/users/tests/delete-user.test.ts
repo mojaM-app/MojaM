@@ -14,7 +14,7 @@ describe('DELETE/users should respond with a status code of 200', () => {
   const permissionsRoute = new PermissionsRoute();
   const app = new App([usersRoute, permissionsRoute]);
 
-  let adminAuthToken: string;
+  let adminAuthToken: string | undefined;
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
@@ -47,7 +47,7 @@ describe('DELETE/users should respond with a status code of 403', () => {
   const usersRoute = new UsersRoute();
   const app = new App([usersRoute]);
 
-  let adminAuthToken: string;
+  let adminAuthToken: string | undefined;
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
@@ -106,7 +106,7 @@ describe('DELETE/users should respond with a status code of 400', () => {
   const permissionsRoute = new PermissionsRoute();
   const app = new App([usersRoute, permissionsRoute]);
 
-  let adminAuthToken: string;
+  let adminAuthToken: string | undefined;
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
@@ -136,7 +136,7 @@ describe('DELETE/users should respond with a status code of 404', () => {
   const permissionsRoute = new PermissionsRoute();
   const app = new App([usersRoute, permissionsRoute]);
 
-  let adminAuthToken: string;
+  let adminAuthToken: string | undefined;
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
@@ -161,7 +161,7 @@ describe('DELETE/users should respond with a status code of 401', () => {
   const usersRoute = new UsersRoute();
   const app = new App([usersRoute]);
 
-  let adminAuthToken: string;
+  let adminAuthToken: string | undefined;
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 

@@ -5,6 +5,8 @@ import { Service } from 'typedi';
 @Service()
 export class InformationService extends BaseService {
   public async get(): Promise<GetInformationDto> {
-    return {};
+    return await new Promise(resolve => {
+      resolve({} satisfies GetInformationDto);
+    });
   }
 }

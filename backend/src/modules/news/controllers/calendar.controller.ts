@@ -6,7 +6,7 @@ import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
 
 export class CalendarController extends BaseController {
-  private readonly _calendarService: CalendarService | undefined = undefined;
+  private readonly _calendarService: CalendarService;
 
   public constructor() {
     super();
@@ -16,8 +16,7 @@ export class CalendarController extends BaseController {
   public get = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const data: GetCalendarEventsDto = await this._calendarService.get();
-
-      res.status(200).json({ data: data, message: events.news.calendar.retrieved });
+      res.status(200).json({ data, message: events.news.calendar.retrieved });
     } catch (error) {
       next(error);
     }

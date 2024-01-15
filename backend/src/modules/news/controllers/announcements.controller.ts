@@ -6,7 +6,7 @@ import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
 
 export class AnnouncementsController extends BaseController {
-  private readonly _announcementsService: AnnouncementsService | undefined = undefined;
+  private readonly _announcementsService: AnnouncementsService;
 
   public constructor() {
     super();
@@ -16,8 +16,7 @@ export class AnnouncementsController extends BaseController {
   public get = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const data: GetAnnouncementsDto = await this._announcementsService.get();
-
-      res.status(200).json({ data: data, message: events.news.announcements.retrieved });
+      res.status(200).json({ data, message: events.news.announcements.retrieved });
     } catch (error) {
       next(error);
     }

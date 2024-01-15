@@ -5,7 +5,7 @@ import express, { Router } from 'express';
 
 class StructureRout implements Routes {
   public path = '/structure';
-  private readonly _controller: StructureController | undefined = undefined;
+  private readonly _controller: StructureController;
 
   public constructor(
     public router: Router,
@@ -22,7 +22,7 @@ class StructureRout implements Routes {
 
 class RegulationsRout implements Routes {
   public path = '/regulations';
-  private readonly _controller: RegulationsController | undefined = undefined;
+  private readonly _controller: RegulationsController;
 
   public constructor(
     public router: Router,
@@ -39,7 +39,7 @@ class RegulationsRout implements Routes {
 
 class MissionRout implements Routes {
   public path = '/mission';
-  private readonly _controller: MissionController | undefined = undefined;
+  private readonly _controller: MissionController;
 
   public constructor(
     public router: Router,
@@ -56,7 +56,7 @@ class MissionRout implements Routes {
 
 class MeetingsRout implements Routes {
   public path = '/meetings';
-  private readonly _controller: MeetingsController | undefined = undefined;
+  private readonly _controller: MeetingsController;
 
   public constructor(
     public router: Router,
@@ -73,7 +73,7 @@ class MeetingsRout implements Routes {
 
 class DiaconieRout implements Routes {
   public path = '/diaconie';
-  private readonly _controller: DiaconieController | undefined = undefined;
+  private readonly _controller: DiaconieController;
 
   public constructor(
     public router: Router,

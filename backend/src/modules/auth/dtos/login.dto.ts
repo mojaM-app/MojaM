@@ -12,7 +12,7 @@ export class LoginDto {
   @MaxLength(VALIDATOR_SETTINGS.EMAIL_MAX_LENGTH, {
     message: error_keys.login.Invalid_Login_Or_Password,
   })
-  public login: string;
+  public login: string | null | undefined;
 
   @IsNotEmpty({
     message: error_keys.login.Invalid_Login_Or_Password,
@@ -23,5 +23,5 @@ export class LoginDto {
   @MaxLength(VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH, {
     message: error_keys.login.Invalid_Login_Or_Password,
   })
-  public password: string;
+  public password: string | null | undefined;
 }

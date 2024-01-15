@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { events } from '@events';
 import { error_keys } from '@exceptions';
@@ -15,11 +16,11 @@ describe('POST /login', () => {
   const permissionsRoute = new PermissionsRoute();
   const app = new App([usersRoute, permissionsRoute]);
 
-  let adminAuthToken: string;
+  let adminAuthToken: string | undefined;
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, <LoginDto>{ login, password })).authToken;
+    adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
   });
 
   describe('when login data are valid', () => {
@@ -27,7 +28,7 @@ describe('POST /login', () => {
       const { email: login, password } = getAdminLoginData();
       const loginResponse = await request(app.getServer())
         .post(authRoute.loginPath)
-        .send(<LoginDto>{ login, password });
+        .send(({ login, password } satisfies LoginDto));
       const body = loginResponse.body;
       expect(typeof body).toBe('object');
       expect(loginResponse.statusCode).toBe(200);
@@ -60,7 +61,7 @@ describe('POST /login', () => {
       const { phone: login, password } = getAdminLoginData();
       const loginResponse = await request(app.getServer())
         .post(authRoute.loginPath)
-        .send(<LoginDto>{ login, password });
+        .send(({ login, password } satisfies LoginDto));
       const body = loginResponse.body;
       expect(typeof body).toBe('object');
       expect(loginResponse.statusCode).toBe(200);
@@ -162,7 +163,7 @@ describe('POST /login', () => {
 
       expect(newUser1Dto.email).toBe(newUser1Dto.email);
 
-      const loginData: LoginDto = { login: login, password: user1.password };
+      const loginData: LoginDto = { login, password: user1.password };
       const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -188,15 +189,19 @@ describe('POST /login', () => {
 
   describe('when login data are invalid', () => {
     it('POST /login should respond with a status code of 400 when login is invalid', async () => {
-      const model = <LoginDto>{ password: 'strongPassword1@' };
+      const model = { password: 'strongPassword1@' };
 
-      const bodyData = [<LoginDto>{ ...model, login: null }, <LoginDto>{ ...model, login: undefined }, <LoginDto>{ ...model, login: '' }];
+      const bodyData = [
+        ({ ...model, login: null } satisfies LoginDto),
+        ({ ...model, login: undefined } satisfies LoginDto),
+        ({ ...model, login: '' } satisfies LoginDto)
+      ];
 
       for (const body of bodyData) {
         const response = await request(app.getServer()).post(authRoute.loginPath).send(body);
         expect(response.statusCode).toBe(400);
-        const errors = (<string>response.body.data.message)?.split(',');
-        expect(errors.filter(x => x.indexOf('Login') === -1).length).toBe(0);
+        const errors = (response.body.data.message as string)?.split(',');
+        expect(errors.filter(x => !x.includes('Login')).length).toBe(0);
       }
     });
 
@@ -209,20 +214,20 @@ describe('POST /login', () => {
       expect(newUserDto?.uuid).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const model = <LoginDto>{ login: user.email };
+      const model = { login: user.email };
 
       const bodyData = [
-        <LoginDto>{ ...model, password: null },
-        <LoginDto>{ ...model, password: undefined },
-        <LoginDto>{ ...model, password: '' },
-        <LoginDto>{ ...model, password: 'V3ry looooooooooooooooooooong passwooooooooooord!12' },
+        ({ ...model, password: null } satisfies LoginDto),
+        ({ ...model, password: undefined } satisfies LoginDto),
+        ({ ...model, password: '' } satisfies LoginDto),
+        ({ ...model, password: 'V3ry looooooooooooooooooooong passwooooooooooord!12' } satisfies LoginDto),
       ];
 
       for (const body of bodyData) {
         const response = await request(app.getServer()).post(authRoute.loginPath).send(body);
         expect(response.statusCode).toBe(400);
-        const errors = (<string>response.body.data.message)?.split(',');
-        expect(errors.filter(x => x.indexOf('Password') === -1).length).toBe(0);
+        const errors = (response.body.data.message as string)?.split(',');
+        expect(errors.filter(x => !x.includes('Password')).length).toBe(0);
       }
 
       const deleteResponse = await request(app.getServer())

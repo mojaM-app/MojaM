@@ -10,21 +10,19 @@ export class Identity {
     return this._user?.uuid;
   }
 
-  private readonly _user: User | undefined;
+  private readonly _user: { id: number | undefined; uuid: string | undefined };
   private readonly _permissions: SystemPermission[];
 
-  public constructor(user: User | undefined, permissions: SystemPermission[]) {
-    this._user = !!user
-      ? <User>{
-          id: user.id,
-          uuid: user.uuid,
-        }
-      : undefined;
+  public constructor(user: User | undefined | null, permissions: SystemPermission[]) {
+    this._user = {
+      id: user?.id,
+      uuid: user?.uuid,
+    };
     this._permissions = permissions;
   }
 
   public isAuthenticated(): boolean {
-    return this.userId > 0;
+    return (this.userId ?? 0) > 0;
   }
 
   public hasPermissionToPreviewUserProfile(): boolean {
@@ -64,10 +62,12 @@ export class Identity {
   }
 
   protected hasAnyPermission(permissions: SystemPermission[]): boolean {
-    return this.isAuthenticated() && this._permissions?.length && permissions?.length && permissions.some(s => this._permissions.includes(s));
+    return this.isAuthenticated() && this._permissions?.length > 0 && permissions?.length > 0 && permissions.some(s => this._permissions.includes(s));
   }
 
   protected hasAllPermissions(permissions: SystemPermission[]): boolean {
-    return this.isAuthenticated() && this._permissions?.length && permissions?.length && permissions.every(s => this._permissions.includes(s));
+    return (
+      this.isAuthenticated() && this._permissions?.length > 0 && permissions?.length > 0 && permissions.every(s => this._permissions.includes(s))
+    );
   }
 }

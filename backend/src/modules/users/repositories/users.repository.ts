@@ -2,11 +2,18 @@ import { User } from '@db/DbModels';
 import { error_keys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import { BaseRepository } from '@modules/common';
-import { ActivateUserPayload, CreateUserDto, CreateUserPayload, DeleteUserPayload, UpdateUserDto, UpdateUserPayload } from '@modules/users';
-import { isNumber } from '@utils';
+import {
+  ActivateUserReqDto,
+  CreateUserDto,
+  CreateUserReqDto,
+  DeactivateUserReqDto,
+  DeleteUserReqDto,
+  UpdateUserDto,
+  UpdateUserReqDto
+} from '@modules/users';
+import { isGuid, isNullOrEmptyString, isNullOrUndefined, isPositiveNumber } from '@utils';
 import { hash } from 'bcrypt';
 import { isEmail } from 'class-validator';
-import { Guid } from 'guid-typescript';
 import StatusCode from 'status-code-enum';
 import { Service } from 'typedi';
 
@@ -16,80 +23,85 @@ export class UsersRepository extends BaseRepository {
     super();
   }
 
-  public async getIdByUuid(userGuid: Guid): Promise<number | null> {
-    const uuid = userGuid?.toString();
-
-    if ((uuid?.length ?? 0) === 0) {
-      return null;
+  public async getIdByUuid(userGuid: string | null | undefined): Promise<number | undefined> {
+    if (!isGuid(userGuid)) {
+      return undefined;
     }
 
-    const cachedUserId = await this._cacheService.getUserIdFromCacheAsync(uuid);
-    if (cachedUserId > 0) {
+    const cachedUserId = await this._cacheService.getUserIdFromCacheAsync(userGuid);
+    if (isPositiveNumber(cachedUserId)) {
       return cachedUserId;
     }
 
-    const count: number = await this._dbContext.user.count({ where: { uuid } });
+    const count: number = await this._dbContext.user.count({ where: { uuid: userGuid! } });
 
     if (count > 1) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.general.More_Then_One_Record_With_Same_Id, [
-        userGuid.toString()
-      ]);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.general.More_Then_One_Record_With_Same_Id, [userGuid!]);
     } else if (count === 0) {
-      return null;
+      return undefined;
     }
 
-    const user: User = await this._dbContext.user.findUnique({ where: { uuid } });
+    const user: User | null = await this._dbContext.user.findUnique({ where: { uuid: userGuid! } });
 
-    await this._cacheService.saveUserIdInCacheAsync(user);
+    if (isNullOrUndefined(user)) {
+      return undefined;
+    }
 
-    return user.id;
+    await this._cacheService.saveUserIdInCacheAsync(user!);
+
+    return user!.id;
   }
 
-  public async getById(userId: number): Promise<User | null> {
-    if (!isNumber(userId) || userId <= 0) {
+  public async getById(userId: number | undefined | null): Promise<User | null> {
+    if (!isPositiveNumber(userId)) {
       return null;
     }
 
-    const count: number = await this._dbContext.user.count({ where: { id: userId } });
+    const count: number = await this._dbContext.user.count({ where: { id: userId! } });
 
     if (count === 0) {
       return null;
     }
 
-    return await this._dbContext.user.findUnique({ where: { id: userId } });
+    return await this._dbContext.user.findUnique({ where: { id: userId! } });
   }
 
-  public async getByUuid(userGuid: Guid): Promise<User | null> {
-    const userId: number | null = await this.getIdByUuid(userGuid);
-
+  public async getByUuid(userGuid: string | null | undefined): Promise<User | null> {
+    const userId = await this.getIdByUuid(userGuid);
     return await this.getById(userId);
   }
 
-  public async findManyByLogin(login: string): Promise<User[]> {
-    let users: User[];
+  public async findManyByLogin(login: string | undefined | null): Promise<User[]> {
+    if (isNullOrEmptyString(login)) {
+      return [];
+    }
 
+    let users: User[];
     if (isEmail(login)) {
-      users = await this._dbContext.user.findMany({ where: { email: login } });
+      users = await this._dbContext.user.findMany({ where: { email: login! } });
     } else {
-      users = await this._dbContext.user.findMany({ where: { phone: login } });
+      users = await this._dbContext.user.findMany({ where: { phone: login! } });
     }
 
     return users;
   }
 
-  public async checkIfExists(user: { email: string, phone: string }): Promise<boolean> {
+  public async checkIfExists(user: { email: string; phone: string } | null | undefined): Promise<boolean> {
+    if (isNullOrEmptyString(user?.email) || isNullOrEmptyString(user?.phone)) {
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.Invalid_Email_Or_Phone);
+    }
+
     const count: number = await this._dbContext.user.count({
-      where: { email: user.email, phone: user.phone }
+      where: { email: user!.email, phone: user!.phone },
     });
 
     return count > 0;
   }
 
-  public async create(payload: CreateUserPayload): Promise<User> {
-    const userData: CreateUserDto = payload.userData;
+  public async create(reqDto: CreateUserReqDto): Promise<User> {
+    const userData: CreateUserDto = reqDto.userData;
     const hashedPassword = await hash(userData.password, 10);
-    const newUser: User = await this._dbContext.user.create({ data: { ...userData, password: hashedPassword } });
-    return newUser;
+    return await this._dbContext.user.create({ data: { ...userData, password: hashedPassword } });
   }
 
   public async checkIfCanBeDeleted(userId: number): Promise<string[]> {
@@ -102,40 +114,40 @@ export class UsersRepository extends BaseRepository {
     return relatedData;
   }
 
-  public async delete(payload: DeleteUserPayload): Promise<User> {
-    const deletedUser = await this._dbContext.user.delete({ where: { id: payload.userId } });
+  public async delete(user: User, reqDto: DeleteUserReqDto): Promise<User | null> {
+    const deletedUser = await this._dbContext.user.delete({ where: { id: user.id } });
 
     return deletedUser;
   }
 
-  public async activate(payload: ActivateUserPayload): Promise<User> {
-    const updatePayload = new UpdateUserPayload(
-      payload.userId,
-      ({
-        isActive: true
-      } satisfies UpdateUserDto),
-      payload.currentUserId
+  public async activate(userId: number, reqDto: ActivateUserReqDto): Promise<User | null> {
+    const updateReqDto = new UpdateUserReqDto(
+      userId,
+      {
+        isActive: true,
+      } satisfies UpdateUserDto,
+      reqDto.currentUserId,
     );
 
-    return await this.update(updatePayload);
+    return await this.update(updateReqDto);
   }
 
-  public async deactivate(payload: ActivateUserPayload): Promise<User> {
-    const updatePayload = new UpdateUserPayload(
-      payload.userId,
-      ({
-        isActive: false
-      } satisfies UpdateUserDto),
-      payload.currentUserId
+  public async deactivate(userId: number, reqDto: DeactivateUserReqDto): Promise<User | null> {
+    const updateReqDto = new UpdateUserReqDto(
+      userId,
+      {
+        isActive: false,
+      } satisfies UpdateUserDto,
+      reqDto.currentUserId,
     );
 
-    return await this.update(updatePayload);
+    return await this.update(updateReqDto);
   }
 
-  public async update(payload: UpdateUserPayload): Promise<User> {
+  private async update(reqDto: UpdateUserReqDto): Promise<User | null> {
     const updatedUser: User = await this._dbContext.user.update({
-      where: { id: payload.userId },
-      data: payload.userData,
+      where: { id: reqDto.userId },
+      data: reqDto.userData,
     });
 
     return updatedUser;

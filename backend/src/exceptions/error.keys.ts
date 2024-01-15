@@ -15,6 +15,7 @@ export const error_keys = {
     Invalid_Phone: 'Invalid_Phone',
     Phone_To_Long: 'Phone_To_Long',
     Invalid_Email: 'Invalid_Email',
+    Invalid_Email_Or_Phone: 'Invalid_Email_Or_Phone',
     Email_To_Long: 'Email_To_Long',
     Invalid_Password: 'Invalid_Password',
     Password_To_Long: 'Password_To_Long',

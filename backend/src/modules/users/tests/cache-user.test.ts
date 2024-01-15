@@ -12,8 +12,8 @@ describe('Cache user data tests', () => {
   let usersRoute: UsersRoute;
   let app: App;
   let findUniqueFn: any;
-  let adminAuthToken: string;
-  let adminUuid: string;
+  let adminAuthToken: string | undefined;
+  let adminUuid: string | undefined;
   beforeAll(async () => {
     jest.resetAllMocks();
 
@@ -61,7 +61,7 @@ describe('Cache user data tests', () => {
     app = new App([usersRoute]);
     const adminAuth = await loginAs(app, ({ login, password } satisfies LoginDto));
     adminAuthToken = adminAuth.authToken;
-    adminUuid = adminAuth.userLoggedIn.uuid;
+    adminUuid = adminAuth.userLoggedIn?.uuid;
   });
 
   afterAll(async () => {

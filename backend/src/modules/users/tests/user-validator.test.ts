@@ -27,7 +27,7 @@ describe('user validator test', () => {
     });
 
     test('validation should be incorrect when EMAIL is invalid', () => {
-      const emails: string[] = [
+      const emails: Array<string | null | undefined> = [
         null,
         undefined,
         '',
@@ -83,13 +83,13 @@ describe('user validator test', () => {
         '+48 221234567',
         '+48221234567',
         '456123123',
-        '456 123 123',
-        '+48 456 123 123',
-        '+48 456123123',
-        '+48456123123',
+        '456 123 456',
+        '+48 456 456 456',
+        '+48 456123456',
+        '+48456123456',
         '+ 48456123123',
         '+ 48 456123123',
-        '+ 48 456 123 123',
+        '+ 48 456 123 456',
       ];
       for (const phone of phones) {
         const user = { ...generateValidUser(), phone };
@@ -100,7 +100,7 @@ describe('user validator test', () => {
     });
 
     test('validation should be incorrect when PHONE is invalid', () => {
-      const phones: string[] = [
+      const phones: Array<string | null | undefined> = [
         null,
         undefined,
         '',
@@ -160,7 +160,7 @@ describe('user validator test', () => {
     });
 
     test('validation should be incorrect when PASSWORD is invalid', () => {
-      const passwords: string[] = [null, undefined, '', 'paasssword', 'P@sswo2!', 'more_than_50_chars_password!10P@sswo2!10P@sswo2!101'];
+      const passwords: Array<string | null | undefined> = [null, undefined, '', 'paasssword', 'P@sswo2!', 'more_than_50_chars_password!10P@sswo2!10P@sswo2!101'];
       for (const password of passwords) {
         const user = { ...generateValidUser(), password };
         const dto = plainToInstance(CreateUserDto, user);

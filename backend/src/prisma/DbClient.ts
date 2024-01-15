@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 class DbClient {
-  private static instance: DbClient = undefined;
+  private static instance: DbClient | undefined = undefined;
 
   private readonly _prisma: PrismaClient;
 

@@ -20,8 +20,8 @@ export class App {
 
   constructor(routes: Routes[]) {
     this.app = express();
-    this.env = NODE_ENV || 'development';
-    this.port = PORT || 5100;
+    this.env = NODE_ENV ?? 'development';
+    this.port = PORT ?? 5100;
 
     this.initializeMiddlewares();
     this.initializeRoutes(routes);
@@ -42,7 +42,7 @@ export class App {
   }
 
   private initializeMiddlewares(): void {
-    this.app.use(morgan(LOG_FORMAT, { stream }));
+    this.app.use(morgan(LOG_FORMAT ?? 'combined', { stream }));
     this.app.use(cors({ origin: ORIGIN, credentials: CREDENTIALS }));
     this.app.use(hpp());
     this.app.use(helmet());

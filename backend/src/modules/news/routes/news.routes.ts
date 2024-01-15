@@ -5,7 +5,7 @@ import express, { Router } from 'express';
 
 class InformationRout implements Routes {
   public path = '/information';
-  private readonly _controller: InformationController | undefined = undefined;
+  private readonly _controller: InformationController;
 
   public constructor(
     public router: Router,
@@ -22,7 +22,7 @@ class InformationRout implements Routes {
 
 class AnnouncementsRout implements Routes {
   public path = '/announcements';
-  private readonly _controller: AnnouncementsController | undefined = undefined;
+  private readonly _controller: AnnouncementsController;
 
   public constructor(
     public router: Router,
@@ -39,7 +39,7 @@ class AnnouncementsRout implements Routes {
 
 class CalendarRout implements Routes {
   public path = '/calendar';
-  private readonly _controller: CalendarController | undefined = undefined;
+  private readonly _controller: CalendarController;
 
   public constructor(
     public router: Router,

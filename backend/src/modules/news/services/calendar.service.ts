@@ -4,9 +4,9 @@ import { Service } from 'typedi';
 
 @Service()
 export class CalendarService extends BaseService {
-  //public users = DbClient.getDbContext().user;
-
   public async get(): Promise<GetCalendarEventsDto> {
-    return {};
+    return await new Promise(resolve => {
+      resolve({} satisfies GetCalendarEventsDto);
+    });
   }
 }
