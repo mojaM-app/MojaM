@@ -1,6 +1,6 @@
 import { events } from '@events';
 import { RequestWithIdentity } from '@modules/auth';
-import { BaseController } from '@modules/common';
+import { BaseController, userToIUser, userToIUserProfile } from '@modules/common';
 import {
   ActivateUserReqDto,
   CreateUserDto,
@@ -10,7 +10,6 @@ import {
   GetUserProfileReqDto,
   UsersService,
 } from '@modules/users';
-import UsersHelper from '@modules/users/helpers/users.helper';
 import { isGuid, isNullOrUndefined } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
@@ -27,7 +26,7 @@ export class UsersController extends BaseController {
     try {
       const reqDto = new GetUserProfileReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
       const user = await this._userService.get(reqDto);
-      res.status(200).json({ data: isNullOrUndefined(user) ? null : UsersHelper.UserToIUserProfile(user!), message: events.users.userRetrieved });
+      res.status(200).json({ data: isNullOrUndefined(user) ? null : userToIUserProfile(user!), message: events.users.userRetrieved });
     } catch (error) {
       next(error);
     }
@@ -38,7 +37,7 @@ export class UsersController extends BaseController {
       const userData: CreateUserDto = req.body;
       const reqDto = new CreateUserReqDto(userData, this.getCurrentUserId(req));
       const user = await this._userService.create(reqDto);
-      res.status(201).json({ data: UsersHelper.UserToIUser(user), message: events.users.userCreated });
+      res.status(201).json({ data: userToIUser(user), message: events.users.userCreated });
     } catch (error) {
       next(error);
     }

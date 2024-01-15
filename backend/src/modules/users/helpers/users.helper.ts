@@ -1,22 +1,20 @@
 import { User } from '@db/DbModels';
 import { IUser, IUserProfile } from '@modules/users';
 
-export default class UsersHelper {
-  public static UserToIUser(user: User): IUser {
-    return <IUser>{
-      uuid: user.uuid,
-      email: user.email,
-      phone: user.phone,
-    };
-  }
+export function userToIUser(user: User): IUser {
+  return {
+    uuid: user.uuid,
+    email: user.email,
+    phone: user.phone,
+  } satisfies IUser;
+}
 
-  public static UserToIUserProfile(user: User): IUserProfile {
-    return <IUserProfile>{
-      uuid: user.uuid,
-      email: user.email,
-      phone: user.phone,
-      firstName: user.firstName,
-      lastName: user.lastName,
-    };
-  }
+export function userToIUserProfile(user: User): IUserProfile {
+  return {
+    uuid: user.uuid,
+    email: user.email,
+    phone: user.phone,
+    firstName: user.firstName,
+    lastName: user.lastName,
+  } satisfies IUserProfile;
 }

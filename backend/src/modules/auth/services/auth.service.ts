@@ -3,10 +3,9 @@ import { User } from '@db/DbModels';
 import { error_keys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import { DataStoredInToken, LoginDto, TokenData } from '@modules/auth';
-import { BaseService } from '@modules/common';
+import { BaseService, userToIUser } from '@modules/common';
 import { PermissionsRepository, SystemPermission } from '@modules/permissions';
 import { IUser, UsersRepository } from '@modules/users';
-import UsersHelper from '@modules/users/helpers/users.helper';
 import { isNullOrEmptyString } from '@utils';
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
@@ -48,7 +47,7 @@ export class AuthService extends BaseService {
     const userPermissions = await this._permissionRepository.getUserPermissions(user.id);
     const tokenData = this.createToken(user, userPermissions);
 
-    return { cookie: this.createCookie(tokenData), user: UsersHelper.UserToIUser(user) };
+    return { cookie: this.createCookie(tokenData), user: userToIUser(user) };
   }
 
   // public async logout(userData: IUser): Promise<IUser> {
