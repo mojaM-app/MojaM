@@ -57,7 +57,7 @@ export class UsersController extends BaseController {
     try {
       const reqDto = new ActivateUserReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
       const data = await this._userService.activate(reqDto);
-      res.status(200).json({ data, message: events.users.userDeleted });
+      res.status(200).json({ data, message: events.users.userActivated });
     } catch (error) {
       next(error);
     }
@@ -67,7 +67,7 @@ export class UsersController extends BaseController {
     try {
       const reqDto = new DeactivateUserReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
       const data = await this._userService.deactivate(reqDto);
-      res.status(200).json({ data, message: events.users.userDeleted });
+      res.status(200).json({ data, message: events.users.userDeactivated });
     } catch (error) {
       next(error);
     }

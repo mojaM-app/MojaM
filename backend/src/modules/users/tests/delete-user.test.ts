@@ -23,9 +23,9 @@ describe('DELETE/users should respond with a status code of 200', () => {
 
   test('when data are valid and user has permission', async () => {
     const user = generateValidUser();
-    const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAuthToken}`);
-    expect(createResponse.statusCode).toBe(201);
-    const { data: newUserDto, message: createMessage }: { data: IUser, message: string } = createResponse.body;
+    const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAuthToken}`);
+    expect(createUserResponse.statusCode).toBe(201);
+    const { data: newUserDto, message: createMessage }: { data: IUser, message: string } = createUserResponse.body;
     expect(newUserDto?.uuid).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
 
@@ -56,20 +56,20 @@ describe('DELETE/users should respond with a status code of 403', () => {
 
   test('when token is not set', async () => {
     const userId: string = Guid.EMPTY;
-    const response = await request(app.getServer())
+    const deleteResponse = await request(app.getServer())
       .delete(usersRoute.path + '/' + userId)
       .send();
-    expect(response.statusCode).toBe(403);
-    const body = response.body;
+    expect(deleteResponse.statusCode).toBe(403);
+    const body = deleteResponse.body;
     expect(typeof body).toBe('object');
     expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
   });
 
   test('when user have no permission', async () => {
     const requestData = generateValidUser();
-    const response = await request(app.getServer()).post(usersRoute.path).send(requestData).set('Authorization', `Bearer ${adminAuthToken}`);
-    expect(response.statusCode).toBe(201);
-    let body = response.body;
+    const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(requestData).set('Authorization', `Bearer ${adminAuthToken}`);
+    expect(createUserResponse.statusCode).toBe(201);
+    let body = createUserResponse.body;
     expect(typeof body).toBe('object');
     const { data: user, message: createMessage }: { data: IUser, message: string } = body;
     expect(user?.uuid).toBeDefined();
@@ -170,12 +170,12 @@ describe('DELETE/users should respond with a status code of 401', () => {
 
   test('when token is invalid', async () => {
     const userId: string = Guid.EMPTY;
-    const response = await request(app.getServer())
+    const deleteResponse = await request(app.getServer())
       .delete(usersRoute.path + '/' + userId)
       .send()
       .set('Authorization', `Bearer invalid_token_${adminAuthToken}`);
-    expect(response.statusCode).toBe(401);
-    const body = response.body;
+    expect(deleteResponse.statusCode).toBe(401);
+    const body = deleteResponse.body;
     expect(typeof body).toBe('object');
     expect(body.data.message).toBe(errorKeys.login.Wrong_Authentication_Token);
   });

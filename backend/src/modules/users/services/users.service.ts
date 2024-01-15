@@ -104,9 +104,13 @@ export class UsersService extends BaseService {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.User_Does_Not_Exist, [reqDto.userGuid!]);
     }
 
+    if (user!.isActive) {
+      return true;
+    }
+
     const activatedUser = await this._userRepository.activate(user!.id, reqDto);
 
-    return !isNullOrUndefined(activatedUser);
+    return !isNullOrUndefined(activatedUser) && activatedUser!.isActive;
   }
 
   public async deactivate(reqDto: DeactivateUserReqDto): Promise<boolean> {
@@ -120,8 +124,12 @@ export class UsersService extends BaseService {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.User_Does_Not_Exist, [reqDto.userGuid!]);
     }
 
+    if (!user!.isActive) {
+      return true;
+    }
+
     const deactivatedUser = await this._userRepository.deactivate(user!.id, reqDto);
 
-    return !isNullOrUndefined(deactivatedUser);
+    return !isNullOrUndefined(deactivatedUser) && !deactivatedUser!.isActive;
   }
 }
