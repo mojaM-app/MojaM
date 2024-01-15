@@ -1,5 +1,5 @@
 import { User } from '@db/DbModels';
-import { error_keys } from '@exceptions';
+import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import { BaseRepository } from '@modules/common';
 import {
@@ -36,7 +36,7 @@ export class UsersRepository extends BaseRepository {
     const count: number = await this._dbContext.user.count({ where: { uuid: userGuid! } });
 
     if (count > 1) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.general.More_Then_One_Record_With_Same_Id, [userGuid!]);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.general.More_Then_One_Record_With_Same_Id, [userGuid!]);
     } else if (count === 0) {
       return undefined;
     }
@@ -88,7 +88,7 @@ export class UsersRepository extends BaseRepository {
 
   public async checkIfExists(user: { email: string; phone: string } | null | undefined): Promise<boolean> {
     if (isNullOrEmptyString(user?.email) || isNullOrEmptyString(user?.phone)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.Invalid_Email_Or_Phone);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.Invalid_Email_Or_Phone);
     }
 
     const count: number = await this._dbContext.user.count({

@@ -1,1 +1,5 @@
-export class BaseService {}
+export class BaseService {
+  /// //////////////////////////////
+  // Base class for all services //
+  /// //////////////////////////////
+}

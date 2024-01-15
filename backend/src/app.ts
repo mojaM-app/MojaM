@@ -1,5 +1,5 @@
 import { CREDENTIALS, LOG_FORMAT, NODE_ENV, ORIGIN, PORT } from '@config';
-import { error_keys } from '@exceptions';
+import { errorKeys } from '@exceptions';
 import { Routes } from '@interfaces';
 import { ErrorMiddleware } from '@middlewares';
 import { AuthRoute } from '@modules/auth';
@@ -61,7 +61,7 @@ export class App {
     });
 
     this.app.use(function (req, res) {
-      res.status(404).json({ message: error_keys.general.Page_Does_Not_Exist });
+      res.status(404).json({ message: errorKeys.general.Page_Does_Not_Exist });
     });
   }
 

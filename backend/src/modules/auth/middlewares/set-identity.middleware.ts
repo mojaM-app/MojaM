@@ -1,5 +1,5 @@
 import { SECRET_AUDIENCE, SECRET_ISSUER, SECRET_KEY } from '@config';
-import { UnauthorizedException, error_keys } from '@exceptions';
+import { UnauthorizedException, errorKeys } from '@exceptions';
 import { DataStoredInToken, Identity, RequestWithIdentity } from '@modules/auth';
 import { PermissionsRepository } from '@modules/permissions';
 import { UsersRepository } from '@modules/users';
@@ -48,10 +48,10 @@ export const setIdentity = async (req: RequestWithIdentity, res: Response, next:
         req.identity = new Identity(user, permissions);
         next();
       } else {
-        next(new UnauthorizedException(error_keys.login.Wrong_Authentication_Token));
+        next(new UnauthorizedException(errorKeys.login.Wrong_Authentication_Token));
       }
     }
   } catch (error) {
-    next(new UnauthorizedException(error_keys.login.Wrong_Authentication_Token));
+    next(new UnauthorizedException(errorKeys.login.Wrong_Authentication_Token));
   }
 };

@@ -1,4 +1,4 @@
-export const error_keys = {
+export const errorKeys = {
   general: {
     Page_Does_Not_Exist: 'Page_Does_Not_Exist',
     More_Then_One_Record_With_Same_Id: 'More_Then_One_Record_With_Same_Id',

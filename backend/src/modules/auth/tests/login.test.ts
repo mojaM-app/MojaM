@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { events } from '@events';
-import { error_keys } from '@exceptions';
+import { errorKeys } from '@exceptions';
 import { AuthRoute, LoginDto, RequestWithIdentity, setIdentity } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import { IUser, UsersRoute } from '@modules/users';
@@ -124,7 +124,7 @@ describe('POST /login', () => {
       expect(typeof body).toBe('object');
       const data = body.data;
       const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
-      expect(loginMessage).toBe(error_keys.login.Invalid_Login_Or_Password);
+      expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
       expect(loginArgs).toBeUndefined();
 
       let deleteResponse = await request(app.getServer())
@@ -171,7 +171,7 @@ describe('POST /login', () => {
       expect(typeof body).toBe('object');
       const data = body.data;
       const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
-      expect(loginMessage).toBe(error_keys.login.Invalid_Login_Or_Password);
+      expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
       expect(loginArgs).toBeUndefined();
 
       let deleteResponse = await request(app.getServer())
@@ -247,7 +247,7 @@ describe('POST /login', () => {
       expect(typeof body).toBe('object');
       const data = body.data;
       const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
-      expect(loginMessage).toBe(error_keys.login.Invalid_Login_Or_Password);
+      expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
       expect(loginArgs).toBeUndefined();
     });
 
@@ -261,7 +261,7 @@ describe('POST /login', () => {
       expect(typeof body).toBe('object');
       const data = body.data;
       const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
-      expect(loginMessage).toBe(error_keys.login.Invalid_Login_Or_Password);
+      expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
       expect(loginArgs).toBeUndefined();
     });
 
@@ -282,7 +282,7 @@ describe('POST /login', () => {
       expect(typeof body).toBe('object');
       const data = body.data;
       const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
-      expect(loginMessage).toBe(error_keys.login.Invalid_Login_Or_Password);
+      expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
       expect(loginArgs).toBeUndefined();
 
       const deleteResponse = await request(app.getServer())
@@ -309,7 +309,7 @@ describe('POST /login', () => {
       expect(typeof body).toBe('object');
       const data = body.data;
       const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
-      expect(loginMessage).toBe(error_keys.login.Invalid_Login_Or_Password);
+      expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
       expect(loginArgs).toBeUndefined();
 
       const deleteResponse = await request(app.getServer())
@@ -344,7 +344,7 @@ describe('POST /login', () => {
       expect(typeof body).toBe('object');
       const data = body.data;
       const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
-      expect(loginMessage).toBe(error_keys.login.User_Is_Not_Active);
+      expect(loginMessage).toBe(errorKeys.login.User_Is_Not_Active);
       expect(loginArgs).toBeUndefined();
 
       const deleteResponse = await request(app.getServer())
@@ -379,7 +379,7 @@ describe('POST /login', () => {
       expect(typeof body).toBe('object');
       const data = body.data;
       const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
-      expect(loginMessage).toBe(error_keys.login.Invalid_Login_Or_Password);
+      expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
       expect(loginArgs).toBeUndefined();
     });
   });

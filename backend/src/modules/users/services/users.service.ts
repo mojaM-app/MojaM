@@ -1,5 +1,5 @@
 import { User } from '@db/DbModels';
-import { error_keys } from '@exceptions';
+import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import { BaseService } from '@modules/common';
 import {
@@ -32,7 +32,7 @@ export class UsersService extends BaseService {
     const user = await this._userRepository.getByUuid(reqDto.userGuid);
 
     if (isNullOrUndefined(user)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.User_Does_Not_Exist, [reqDto.userGuid!]);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.User_Does_Not_Exist, [reqDto.userGuid!]);
     }
 
     return user;
@@ -42,17 +42,17 @@ export class UsersService extends BaseService {
     const userData: CreateUserDto = reqDto.userData;
 
     if (isNullOrEmptyString(userData?.email) || isNullOrEmptyString(userData?.phone)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.Invalid_Email_Or_Phone);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.Invalid_Email_Or_Phone);
     }
 
     const userExists = await this._userRepository.checkIfExists({ email: userData.email!, phone: userData.phone! });
 
     if (userExists) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.User_Already_Exists, [userData.email!, userData.phone!]);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.User_Already_Exists, [userData.email!, userData.phone!]);
     }
 
     if (isNullOrEmptyString(userData?.password)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.Invalid_Password);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.Invalid_Password);
     }
 
     return await this._userRepository.create(reqDto);
@@ -75,7 +75,7 @@ export class UsersService extends BaseService {
     const user = await this._userRepository.getByUuid(reqDto.userGuid);
 
     if (isNullOrUndefined(user)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.User_Does_Not_Exist, [reqDto.userGuid!]);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.User_Does_Not_Exist, [reqDto.userGuid!]);
     }
 
     const relatedData: string[] = await this._userRepository.checkIfCanBeDeleted(user!.id);
@@ -83,7 +83,7 @@ export class UsersService extends BaseService {
     if (relatedData.length > 0) {
       throw new TranslatableHttpException(
         StatusCode.ClientErrorBadRequest,
-        error_keys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted,
+        errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted,
         [user!.uuid].concat(relatedData),
       );
     }
@@ -101,7 +101,7 @@ export class UsersService extends BaseService {
     const user = await this._userRepository.getByUuid(reqDto.userGuid);
 
     if (isNullOrUndefined(user)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.User_Does_Not_Exist, [reqDto.userGuid!]);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.User_Does_Not_Exist, [reqDto.userGuid!]);
     }
 
     const activatedUser = await this._userRepository.activate(user!.id, reqDto);
@@ -117,7 +117,7 @@ export class UsersService extends BaseService {
     const user = await this._userRepository.getByUuid(reqDto.userGuid);
 
     if (isNullOrUndefined(user)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.users.User_Does_Not_Exist, [reqDto.userGuid!]);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.User_Does_Not_Exist, [reqDto.userGuid!]);
     }
 
     const deactivatedUser = await this._userRepository.deactivate(user!.id, reqDto);

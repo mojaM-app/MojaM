@@ -1,6 +1,6 @@
 import { SECRET_AUDIENCE, SECRET_ISSUER, SECRET_KEY } from '@config';
 import { User } from '@db/DbModels';
-import { error_keys } from '@exceptions';
+import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import { DataStoredInToken, LoginDto, TokenData } from '@modules/auth';
 import { BaseService, userToIUser } from '@modules/common';
@@ -25,23 +25,23 @@ export class AuthService extends BaseService {
 
   public async login(loginData: LoginDto): Promise<{ cookie: string; user: IUser }> {
     if (isNullOrEmptyString(loginData?.login) || isNullOrEmptyString(loginData?.password)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.login.Invalid_Login_Or_Password);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.Invalid_Login_Or_Password);
     }
 
     const users: User[] = await this._userRepository.findManyByLogin(loginData.login);
 
     if (users?.length !== 1) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.login.Invalid_Login_Or_Password);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.Invalid_Login_Or_Password);
     }
 
     const user: User = users[0];
     const isPasswordMatching: boolean = await compare(loginData.password ?? '', user.password);
     if (!isPasswordMatching) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.login.Invalid_Login_Or_Password);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.Invalid_Login_Or_Password);
     }
 
     if (!user.isActive) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, error_keys.login.User_Is_Not_Active);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.User_Is_Not_Active);
     }
 
     const userPermissions = await this._permissionRepository.getUserPermissions(user.id);
