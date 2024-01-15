@@ -9,7 +9,7 @@ import {
   DeactivateUserReqDto,
   DeleteUserReqDto,
   UpdateUserDto,
-  UpdateUserReqDto
+  UpdateUserReqDto,
 } from '@modules/users';
 import { isGuid, isNullOrEmptyString, isNullOrUndefined, isPositiveNumber } from '@utils';
 import { hash } from 'bcrypt';
@@ -52,7 +52,7 @@ export class UsersRepository extends BaseRepository {
     return user!.id;
   }
 
-  public async getById(userId: number | undefined | null): Promise<User | null> {
+  public async getById(userId: number | null | undefined): Promise<User | null> {
     if (!isPositiveNumber(userId)) {
       return null;
     }
@@ -71,7 +71,7 @@ export class UsersRepository extends BaseRepository {
     return await this.getById(userId);
   }
 
-  public async findManyByLogin(login: string | undefined | null): Promise<User[]> {
+  public async findManyByLogin(login: string | null | undefined): Promise<User[]> {
     if (isNullOrEmptyString(login)) {
       return [];
     }

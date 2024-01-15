@@ -42,13 +42,13 @@ export const setIdentity = async (req: RequestWithIdentity, res: Response, next:
       const userRepository = Container.get(UsersRepository);
       const user = await userRepository.getByUuid(id);
 
-      if (!isNullOrUndefined(user)) {
+      if (isNullOrUndefined(user)) {
+        next(new UnauthorizedException(errorKeys.login.Wrong_Authentication_Token));
+      } else {
         const permissionRepository = Container.get(PermissionsRepository);
         const permissions = await permissionRepository.getUserPermissions(user!.id);
         req.identity = new Identity(user, permissions);
         next();
-      } else {
-        next(new UnauthorizedException(errorKeys.login.Wrong_Authentication_Token));
       }
     }
   } catch (error) {

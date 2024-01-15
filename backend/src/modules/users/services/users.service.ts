@@ -45,10 +45,10 @@ export class UsersService extends BaseService {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.Invalid_Email_Or_Phone);
     }
 
-    const userExists = await this._userRepository.checkIfExists({ email: userData.email!, phone: userData.phone! });
+    const userExists = await this._userRepository.checkIfExists({ email: userData.email, phone: userData.phone });
 
     if (userExists) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.User_Already_Exists, [userData.email!, userData.phone!]);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.User_Already_Exists, [userData.email, userData.phone]);
     }
 
     if (isNullOrEmptyString(userData?.password)) {
