@@ -1,7 +1,8 @@
 import { User } from '@db/DbModels';
+import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
-import { BaseService } from '@modules/common';
+import { BaseService, userToIUser } from '@modules/common';
 import {
   ActivateUserReqDto,
   CreateUserDto,
@@ -9,6 +10,7 @@ import {
   DeactivateUserReqDto,
   DeleteUserReqDto,
   GetUserProfileReqDto,
+  IUser,
   UsersRepository,
 } from '@modules/users';
 import { isGuid, isNullOrEmptyString, isNullOrUndefined } from '@utils';
@@ -38,7 +40,7 @@ export class UsersService extends BaseService {
     return user;
   }
 
-  public async create(reqDto: CreateUserReqDto): Promise<User> {
+  public async create(reqDto: CreateUserReqDto): Promise<IUser> {
     const userData: CreateUserDto = reqDto.userData;
 
     if (isNullOrEmptyString(userData?.email) || isNullOrEmptyString(userData?.phone)) {
@@ -55,7 +57,10 @@ export class UsersService extends BaseService {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.Invalid_Password);
     }
 
-    return await this._userRepository.create(reqDto);
+    const user = await this._userRepository.create(reqDto);
+    const userDto = userToIUser(user);
+    this._eventDispatcher.dispatch(events.users.userCreated, userDto);
+    return userDto;
   }
 
   // public async updateUser(userId: number, userData: UpdateUserDto): Promise<IUser> {

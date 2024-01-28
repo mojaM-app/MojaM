@@ -1,5 +1,6 @@
 import { SECRET_AUDIENCE, SECRET_ISSUER, SECRET_KEY } from '@config';
 import { User } from '@db/DbModels';
+import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import { DataStoredInToken, LoginDto, TokenData } from '@modules/auth';
@@ -47,7 +48,9 @@ export class AuthService extends BaseService {
     const userPermissions = await this._permissionRepository.getUserPermissions(user.id);
     const tokenData = this.createToken(user, userPermissions);
 
-    return { cookie: this.createCookie(tokenData), user: userToIUser(user) };
+    const userDto = userToIUser(user);
+    this._eventDispatcher.dispatch(events.users.userLoggedIn, userDto);
+    return { cookie: this.createCookie(tokenData), user: userDto };
   }
 
   // public async logout(userData: IUser): Promise<IUser> {

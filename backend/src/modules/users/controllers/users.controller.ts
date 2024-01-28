@@ -1,6 +1,6 @@
 import { events } from '@events';
 import { RequestWithIdentity } from '@modules/auth';
-import { BaseController, userToIUser, userToIUserProfile } from '@modules/common';
+import { BaseController, userToIUserProfile } from '@modules/common';
 import {
   ActivateUserReqDto,
   CreateUserDto,
@@ -37,7 +37,7 @@ export class UsersController extends BaseController {
       const userData: CreateUserDto = req.body;
       const reqDto = new CreateUserReqDto(userData, this.getCurrentUserId(req));
       const user = await this._userService.create(reqDto);
-      res.status(201).json({ data: userToIUser(user), message: events.users.userCreated });
+      res.status(201).json({ data: user, message: events.users.userCreated });
     } catch (error) {
       next(error);
     }

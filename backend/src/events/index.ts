@@ -40,3 +40,5 @@ export const events = {
     permissionDeleted: 'onPermissionDeleted',
   },
 };
+
+export { EventDispatcherService } from './event-dispatcher.service';

@@ -23,6 +23,7 @@
       "@/*": ["*"],
       "@config": ["config"],
       "@events": ["events"],
+      "@events/*": ["events/*"],
       "@exceptions": ["exceptions"],
       "@exceptions/*": ["exceptions/*"],
       "@interfaces": ["interfaces"],

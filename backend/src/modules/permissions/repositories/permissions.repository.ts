@@ -1,8 +1,8 @@
-import { isNullOrUndefined, isPositiveNumber } from '@/utils';
 import { UserSystemPermission } from '@db/DbModels';
 import { BaseRepository } from '@modules/common';
 import { AddPermissionReqDto, DeletePermissionsReqDto, SystemPermission } from '@modules/permissions';
 import { UsersRepository } from '@modules/users';
+import { isNullOrUndefined, isPositiveNumber } from '@utils';
 import Container, { Service } from 'typedi';
 
 @Service()
