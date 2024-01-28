@@ -40,7 +40,7 @@ export const setIdentity = async (req: RequestWithIdentity, res: Response, next:
         issuer: SECRET_ISSUER,
       }).payload as DataStoredInToken;
       const userRepository = Container.get(UsersRepository);
-      const user = await userRepository.getByUuid(id);
+      const user = await userRepository?.getByUuid(id);
 
       if (isNullOrUndefined(user)) {
         next(new UnauthorizedException(errorKeys.login.Wrong_Authentication_Token));

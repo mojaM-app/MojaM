@@ -192,4 +192,32 @@ describe('POST/users should respond with a status code of 401', () => {
     expect(typeof body).toBe('object');
     expect(body.data.message).toBe(errorKeys.login.Wrong_Authentication_Token);
   });
+
+  it('when try to use token from user that not exists', async () => {
+    const userBob = generateValidUser();
+
+    const createBobResponse = await request(app.getServer()).post(usersRoute.path).send(userBob).set('Authorization', `Bearer ${adminAuthToken}`);
+    expect(createBobResponse.statusCode).toBe(201);
+    const { data: bobDto, message: bobCreateMessage }: { data: IUser; message: string } = createBobResponse.body;
+    expect(bobDto?.uuid).toBeDefined();
+    expect(bobCreateMessage).toBe(events.users.userCreated);
+
+    const bobAuthToken = (await loginAs(app, ({ login: bobDto.email, password: userBob.password } satisfies LoginDto))).authToken;
+
+    const deleteBobResponse = await request(app.getServer())
+      .delete(usersRoute.path + '/' + bobDto.uuid)
+      .send()
+      .set('Authorization', `Bearer ${adminAuthToken}`);
+    expect(deleteBobResponse.statusCode).toBe(200);
+
+    const createUserUsingBobAuthTokenResponse = await request(app.getServer()).post(usersRoute.path).send(generateValidUser()).set('Authorization', `Bearer ${bobAuthToken}`);
+    expect(createUserUsingBobAuthTokenResponse.statusCode).toBe(401);
+    expect(createUserUsingBobAuthTokenResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+    const body = createUserUsingBobAuthTokenResponse.body;
+    expect(typeof body).toBe('object');
+    const data = body.data;
+    const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+    expect(loginMessage).toBe(errorKeys.login.Wrong_Authentication_Token);
+    expect(loginArgs).toBeUndefined();
+  });
 });
