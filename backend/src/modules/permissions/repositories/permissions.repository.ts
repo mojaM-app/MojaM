@@ -62,12 +62,14 @@ export class PermissionsRepository extends BaseRepository {
   public async delete(reqDto: DeletePermissionsReqDto): Promise<boolean> {
     const userId = await this._userRepository.getIdByUuid(reqDto.userGuid);
 
-    if (!isPositiveNumber(userId) || (!isNullOrUndefined(reqDto.permissionId) && !isPositiveNumber(reqDto.permissionId))) {
+    if (!isPositiveNumber(userId) ||
+      (!isNullOrUndefined(reqDto.permissionId) && !isPositiveNumber(reqDto.permissionId))) {
       return false;
     }
 
+    let user;
     if (isPositiveNumber(reqDto.permissionId)) {
-      const result = await this._dbContext.userSystemPermission.delete({
+      user = await this._dbContext.userSystemPermission.delete({
         where: {
           userId_permissionId: {
             userId: userId!,
@@ -76,7 +78,7 @@ export class PermissionsRepository extends BaseRepository {
         },
       });
     } else {
-      const result = await this._dbContext.user.update({
+      user = await this._dbContext.user.update({
         where: {
           id: userId,
         },
@@ -91,6 +93,6 @@ export class PermissionsRepository extends BaseRepository {
       });
     }
 
-    return true;
+    return !isNullOrUndefined(user);
   }
 }
