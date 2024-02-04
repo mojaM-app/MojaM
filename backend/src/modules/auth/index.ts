@@ -1,3 +1,6 @@
+import { LoginEventSubscriber } from './events/event.subscriber';
+export { LoginEventSubscriber };
+
 export { LoginDto } from './dtos/login.dto';
 
 export type { DataStoredInToken } from './models/DataStoredInToken';

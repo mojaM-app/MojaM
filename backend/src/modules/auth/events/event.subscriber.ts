@@ -6,6 +6,6 @@ import { EventSubscriber, On } from 'event-dispatch';
 export class LoginEventSubscriber {
   @On(events.users.userLoggedIn)
   public onLogIn(user: IUser): void {
-    console.log('User logged in!');
+    console.log(`User ${user.email} logged in!`);
   }
 }
