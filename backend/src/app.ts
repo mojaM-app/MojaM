@@ -44,6 +44,7 @@ export class App {
   private initializeMiddlewares(): void {
     this.app.use(morgan(LOG_FORMAT ?? 'combined', { stream }));
     this.app.use(cors({ origin: ORIGIN, credentials: CREDENTIALS }));
+    this.app.disable('x-powered-by');
     this.app.use(hpp());
     this.app.use(helmet());
     this.app.use(compression());
