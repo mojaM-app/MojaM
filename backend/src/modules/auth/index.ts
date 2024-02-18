@@ -1,5 +1,4 @@
-import { LoginEventSubscriber } from './events/event.subscriber';
-export { LoginEventSubscriber };
+export { LoginEventSubscriber } from './events/event.subscriber';
 
 export { LoginDto } from './dtos/login.dto';
 
