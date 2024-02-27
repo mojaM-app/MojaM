@@ -101,7 +101,7 @@ export class UsersRepository extends BaseRepository {
   public async create(reqDto: CreateUserReqDto): Promise<User> {
     const userData: CreateUserDto = reqDto.userData;
     const hashedPassword = await hash(userData.password, 10);
-    return await this._dbContext.user.create({ data: { ...userData, password: hashedPassword } });
+    return await this._dbContext.user.create({ data: { ...userData, password: hashedPassword, isActive: false } });
   }
 
   public async checkIfCanBeDeleted(userId: number): Promise<string[]> {
@@ -142,6 +142,26 @@ export class UsersRepository extends BaseRepository {
     );
 
     return await this.update(updateReqDto);
+  }
+
+  public async increaseFailedLoginAttempts(reqDto: UpdateUserReqDto): Promise<number> {
+    if (isNullOrUndefined(reqDto.userData.failedLoginAttempts)) {
+      reqDto.userData.failedLoginAttempts = 0;
+    }
+
+    reqDto.userData.failedLoginAttempts!++;
+
+    await this.update(reqDto);
+
+    return reqDto.userData.failedLoginAttempts!;
+  }
+
+  public async lockOutUser(reqDto: UpdateUserReqDto): Promise<number> {
+    reqDto.userData.isLockedOut = true;
+
+    await this.update(reqDto);
+
+    return reqDto.userData.failedLoginAttempts!;
   }
 
   private async update(reqDto: UpdateUserReqDto): Promise<User | null> {

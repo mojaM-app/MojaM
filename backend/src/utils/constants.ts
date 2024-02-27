@@ -23,3 +23,10 @@ export const VALIDATOR_SETTINGS: {
   PHONE_MAX_LENGTH: 16,
   PHONE_COUNTRY_CODE: 'PL',
 };
+
+export const USER_ACCOUNT_LOCKOUT_SETTINGS: {
+  FAILED_LOGIN_ATTEMPTS: number;
+} = {
+  FAILED_LOGIN_ATTEMPTS: 3, // how many times each user can specify the wrong password before the lockout occurs
+  // Users_Locked_Out_For: 15, // how many minutes each user is locked out
+};

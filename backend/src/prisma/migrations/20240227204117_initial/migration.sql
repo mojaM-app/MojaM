@@ -11,7 +11,7 @@ CREATE TABLE `Users` (
     `LastName` VARCHAR(255) NULL,
     `BirthDay` DATE NULL,
     `JoiningYear` DATE NULL,
-    `IsActive` BOOLEAN NOT NULL DEFAULT true,
+    `IsActive` BOOLEAN NOT NULL DEFAULT false,
     `CreatedAt` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `UpdatedAt` TIMESTAMP(0) NULL,
     `LastLoginAt` TIMESTAMP(0) NULL,

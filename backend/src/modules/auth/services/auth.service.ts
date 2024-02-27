@@ -3,11 +3,12 @@ import { User } from '@db/DbModels';
 import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
-import { DataStoredInToken, LoginDto, TokenData } from '@modules/auth';
+import { DataStoredInToken, FailedLoginAttemptEventDto, InactiveUserTriesToLogInEventDto, LockedUserTriesToLogInEventDto, LoginDto, TokenData, UserLockedOutEventDto, UserLoggedInEventDto } from '@modules/auth';
 import { BaseService, userToIUser } from '@modules/common';
 import { PermissionsRepository, SystemPermission } from '@modules/permissions';
-import { IUser, UsersRepository } from '@modules/users';
+import { IUser, UpdateUserReqDto, UsersRepository } from '@modules/users';
 import { isNullOrEmptyString } from '@utils';
+import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import StatusCode from 'status-code-enum';
@@ -36,20 +37,50 @@ export class AuthService extends BaseService {
     }
 
     const user: User = users[0];
-    const isPasswordMatching: boolean = await compare(loginData.password ?? '', user.password);
-    if (!isPasswordMatching) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.Invalid_Login_Or_Password);
-    }
+    const userDto = userToIUser(user);
 
     if (!user.isActive) {
+      this._eventDispatcher.dispatch(events.users.inactiveUserTriesToLogIn, new InactiveUserTriesToLogInEventDto(userDto));
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.User_Is_Not_Active);
+    }
+
+    if (user.isLockedOut) {
+      this._eventDispatcher.dispatch(events.users.lockedUserTriesToLogIn, new LockedUserTriesToLogInEventDto(userDto));
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.User_Is_Locked_Out);
+    }
+
+    const isPasswordMatching: boolean = await compare(loginData.password ?? '', user.password);
+
+    if (!isPasswordMatching) {
+      const failedLoginAttempts = await this._userRepository.increaseFailedLoginAttempts({
+        userId: user.id,
+        userData: {
+          failedLoginAttempts: user.failedLoginAttempts,
+        },
+        currentUserId: undefined,
+      } satisfies UpdateUserReqDto);
+
+      this._eventDispatcher.dispatch(events.users.failedLoginAttempt, new FailedLoginAttemptEventDto(userDto));
+
+      if (failedLoginAttempts >= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS) {
+        await this._userRepository.lockOutUser({
+          userId: user.id,
+          userData: {
+            isLockedOut: user.isLockedOut,
+          },
+          currentUserId: undefined,
+        } satisfies UpdateUserReqDto);
+
+        this._eventDispatcher.dispatch(events.users.userLockedOut, new UserLockedOutEventDto(userDto));
+      }
+
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.Invalid_Login_Or_Password);
     }
 
     const userPermissions = await this._permissionRepository.getUserPermissions(user.id);
     const tokenData = this.createToken(user, userPermissions);
 
-    const userDto = userToIUser(user);
-    this._eventDispatcher.dispatch(events.users.userLoggedIn, userDto);
+    this._eventDispatcher.dispatch(events.users.userLoggedIn, new UserLoggedInEventDto(userDto));
     return { cookie: this.createCookie(tokenData), user: userDto };
   }
 
@@ -60,7 +91,7 @@ export class AuthService extends BaseService {
   //   return findUser;
   // }
 
-  public createToken(user: IUser, permissions: SystemPermission[]): TokenData {
+  private createToken(user: IUser, permissions: SystemPermission[]): TokenData {
     const dataStoredInToken: DataStoredInToken = { id: user.uuid, permissions };
 
     const expiresIn: number = 10 * 60; // expressed in seconds
@@ -77,7 +108,7 @@ export class AuthService extends BaseService {
     };
   }
 
-  public createCookie(tokenData: TokenData): string {
+  private createCookie(tokenData: TokenData): string {
     return `Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn};`;
   }
 }

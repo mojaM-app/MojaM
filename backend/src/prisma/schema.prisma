@@ -22,7 +22,7 @@ model User {
   lastName            String?   @map("LastName") @db.VarChar(255)
   birthDay            DateTime? @map("BirthDay") @db.Date
   joiningYear         DateTime? @map("JoiningYear") @db.Date
-  isActive            Boolean   @default(true) @map("IsActive") @db.TinyInt()
+  isActive            Boolean   @default(false) @map("IsActive") @db.TinyInt()
   createdAt           DateTime  @default(now()) @map("CreatedAt") @db.Timestamp(0)
   updatedAt           DateTime? @map("UpdatedAt") @db.Timestamp(0)
   lastLoginAt         DateTime? @map("LastLoginAt") @db.Timestamp(0)

@@ -1,5 +1,12 @@
 export { LoginEventSubscriber } from './events/event.subscriber';
 
+export {
+  FailedLoginAttemptEventDto,
+  InactiveUserTriesToLogInEventDto,
+  LockedUserTriesToLogInEventDto,
+  UserLockedOutEventDto,
+  UserLoggedInEventDto
+} from './dtos/event.dto';
 export { LoginDto } from './dtos/login.dto';
 
 export type { DataStoredInToken } from './models/DataStoredInToken';

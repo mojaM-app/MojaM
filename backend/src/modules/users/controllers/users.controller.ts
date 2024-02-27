@@ -1,6 +1,6 @@
 import { events } from '@events';
 import { RequestWithIdentity } from '@modules/auth';
-import { BaseController, userToIUserProfile } from '@modules/common';
+import { BaseController } from '@modules/common';
 import {
   ActivateUserReqDto,
   CreateUserDto,
@@ -8,9 +8,10 @@ import {
   DeactivateUserReqDto,
   DeleteUserReqDto,
   GetUserProfileReqDto,
+  IUserProfile,
   UsersService,
 } from '@modules/users';
-import { isGuid, isNullOrUndefined } from '@utils';
+import { isGuid } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
 
@@ -25,8 +26,8 @@ export class UsersController extends BaseController {
   public getUserProfile = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const reqDto = new GetUserProfileReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
-      const user = await this._userService.get(reqDto);
-      res.status(200).json({ data: isNullOrUndefined(user) ? null : userToIUserProfile(user!), message: events.users.userRetrieved });
+      const user: IUserProfile | null = await this._userService.get(reqDto);
+      res.status(200).json({ data: user, message: events.users.userRetrieved });
     } catch (error) {
       next(error);
     }

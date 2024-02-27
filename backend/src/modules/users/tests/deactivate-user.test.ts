@@ -1,11 +1,13 @@
 import { App } from '@/app';
-import { events } from '@events';
+import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import { IUser, UsersRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
+import { registerTestEventHandlers, testEventHandlers } from '@utils/tests-events.utils';
 import { getAdminLoginData } from '@utils/tests.utils';
+import { EventDispatcher } from 'event-dispatch';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
 
@@ -19,6 +21,13 @@ describe('POST/users/:id/deactivate should respond with a status code of 200', (
     const { email: login, password } = getAdminLoginData();
 
     adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
+
+    const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
+    registerTestEventHandlers(eventDispatcher);
+  });
+
+  beforeEach(async() => {
+    jest.resetAllMocks();
   });
 
   test('when data are valid and user has permission', async () => {
@@ -46,6 +55,16 @@ describe('POST/users/:id/deactivate should respond with a status code of 200', (
       .send()
       .set('Authorization', `Bearer ${adminAuthToken}`);
     expect(deleteUserResponse.statusCode).toBe(200);
+
+    // checking events running via eventDispatcher
+    Object.entries(testEventHandlers)
+      .filter(([, value]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeactivated, testEventHandlers.onUserDeleted].includes(value))
+      .forEach(([, value]) => {
+        expect(value).not.toHaveBeenCalled();
+      });
+    expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
+    expect(testEventHandlers.onUserDeactivated).not.toHaveBeenCalled();
+    expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
   });
 
   test('when data are valid, user has permission and deactivatedUser is not active', async () => {
@@ -85,6 +104,16 @@ describe('POST/users/:id/deactivate should respond with a status code of 200', (
       .send()
       .set('Authorization', `Bearer ${adminAuthToken}`);
     expect(deleteUserResponse.statusCode).toBe(200);
+
+    // checking events running via eventDispatcher
+    Object.entries(testEventHandlers)
+      .filter(([, value]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeactivated, testEventHandlers.onUserDeleted].includes(value))
+      .forEach(([, value]) => {
+        expect(value).not.toHaveBeenCalled();
+      });
+    expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
+    expect(testEventHandlers.onUserDeactivated).not.toHaveBeenCalled();
+    expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
   });
 
   test('when data are valid, user has permission and deactivatedUser is active', async () => {
@@ -124,6 +153,21 @@ describe('POST/users/:id/deactivate should respond with a status code of 200', (
       .send()
       .set('Authorization', `Bearer ${adminAuthToken}`);
     expect(deleteUserResponse.statusCode).toBe(200);
+
+    // checking events running via eventDispatcher
+    Object.entries(testEventHandlers)
+      .filter(([, value]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserDeactivated, testEventHandlers.onUserDeleted].includes(value))
+      .forEach(([, value]) => {
+        expect(value).not.toHaveBeenCalled();
+      });
+    expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
+    expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
+    expect(testEventHandlers.onUserDeactivated).toHaveBeenCalledTimes(1);
+    expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
+  });
+
+  afterAll(async () => {
+    jest.resetAllMocks();
   });
 });
 
@@ -136,6 +180,13 @@ describe('POST/users/:id/deactivate should respond with a status code of 403', (
     const { email: login, password } = getAdminLoginData();
 
     adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
+
+    const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
+    registerTestEventHandlers(eventDispatcher);
+  });
+
+  beforeEach(async() => {
+    jest.resetAllMocks();
   });
 
   test('when token is not set', async () => {
@@ -147,6 +198,11 @@ describe('POST/users/:id/deactivate should respond with a status code of 403', (
     const body = deactivateUserResponse.body;
     expect(typeof body).toBe('object');
     expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+
+    // checking events running via eventDispatcher
+    Object.entries(testEventHandlers).forEach(([, value]) => {
+      expect(value).not.toHaveBeenCalled();
+    });
   });
 
   test('when user have no permission', async () => {
@@ -159,6 +215,12 @@ describe('POST/users/:id/deactivate should respond with a status code of 403', (
     expect(user?.uuid).toBeDefined();
     expect(user?.email).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
+
+    const activateNewUserResponse = await request(app.getServer())
+      .post(usersRoute.path + '/' + user.uuid + '/' + usersRoute.activatePath)
+      .send()
+      .set('Authorization', `Bearer ${adminAuthToken}`);
+    expect(activateNewUserResponse.statusCode).toBe(200);
 
     const newUserAuthToken = (await loginAs(app, ({ login: requestData.email, password: requestData.password } satisfies LoginDto))).authToken;
     const deactivateUserResponse = await request(app.getServer())
@@ -182,6 +244,21 @@ describe('POST/users/:id/deactivate should respond with a status code of 403', (
     const { data: deletedUserUuid, message: deleteMessage }: { data: string, message: string } = body;
     expect(deleteMessage).toBe(events.users.userDeleted);
     expect(deletedUserUuid).toBe(user.uuid);
+
+    // checking events running via eventDispatcher
+    Object.entries(testEventHandlers)
+      .filter(([, value]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserLoggedIn, testEventHandlers.onUserDeleted].includes(value))
+      .forEach(([, value]) => {
+        expect(value).not.toHaveBeenCalled();
+      });
+    expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
+    expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
+    expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
+    expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
+  });
+
+  afterAll(async () => {
+    jest.resetAllMocks();
   });
 });
 
@@ -195,6 +272,13 @@ describe('POST/users/:id/deactivate should respond with a status code of 400', (
     const { email: login, password } = getAdminLoginData();
 
     adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
+
+    const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
+    registerTestEventHandlers(eventDispatcher);
+  });
+
+  beforeEach(async() => {
+    jest.resetAllMocks();
   });
 
   test('when user not exist', async () => {
@@ -212,6 +296,15 @@ describe('POST/users/:id/deactivate should respond with a status code of 400', (
     expect(deactivateMessage).toBe(errorKeys.users.User_Does_Not_Exist);
     expect(deactivateArgs.length).toBe(1);
     expect(deactivateArgs[0]).toBe(userId);
+
+    // checking events running via eventDispatcher
+    Object.entries(testEventHandlers).forEach(([, value]) => {
+      expect(value).not.toHaveBeenCalled();
+    });
+  });
+
+  afterAll(async () => {
+    jest.resetAllMocks();
   });
 });
 
@@ -225,6 +318,13 @@ describe('POST/users/:id/deactivate should respond with a status code of 404', (
     const { email: login, password } = getAdminLoginData();
 
     adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
+
+    const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
+    registerTestEventHandlers(eventDispatcher);
+  });
+
+  beforeEach(async() => {
+    jest.resetAllMocks();
   });
 
   test('when user Id is not GUID', async () => {
@@ -238,6 +338,15 @@ describe('POST/users/:id/deactivate should respond with a status code of 404', (
     expect(typeof body).toBe('object');
     const { message: deactivateMessage }: { message: string } = body;
     expect(deactivateMessage).toBe(errorKeys.general.Page_Does_Not_Exist);
+
+    // checking events running via eventDispatcher
+    Object.entries(testEventHandlers).forEach(([, value]) => {
+      expect(value).not.toHaveBeenCalled();
+    });
+  });
+
+  afterAll(async () => {
+    jest.resetAllMocks();
   });
 });
 
@@ -250,6 +359,13 @@ describe('POST/users/:id/deactivate should respond with a status code of 401', (
     const { email: login, password } = getAdminLoginData();
 
     adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
+
+    const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
+    registerTestEventHandlers(eventDispatcher);
+  });
+
+  beforeEach(async() => {
+    jest.resetAllMocks();
   });
 
   test('when token is invalid', async () => {
@@ -262,5 +378,14 @@ describe('POST/users/:id/deactivate should respond with a status code of 401', (
     const body = deactivateResponse.body;
     expect(typeof body).toBe('object');
     expect(body.data.message).toBe(errorKeys.login.Wrong_Authentication_Token);
+
+    // checking events running via eventDispatcher
+    Object.entries(testEventHandlers).forEach(([, value]) => {
+      expect(value).not.toHaveBeenCalled();
+    });
+  });
+
+  afterAll(async () => {
+    jest.resetAllMocks();
   });
 });

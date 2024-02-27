@@ -1,8 +1,7 @@
-import { User } from '@db/DbModels';
 import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
-import { BaseService, userToIUser } from '@modules/common';
+import { BaseService, userToIUser, userToIUserProfile } from '@modules/common';
 import {
   ActivateUserReqDto,
   CreateUserDto,
@@ -11,6 +10,12 @@ import {
   DeleteUserReqDto,
   GetUserProfileReqDto,
   IUser,
+  IUserProfile,
+  UserActivatedEventDto,
+  UserCreatedEventDto,
+  UserDeactivatedEventDto,
+  UserDeletedEventDto,
+  UserRetrievedEventDto,
   UsersRepository,
 } from '@modules/users';
 import { isGuid, isNullOrEmptyString, isNullOrUndefined } from '@utils';
@@ -26,7 +31,7 @@ export class UsersService extends BaseService {
     this._userRepository = Container.get(UsersRepository);
   }
 
-  public async get(reqDto: GetUserProfileReqDto): Promise<User | null> {
+  public async get(reqDto: GetUserProfileReqDto): Promise<IUserProfile | null> {
     if (!isGuid(reqDto.userGuid)) {
       return null;
     }
@@ -37,7 +42,11 @@ export class UsersService extends BaseService {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.User_Does_Not_Exist, [reqDto.userGuid!]);
     }
 
-    return user;
+    const userProfile = userToIUserProfile(user!);
+
+    this._eventDispatcher.dispatch(events.users.userRetrieved, new UserRetrievedEventDto(userProfile, reqDto.currentUserId));
+
+    return userProfile;
   }
 
   public async create(reqDto: CreateUserReqDto): Promise<IUser> {
@@ -59,7 +68,8 @@ export class UsersService extends BaseService {
 
     const user = await this._userRepository.create(reqDto);
     const userDto = userToIUser(user);
-    this._eventDispatcher.dispatch(events.users.userCreated, userDto);
+    this._eventDispatcher.dispatch(events.users.userCreated, new UserCreatedEventDto(userDto, reqDto.currentUserId));
+
     return userDto;
   }
 
@@ -95,7 +105,9 @@ export class UsersService extends BaseService {
 
     const deletedUser = await this._userRepository.delete(user!, reqDto);
 
-    return isNullOrUndefined(deletedUser) ? null : deletedUser!.uuid;
+    this._eventDispatcher.dispatch(events.users.userDeleted, new UserDeletedEventDto(userToIUser(deletedUser!), reqDto.currentUserId));
+
+    return deletedUser!.uuid;
   }
 
   public async activate(reqDto: ActivateUserReqDto): Promise<boolean> {
@@ -115,7 +127,9 @@ export class UsersService extends BaseService {
 
     const activatedUser = await this._userRepository.activate(user!.id, reqDto);
 
-    return !isNullOrUndefined(activatedUser) && activatedUser!.isActive;
+    this._eventDispatcher.dispatch(events.users.userActivated, new UserActivatedEventDto(userToIUser(activatedUser!), reqDto.currentUserId));
+
+    return activatedUser!.isActive;
   }
 
   public async deactivate(reqDto: DeactivateUserReqDto): Promise<boolean> {
@@ -135,6 +149,8 @@ export class UsersService extends BaseService {
 
     const deactivatedUser = await this._userRepository.deactivate(user!.id, reqDto);
 
-    return !isNullOrUndefined(deactivatedUser) && !deactivatedUser!.isActive;
+    this._eventDispatcher.dispatch(events.users.userDeactivated, new UserDeactivatedEventDto(userToIUser(deactivatedUser!), reqDto.currentUserId));
+
+    return !deactivatedUser!.isActive;
   }
 }

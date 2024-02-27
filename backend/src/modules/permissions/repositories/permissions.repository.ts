@@ -2,7 +2,7 @@ import { UserSystemPermission } from '@db/DbModels';
 import { BaseRepository } from '@modules/common';
 import { AddPermissionReqDto, DeletePermissionsReqDto, SystemPermission } from '@modules/permissions';
 import { UsersRepository } from '@modules/users';
-import { isNullOrUndefined, isPositiveNumber } from '@utils';
+import { getUtcNow, isNullOrUndefined, isPositiveNumber } from '@utils';
 import Container, { Service } from 'typedi';
 
 @Service()
@@ -49,7 +49,7 @@ export class PermissionsRepository extends BaseRepository {
         permission: {
           connect: { id: reqDto.permissionId },
         },
-        assignedAt: new Date(),
+        assignedAt: getUtcNow(),
         assignedBy: {
           connect: { id: reqDto.currentUserId },
         },
