@@ -62,8 +62,8 @@ describe('POST /login', () => {
       };
       const next: NextFunction = jest.fn();
       await setIdentity(req as any, {} as any, next);
-      expect((req as RequestWithIdentity).identity.userUuid).toEqual(userLoggedIn.uuid);
-      expect((req as RequestWithIdentity).identity.hasPermissionToEditUserProfile()).toBeTruthy();
+      expect((req as unknown as RequestWithIdentity).identity.userUuid).toEqual(userLoggedIn.uuid);
+      expect((req as unknown as RequestWithIdentity).identity.hasPermissionToEditUserProfile()).toBeTruthy();
       expect(next).toHaveBeenCalled();
 
       // checking events running via eventDispatcher
@@ -105,8 +105,8 @@ describe('POST /login', () => {
       };
       const next: NextFunction = jest.fn();
       await setIdentity(req as any, {} as any, next);
-      expect((req as RequestWithIdentity).identity.userUuid).toEqual(userLoggedIn.uuid);
-      expect((req as RequestWithIdentity).identity.hasPermissionToEditUserProfile()).toBeTruthy();
+      expect((req as unknown as RequestWithIdentity).identity.userUuid).toEqual(userLoggedIn.uuid);
+      expect((req as unknown as RequestWithIdentity).identity.hasPermissionToEditUserProfile()).toBeTruthy();
       expect(next).toHaveBeenCalled();
 
       // checking events running via eventDispatcher
