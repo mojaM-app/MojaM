@@ -2,33 +2,6 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { isNullOrUndefined } from './object.utils';
 
-const arraysEquals = (arr1: any[] | null | undefined, arr2: any[] | null | undefined): boolean => {
-  if (
-    (isNullOrUndefined(arr1) && isNullOrUndefined(arr2)) ||
-    (isNullOrUndefined(arr1) && (arr2?.length ?? 0) === 0) ||
-    (isNullOrUndefined(arr2) && (arr1?.length ?? 0) === 0) ||
-    ((arr1?.length ?? 0) === 0 && (arr2?.length ?? 0) === 0)
-  ) {
-    return true;
-  } else if (
-    (isNullOrUndefined(arr1) && (arr2?.length ?? 0) > 0) ||
-    (isNullOrUndefined(arr2) && (arr1?.length ?? 0) > 0) ||
-    arr1?.length !== arr2?.length
-  ) {
-    return false;
-  }
-
-  const uniqueArr1 = arr1!.filter(obj => {
-    return !arr2!.some((obj2: any) => objectsEqual(obj, obj2));
-  });
-
-  const uniqueArr2 = arr2!.filter((obj: any) => {
-    return !arr1!.some(obj2 => objectsEqual(obj, obj2));
-  });
-
-  return arr1?.length === arr2?.length && uniqueArr1?.length === 0 && uniqueArr2?.length === 0;
-};
-
 const objectsEqual = (x: any, y: any): boolean => {
   if (x === y) {
     return true;
@@ -81,6 +54,33 @@ const objectsEqual = (x: any, y: any): boolean => {
   }
 
   return true;
+};
+
+const arraysEquals = (arr1: any[] | null | undefined, arr2: any[] | null | undefined): boolean => {
+  if (
+    (isNullOrUndefined(arr1) && isNullOrUndefined(arr2)) ||
+    (isNullOrUndefined(arr1) && (arr2?.length ?? 0) === 0) ||
+    (isNullOrUndefined(arr2) && (arr1?.length ?? 0) === 0) ||
+    ((arr1?.length ?? 0) === 0 && (arr2?.length ?? 0) === 0)
+  ) {
+    return true;
+  } else if (
+    (isNullOrUndefined(arr1) && (arr2?.length ?? 0) > 0) ||
+    (isNullOrUndefined(arr2) && (arr1?.length ?? 0) > 0) ||
+    arr1?.length !== arr2?.length
+  ) {
+    return false;
+  }
+
+  const uniqueArr1 = arr1!.filter(obj => {
+    return !arr2!.some((obj2: any) => objectsEqual(obj, obj2));
+  });
+
+  const uniqueArr2 = arr2!.filter((obj: any) => {
+    return !arr1!.some(obj2 => objectsEqual(obj, obj2));
+  });
+
+  return arr1?.length === arr2?.length && uniqueArr1?.length === 0 && uniqueArr2?.length === 0;
 };
 
 const isArray = (value: any): boolean => {
