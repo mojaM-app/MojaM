@@ -18,6 +18,7 @@ model User {
   phone               String    @map("Phone") @db.VarChar(30)
   phoneConfirmed      Boolean   @default(false) @map("PhoneConfirmed") @db.TinyInt()
   password            String    @map("Password") @db.VarChar(1024)
+  salt                String    @map("Salt") @db.VarChar(64)
   firstName           String?   @map("FirstName") @db.VarChar(255)
   lastName            String?   @map("LastName") @db.VarChar(255)
   birthDay            DateTime? @map("BirthDay") @db.Date
@@ -29,7 +30,7 @@ model User {
   failedLoginAttempts Int       @default(0) @map("FailedLoginAttempts") @db.Int
   isLockedOut         Boolean   @default(false) @map("IsLockedOut") @db.TinyInt()
 
-  systemPermissions UserSystemPermission[] @relation("User")
+  systemPermissions         UserSystemPermission[] @relation("User")
   assignedSystemPermissions UserSystemPermission[] @relation("AssignedBy")
 
   @@unique([email, phone], map: "UQ_User_Email_Phone")
