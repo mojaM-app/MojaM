@@ -2,6 +2,7 @@
   "name": "moja-m_backend_app",
   "version": "0.0.0",
   "license": "MIT",
+  "type": "commonjs",
   "scripts": {
     "init": "copy .env.example .env.development.local && copy .env.example .env.test.local && npm install -g dotenv-cli && npm install && npm audit",
     "start": "npm run build && cross-env NODE_ENV=production node dist/src/server.js",
@@ -26,7 +27,6 @@
   },
   "dependencies": {
     "@prisma/client": "^5.10.2",
-    "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "compression": "^1.7.4",
@@ -51,7 +51,6 @@
   "devDependencies": {
     "@swc/cli": "^0.3.10",
     "@swc/core": "^1.4.5",
-    "@types/bcrypt": "^5.0.2",
     "@types/compression": "^1.7.5",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
@@ -83,10 +82,10 @@
     "prettier": "^3.2.5",
     "prisma": "^5.10.2",
     "supertest": "^6.3.4",
-    "ts-jest": "^29.1.2",
+    "ts-jest": "^29.1.1",
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.8",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "5.4.2"
+    "typescript": "5.2.2"
   }
 }
