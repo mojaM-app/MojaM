@@ -9,20 +9,22 @@ import { PermissionsRepository, SystemPermission } from '@modules/permissions';
 import { IUser, UpdateUserReqDto, UsersRepository } from '@modules/users';
 import { isNullOrEmptyString } from '@utils';
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
-import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import StatusCode from 'status-code-enum';
 import { Container, Service } from 'typedi';
+import { CryptoService } from './crypto.service';
 
 @Service()
 export class AuthService extends BaseService {
   private readonly _userRepository: UsersRepository;
   private readonly _permissionRepository: PermissionsRepository;
+  private readonly _cryptoService: CryptoService;
 
   public constructor() {
     super();
     this._userRepository = Container.get(UsersRepository);
     this._permissionRepository = Container.get(PermissionsRepository);
+    this._cryptoService = Container.get(CryptoService);
   }
 
   public async login(loginData: LoginDto): Promise<{ cookie: string; user: IUser }> {
@@ -49,7 +51,7 @@ export class AuthService extends BaseService {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.User_Is_Locked_Out);
     }
 
-    const isPasswordMatching: boolean = await compare(loginData.password ?? '', user.password);
+    const isPasswordMatching: boolean = this._cryptoService.passwordMatches(loginData.password ?? '', user.salt, user.password);
 
     if (!isPasswordMatching) {
       const failedLoginAttempts = await this._userRepository.increaseFailedLoginAttempts({

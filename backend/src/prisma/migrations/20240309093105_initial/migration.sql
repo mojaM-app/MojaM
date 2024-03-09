@@ -7,6 +7,7 @@ CREATE TABLE `Users` (
     `Phone` VARCHAR(30) NOT NULL,
     `PhoneConfirmed` BOOLEAN NOT NULL DEFAULT false,
     `Password` VARCHAR(1024) NOT NULL,
+    `Salt` VARCHAR(64) NOT NULL,
     `FirstName` VARCHAR(255) NULL,
     `LastName` VARCHAR(255) NULL,
     `BirthDay` DATE NULL,

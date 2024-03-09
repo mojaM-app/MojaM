@@ -1,6 +1,7 @@
 import { User } from '@db/DbModels';
 import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
+import { CryptoService } from '@modules/auth/services/crypto.service';
 import { BaseRepository } from '@modules/common';
 import {
   ActivateUserReqDto,
@@ -12,15 +13,17 @@ import {
   UpdateUserReqDto,
 } from '@modules/users';
 import { isGuid, isNullOrEmptyString, isNullOrUndefined, isPositiveNumber } from '@utils';
-import { hash } from 'bcrypt';
 import { isEmail } from 'class-validator';
 import StatusCode from 'status-code-enum';
-import { Service } from 'typedi';
+import Container, { Service } from 'typedi';
 
 @Service()
 export class UsersRepository extends BaseRepository {
+  private readonly _cryptoService: CryptoService;
+
   public constructor() {
     super();
+    this._cryptoService = Container.get(CryptoService);
   }
 
   public async getIdByUuid(userGuid: string | null | undefined): Promise<number | undefined> {
@@ -100,8 +103,9 @@ export class UsersRepository extends BaseRepository {
 
   public async create(reqDto: CreateUserReqDto): Promise<User> {
     const userData: CreateUserDto = reqDto.userData;
-    const hashedPassword = await hash(userData.password, 10);
-    return await this._dbContext.user.create({ data: { ...userData, password: hashedPassword, isActive: false } });
+    const salt = this._cryptoService.generateSalt();
+    const hashedPassword = this._cryptoService.hashPassword(salt, userData.password);
+    return await this._dbContext.user.create({ data: { ...userData, password: hashedPassword, isActive: false, salt } });
   }
 
   public async checkIfCanBeDeleted(userId: number): Promise<string[]> {

@@ -1,9 +1,10 @@
-import { SystemPermission } from '@modules/permissions/enums/system-permission.enum';
 import { PrismaClient } from '@prisma/client';
-import { hash } from 'bcrypt';
+import { CryptoService } from './../modules/auth/services/crypto.service';
+import { SystemPermission } from './../modules/permissions/enums/system-permission.enum';
 import { generateRandomNumber, getAdminLoginData } from './../utils/tests.utils';
 
 const prisma = new PrismaClient();
+const cryptoService = new CryptoService();
 
 const seedSystemPermission = async (prisma: PrismaClient): Promise<void> => {
   await prisma.systemPermission.upsert({
@@ -141,13 +142,15 @@ const seedUsers = async (prisma: PrismaClient): Promise<void> => {
   const adminLoginData = getAdminLoginData();
   let email: string = adminLoginData.email;
   let phone: string = adminLoginData.phone;
-  let password = await hash(adminLoginData.password, 10);
+  let salt = cryptoService.generateSalt();
+  let password = cryptoService.hashPassword(salt, adminLoginData.password);
   await prisma.user.upsert({
     where: { email_phone: { email, phone } },
     update: {},
     create: {
       email,
       phone,
+      salt,
       password,
       isActive: true,
       firstName: 'has full access',
@@ -173,13 +176,15 @@ const seedUsers = async (prisma: PrismaClient): Promise<void> => {
 
   email = 'user1';
   phone = generateRandomNumber(9);
-  password = await hash('p@ss', 10);
+  salt = cryptoService.generateSalt();
+  password = cryptoService.hashPassword(salt, 'p@ss');
   await prisma.user.upsert({
     where: { email_phone: { email, phone } },
     update: {},
     create: {
       email,
       phone,
+      salt,
       password,
       isActive: true,
       firstName: 'only for tests',

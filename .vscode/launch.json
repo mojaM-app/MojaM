@@ -5,31 +5,31 @@
             "type": "node-terminal",
             "request": "launch",
             "name": "Dev backend",
-            "command": "cd backend/ && npm run dev"
+            "command": "cd backend/; if ($?) { npm run dev }"
         },
         {
             "type": "node-terminal",
             "request": "launch",
             "name": "Start backend",
-            "command": "cd backend/ && npm run start"
+            "command": "cd backend/; if ($?) { npm run start }"
         },
         {
             "type": "node-terminal",
             "request": "launch",
             "name": "Test backend",
-            "command": "cd backend/ && npm run test"
+            "command": "cd backend/; if ($?) { npm run test }"
         },
         {
             "type": "node-terminal",
             "request": "launch",
             "name": "Lint backend",
-            "command": "cd backend/ && npm run lint"
+            "command": "cd backend/; if ($?) { npm run lint }"
         },
         {
             "type": "node-terminal",
             "request": "launch",
             "name": "Lint:Fix backend",
-            "command": "cd backend/ && npm run lint:fix"
+            "command": "cd backend/; if ($?) { npm run lint:fix }"
         }
     ]
 }
