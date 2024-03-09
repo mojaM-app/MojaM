@@ -1,7 +1,7 @@
 import { User } from '@db/DbModels';
 import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
-import { CryptoService } from '@modules/auth/services/crypto.service';
+import { CryptoService } from '@modules/auth';
 import { BaseRepository } from '@modules/common';
 import {
   ActivateUserReqDto,

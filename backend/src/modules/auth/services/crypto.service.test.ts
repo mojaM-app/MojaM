@@ -1,3 +1,4 @@
+import { getAdminLoginData } from '@utils/tests.utils';
 import { CryptoService } from './crypto.service';
 
 describe('CryptoService', () => {
@@ -25,7 +26,7 @@ describe('CryptoService', () => {
   describe('hashPassword', () => {
     it('should return a hashed password', () => {
       const salt = cryptoService.generateSalt();
-      const password = 'password123';
+      const { password } = getAdminLoginData();
       const hashedPassword = cryptoService.hashPassword(salt, password);
       expect(hashedPassword).toBeDefined();
       expect(typeof hashedPassword).toBe('string');
@@ -34,7 +35,7 @@ describe('CryptoService', () => {
 
     it('should return same hashed password', () => {
       const salt = cryptoService.generateSalt();
-      const password = 'password123';
+      const { password } = getAdminLoginData();
       const hashedPassword1 = cryptoService.hashPassword(salt, password);
       const hashedPassword2 = cryptoService.hashPassword(salt, password);
       expect(hashedPassword2).toEqual(hashedPassword1);
@@ -44,7 +45,7 @@ describe('CryptoService', () => {
   describe('passwordMatches', () => {
     it('should return TRUE when password matches', () => {
       const salt = cryptoService.generateSalt();
-      const password = 'password123';
+      const { password } = getAdminLoginData();
 
       expect(salt.length).toBeGreaterThan(0);
 

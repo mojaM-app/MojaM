@@ -3,7 +3,7 @@ import { User } from '@db/DbModels';
 import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
-import { DataStoredInToken, FailedLoginAttemptEventDto, InactiveUserTriesToLogInEventDto, LockedUserTriesToLogInEventDto, LoginDto, TokenData, UserLockedOutEventDto, UserLoggedInEventDto } from '@modules/auth';
+import { CryptoService, DataStoredInToken, FailedLoginAttemptEventDto, InactiveUserTriesToLogInEventDto, LockedUserTriesToLogInEventDto, LoginDto, TokenData, UserLockedOutEventDto, UserLoggedInEventDto } from '@modules/auth';
 import { BaseService, userToIUser } from '@modules/common';
 import { PermissionsRepository, SystemPermission } from '@modules/permissions';
 import { IUser, UpdateUserReqDto, UsersRepository } from '@modules/users';
@@ -12,7 +12,6 @@ import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
 import { sign } from 'jsonwebtoken';
 import StatusCode from 'status-code-enum';
 import { Container, Service } from 'typedi';
-import { CryptoService } from './crypto.service';
 
 @Service()
 export class AuthService extends BaseService {

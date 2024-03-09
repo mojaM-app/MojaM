@@ -17,5 +17,6 @@ export type { TokenData } from './models/TokenData';
 export { AuthController } from './controllers/auth.controller';
 export { AuthRoute } from './routes/auth.routes';
 export { AuthService } from './services/auth.service';
+export { CryptoService } from './services/crypto.service';
 
 export { setIdentity } from './middlewares/set-identity.middleware';
