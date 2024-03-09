@@ -1,6 +1,6 @@
 import { events } from '@events';
-import { FailedLoginAttemptEventDto, InactiveUserTriesToLogInEventDto, LockedUserTriesToLogInEventDto, UserLockedOutEventDto, UserLoggedInEventDto } from '@modules/auth';
 import { EventSubscriber, On } from 'event-dispatch';
+import { FailedLoginAttemptEventDto, InactiveUserTriesToLogInEventDto, LockedUserTriesToLogInEventDto, UserLockedOutEventDto, UserLoggedInEventDto } from '../dtos/event.dto';
 
 @EventSubscriber()
 export class LoginEventSubscriber {

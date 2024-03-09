@@ -1,6 +1,10 @@
 import { events } from '@events';
-import { UserActivatedEventDto, UserCreatedEventDto, UserDeactivatedEventDto, UserDeletedEventDto, UserRetrievedEventDto } from '@modules/users';
 import { EventSubscriber, On } from 'event-dispatch';
+import { UserActivatedEventDto } from '../dtos/activate-user.dto';
+import { UserCreatedEventDto } from '../dtos/create-user.dto';
+import { UserDeactivatedEventDto } from '../dtos/deactivate-user.dto';
+import { UserDeletedEventDto } from '../dtos/delete-user.dto';
+import { UserRetrievedEventDto } from '../dtos/get-user-profile.dto';
 
 @EventSubscriber()
 export class UserEventSubscriber {
