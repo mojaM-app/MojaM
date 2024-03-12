@@ -13,4 +13,4 @@ export { isNullOrUndefined } from '@utils/object.utils';
 
 export { isGuid } from '@utils/guid.utils';
 
-export { getFullUrl as fullUrl } from '@utils/url.utils';
+export { getFullUrl } from '@utils/url.utils';
