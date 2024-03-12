@@ -3,7 +3,7 @@ import { errorKeys } from '@exceptions';
 import { Routes } from '@interfaces';
 import { ErrorMiddleware } from '@middlewares';
 import { AuthRoute } from '@modules/auth';
-import { logger, stream } from '@utils';
+import { fullUrl, logger, stream } from '@utils';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -62,7 +62,8 @@ export class App {
     });
 
     this.app.use(function (req, res) {
-      res.status(404).json({ message: errorKeys.general.Page_Does_Not_Exist });
+      const url = fullUrl(req);
+      res.status(404).json({ message: errorKeys.general.Page_Does_Not_Exist, url });
     });
   }
 

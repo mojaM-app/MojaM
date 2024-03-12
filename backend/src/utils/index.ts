@@ -12,3 +12,5 @@ export { isEmptyString, isNullOrEmptyString, isString } from '@utils/strings.uti
 export { isNullOrUndefined } from '@utils/object.utils';
 
 export { isGuid } from '@utils/guid.utils';
+
+export { getFullUrl as fullUrl } from '@utils/url.utils';
