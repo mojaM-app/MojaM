@@ -19,7 +19,7 @@
     "prisma:generate": "prisma generate --schema src/prisma/schema.prisma",
     "prisma:seed": "dotenv -e .env.development.local -- npx prisma db seed",
     "prisma:reset": "dotenv -e .env.development.local -- npx prisma migrate reset",
-    "prisma:generate_prod": "prisma generate --schema ./prisma/schema.prisma",
+    "prisma_on_server:generate": "prisma generate --schema ./prisma/schema.prisma",
     "npm-check-updates": "npx npm-check-updates"
   },
   "prisma": {
