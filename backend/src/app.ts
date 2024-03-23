@@ -1,4 +1,4 @@
-import { CREDENTIALS, LOG_FORMAT, NODE_ENV, ORIGIN, PORT } from '@config';
+import { BASE_PATH, CREDENTIALS, LOG_FORMAT, NODE_ENV, ORIGIN, PORT } from '@config';
 import { errorKeys } from '@exceptions';
 import { Routes } from '@interfaces';
 import { ErrorMiddleware } from '@middlewares';
@@ -58,7 +58,7 @@ export class App {
     this.addAuthRoute();
 
     routes.forEach(route => {
-      this.app.use('/', route.router);
+      this.setRout(route);
     });
 
     this.app.use(function (req, res) {
@@ -69,10 +69,15 @@ export class App {
 
   private addAuthRoute(): void {
     const authRoute = new AuthRoute();
-    this.app.use('/', authRoute.router);
+    this.setRout(authRoute);
   }
 
   private initializeErrorHandling(): void {
     this.app.use(ErrorMiddleware);
+  }
+
+  private setRout(route: Routes): void {
+    const path = BASE_PATH ?? '';
+    this.app.use(path, route.router);
   }
 }
