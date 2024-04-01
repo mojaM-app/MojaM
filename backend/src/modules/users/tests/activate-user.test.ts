@@ -58,9 +58,9 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers)
-      .filter(([, value]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserDeleted].includes(value))
-      .forEach(([, value]) => {
-        expect(value).not.toHaveBeenCalled();
+      .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserDeleted].includes(eventHandler))
+      .forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
       });
     expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
     expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
@@ -107,9 +107,9 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers)
-      .filter(([, value]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserDeleted].includes(value))
-      .forEach(([, value]) => {
-        expect(value).not.toHaveBeenCalled();
+      .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserDeleted].includes(eventHandler))
+      .forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
       });
     expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
     expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
@@ -144,9 +144,9 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers)
-      .filter(([, value]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserDeleted].includes(value))
-      .forEach(([, value]) => {
-        expect(value).not.toHaveBeenCalled();
+      .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserDeleted].includes(eventHandler))
+      .forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
       });
     expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
     expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
@@ -187,8 +187,8 @@ describe('POST/users/:id/activate should respond with a status code of 403', () 
     expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
 
     // checking events running via eventDispatcher
-    Object.entries(testEventHandlers).forEach(([, value]) => {
-      expect(value).not.toHaveBeenCalled();
+    Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+      expect(eventHandler).not.toHaveBeenCalled();
     });
   });
 
@@ -240,16 +240,16 @@ describe('POST/users/:id/activate should respond with a status code of 403', () 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers)
       .filter(
-        ([, value]) =>
+        ([, eventHandler]) =>
           ![
             testEventHandlers.onUserCreated,
             testEventHandlers.onUserActivated,
             testEventHandlers.onUserLoggedIn,
             testEventHandlers.onUserDeleted,
-          ].includes(value),
+          ].includes(eventHandler),
       )
-      .forEach(([, value]) => {
-        expect(value).not.toHaveBeenCalled();
+      .forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
       });
     expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
     expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
@@ -298,8 +298,8 @@ describe('POST/users/:id/activate should respond with a status code of 400', () 
     expect(activateArgs[0]).toBe(userId);
 
     // checking events running via eventDispatcher
-    Object.entries(testEventHandlers).forEach(([, value]) => {
-      expect(value).not.toHaveBeenCalled();
+    Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+      expect(eventHandler).not.toHaveBeenCalled();
     });
   });
 
@@ -340,8 +340,8 @@ describe('POST/users/:id/activate should respond with a status code of 404', () 
     expect(activateMessage).toBe(errorKeys.general.Page_Does_Not_Exist);
 
     // checking events running via eventDispatcher
-    Object.entries(testEventHandlers).forEach(([, value]) => {
-      expect(value).not.toHaveBeenCalled();
+    Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+      expect(eventHandler).not.toHaveBeenCalled();
     });
   });
 
@@ -380,8 +380,8 @@ describe('POST/users/:id/activate should respond with a status code of 401', () 
     expect(body.data.message).toBe(errorKeys.login.Wrong_Authentication_Token);
 
     // checking events running via eventDispatcher
-    Object.entries(testEventHandlers).forEach(([, value]) => {
-      expect(value).not.toHaveBeenCalled();
+    Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+      expect(eventHandler).not.toHaveBeenCalled();
     });
   });
 

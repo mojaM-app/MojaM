@@ -33,8 +33,8 @@ const testEventHandlers: {
 };
 
 const registerTestEventHandlers = (eventDispatcher: EventDispatcher): void => {
-  Object.entries(testEventHandlers).forEach(([key, value]) => {
-    eventDispatcher.on(key, value);
+  Object.entries(testEventHandlers).forEach(([event, eventHandler]) => {
+    eventDispatcher.on(event, eventHandler);
   });
 };
 

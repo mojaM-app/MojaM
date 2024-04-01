@@ -18,7 +18,11 @@ export class PermissionsController extends BaseController {
       const { userGuid, permissionId, currentUserId } = this.getRequestParams(req);
       const reqDto = new AddPermissionReqDto(userGuid, permissionId, currentUserId);
       const result = await this._permissionService.add(reqDto);
-      res.status(201).json({ data: result, message: events.permissions.permissionAdded });
+      if (result === true) {
+        res.status(201).json({ data: result, message: events.permissions.permissionAdded });
+      } else {
+        res.status(400).json({ data: result });
+      }
     } catch (error) {
       next(error);
     }
@@ -29,7 +33,11 @@ export class PermissionsController extends BaseController {
       const { userGuid, permissionId, currentUserId } = this.getRequestParams(req);
       const reqDto = new DeletePermissionsReqDto(userGuid, permissionId, currentUserId);
       const result = await this._permissionService.delete(reqDto);
-      res.status(200).json({ data: result, message: events.permissions.permissionDeleted });
+      if (result === true) {
+        res.status(200).json({ data: result, message: events.permissions.permissionDeleted });
+      } else {
+        res.status(400).json({ data: result });
+      }
     } catch (error) {
       next(error);
     }

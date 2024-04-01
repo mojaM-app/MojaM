@@ -71,9 +71,9 @@ describe('POST /login', () => {
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(new UserLoggedInEventDto(userLoggedIn));
 
       Object.entries(testEventHandlers)
-        .filter(([, value]) => ![testEventHandlers.onUserLoggedIn].includes(value))
-        .forEach(([, value]) => {
-          expect(value).not.toHaveBeenCalled();
+        .filter(([, eventHandler]) => ![testEventHandlers.onUserLoggedIn].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
         });
     });
 
@@ -114,9 +114,9 @@ describe('POST /login', () => {
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(new UserLoggedInEventDto(userLoggedIn));
 
       Object.entries(testEventHandlers)
-        .filter(([, value]) => ![testEventHandlers.onUserLoggedIn].includes(value))
-        .forEach(([, value]) => {
-          expect(value).not.toHaveBeenCalled();
+        .filter(([, eventHandler]) => ![testEventHandlers.onUserLoggedIn].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
         });
     });
   });
@@ -174,9 +174,9 @@ describe('POST /login', () => {
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
-        .filter(([, value]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(value))
-        .forEach(([, value]) => {
-          expect(value).not.toHaveBeenCalled();
+        .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(2);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(2);
@@ -230,9 +230,9 @@ describe('POST /login', () => {
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
-        .filter(([, value]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(value))
-        .forEach(([, value]) => {
-          expect(value).not.toHaveBeenCalled();
+        .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(2);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(2);
@@ -261,8 +261,8 @@ describe('POST /login', () => {
       }
 
       // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, value]) => {
-        expect(value).not.toHaveBeenCalled();
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
       });
     });
 
@@ -299,9 +299,9 @@ describe('POST /login', () => {
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
-        .filter(([, value]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(value))
-        .forEach(([, value]) => {
-          expect(value).not.toHaveBeenCalled();
+        .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
@@ -321,8 +321,8 @@ describe('POST /login', () => {
       expect(loginArgs).toBeUndefined();
 
       // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, value]) => {
-        expect(value).not.toHaveBeenCalled();
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
       });
     });
 
@@ -340,8 +340,8 @@ describe('POST /login', () => {
       expect(loginArgs).toBeUndefined();
 
       // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, value]) => {
-        expect(value).not.toHaveBeenCalled();
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
       });
     });
 
@@ -380,16 +380,16 @@ describe('POST /login', () => {
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
         .filter(
-          ([, value]) =>
+          ([, eventHandler]) =>
             ![
               testEventHandlers.onUserCreated,
               testEventHandlers.onUserActivated,
               testEventHandlers.onUserDeleted,
               testEventHandlers.onFailedLoginAttempt,
-            ].includes(value),
+            ].includes(eventHandler),
         )
-        .forEach(([, value]) => {
-          expect(value).not.toHaveBeenCalled();
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
@@ -432,16 +432,16 @@ describe('POST /login', () => {
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
         .filter(
-          ([, value]) =>
+          ([, eventHandler]) =>
             ![
               testEventHandlers.onUserCreated,
               testEventHandlers.onUserActivated,
               testEventHandlers.onUserDeleted,
               testEventHandlers.onFailedLoginAttempt,
-            ].includes(value),
+            ].includes(eventHandler),
         )
-        .forEach(([, value]) => {
-          expect(value).not.toHaveBeenCalled();
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
@@ -497,7 +497,7 @@ describe('POST /login', () => {
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
         .filter(
-          ([, value]) =>
+          ([, eventHandler]) =>
             ![
               testEventHandlers.onUserCreated,
               testEventHandlers.onUserActivated,
@@ -505,10 +505,10 @@ describe('POST /login', () => {
               testEventHandlers.onFailedLoginAttempt,
               testEventHandlers.onUserLockedOut,
               testEventHandlers.lockedUserTriesToLogIn,
-            ].includes(value),
+            ].includes(eventHandler),
         )
-        .forEach(([, value]) => {
-          expect(value).not.toHaveBeenCalled();
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
@@ -565,7 +565,7 @@ describe('POST /login', () => {
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
         .filter(
-          ([, value]) =>
+          ([, eventHandler]) =>
             ![
               testEventHandlers.onUserCreated,
               testEventHandlers.onUserActivated,
@@ -573,10 +573,10 @@ describe('POST /login', () => {
               testEventHandlers.onFailedLoginAttempt,
               testEventHandlers.onUserLockedOut,
               testEventHandlers.lockedUserTriesToLogIn,
-            ].includes(value),
+            ].includes(eventHandler),
         )
-        .forEach(([, value]) => {
-          expect(value).not.toHaveBeenCalled();
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
@@ -627,16 +627,16 @@ describe('POST /login', () => {
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
         .filter(
-          ([, value]) =>
+          ([, eventHandler]) =>
             ![
               testEventHandlers.onUserCreated,
               testEventHandlers.onUserDeleted,
               testEventHandlers.onUserDeactivated,
               testEventHandlers.inactiveUserTriesToLogIn,
-            ].includes(value),
+            ].includes(eventHandler),
         )
-        .forEach(([, value]) => {
-          expect(value).not.toHaveBeenCalled();
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeactivated).not.toHaveBeenCalled();
@@ -679,16 +679,16 @@ describe('POST /login', () => {
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
         .filter(
-          ([, value]) =>
+          ([, eventHandler]) =>
             ![
               testEventHandlers.onUserCreated,
               testEventHandlers.onUserDeleted,
               testEventHandlers.onUserDeactivated,
               testEventHandlers.inactiveUserTriesToLogIn,
-            ].includes(value),
+            ].includes(eventHandler),
         )
-        .forEach(([, value]) => {
-          expect(value).not.toHaveBeenCalled();
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeactivated).not.toHaveBeenCalled();
@@ -730,9 +730,9 @@ describe('POST /login', () => {
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
-        .filter(([, value]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(value))
-        .forEach(([, value]) => {
-          expect(value).not.toHaveBeenCalled();
+        .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);

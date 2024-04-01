@@ -1,3 +1,4 @@
+import { events } from '@events';
 import { BaseService } from '@modules/common';
 import { AddPermissionReqDto, DeletePermissionsReqDto, PermissionsRepository } from '@modules/permissions';
 import { isGuid, isNullOrUndefined, isPositiveNumber } from '@utils';
@@ -17,7 +18,13 @@ export class PermissionsService extends BaseService {
       return false;
     }
 
-    return await this._permissionRepository.add(reqDto);
+    const result = await this._permissionRepository.add(reqDto);
+
+    if (result === true) {
+      this._eventDispatcher.dispatch(events.permissions.permissionAdded, result);
+    }
+
+    return result;
   }
 
   public async delete(reqDto: DeletePermissionsReqDto): Promise<boolean> {
@@ -25,6 +32,12 @@ export class PermissionsService extends BaseService {
       return false;
     }
 
-    return await this._permissionRepository.delete(reqDto);
+    const result = await this._permissionRepository.delete(reqDto);
+
+    if (result === true) {
+      this._eventDispatcher.dispatch(events.permissions.permissionDeleted, result);
+    }
+
+    return result;
   }
 }

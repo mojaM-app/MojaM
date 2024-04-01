@@ -10,3 +10,15 @@ export class AddPermissionReqDto extends BaseReqDto {
     this.permissionId = permissionId;
   }
 }
+
+export class PermissionAddedEventDto {
+  public readonly currentUserId: number | undefined;
+  userGuid: string | undefined;
+  permissionId: number | undefined;
+
+  public constructor(userGuid: string | undefined, permissionId: number | undefined, currentUserId: number | undefined) {
+    this.userGuid = userGuid;
+    this.permissionId = permissionId;
+    this.currentUserId = currentUserId;
+  }
+}
