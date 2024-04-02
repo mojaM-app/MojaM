@@ -2,7 +2,7 @@
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
-import { AuthRoute, LoginDto, RequestWithIdentity, UserLoggedInEventDto, setIdentity } from '@modules/auth';
+import { AuthRoute, LoginDto, RequestWithIdentity, UserLoggedInEvent, setIdentity } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import { IUser, UsersRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
@@ -68,7 +68,7 @@ describe('POST /login', () => {
 
       // checking events running via eventDispatcher
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(new UserLoggedInEventDto(userLoggedIn));
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(new UserLoggedInEvent(userLoggedIn));
 
       Object.entries(testEventHandlers)
         .filter(([, eventHandler]) => ![testEventHandlers.onUserLoggedIn].includes(eventHandler))
@@ -111,7 +111,7 @@ describe('POST /login', () => {
 
       // checking events running via eventDispatcher
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(new UserLoggedInEventDto(userLoggedIn));
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(new UserLoggedInEvent(userLoggedIn));
 
       Object.entries(testEventHandlers)
         .filter(([, eventHandler]) => ![testEventHandlers.onUserLoggedIn].includes(eventHandler))

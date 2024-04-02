@@ -1,12 +1,11 @@
 export { LoginEventSubscriber } from './events/event.subscriber';
 
-export {
-  FailedLoginAttemptEventDto,
-  InactiveUserTriesToLogInEventDto,
-  LockedUserTriesToLogInEventDto,
-  UserLockedOutEventDto,
-  UserLoggedInEventDto
-} from './dtos/event.dto';
+export { FailedLoginAttemptEvent } from './events/failed-login-attempt-event';
+export { InactiveUserTriesToLogInEvent } from './events/inactive-user-tries-to-log-in-event';
+export { LockedUserTriesToLogInEvent } from './events/locked-user-tries-to-log-in-event';
+export { UserLockedOutEvent } from './events/user-locked-out-event';
+export { UserLoggedInEvent } from './events/user-logged-in-event';
+
 export { LoginDto } from './dtos/login.dto';
 
 export type { DataStoredInToken } from './models/DataStoredInToken';

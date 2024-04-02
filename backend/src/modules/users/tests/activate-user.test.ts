@@ -184,7 +184,7 @@ describe('POST/users/:id/activate should respond with a status code of 403', () 
     expect(activateUserResponse.statusCode).toBe(403);
     const body = activateUserResponse.body;
     expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+    expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -223,7 +223,7 @@ describe('POST/users/:id/activate should respond with a status code of 403', () 
     expect(activateUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = activateUserResponse.body;
     expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+    expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
     const deleteUserResponse = await request(app.getServer())
       .delete(usersRoute.path + '/' + user.uuid)

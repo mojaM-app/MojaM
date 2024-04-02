@@ -2,7 +2,6 @@ import { errorKeys } from '@exceptions';
 import { BaseReqDto } from '@modules/common';
 import { VALIDATOR_SETTINGS } from '@utils';
 import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString, IsStrongPassword, MaxLength } from 'class-validator';
-import { IUser } from '../interfaces/IUser';
 
 export class CreateUserDto {
   @IsString({
@@ -57,15 +56,5 @@ export class CreateUserReqDto extends BaseReqDto {
   public constructor(userData: CreateUserDto, currentUserId: number | undefined) {
     super(currentUserId);
     this.userData = userData;
-  }
-}
-
-export class UserCreatedEventDto {
-  public readonly currentUserId: number | undefined;
-  public readonly user: IUser;
-
-  public constructor(user: IUser, currentUserId: number | undefined) {
-    this.user = user;
-    this.currentUserId = currentUserId;
   }
 }

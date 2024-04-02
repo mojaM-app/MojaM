@@ -91,7 +91,7 @@ describe('DELETE/users should respond with a status code of 403', () => {
     expect(deleteResponse.statusCode).toBe(403);
     const body = deleteResponse.body;
     expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+    expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -126,7 +126,7 @@ describe('DELETE/users should respond with a status code of 403', () => {
     expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = deleteResponse.body;
     expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+    expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
     deleteResponse = await request(app.getServer())
       .delete(usersRoute.path + '/' + user.uuid)

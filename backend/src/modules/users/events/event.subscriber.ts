@@ -1,35 +1,35 @@
 import { events } from '@events';
 import { EventSubscriber, On } from 'event-dispatch';
-import { UserActivatedEventDto } from '../dtos/activate-user.dto';
-import { UserCreatedEventDto } from '../dtos/create-user.dto';
-import { UserDeactivatedEventDto } from '../dtos/deactivate-user.dto';
-import { UserDeletedEventDto } from '../dtos/delete-user.dto';
-import { UserRetrievedEventDto } from '../dtos/get-user-profile.dto';
+import { UserActivatedEvent } from '../events/user-activated-event';
+import { UserCreatedEvent } from '../events/user-created-event';
+import { UserDeactivatedEvent } from '../events/user-deactivated-event';
+import { UserDeletedEvent } from '../events/user-deleted-event';
+import { UserRetrievedEvent } from '../events/user-retrieved-event';
 
 @EventSubscriber()
 export class UserEventSubscriber {
   @On(events.users.userRetrieved)
-  public onUserRetrieved(data: UserRetrievedEventDto): void {
+  public onUserRetrieved(data: UserRetrievedEvent): void {
     console.log(`User ${data?.user?.email} (phone: ${data?.user?.phone}) created!`);
   }
 
   @On(events.users.userCreated)
-  public onUserCreated(data: UserCreatedEventDto): void {
+  public onUserCreated(data: UserCreatedEvent): void {
     console.log(`User ${data?.user?.email} (phone: ${data?.user?.phone}) created!`);
   }
 
   @On(events.users.userDeleted)
-  public onUserDeleted(data: UserDeletedEventDto): void {
+  public onUserDeleted(data: UserDeletedEvent): void {
     console.log(`User ${data?.user?.email} (phone: ${data?.user?.phone}) deleted!`);
   }
 
   @On(events.users.userActivated)
-  public onUserActivated(data: UserActivatedEventDto): void {
+  public onUserActivated(data: UserActivatedEvent): void {
     console.log(`User ${data?.user?.email} (phone: ${data?.user?.phone}) activated!`);
   }
 
   @On(events.users.userDeactivated)
-  public onUserDeactivated(data: UserDeactivatedEventDto): void {
+  public onUserDeactivated(data: UserDeactivatedEvent): void {
     console.log(`User ${data?.user?.email} (phone: ${data?.user?.phone}) deactivated!`);
   }
 }

@@ -3,7 +3,7 @@ import { TranslatableHttpException } from './TranslatableHttpException';
 import { errorKeys } from './error.keys';
 
 export class ForbiddenException extends TranslatableHttpException {
-  constructor(translationKey: string = errorKeys.login.User_Not_Authenticated) {
+  constructor(translationKey: string = errorKeys.login.User_Not_Authorized) {
     super(StatusCode.ClientErrorForbidden, translationKey);
   }
 }

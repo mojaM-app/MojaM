@@ -1,7 +1,7 @@
 import { events } from '@events';
 import { BaseService } from '@modules/common';
-import { AddPermissionReqDto, DeletePermissionsReqDto, PermissionsRepository } from '@modules/permissions';
-import { isGuid, isNullOrUndefined, isPositiveNumber } from '@utils';
+import { AddPermissionReqDto, DeletePermissionsReqDto, PermissionAddedEvent, PermissionDeletedEvent, PermissionsRepository, SystemPermission } from '@modules/permissions';
+import { isEnumValue, isGuid, isNullOrUndefined, isPositiveNumber } from '@utils';
 import { Container, Service } from 'typedi';
 
 @Service()
@@ -14,14 +14,14 @@ export class PermissionsService extends BaseService {
   }
 
   public async add(reqDto: AddPermissionReqDto): Promise<boolean> {
-    if (!isGuid(reqDto.userGuid) || !isPositiveNumber(reqDto.permissionId)) {
+    if (!isGuid(reqDto.userGuid) || !isEnumValue(SystemPermission, reqDto.permissionId)) {
       return false;
     }
 
     const result = await this._permissionRepository.add(reqDto);
 
     if (result === true) {
-      this._eventDispatcher.dispatch(events.permissions.permissionAdded, result);
+      this._eventDispatcher.dispatch(events.permissions.permissionAdded, new PermissionAddedEvent(reqDto.userGuid, reqDto.permissionId, reqDto.currentUserId));
     }
 
     return result;
@@ -35,7 +35,7 @@ export class PermissionsService extends BaseService {
     const result = await this._permissionRepository.delete(reqDto);
 
     if (result === true) {
-      this._eventDispatcher.dispatch(events.permissions.permissionDeleted, result);
+      this._eventDispatcher.dispatch(events.permissions.permissionDeleted, new PermissionDeletedEvent(reqDto.userGuid, reqDto.permissionId, reqDto.currentUserId));
     }
 
     return result;

@@ -11,11 +11,11 @@ import {
   GetUserProfileReqDto,
   IUser,
   IUserProfile,
-  UserActivatedEventDto,
-  UserCreatedEventDto,
-  UserDeactivatedEventDto,
-  UserDeletedEventDto,
-  UserRetrievedEventDto,
+  UserActivatedEvent,
+  UserCreatedEvent,
+  UserDeactivatedEvent,
+  UserDeletedEvent,
+  UserRetrievedEvent,
   UsersRepository,
 } from '@modules/users';
 import { isGuid, isNullOrEmptyString, isNullOrUndefined } from '@utils';
@@ -44,7 +44,7 @@ export class UsersService extends BaseService {
 
     const userProfile = userToIUserProfile(user!);
 
-    this._eventDispatcher.dispatch(events.users.userRetrieved, new UserRetrievedEventDto(userProfile, reqDto.currentUserId));
+    this._eventDispatcher.dispatch(events.users.userRetrieved, new UserRetrievedEvent(userProfile, reqDto.currentUserId));
 
     return userProfile;
   }
@@ -68,7 +68,7 @@ export class UsersService extends BaseService {
 
     const user = await this._userRepository.create(reqDto);
     const userDto = userToIUser(user);
-    this._eventDispatcher.dispatch(events.users.userCreated, new UserCreatedEventDto(userDto, reqDto.currentUserId));
+    this._eventDispatcher.dispatch(events.users.userCreated, new UserCreatedEvent(userDto, reqDto.currentUserId));
 
     return userDto;
   }
@@ -105,7 +105,7 @@ export class UsersService extends BaseService {
 
     const deletedUser = await this._userRepository.delete(user!, reqDto);
 
-    this._eventDispatcher.dispatch(events.users.userDeleted, new UserDeletedEventDto(userToIUser(deletedUser!), reqDto.currentUserId));
+    this._eventDispatcher.dispatch(events.users.userDeleted, new UserDeletedEvent(userToIUser(deletedUser!), reqDto.currentUserId));
 
     return deletedUser!.uuid;
   }
@@ -127,7 +127,7 @@ export class UsersService extends BaseService {
 
     const activatedUser = await this._userRepository.activate(user!.id, reqDto);
 
-    this._eventDispatcher.dispatch(events.users.userActivated, new UserActivatedEventDto(userToIUser(activatedUser!), reqDto.currentUserId));
+    this._eventDispatcher.dispatch(events.users.userActivated, new UserActivatedEvent(userToIUser(activatedUser!), reqDto.currentUserId));
 
     return activatedUser!.isActive;
   }
@@ -149,7 +149,7 @@ export class UsersService extends BaseService {
 
     const deactivatedUser = await this._userRepository.deactivate(user!.id, reqDto);
 
-    this._eventDispatcher.dispatch(events.users.userDeactivated, new UserDeactivatedEventDto(userToIUser(deactivatedUser!), reqDto.currentUserId));
+    this._eventDispatcher.dispatch(events.users.userDeactivated, new UserDeactivatedEvent(userToIUser(deactivatedUser!), reqDto.currentUserId));
 
     return !deactivatedUser!.isActive;
   }

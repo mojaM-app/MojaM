@@ -14,3 +14,5 @@ export { isNullOrUndefined } from '@utils/object.utils';
 export { isGuid } from '@utils/guid.utils';
 
 export { getFullUrl } from '@utils/url.utils';
+
+export { isEnumValue } from '@utils/enum.utils';

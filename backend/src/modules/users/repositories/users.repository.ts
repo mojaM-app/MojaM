@@ -119,6 +119,8 @@ export class UsersRepository extends BaseRepository {
   }
 
   public async delete(user: User, reqDto: DeleteUserReqDto): Promise<User | null> {
+    await this._dbContext.userSystemPermission.deleteMany({ where: { userId: user.id } });
+
     const deletedUser = await this._dbContext.user.delete({ where: { id: user.id } });
 
     return deletedUser;

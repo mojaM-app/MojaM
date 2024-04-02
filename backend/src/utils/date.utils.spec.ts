@@ -57,8 +57,7 @@ describe('getUtcNow', () => {
       now.getDate(),
       now.getHours(),
       now.getMinutes(),
-      now.getSeconds(),
-      now.getMilliseconds(),
+      now.getSeconds()
     )));
   });
 });

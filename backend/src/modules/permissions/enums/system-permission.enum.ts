@@ -1,4 +1,4 @@
-export const enum SystemPermission {
+enum SystemPermission {
   PreviewUserList = 100,
   PreviewUserProfile = 101,
   AddUser = 102,
@@ -11,3 +11,5 @@ export const enum SystemPermission {
   AddPermission = 200,
   DeletePermission = 201,
 }
+
+export { SystemPermission };
