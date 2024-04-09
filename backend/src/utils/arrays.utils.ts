@@ -93,7 +93,6 @@ const isArray = (array: any): boolean => {
 
 const isArrayEmpty = (array: any): boolean => {
   return isArray(array) && array.length === 0;
-}
+};
 
 export { arraysEquals, isArray, isArrayEmpty };
-
