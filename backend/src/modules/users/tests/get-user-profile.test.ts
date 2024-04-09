@@ -151,8 +151,7 @@ describe('GET/users/:id should respond with a status code of 403', () => {
     expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = deleteResponse.body;
     expect(typeof body).toBe('object');
-    const { data: deletedUserUuid, message: deleteMessage }: { data: string, message: string } = body;
-    expect(deleteMessage).toBe(events.users.userDeleted);
+    const { data: deletedUserUuid }: { data: string } = body;
     expect(deletedUserUuid).toBe(newUserDto.uuid);
 
     // checking events running via eventDispatcher

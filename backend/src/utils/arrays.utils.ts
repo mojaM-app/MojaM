@@ -83,12 +83,17 @@ const arraysEquals = (arr1: any[] | null | undefined, arr2: any[] | null | undef
   return arr1?.length === arr2?.length && uniqueArr1?.length === 0 && uniqueArr2?.length === 0;
 };
 
-const isArray = (value: any): boolean => {
-  if (isNullOrUndefined(value) || isNullOrUndefined(value.length)) {
+const isArray = (array: any): boolean => {
+  if (isNullOrUndefined(array) || isNullOrUndefined(array.length)) {
     return false;
   }
 
-  return Array.isArray(value);
+  return Array.isArray(array);
 };
 
-export { arraysEquals, isArray };
+const isArrayEmpty = (array: any): boolean => {
+  return isArray(array) && array.length === 0;
+}
+
+export { arraysEquals, isArray, isArrayEmpty };
+

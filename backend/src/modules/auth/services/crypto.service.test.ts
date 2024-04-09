@@ -24,6 +24,20 @@ describe('CryptoService', () => {
   });
 
   describe('hashPassword', () => {
+    it('should throw an error when salt is not set', () => {
+      const { password } = getAdminLoginData();
+      expect(() => cryptoService.hashPassword(null as any, password)).toThrow('Salt and password are required to hash a password');
+      expect(() => cryptoService.hashPassword(undefined as any, password)).toThrow('Salt and password are required to hash a password');
+      expect(() => cryptoService.hashPassword('', password)).toThrow('Salt and password are required to hash a password');
+    });
+
+    it('should throw an error when password is not set', () => {
+      const salt = cryptoService.generateSalt();
+      expect(() => cryptoService.hashPassword(salt, null as any)).toThrow('Salt and password are required to hash a password');
+      expect(() => cryptoService.hashPassword(salt, undefined as any)).toThrow('Salt and password are required to hash a password');
+      expect(() => cryptoService.hashPassword(salt, '')).toThrow('Salt and password are required to hash a password');
+    });
+
     it('should return a hashed password', () => {
       const salt = cryptoService.generateSalt();
       const { password } = getAdminLoginData();
@@ -39,6 +53,15 @@ describe('CryptoService', () => {
       const hashedPassword1 = cryptoService.hashPassword(salt, password);
       const hashedPassword2 = cryptoService.hashPassword(salt, password);
       expect(hashedPassword2).toEqual(hashedPassword1);
+    });
+
+    it('should return different hashed password', () => {
+      const salt1 = cryptoService.generateSalt();
+      const salt2 = cryptoService.generateSalt();
+      const { password } = getAdminLoginData();
+      const hashedPassword1 = cryptoService.hashPassword(salt1, password);
+      const hashedPassword2 = cryptoService.hashPassword(salt2, password);
+      expect(hashedPassword2).not.toEqual(hashedPassword1);
     });
   });
 

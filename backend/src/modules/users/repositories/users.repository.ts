@@ -1,4 +1,4 @@
-import { User } from '@db/DbModels';
+import { User, relatedDataNames } from '@db/DbModels';
 import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import { CryptoService } from '@modules/auth';
@@ -45,10 +45,6 @@ export class UsersRepository extends BaseRepository {
     }
 
     const user: User | null = await this._dbContext.user.findUnique({ where: { uuid: userGuid! } });
-
-    if (isNullOrUndefined(user)) {
-      return undefined;
-    }
 
     await this._cacheService.saveUserIdInCacheAsync(user!);
 
@@ -111,8 +107,8 @@ export class UsersRepository extends BaseRepository {
   public async checkIfCanBeDeleted(userId: number): Promise<string[]> {
     const relatedData: string[] = [];
 
-    if ((await this._dbContext.userSystemPermission.count({ where: { assignedById: userId } })) > 0) {
-      relatedData.push('SystemPermission_AssignedBy');
+    if ((await this._dbContext.userSystemPermission.count({ where: { assignedById: userId, userId: { not: userId } } })) > 0) {
+      relatedData.push(relatedDataNames.SystemPermission_AssignedBy);
     }
 
     return relatedData;

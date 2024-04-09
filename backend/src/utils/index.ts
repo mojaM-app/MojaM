@@ -5,7 +5,7 @@ export { getUtcNow, isDate, toUtcDate } from '@utils/date.utils';
 
 export { isNumber, isPositiveNumber, toNumber } from '@utils/numbers.utils';
 
-export { arraysEquals, isArray } from '@utils/arrays.utils';
+export { arraysEquals, isArray, isArrayEmpty } from '@utils/arrays.utils';
 
 export { isEmptyString, isNullOrEmptyString, isString } from '@utils/strings.utils';
 

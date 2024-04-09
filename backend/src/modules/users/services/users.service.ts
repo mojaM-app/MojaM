@@ -18,7 +18,7 @@ import {
   UserRetrievedEvent,
   UsersRepository,
 } from '@modules/users';
-import { isGuid, isNullOrEmptyString, isNullOrUndefined } from '@utils';
+import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import StatusCode from 'status-code-enum';
 import { Container, Service } from 'typedi';
 
@@ -32,10 +32,6 @@ export class UsersService extends BaseService {
   }
 
   public async get(reqDto: GetUserProfileReqDto): Promise<IUserProfile | null> {
-    if (!isGuid(reqDto.userGuid)) {
-      return null;
-    }
-
     const user = await this._userRepository.getByUuid(reqDto.userGuid);
 
     if (isNullOrUndefined(user)) {
@@ -83,10 +79,6 @@ export class UsersService extends BaseService {
   // }
 
   public async delete(reqDto: DeleteUserReqDto): Promise<string | null> {
-    if (!isGuid(reqDto.userGuid)) {
-      return null;
-    }
-
     const user = await this._userRepository.getByUuid(reqDto.userGuid);
 
     if (isNullOrUndefined(user)) {
@@ -111,10 +103,6 @@ export class UsersService extends BaseService {
   }
 
   public async activate(reqDto: ActivateUserReqDto): Promise<boolean> {
-    if (!isGuid(reqDto.userGuid)) {
-      return false;
-    }
-
     const user = await this._userRepository.getByUuid(reqDto.userGuid);
 
     if (isNullOrUndefined(user)) {
@@ -133,10 +121,6 @@ export class UsersService extends BaseService {
   }
 
   public async deactivate(reqDto: DeactivateUserReqDto): Promise<boolean> {
-    if (!isGuid(reqDto.userGuid)) {
-      return false;
-    }
-
     const user = await this._userRepository.getByUuid(reqDto.userGuid);
 
     if (isNullOrUndefined(user)) {

@@ -2,7 +2,7 @@ import { UserSystemPermission } from '@db/DbModels';
 import { BaseRepository } from '@modules/common';
 import { AddPermissionReqDto, DeletePermissionsReqDto, SystemPermission } from '@modules/permissions';
 import { UsersRepository } from '@modules/users';
-import { getUtcNow, isNullOrUndefined, isPositiveNumber } from '@utils';
+import { getUtcNow, isArrayEmpty, isEnumValue, isNullOrUndefined, isPositiveNumber } from '@utils';
 import Container, { Service } from 'typedi';
 
 @Service()
@@ -21,23 +21,27 @@ export class PermissionsRepository extends BaseRepository {
 
     const permissions = await this._dbContext.userSystemPermission.findMany({ where: { userId } });
 
+    if (isArrayEmpty(permissions)) {
+      return [];
+    }
+
     return permissions.map(m => m.permissionId);
   }
 
   public async add(reqDto: AddPermissionReqDto): Promise<boolean> {
     const userId = await this._userRepository.getIdByUuid(reqDto.userGuid);
 
-    if (!isPositiveNumber(userId) || !isPositiveNumber(reqDto.permissionId)) {
+    if (!isPositiveNumber(userId) || !isEnumValue(SystemPermission, reqDto.permissionId)) {
       return false;
     }
 
-    const where = { userId_permissionId: { userId: userId!, permissionId: reqDto.permissionId! } };
+    const existQuery = { userId_permissionId: { userId: userId!, permissionId: reqDto.permissionId! } };
 
-    const permission: UserSystemPermission | null = await this._dbContext.userSystemPermission.findUnique({
-      where,
+    const existedPermission: UserSystemPermission | null = await this._dbContext.userSystemPermission.findUnique({
+      where: existQuery,
     });
 
-    if (!isNullOrUndefined(permission)) {
+    if (!isNullOrUndefined(existedPermission)) {
       return true;
     }
 
@@ -62,14 +66,33 @@ export class PermissionsRepository extends BaseRepository {
   public async delete(reqDto: DeletePermissionsReqDto): Promise<boolean> {
     const userId = await this._userRepository.getIdByUuid(reqDto.userGuid);
 
-    if (!isPositiveNumber(userId) ||
-      (!isNullOrUndefined(reqDto.permissionId) && !isPositiveNumber(reqDto.permissionId))) {
+    if (!isPositiveNumber(userId) || (!isNullOrUndefined(reqDto.permissionId) && !isEnumValue(SystemPermission, reqDto.permissionId))) {
       return false;
     }
 
-    let user;
-    if (isPositiveNumber(reqDto.permissionId)) {
-      user = await this._dbContext.userSystemPermission.delete({
+    let existQuery;
+    if (isEnumValue(SystemPermission, reqDto.permissionId)) {
+      existQuery = {
+        userId: userId!,
+        permissionId: reqDto.permissionId!,
+      };
+    } else {
+      existQuery = {
+        userId: userId!,
+      };
+    }
+
+    const exist = await this._dbContext.userSystemPermission.count({
+      where: existQuery,
+    });
+
+    if (exist === 0) {
+      return true;
+    }
+
+    let deleteResult;
+    if (isEnumValue(SystemPermission, reqDto.permissionId)) {
+      deleteResult = await this._dbContext.userSystemPermission.delete({
         where: {
           userId_permissionId: {
             userId: userId!,
@@ -78,7 +101,7 @@ export class PermissionsRepository extends BaseRepository {
         },
       });
     } else {
-      user = await this._dbContext.user.update({
+      deleteResult = await this._dbContext.user.update({
         where: {
           id: userId,
         },
@@ -93,6 +116,6 @@ export class PermissionsRepository extends BaseRepository {
       });
     }
 
-    return !isNullOrUndefined(user);
+    return !isNullOrUndefined(deleteResult);
   }
 }

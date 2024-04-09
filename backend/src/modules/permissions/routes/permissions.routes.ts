@@ -22,7 +22,7 @@ export class PermissionsRoute implements Routes {
       this._permissionsController.add,
     );
     this.router.delete(
-      `${this.path}/:userId(${REGEX_GUID_PATTERN})/:permissionId(${REGEX_INT_PATTERN})`,
+      `${this.path}/:userId(${REGEX_GUID_PATTERN})/:permissionId(${REGEX_INT_PATTERN})?`,
       [setIdentity, this.checkDeletePermission],
       this._permissionsController.delete,
     );
