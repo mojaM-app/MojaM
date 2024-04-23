@@ -1,4 +1,4 @@
-import { getUtcNow } from "@utils";
+import { getUtcNow } from '@utils';
 
 export abstract class Event {
   public readonly timestamp: Date;

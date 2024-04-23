@@ -46,5 +46,5 @@ export const events = {
 };
 
 export { Event } from './Event';
-export { EventDispatcherService } from './event-dispatcher.service';
 
+export { EventDispatcherService } from './event-dispatcher.service';
