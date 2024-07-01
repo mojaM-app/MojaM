@@ -22,7 +22,8 @@ Połączenie do bazy realizowane jest za pomocą [ORM Prisma](https://www.prisma
 PORT = 5100
 
 # DATABASE
-DATABASE_URL= mysql://root:admin@localhost:3306/dev
+DATABASE_CONFIG = {"type":"mysql","host":"localhost","port":3306,"username":"root","password":"admin","database":"dev"}
+
 
 # TOKEN
 SECRET_KEY = secretKey
@@ -37,7 +38,7 @@ LOG_DIR = ../logs
 ORIGIN = *
 CREDENTIALS = true
 ```
-``DATABASE_URL`` zawiera informacje na temat połączenia do bazy danych.  
+``DATABASE_CONFIG`` zawiera informacje na temat połączenia do bazy danych.  
 Sprawdź jakie są Twoje paramety połączenia się z bazą danych a następnie ustaw je w pliku ``.env.development.local``  
 Powyższe poświadczenia to: login: ``root`` i hasło: ``admin``  
 Sprawdź też czy port pod którym dostępna jest Twoja baza danych jest poprawny (powyżej nr portu: ``3306``).  

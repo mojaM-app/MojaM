@@ -43,17 +43,6 @@
 			"problemMatcher": []
 		},
 		{
-			"label": "run prisma migration",
-			"type": "shell",
-			"windows": {
-				"command": "cd backend/; if ($?) { npm run prisma:migrate }"
-			},
-			"osx": {
-				"command": "cd backend/ && npm run prisma:migrate"
-			},
-			"problemMatcher": []
-		},
-		{
 			"label": "run backend tests",
 			"type": "shell",
 			"windows": {
