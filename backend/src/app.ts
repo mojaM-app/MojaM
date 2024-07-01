@@ -1,4 +1,5 @@
 import { BASE_PATH, CREDENTIALS, LOG_FORMAT, NODE_ENV, ORIGIN, PORT } from '@config';
+import { DbConnection } from '@db';
 import { errorKeys } from '@exceptions';
 import { Routes } from '@interfaces';
 import { ErrorMiddleware } from '@middlewares';
@@ -23,6 +24,7 @@ export class App {
     this.env = NODE_ENV ?? 'development';
     this.port = PORT ?? 5100;
 
+    this.initializeDatabase();
     this.initializeMiddlewares();
     this.initializeRoutes(routes);
     this.initializeErrorHandling();
@@ -79,5 +81,20 @@ export class App {
   private setRout(route: Routes): void {
     const path = BASE_PATH ?? '';
     this.app.use(path, route.router);
+  }
+
+  private initializeDatabase(): void {
+    // establish database connection
+    logger.info('==================== establish database connection ====================');
+
+    const connection: DbConnection = DbConnection.getConnection();
+    connection
+      .connect()
+      .then(() => {
+        logger.info('Data Source has been initialized!');
+      })
+      .catch((err: any) => {
+        logger.error('Error during Data Source initialization:', err);
+      });
   }
 }

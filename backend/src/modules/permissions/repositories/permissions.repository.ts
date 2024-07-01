@@ -1,4 +1,3 @@
-import { UserSystemPermission } from '@db/DbModels';
 import { BaseRepository } from '@modules/common';
 import { AddPermissionReqDto, DeletePermissionsReqDto, SystemPermission } from '@modules/permissions';
 import { UsersRepository } from '@modules/users';
@@ -19,13 +18,17 @@ export class PermissionsRepository extends BaseRepository {
       return [];
     }
 
-    const permissions = await this._dbContext.userSystemPermission.findMany({ where: { userId } });
+    const permissions = await this._dbContext.userSystemPermissions
+      .createQueryBuilder('u_to_p')
+      .where('u_to_p.UserId = :userId', { userId })
+      .select(['u_to_p.systemPermission'])
+      .getMany();
 
     if (isArrayEmpty(permissions)) {
       return [];
     }
 
-    return permissions.map(m => m.permissionId);
+    return permissions.map(m => (m as any)?.systemPermission);
   }
 
   public async add(reqDto: AddPermissionReqDto): Promise<boolean> {
@@ -35,29 +38,21 @@ export class PermissionsRepository extends BaseRepository {
       return false;
     }
 
-    const existQuery = { userId_permissionId: { userId: userId!, permissionId: reqDto.permissionId! } };
+    const exists = await this._dbContext.userSystemPermissions
+      .createQueryBuilder()
+      .where('PermissionId = :permissionId', { permissionId: reqDto.permissionId })
+      .andWhere('UserId = :userId', { userId })
+      .getExists();
 
-    const existedPermission: UserSystemPermission | null = await this._dbContext.userSystemPermission.findUnique({
-      where: existQuery,
-    });
-
-    if (!isNullOrUndefined(existedPermission)) {
+    if (exists) {
       return true;
     }
 
-    await this._dbContext.userSystemPermission.create({
-      data: {
-        user: {
-          connect: { id: userId },
-        },
-        permission: {
-          connect: { id: reqDto.permissionId },
-        },
-        assignedAt: getUtcNow(),
-        assignedBy: {
-          connect: { id: reqDto.currentUserId },
-        },
-      },
+    await this._dbContext.userSystemPermissions.save({
+      user: { id: userId },
+      systemPermission: { id: reqDto.permissionId },
+      assignedAt: getUtcNow(),
+      assignedBy: { id: reqDto.currentUserId },
     });
 
     return true;
@@ -66,56 +61,26 @@ export class PermissionsRepository extends BaseRepository {
   public async delete(reqDto: DeletePermissionsReqDto): Promise<boolean> {
     const userId = await this._userRepository.getIdByUuid(reqDto.userGuid);
 
-    if (!isPositiveNumber(userId) || (!isNullOrUndefined(reqDto.permissionId) && !isEnumValue(SystemPermission, reqDto.permissionId))) {
+    if (!isPositiveNumber(userId) ||
+      (!isNullOrUndefined(reqDto.permissionId) && !isEnumValue(SystemPermission, reqDto.permissionId))) {
       return false;
     }
 
-    let existQuery;
+    const queryBuilder = this._dbContext.userSystemPermissions
+      .createQueryBuilder()
+      .where('UserId = :userId', { userId });
+
     if (isEnumValue(SystemPermission, reqDto.permissionId)) {
-      existQuery = {
-        userId: userId!,
-        permissionId: reqDto.permissionId!,
-      };
-    } else {
-      existQuery = {
-        userId: userId!,
-      };
+      queryBuilder.andWhere('PermissionId = :permissionId', { permissionId: reqDto.permissionId });
     }
 
-    const exist = await this._dbContext.userSystemPermission.count({
-      where: existQuery,
-    });
+    const count = await queryBuilder.getCount();
 
-    if (exist === 0) {
+    if (count === 0) {
       return true;
     }
 
-    let deleteResult;
-    if (isEnumValue(SystemPermission, reqDto.permissionId)) {
-      deleteResult = await this._dbContext.userSystemPermission.delete({
-        where: {
-          userId_permissionId: {
-            userId: userId!,
-            permissionId: reqDto.permissionId!,
-          },
-        },
-      });
-    } else {
-      deleteResult = await this._dbContext.user.update({
-        where: {
-          id: userId,
-        },
-        data: {
-          systemPermissions: {
-            deleteMany: {},
-          },
-        },
-        include: {
-          systemPermissions: true,
-        },
-      });
-    }
-
+    const deleteResult = await queryBuilder.delete().execute();
     return !isNullOrUndefined(deleteResult);
   }
 }

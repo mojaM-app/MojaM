@@ -15,8 +15,8 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
   const usersRoute = new UsersRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App([usersRoute, permissionsRoute]);
-
   let adminAuthToken: string | undefined;
+
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
@@ -58,7 +58,10 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers)
-      .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserDeleted].includes(eventHandler))
+      .filter(
+        ([, eventHandler]) =>
+          ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserDeleted].includes(eventHandler),
+      )
       .forEach(([, eventHandler]) => {
         expect(eventHandler).not.toHaveBeenCalled();
       });
@@ -107,13 +110,16 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers)
-      .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserDeleted].includes(eventHandler))
+      .filter(
+        ([, eventHandler]) =>
+          ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserDeleted].includes(eventHandler),
+      )
       .forEach(([, eventHandler]) => {
         expect(eventHandler).not.toHaveBeenCalled();
       });
     expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
     expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
-    expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
+    expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
   });
 
   test('when data are valid, user has permission and activatedUser is not active', async () => {
@@ -144,7 +150,10 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers)
-      .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserDeleted].includes(eventHandler))
+      .filter(
+        ([, eventHandler]) =>
+          ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserDeleted].includes(eventHandler),
+      )
       .forEach(([, eventHandler]) => {
         expect(eventHandler).not.toHaveBeenCalled();
       });
@@ -161,8 +170,8 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
 describe('POST/users/:id/activate should respond with a status code of 403', () => {
   const usersRoute = new UsersRoute();
   const app = new App([usersRoute]);
-
   let adminAuthToken: string | undefined;
+
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
@@ -265,8 +274,8 @@ describe('POST/users/:id/activate should respond with a status code of 400', () 
   const usersRoute = new UsersRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App([usersRoute, permissionsRoute]);
-
   let adminAuthToken: string | undefined;
+
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
@@ -311,8 +320,8 @@ describe('POST/users/:id/activate should respond with a status code of 404', () 
   const usersRoute = new UsersRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App([usersRoute, permissionsRoute]);
-
   let adminAuthToken: string | undefined;
+
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
@@ -352,8 +361,8 @@ describe('POST/users/:id/activate should respond with a status code of 404', () 
 describe('POST/users/:id/activate should respond with a status code of 401', () => {
   const usersRoute = new UsersRoute();
   const app = new App([usersRoute]);
-
   let adminAuthToken: string | undefined;
+
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 

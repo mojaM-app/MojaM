@@ -15,8 +15,8 @@ import request from 'supertest';
 describe('GET/users/:id should respond with a status code of 200', () => {
   const usersRoute = new UsersRoute();
   const app = new App([usersRoute]);
-
   let adminAuthToken: string | undefined;
+
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
@@ -26,7 +26,7 @@ describe('GET/users/:id should respond with a status code of 200', () => {
     registerTestEventHandlers(eventDispatcher);
   });
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     jest.resetAllMocks();
   });
 
@@ -34,7 +34,7 @@ describe('GET/users/:id should respond with a status code of 200', () => {
     const newUser = generateValidUser();
     const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(newUser).set('Authorization', `Bearer ${adminAuthToken}`);
     expect(createUserResponse.statusCode).toBe(201);
-    const { data: newUserDto, message: createMessage }: { data: IUser, message: string } = createUserResponse.body;
+    const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createUserResponse.body;
     expect(newUserDto?.uuid).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
 
@@ -46,7 +46,7 @@ describe('GET/users/:id should respond with a status code of 200', () => {
     expect(getUserProfileResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     const body = getUserProfileResponse.body;
     expect(typeof body).toBe('object');
-    const { data: userProfile, message: getUserProfileMessage }: { data: IUserProfile, message: string } = body;
+    const { data: userProfile, message: getUserProfileMessage }: { data: IUserProfile; message: string } = body;
     expect(getUserProfileMessage).toBe(events.users.userRetrieved);
     expect(userProfile).toBeDefined();
     expect(userProfile.uuid).toBeDefined();
@@ -66,7 +66,10 @@ describe('GET/users/:id should respond with a status code of 200', () => {
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers)
-      .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserRetrieved, testEventHandlers.onUserDeleted].includes(eventHandler))
+      .filter(
+        ([, eventHandler]) =>
+          ![testEventHandlers.onUserCreated, testEventHandlers.onUserRetrieved, testEventHandlers.onUserDeleted].includes(eventHandler),
+      )
       .forEach(([, eventHandler]) => {
         expect(eventHandler).not.toHaveBeenCalled();
       });
@@ -83,18 +86,18 @@ describe('GET/users/:id should respond with a status code of 200', () => {
 describe('GET/users/:id should respond with a status code of 403', () => {
   const usersRoute = new UsersRoute();
   const app = new App([usersRoute]);
-
   let adminAuthToken: string | undefined;
+
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
+    adminAuthToken = (await loginAs(app, { login, password } satisfies LoginDto)).authToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
   });
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     jest.resetAllMocks();
   });
 
@@ -116,11 +119,14 @@ describe('GET/users/:id should respond with a status code of 403', () => {
 
   test('when user have no permission', async () => {
     const requestData = generateValidUser();
-    const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(requestData).set('Authorization', `Bearer ${adminAuthToken}`);
+    const createUserResponse = await request(app.getServer())
+      .post(usersRoute.path)
+      .send(requestData)
+      .set('Authorization', `Bearer ${adminAuthToken}`);
     expect(createUserResponse.statusCode).toBe(201);
     let body = createUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: newUserDto, message: createMessage }: { data: IUser, message: string } = body;
+    const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = body;
     expect(newUserDto?.uuid).toBeDefined();
     expect(newUserDto?.email).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
@@ -131,7 +137,7 @@ describe('GET/users/:id should respond with a status code of 403', () => {
       .set('Authorization', `Bearer ${adminAuthToken}`);
     expect(activateNewUserResponse.statusCode).toBe(200);
 
-    const newUserAuthToken = (await loginAs(app, ({ login: requestData.email, password: requestData.password } satisfies LoginDto))).authToken;
+    const newUserAuthToken = (await loginAs(app, { login: requestData.email, password: requestData.password } satisfies LoginDto)).authToken;
 
     const getUserProfileResponse = await request(app.getServer())
       .get(usersRoute.path + '/' + newUserDto.uuid)
@@ -156,7 +162,15 @@ describe('GET/users/:id should respond with a status code of 403', () => {
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers)
-      .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserLoggedIn, testEventHandlers.onUserDeleted].includes(eventHandler))
+      .filter(
+        ([, eventHandler]) =>
+          ![
+            testEventHandlers.onUserCreated,
+            testEventHandlers.onUserActivated,
+            testEventHandlers.onUserLoggedIn,
+            testEventHandlers.onUserDeleted,
+          ].includes(eventHandler),
+      )
       .forEach(([, eventHandler]) => {
         expect(eventHandler).not.toHaveBeenCalled();
       });
@@ -175,18 +189,18 @@ describe('GET/users/:id should respond with a status code of 403', () => {
 describe('GET/users/:id should respond with a status code of 400', () => {
   const usersRoute = new UsersRoute();
   const app = new App([usersRoute]);
-
   let adminAuthToken: string | undefined;
+
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
+    adminAuthToken = (await loginAs(app, { login, password } satisfies LoginDto)).authToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
   });
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     jest.resetAllMocks();
   });
 
@@ -201,7 +215,7 @@ describe('GET/users/:id should respond with a status code of 400', () => {
     const body = getUserProfileResponse.body;
     expect(typeof body).toBe('object');
     const data = body.data;
-    const { message: getUserProfileMessage, args: createArgs }: { message: string, args: string[] } = data;
+    const { message: getUserProfileMessage, args: createArgs }: { message: string; args: string[] } = data;
     expect(getUserProfileMessage).toBe(errorKeys.users.User_Does_Not_Exist);
     expect(createArgs.length).toBe(1);
     expect(createArgs[0]).toBe(userId);
@@ -220,18 +234,18 @@ describe('GET/users/:id should respond with a status code of 400', () => {
 describe('GET/users/:id should respond with a status code of 404', () => {
   const usersRoute = new UsersRoute();
   const app = new App([usersRoute]);
-
   let adminAuthToken: string | undefined;
+
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
+    adminAuthToken = (await loginAs(app, { login, password } satisfies LoginDto)).authToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
   });
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     jest.resetAllMocks();
   });
 
@@ -261,18 +275,18 @@ describe('GET/users/:id should respond with a status code of 404', () => {
 describe('GET/users/:id should respond with a status code of 401', () => {
   const usersRoute = new UsersRoute();
   const app = new App([usersRoute]);
-
   let adminAuthToken: string | undefined;
+
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, ({ login, password } satisfies LoginDto))).authToken;
+    adminAuthToken = (await loginAs(app, { login, password } satisfies LoginDto)).authToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
   });
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     jest.resetAllMocks();
   });
 

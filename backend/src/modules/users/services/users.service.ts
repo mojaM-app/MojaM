@@ -95,11 +95,11 @@ export class UsersService extends BaseService {
       );
     }
 
-    const deletedUser = await this._userRepository.delete(user!, reqDto);
+    await this._userRepository.delete(user!, reqDto);
 
-    this._eventDispatcher.dispatch(events.users.userDeleted, new UserDeletedEvent(userToIUser(deletedUser!), reqDto.currentUserId));
+    this._eventDispatcher.dispatch(events.users.userDeleted, new UserDeletedEvent(userToIUser(user!), reqDto.currentUserId));
 
-    return deletedUser!.uuid;
+    return user!.uuid;
   }
 
   public async activate(reqDto: ActivateUserReqDto): Promise<boolean> {

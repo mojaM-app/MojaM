@@ -279,7 +279,15 @@ describe('POST/users should respond with a status code of 403', () => {
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers)
-      .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserLoggedIn, testEventHandlers.onUserDeleted].includes(eventHandler))
+      .filter(
+        ([, eventHandler]) =>
+          ![
+            testEventHandlers.onUserCreated,
+            testEventHandlers.onUserActivated,
+            testEventHandlers.onUserLoggedIn,
+            testEventHandlers.onUserDeleted,
+          ].includes(eventHandler),
+      )
       .forEach(([, eventHandler]) => {
         expect(eventHandler).not.toHaveBeenCalled();
       });
@@ -367,7 +375,15 @@ describe('POST/users should respond with a status code of 401', () => {
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers)
-      .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserLoggedIn, testEventHandlers.onUserDeleted].includes(eventHandler))
+      .filter(
+        ([, eventHandler]) =>
+          ![
+            testEventHandlers.onUserCreated,
+            testEventHandlers.onUserActivated,
+            testEventHandlers.onUserLoggedIn,
+            testEventHandlers.onUserDeleted,
+          ].includes(eventHandler),
+      )
       .forEach(([, eventHandler]) => {
         expect(eventHandler).not.toHaveBeenCalled();
       });

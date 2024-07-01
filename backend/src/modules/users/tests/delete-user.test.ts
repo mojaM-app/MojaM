@@ -1,5 +1,5 @@
 import { App } from '@/app';
-import { relatedDataNames } from '@db/DbModels';
+import { relatedDataNames } from '@db';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { LoginDto } from '@modules/auth';
@@ -16,8 +16,8 @@ describe('DELETE/users should respond with a status code of 200', () => {
   const usersRoute = new UsersRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App([usersRoute, permissionsRoute]);
-
   let adminAuthToken: string | undefined;
+
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
@@ -193,8 +193,8 @@ describe('DELETE/users should respond with a status code of 200', () => {
 describe('DELETE/users should respond with a status code of 403', () => {
   const usersRoute = new UsersRoute();
   const app = new App([usersRoute]);
-
   let adminAuthToken: string | undefined;
+
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
@@ -297,8 +297,8 @@ describe('DELETE/users should respond with a status code of 400', () => {
   const usersRoute = new UsersRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App([usersRoute, permissionsRoute]);
-
   let adminAuthToken: string | undefined;
+
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
@@ -376,8 +376,7 @@ describe('DELETE/users should respond with a status code of 400', () => {
       .set('Authorization', `Bearer ${adminAuthToken}`);
     expect(activateUserResponse.statusCode).toBe(200);
 
-    const user1AuthToken = (await loginAs(app, { login: user1RequestData.email, password: user1RequestData.password } satisfies LoginDto))
-      .authToken;
+    const user1AuthToken = (await loginAs(app, { login: user1RequestData.email, password: user1RequestData.password } satisfies LoginDto)).authToken;
 
     path = permissionsRoute.path + '/' + user2.uuid + '/' + SystemPermission.PreviewUserList.toString();
     const user2AddPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${user1AuthToken}`);
@@ -455,8 +454,8 @@ describe('DELETE/users should respond with a status code of 404', () => {
   const usersRoute = new UsersRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App([usersRoute, permissionsRoute]);
-
   let adminAuthToken: string | undefined;
+
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
@@ -496,8 +495,8 @@ describe('DELETE/users should respond with a status code of 404', () => {
 describe('DELETE/users should respond with a status code of 401', () => {
   const usersRoute = new UsersRoute();
   const app = new App([usersRoute]);
-
   let adminAuthToken: string | undefined;
+
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 

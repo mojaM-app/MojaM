@@ -27,7 +27,7 @@ export class PermissionsService extends BaseService {
 
     const result = await this._permissionRepository.add(reqDto);
 
-    if (result === true) {
+    if (result) {
       this._eventDispatcher.dispatch(
         events.permissions.permissionAdded,
         new PermissionAddedEvent(reqDto.userGuid, reqDto.permissionId, reqDto.currentUserId),
@@ -44,7 +44,7 @@ export class PermissionsService extends BaseService {
 
     const result = await this._permissionRepository.delete(reqDto);
 
-    if (result === true) {
+    if (result) {
       this._eventDispatcher.dispatch(
         events.permissions.permissionDeleted,
         new PermissionDeletedEvent(reqDto.userGuid, reqDto.permissionId, reqDto.currentUserId),

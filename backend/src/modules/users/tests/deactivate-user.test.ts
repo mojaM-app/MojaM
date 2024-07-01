@@ -15,8 +15,8 @@ describe('POST/users/:id/deactivate should respond with a status code of 200', (
   const usersRoute = new UsersRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App([usersRoute, permissionsRoute]);
-
   let adminAuthToken: string | undefined;
+
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
@@ -174,8 +174,8 @@ describe('POST/users/:id/deactivate should respond with a status code of 200', (
 describe('POST/users/:id/deactivate should respond with a status code of 403', () => {
   const usersRoute = new UsersRoute();
   const app = new App([usersRoute]);
-
   let adminAuthToken: string | undefined;
+
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
@@ -265,8 +265,8 @@ describe('POST/users/:id/deactivate should respond with a status code of 400', (
   const usersRoute = new UsersRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App([usersRoute, permissionsRoute]);
-
   let adminAuthToken: string | undefined;
+
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
@@ -311,8 +311,8 @@ describe('POST/users/:id/deactivate should respond with a status code of 404', (
   const usersRoute = new UsersRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App([usersRoute, permissionsRoute]);
-
   let adminAuthToken: string | undefined;
+
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
@@ -352,8 +352,8 @@ describe('POST/users/:id/deactivate should respond with a status code of 404', (
 describe('POST/users/:id/deactivate should respond with a status code of 401', () => {
   const usersRoute = new UsersRoute();
   const app = new App([usersRoute]);
-
   let adminAuthToken: string | undefined;
+
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 

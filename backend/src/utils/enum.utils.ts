@@ -1,4 +1,4 @@
-const isEnumValue = (enumObject: any, value: any): boolean => {
+const isEnumValue = (enumObject: Record<string, unknown> | ArrayLike<unknown>, value: any): boolean => {
   const enumValues = Object.values(enumObject);
   return enumValues.includes(value);
 };

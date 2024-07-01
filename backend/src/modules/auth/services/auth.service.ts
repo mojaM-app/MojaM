@@ -1,5 +1,4 @@
 import { SECRET_AUDIENCE, SECRET_ISSUER, SECRET_KEY } from '@config';
-import { User } from '@db/DbModels';
 import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
@@ -7,6 +6,7 @@ import { CryptoService, DataStoredInToken, FailedLoginAttemptEvent, InactiveUser
 import { BaseService, userToIUser } from '@modules/common';
 import { PermissionsRepository, SystemPermission } from '@modules/permissions';
 import { IUser, UpdateUserReqDto, UsersRepository } from '@modules/users';
+import { User } from '@modules/users/entities/user.entity';
 import { isNullOrEmptyString } from '@utils';
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
 import { sign } from 'jsonwebtoken';

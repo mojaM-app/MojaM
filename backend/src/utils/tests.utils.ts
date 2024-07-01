@@ -41,14 +41,13 @@ const generateRandomNumber = (length: number = 9): string => {
   return pwd;
 };
 
-const getAdminLoginData = (): { email: string; phone: string; password: string } => {
-  return { email: 'admin@domain.com', phone: '123456789', password: 'P@ssWord!1' };
+const getAdminLoginData = (): { uuid: string; email: string; phone: string; password: string } => {
+  return {
+    uuid: '2eaa394a-649d-44c1-b797-4a9e4ed2f836',
+    email: 'admin@domain.com',
+    phone: '123456789',
+    password: 'P@ssWord!1',
+  };
 };
 
-export {
-  generateRandomEmail,
-  generateRandomNumber,
-  generateRandomPassword,
-  generateRandomString,
-  getAdminLoginData
-};
+export { generateRandomEmail, generateRandomNumber, generateRandomPassword, generateRandomString, getAdminLoginData };

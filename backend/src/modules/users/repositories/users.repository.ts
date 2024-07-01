@@ -1,4 +1,4 @@
-import { User, relatedDataNames } from '@db/DbModels';
+import { relatedDataNames } from '@db';
 import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import { CryptoService } from '@modules/auth';
@@ -16,6 +16,7 @@ import { isGuid, isNullOrEmptyString, isNullOrUndefined, isPositiveNumber } from
 import { isEmail } from 'class-validator';
 import StatusCode from 'status-code-enum';
 import Container, { Service } from 'typedi';
+import { User } from './../entities/user.entity';
 
 @Service()
 export class UsersRepository extends BaseRepository {
@@ -36,7 +37,7 @@ export class UsersRepository extends BaseRepository {
       return cachedUserId;
     }
 
-    const count: number = await this._dbContext.user.count({ where: { uuid: userGuid! } });
+    const count: number = await this._dbContext.users.count({ where: { uuid: userGuid! } });
 
     if (count > 1) {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.general.More_Then_One_Record_With_Same_Id, [userGuid!]);
@@ -44,9 +45,9 @@ export class UsersRepository extends BaseRepository {
       return undefined;
     }
 
-    const user: User | null = await this._dbContext.user.findUnique({ where: { uuid: userGuid! } });
+    const user: User | null = await this._dbContext.users.findOneBy({ uuid: userGuid! });
 
-    await this._cacheService.saveUserIdInCacheAsync(user!);
+    await this._cacheService.saveUserIdInCacheAsync(user);
 
     return user!.id;
   }
@@ -56,13 +57,13 @@ export class UsersRepository extends BaseRepository {
       return null;
     }
 
-    const count: number = await this._dbContext.user.count({ where: { id: userId! } });
+    const count: number = await this._dbContext.users.count({ where: { id: userId! } });
 
     if (count === 0) {
       return null;
     }
 
-    return await this._dbContext.user.findUnique({ where: { id: userId! } });
+    return await this._dbContext.users.findOneBy({ id: userId! });
   }
 
   public async getByUuid(userGuid: string | null | undefined): Promise<User | null> {
@@ -77,9 +78,9 @@ export class UsersRepository extends BaseRepository {
 
     let users: User[];
     if (isEmail(login)) {
-      users = await this._dbContext.user.findMany({ where: { email: login! } });
+      users = await this._dbContext.users.findBy({ email: login! });
     } else {
-      users = await this._dbContext.user.findMany({ where: { phone: login! } });
+      users = await this._dbContext.users.findBy({ phone: login! });
     }
 
     return users;
@@ -90,7 +91,7 @@ export class UsersRepository extends BaseRepository {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.Invalid_Email_Or_Phone);
     }
 
-    const count: number = await this._dbContext.user.count({
+    const count: number = await this._dbContext.users.count({
       where: { email: user!.email, phone: user!.phone },
     });
 
@@ -101,25 +102,36 @@ export class UsersRepository extends BaseRepository {
     const userData: CreateUserDto = reqDto.userData;
     const salt = this._cryptoService.generateSalt();
     const hashedPassword = this._cryptoService.hashPassword(salt, userData.password);
-    return await this._dbContext.user.create({ data: { ...userData, password: hashedPassword, isActive: false, salt } });
+    const newUser = this._dbContext.users.create({ ...userData, password: hashedPassword, isActive: false, salt });
+    return await this._dbContext.users.save(newUser);
   }
 
   public async checkIfCanBeDeleted(userId: number): Promise<string[]> {
     const relatedData: string[] = [];
 
-    if ((await this._dbContext.userSystemPermission.count({ where: { assignedById: userId, userId: { not: userId } } })) > 0) {
+    const count = await this._dbContext.userSystemPermissions
+      .createQueryBuilder()
+      .where('AssignedById = :userId', { userId })
+      .andWhere('UserId != :userId', { userId })
+      .getCount();
+
+    if (count > 0) {
       relatedData.push(relatedDataNames.SystemPermission_AssignedBy);
     }
 
     return relatedData;
   }
 
-  public async delete(user: User, reqDto: DeleteUserReqDto): Promise<User | null> {
-    await this._dbContext.userSystemPermission.deleteMany({ where: { userId: user.id } });
+  public async delete(user: User, reqDto: DeleteUserReqDto): Promise<boolean> {
+    await this._dbContext.userSystemPermissions
+      .createQueryBuilder()
+      .delete()
+      .where('userId = :userId', { userId: user.id })
+      .execute();
 
-    const deletedUser = await this._dbContext.user.delete({ where: { id: user.id } });
+    await this._dbContext.users.delete({ id: user.id });
 
-    return deletedUser;
+    return true;
   }
 
   public async activate(userId: number, reqDto: ActivateUserReqDto): Promise<User | null> {
@@ -167,11 +179,11 @@ export class UsersRepository extends BaseRepository {
   }
 
   private async update(reqDto: UpdateUserReqDto): Promise<User | null> {
-    const updatedUser: User = await this._dbContext.user.update({
-      where: { id: reqDto.userId },
-      data: reqDto.userData,
-    });
+    await this._dbContext.users.update(
+      reqDto.userId,
+      reqDto.userData,
+    );
 
-    return updatedUser;
+    return await this._dbContext.users.findOne({ where: { id: reqDto.userId } });
   }
 }

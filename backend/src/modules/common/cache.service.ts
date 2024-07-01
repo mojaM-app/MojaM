@@ -1,4 +1,4 @@
-import { User } from '@db/DbModels';
+import { User } from '@modules/users/entities/user.entity';
 import { isGuid } from '@utils';
 import { CacheContainer } from 'node-ts-cache';
 import { MemoryStorage } from 'node-ts-cache-storage-memory';
@@ -21,7 +21,7 @@ export class CacheService {
     return await this.getDataFromCache<number | undefined>(cacheKey);
   }
 
-  public async saveUserIdInCacheAsync(user: User | undefined): Promise<void> {
+  public async saveUserIdInCacheAsync(user: User | null | undefined): Promise<void> {
     if (!isGuid(user?.uuid)) {
       return;
     }

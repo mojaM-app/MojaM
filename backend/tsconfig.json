@@ -34,7 +34,7 @@
       "@utils": ["utils"],
       "@utils/*": ["utils/*"],
       "@modules/*": ["modules/*"],
-      "@db/*": ["prisma/*"]
+      "@db": ["dataBase"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.json", ".env"],

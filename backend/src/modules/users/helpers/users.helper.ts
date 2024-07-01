@@ -1,5 +1,5 @@
-import { User } from '@db/DbModels';
 import { IUser, IUserProfile } from '@modules/users';
+import { User } from '@modules/users/entities/user.entity';
 
 export function userToIUser(user: User): IUser {
   return {

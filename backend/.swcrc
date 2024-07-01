@@ -31,7 +31,7 @@
       "@utils": ["utils"],
       "@utils/*": ["utils/*"],
       "@modules/*": ["modules/*"],
-      "@db/*": ["prisma/*"]
+      "@db": ["dataBase"]
     }
   },
   "module": {

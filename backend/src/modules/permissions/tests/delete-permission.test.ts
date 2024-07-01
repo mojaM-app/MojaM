@@ -16,7 +16,6 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
   const usersRoute = new UsersRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App([usersRoute, permissionsRoute]);
-
   let adminAuthToken: string | undefined;
   let userLoggedIn: IUser;
   beforeAll(async () => {
@@ -73,7 +72,6 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
   const usersRoute = new UsersRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App([usersRoute, permissionsRoute]);
-
   let adminAuthToken: string | undefined;
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
@@ -104,7 +102,7 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
     });
   });
 
-  it('DELETE /permissions/userId/permissionId should respond with a status code of 400 when user not exist and permissionId is missing', async () => {
+  test('DELETE /permissions/userId/permissionId should respond with a status code of 400 when user not exist and permissionId is missing', async () => {
     const path = permissionsRoute.path + '/' + Guid.EMPTY;
     const response = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAuthToken}`);
     expect(response.statusCode).toBe(400);
@@ -114,7 +112,7 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
     const newUser = generateValidUser();
     const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(newUser).set('Authorization', `Bearer ${adminAuthToken}`);
     expect(createUserResponse.statusCode).toBe(201);
-    const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createUserResponse.body;
+    const { data: newUserDto }: { data: IUser; message: string } = createUserResponse.body;
     expect(newUserDto?.uuid).toBeDefined();
 
     const deleteResponse = await request(app.getServer())

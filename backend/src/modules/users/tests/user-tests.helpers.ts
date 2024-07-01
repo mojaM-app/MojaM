@@ -8,7 +8,7 @@ const generateValidUser = (): CreateUserDto => {
   return {
     email: generateRandomEmail(),
     password: generateRandomPassword(),
-    phone: '88' + generateRandomNumber(7)
+    phone: '88' + generateRandomNumber(7),
   } satisfies CreateUserDto;
 };
 
@@ -19,12 +19,20 @@ const getJwtToken = (response: any): string => {
   return cookie.split(';')[0].split('=')[1];
 };
 
-const loginAs = async (app: App, user: { login: string | null | undefined, password: string | null | undefined }): Promise<{ userLoggedIn: IUser | undefined, authToken: string | undefined }> => {
-  const loginDto: LoginDto = { login: user.login, password: user.password };
-  const loginResponse = await request(app.getServer()).post(new AuthRoute().loginPath).send(loginDto);
-  const userLoggedIn = loginResponse.statusCode === 200 ? loginResponse.body.data : undefined;
-  const authToken = loginResponse.statusCode === 200 ? getJwtToken(loginResponse) : undefined;
-  return { userLoggedIn, authToken };
+const loginAs = async (
+  app: App,
+  user: { login: string | null | undefined; password: string | null | undefined },
+): Promise<{ userLoggedIn: IUser | undefined; authToken: string | undefined }> => {
+  const loginDto = { login: user.login, password: user.password } satisfies LoginDto;
+  try {
+    const loginResponse = await request(app.getServer()).post(new AuthRoute().loginPath).send(loginDto);
+    const userLoggedIn = loginResponse.statusCode === 200 ? loginResponse.body.data : undefined;
+    const authToken = loginResponse.statusCode === 200 ? getJwtToken(loginResponse) : undefined;
+    return { userLoggedIn, authToken };
+  } catch (error) {
+    console.error('Error in loginAs:', error);
+    return { userLoggedIn: undefined, authToken: undefined };
+  }
 };
 
 export { generateValidUser, loginAs };
