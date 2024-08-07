@@ -1,0 +1,47 @@
+<div class="mt-2 overflow-y-auto overflow-x-hidden">
+  <!-- <div class="row">
+    <div class="col">
+      <mat-slide-toggle [checked]="isDarkMode" [color]="'accent'" (change)="changed($event)">{{
+        'SideMenu/DarkMode' | gmessage
+      }}</mat-slide-toggle>
+    </div>
+  </div> -->
+
+  <mat-nav-list>
+    @for (menuItem of menuItems; track menuItem) {
+      @if ((menuItem.children || []).length > 0) {
+        <!-- <div mat-subheader class="d-flex mb-1 border-bottom">
+          @if (menuItem.icon) {
+            <mat-icon matListItemIcon class="me-2">{{ menuItem.icon }}</mat-icon>
+          }
+          <span>{{ menuItem.name | gmessage }}</span>
+        </div> -->
+        @for (link of menuItem.children; track link) {
+          <a
+            mat-list-item
+            appListItemFocusable
+            [routerLink]="[link.route]"
+            routerLinkActive
+            [routerLinkActiveOptions]="{ exact: true }"
+            #rla="routerLinkActive"
+            [activated]="rla.isActive">
+            <span matListItemTitle>{{ link.name | gmessage }}</span>
+            <mat-icon matListItemIcon>{{ link.icon }}</mat-icon>
+          </a>
+        }
+      } @else {
+        <a
+          mat-list-item
+          appListItemFocusable
+          [routerLink]="[menuItem.route]"
+          routerLinkActive
+          [routerLinkActiveOptions]="{ exact: true }"
+          #rla="routerLinkActive"
+          [activated]="rla.isActive">
+          <span matListItemTitle>{{ menuItem.name | gmessage }}</span>
+          <mat-icon matListItemIcon>{{ menuItem.icon }}</mat-icon>
+        </a>
+      }
+    }
+  </mat-nav-list>
+</div>

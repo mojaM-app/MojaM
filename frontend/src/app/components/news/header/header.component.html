@@ -1,0 +1,21 @@
+<nav mat-tab-nav-bar class="news-header" [tabPanel]="tabPanel">
+  <a
+    mat-tab-link
+    mat-align-tabs="center"
+    *ngFor="let tabItem of tabs"
+    [routerLink]="tabItem.route"
+    routerLinkActive
+    #rla="routerLinkActive"
+    [active]="rla.isActive">
+    <span id="navstepstext" class="d-flex align-items-center">
+      <mat-icon
+        aria-hidden="false"
+        [attr.aria-label]="tabItem.label"
+        [fontIcon]="tabItem.icon"
+        class="fs-5 me-1"></mat-icon>
+      {{ tabItem.label }}</span
+    >
+  </a>
+</nav>
+
+<mat-tab-nav-panel #tabPanel> </mat-tab-nav-panel>

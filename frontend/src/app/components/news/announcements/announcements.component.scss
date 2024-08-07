@@ -1,0 +1,19 @@
+@import "bootstrap/scss/_functions";
+@import "bootstrap/scss/_mixins";
+@import "bootstrap/scss/_variables";
+
+:host,
+.content-container,
+.content {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  .announcement-list {
+    overflow: auto;
+    height: 100%;
+    width: 100%;
+  }
+}

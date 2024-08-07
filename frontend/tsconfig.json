@@ -18,11 +18,20 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
+    "baseUrl": "./",
     "useDefineForClassFields": false,
     "lib": [
       "ES2022",
       "dom"
-    ]
+    ],
+    "paths": {
+      "cldr": [
+        "node_modules/cldrjs/dist/cldr"
+      ],
+      "cldr/*": [
+        "node_modules/cldrjs/dist/cldr/*"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

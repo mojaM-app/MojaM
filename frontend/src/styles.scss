@@ -1,4 +1,119 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+@use '@angular/material' as mat;
+
+@include mat.core();
+@import 'node_modules/angular-calendar/scss/angular-calendar.scss';
+
+$dark-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    density: (
+      scale: -1,
+    ),
+  )
+);
+
+$light-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    density: (
+      scale: -1,
+    ),
+  )
+);
+
+html {
+  height: 100%;
+  width: 100%;
+}
+
+app-root {
+  height: 100%;
+  width: 100%;
+  display: block;
+}
+
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+
+  @include mat.all-component-themes($light-theme);
+
+  //override mat variables
+  --mat-list-active-indicator-shape: 0.5rem;
+
+  //override bootstrap colors
+  --bs-body-bg: #{--mat-app-background-color};
+  --bs-body-color: #{--mat-app-text-color};
+  --bs-border-color: #{mat.get-theme-color($light-theme, primary-container)};
+
+  //override calendar colors
+  @include cal-theme(
+    (
+      bg-primary: mat.get-theme-color($light-theme, surface),
+      bg-secondary: mat.get-theme-color($light-theme, on-secondary),
+      weekend-color: mat.get-theme-color($light-theme, error),
+      bg-active: mat.get-theme-color($light-theme, secondary-container),
+      border-color: mat.get-theme-color($light-theme, primary-container),
+      gray: mat.get-theme-color($light-theme, tertiary),
+      today-bg: mat.get-theme-color($light-theme, primary-container),
+      event-color-primary: mat.get-theme-color($light-theme, primary),
+    )
+  );
+
+  .bg-color-primary {
+    background-color: mat.get-theme-color($light-theme, primary-container);
+  }
+
+  .bg-color-secondary {
+    background-color: mat.get-theme-color($light-theme, secondary-container);
+  }
+
+  &.theme-dark {
+    @include mat.all-component-colors($dark-theme);
+
+    //override bootstrap colors
+    --bs-border-color: #{mat.get-theme-color($dark-theme, primary-container)};
+
+    .bg-color-primary {
+      background-color: mat.get-theme-color($dark-theme, primary-container);
+    }
+
+    .bg-color-secondary {
+      background-color: mat.get-theme-color($dark-theme, secondary-container);
+    }
+
+    //override calendar colors
+    @include cal-theme(
+      (
+        bg-primary: mat.get-theme-color($dark-theme, surface),
+        bg-secondary: mat.get-theme-color($dark-theme, on-secondary),
+        weekend-color: mat.get-theme-color($dark-theme, error),
+        bg-active: mat.get-theme-color($dark-theme, secondary-container),
+        border-color: mat.get-theme-color($dark-theme, primary-container),
+        gray: mat.get-theme-color($dark-theme, tertiary),
+        today-bg: mat.get-theme-color($dark-theme, primary-container),
+        event-color-primary: mat.get-theme-color($dark-theme, primary),
+      )
+    );
+  }
+
+  --mat-sidenav-container-width: 300px;
+}
+
+.size-md {
+  &.mat-toolbar-multiple-rows,
+  &.mat-toolbar-row {
+    --mat-toolbar-standard-height: 48px;
+  }
+}
