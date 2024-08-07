@@ -6,15 +6,9 @@
     "BtnOk": "OK"
   },
   "Header": {},
-  "Footer": {
-  },
-  "SideMenu": {
-    "DarkMode": "Ciemny motyw",
-    "News": "Aktualności",
-    "Bulletin": "Biuletyn",
-    "Community": "Wspólnota"
-  },
+  "Footer": {},
   "Community": {
+    "Title": "Wspólnota",
     "Index": {},
     "Contact": {
       "Title": "Kontakt"
@@ -36,6 +30,7 @@
     }
   },
   "News": {
+    "Title": "Aktualności",
     "Information": {
       "Title": "Aktualności"
     },
@@ -54,6 +49,12 @@
       "Title": "Ogłoszenia",
       "AnnouncementsOfTheDay" : "Ogłoszenia z dnia"
     }
+  },
+  "Bulletin": {
+    "Title": "Biuletyn"
+  },
+  "Settings": {
+    "Title": "Ustawienia"
   },
   "Error404": {
     "PageNotFound": "Strona nie istnieje"

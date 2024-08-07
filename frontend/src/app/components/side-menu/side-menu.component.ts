@@ -9,6 +9,7 @@ import { ThemeService } from '../../../services/theme/theme.service';
 import { BulletinMenu } from '../bulletin/bulletin.menu';
 import { CommunityMenu } from '../community/community.menu';
 import { AnnouncementsMenu, CalendarMenu, InformationMenu, NewsMenu } from '../news/news.menu';
+import { SettingsMenu } from '../settings/settings.menu';
 
 @Component({
   selector: 'app-side-menu',
@@ -61,6 +62,13 @@ export class SideMenuComponent {
       name: CommunityMenu.Label,
       icon: CommunityMenu.Icon,
       route: CommunityMenu.Path,
+    },
+
+
+    {
+      name: SettingsMenu.Label,
+      icon: SettingsMenu.Icon,
+      route: SettingsMenu.Path,
     },
   ];
 

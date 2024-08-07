@@ -1,5 +1,5 @@
 export class NewsMenu {
-  public static Label: string = 'SideMenu/News';
+  public static Label: string = 'News/Title';
   public static Icon: string = 'newspaper';
   public static Path: string = 'news';
 }
