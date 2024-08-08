@@ -1,12 +1,4 @@
 <div class="mt-2 overflow-y-auto overflow-x-hidden">
-  <!-- <div class="row">
-    <div class="col">
-      <mat-slide-toggle [checked]="isDarkMode" [color]="'accent'" (change)="changed($event)">{{
-        'SideMenu/DarkMode' | gmessage
-      }}</mat-slide-toggle>
-    </div>
-  </div> -->
-
   <mat-nav-list>
     @for (menuItem of menuItems; track menuItem) {
       @if ((menuItem.children || []).length > 0) {

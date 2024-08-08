@@ -55,7 +55,12 @@ body {
   //override bootstrap colors
   --bs-body-bg: #{--mat-app-background-color};
   --bs-body-color: #{--mat-app-text-color};
+  --mat-switch-label-text-color: red;
   --bs-border-color: #{mat.get-theme-color($light-theme, primary-container)};
+  .card {
+    --bs-card-inner-border-radius: 0;
+    --bs-card-cap-bg: #{mat.get-theme-color($light-theme, surface-container)};
+  }
 
   //override calendar colors
   @include cal-theme(
@@ -84,6 +89,10 @@ body {
 
     //override bootstrap colors
     --bs-border-color: #{mat.get-theme-color($dark-theme, primary-container)};
+    .card {
+      --bs-card-inner-border-radius: 0;
+      --bs-card-cap-bg: #{mat.get-theme-color($dark-theme, surface-container-high)};
+    }
 
     .bg-color-primary {
       background-color: mat.get-theme-color($dark-theme, primary-container);
@@ -115,5 +124,28 @@ body {
   &.mat-toolbar-multiple-rows,
   &.mat-toolbar-row {
     --mat-toolbar-standard-height: 48px;
+  }
+}
+
+.d-grid-with-header-and-footer {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    'header'
+    'main'
+    'footer';
+
+  header {
+    grid-area: header;
+    font-size: large;
+  }
+
+  main {
+    grid-area: main;
+  }
+
+  footer {
+    grid-area: footer;
   }
 }
