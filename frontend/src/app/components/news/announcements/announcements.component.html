@@ -1,8 +1,10 @@
 <div class="content-container" touch (swipeNext)="selectNextTab()" (swipePrev)="selectPrevTab()">
-  <news-header #header></news-header>
+  @if (!isMobile) {
+    <news-header #header></news-header>
+  }
   <div class="content" [loading]="announcements === null">
     <ng-container *ngIf="announcementsDate">
-      <h5 class="p-0 py-2 m-0 text-center">
+      <h5 class="m-0 p-0 py-2 text-center">
         {{ 'News/Announcements/AnnouncementsOfTheDay' | gmessage }}
 
         {{ announcementsDate | gdate: 'short' }}

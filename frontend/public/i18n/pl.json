@@ -55,8 +55,10 @@
   },
   "Settings": {
     "Title": "Ustawienia",
-    "DarkMode": "Ciemny motyw",
-    "DarkModeDescription": "Włącz tryb ciemny"
+    "Theme": "Motyw",
+    "LightTheme": "Jasny",
+    "DarkTheme": "Ciemny",
+    "ThemeDescription": "Włącz tryb ciemny"
   },
   "Error404": {
     "PageNotFound": "Strona nie istnieje"

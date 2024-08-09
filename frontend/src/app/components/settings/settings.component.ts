@@ -15,6 +15,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { ThemeService } from 'src/services/theme/theme.service';
@@ -23,7 +24,7 @@ import { ISettingsForm, SettingsFormControlNames } from './settings.form';
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [PipesModule, MatSlideToggleModule, ReactiveFormsModule, FormsModule],
+  imports: [PipesModule, MatSlideToggleModule, ReactiveFormsModule, FormsModule, MatInputModule],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

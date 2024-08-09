@@ -1,5 +1,12 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { CalendarDateFormatter, CalendarEvent, CalendarView, DateAdapter, DAYS_OF_WEEK } from 'angular-calendar';
+import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
+import {
+  CalendarDateFormatter,
+  CalendarEvent,
+  CalendarView,
+  DateAdapter,
+  DAYS_OF_WEEK,
+} from 'angular-calendar';
+import { IS_MOBILE } from 'src/app/app.config';
 import { CultureService } from '../../../../services/translate/culture.service';
 import { BaseNewsComponent } from '../base-news.component';
 import { CustomDateFormatter } from './date-formatters/custom.date-formatter';
@@ -20,12 +27,13 @@ import { CustomDateFormatter } from './date-formatters/custom.date-formatter';
 export class CalendarComponent extends BaseNewsComponent {
   CalendarView = CalendarView;
   public view: CalendarView = CalendarView.Month;
-  public viewDate = new Date();
+  public viewDate: Date = new Date();
   public events: CalendarEvent[] = [];
   public weekStartsOn: number = DAYS_OF_WEEK.MONDAY;
   public weekendDays: number[] = [DAYS_OF_WEEK.SATURDAY, DAYS_OF_WEEK.SUNDAY];
 
   public constructor(
+    @Inject(IS_MOBILE) public isMobile: boolean,
     public cultureService: CultureService,
     private _dateAdapter: DateAdapter
   ) {

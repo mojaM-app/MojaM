@@ -4,6 +4,7 @@ import {
   APP_INITIALIZER,
   ApplicationConfig,
   importProvidersFrom,
+  InjectionToken,
   provideZoneChangeDetection,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,9 +18,12 @@ import { provideRouter } from '@angular/router';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { HttpErrorInterceptor } from 'src/interceptors/error.interceptor';
 import { PipesModule } from 'src/pipes/pipes.module';
+import { DeviceService } from 'src/services/device/device.service';
 import { LocalStorageService } from 'src/services/storage/localstorage.service';
 import { TranslationInitService } from 'src/services/translate/translation-init.service';
 import { routes } from './app.routes';
+
+export const IS_MOBILE = new InjectionToken<boolean>('isMobile');
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -54,6 +58,14 @@ export const appConfig: ApplicationConfig = {
       provide: HTTP_INTERCEPTORS,
       useClass: HttpErrorInterceptor,
       multi: true,
+    },
+    {
+      provide: IS_MOBILE,
+      useFactory(deviceService: DeviceService) {
+        return deviceService.isMobile();
+      },
+      deps: [DeviceService],
+      multi: false,
     },
   ],
 };

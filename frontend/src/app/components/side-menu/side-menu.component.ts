@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { IS_MOBILE } from 'src/app/app.config';
 import { PipesModule } from 'src/pipes/pipes.module';
-import { DeviceService } from 'src/services/device/device.service';
 import { ThemeService } from '../../../services/theme/theme.service';
 import { BulletinMenu } from '../bulletin/bulletin.menu';
 import { CommunityMenu } from '../community/community.menu';
@@ -28,8 +28,7 @@ import { SettingsMenu } from '../settings/settings.menu';
   ],
 })
 export class SideMenuComponent {
-  public isDarkMode = false;
-  public isMobile = false;
+  public isDarkMode: boolean = false;
 
   public menuItems = [
     {
@@ -64,7 +63,6 @@ export class SideMenuComponent {
       route: CommunityMenu.Path,
     },
 
-
     {
       name: SettingsMenu.Label,
       icon: SettingsMenu.Icon,
@@ -73,12 +71,11 @@ export class SideMenuComponent {
   ];
 
   public constructor(
+    @Inject(IS_MOBILE) public isMobile: boolean,
     public router: Router,
     private _themeService: ThemeService,
-    deviceService: DeviceService
   ) {
     this.isDarkMode = this._themeService.isDarkMode();
-    this.isMobile = deviceService.isMobile();
   }
 
   public changed(arg: MatSlideToggleChange) {

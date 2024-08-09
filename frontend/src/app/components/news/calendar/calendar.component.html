@@ -1,9 +1,11 @@
-<news-header
-  #header
-  class="news-header"
-  touch
-  (swipeNext)="selectNextTab()"
-  (swipePrev)="selectPrevTab()"></news-header>
+@if (!isMobile) {
+  <news-header
+    #header
+    class="news-header"
+    touch
+    (swipeNext)="selectNextTab()"
+    (swipePrev)="selectPrevTab()"></news-header>
+}
 
 <div class="content" touch (swipeNext)="setNextView()" (swipePrev)="setPrevView()">
   <div class="row clearfix calendar-header text-center">

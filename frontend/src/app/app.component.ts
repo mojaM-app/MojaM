@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  Inject,
   OnInit,
   ViewChild,
 } from '@angular/core';
@@ -11,8 +12,8 @@ import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterOutlet } from '@angular/router';
 import { PipesModule } from 'src/pipes/pipes.module';
-import { DeviceService } from 'src/services/device/device.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
+import { IS_MOBILE } from './app.config';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
 import { SideMenuComponent } from './components/side-menu/side-menu.component';
@@ -38,16 +39,13 @@ import { SideMenuComponent } from './components/side-menu/side-menu.component';
 export class AppComponent implements OnInit {
   @ViewChild('sidenav') public sidenav: MatSidenav | undefined;
 
-  public isMobile = true;
-  public showSpinner = false;
+  public showSpinner: boolean = false;
 
   public constructor(
-    deviceService: DeviceService,
+    @Inject(IS_MOBILE) public isMobile: boolean,
     private _changeDetectorRef: ChangeDetectorRef,
     private _spinnerService: SpinnerService
-  ) {
-    this.isMobile = deviceService.isMobile();
-  }
+  ) {}
 
   public ngOnInit(): void {
     this._spinnerService.onStateChanged$().subscribe((state: boolean) => {

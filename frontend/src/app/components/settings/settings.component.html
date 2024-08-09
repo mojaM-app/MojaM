@@ -8,12 +8,24 @@
       </header>
       <main>
         <div class="card-body">
-          <mat-slide-toggle
-            #darkModeSwitch
-            [formControlName]="formControlNames.isDarkMode"
-            labelPosition="before"
-            >{{ 'Settings/DarkMode' | gmessage }}</mat-slide-toggle
-          >
+          <div class="row mb-2">
+            <mat-label
+              class="col-sm-2 align-self-center"
+              for="is-dark-mode-input-button"
+              id="is-dark-mode-input-label"
+              >{{ 'Settings/Theme' | gmessage }}</mat-label
+            >
+            <div class="col-sm-9 align-self-center">
+              {{ 'Settings/LightTheme' | gmessage }}
+              <mat-slide-toggle
+                #darkModeSwitch
+                id="is-dark-mode-input"
+                [formControlName]="formControlNames.isDarkMode"
+                aria-labelledby="is-dark-mode-input-label"></mat-slide-toggle>
+              {{ 'Settings/DarkTheme' | gmessage }}
+            </div>
+          </div>
+
           <p>akapit</p>
           <p>akapit</p>
           <p>akapit</p>
@@ -54,8 +66,8 @@
       </main>
       <footer class="sticky-bottom">
         <div class="card-footer text-body-secondary">
-        <button mat-raised-button color="primary">Save</button>
-      </div>
+          <button mat-raised-button color="primary">Save</button>
+        </div>
       </footer>
     </div>
   </form>

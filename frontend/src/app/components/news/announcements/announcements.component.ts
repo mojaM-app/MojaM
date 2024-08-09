@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { finalize } from 'rxjs';
+import { IS_MOBILE } from 'src/app/app.config';
 import { IAnnouncements } from '../../../../interfaces/news/announcements/announcements';
 import { AnnouncementsService } from '../../../../services/common/news/announcements.service';
 import { BaseNewsComponent } from '../base-news.component';
@@ -15,6 +16,7 @@ export class AnnouncementsComponent extends BaseNewsComponent implements OnInit 
   public announcementsDate: Date | null = null;
 
   public constructor(
+    @Inject(IS_MOBILE) public isMobile: boolean,
     private _service: AnnouncementsService,
     private _changeDetectorRef: ChangeDetectorRef
   ) {
