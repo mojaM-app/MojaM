@@ -8,7 +8,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration=development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "npm-check-updates": "npx npm-check-updates"
   },
   "private": true,
   "dependencies": {
@@ -48,6 +49,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "npm-check-updated": "^6.0.4",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.5",
     "typescript": "~5.4.2",
