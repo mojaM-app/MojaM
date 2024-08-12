@@ -6,7 +6,7 @@ export class SupportedLanguages {
   static Get(): ILanguageData[] {
     if (this._supportedLanguages === null) {
       this._supportedLanguages = [
-        <ILanguageData>{
+        {
           id: 'pl',
           label: 'język polski',
           icon: 'svg/languages/pl.svg',
@@ -14,7 +14,7 @@ export class SupportedLanguages {
             fetch(`./i18n/pl.json?${new Date().getTime()}`)
               .then(response => response.json())
               .then(messages => ({ pl: messages })),
-        },
+        } satisfies ILanguageData,
       ];
     }
 

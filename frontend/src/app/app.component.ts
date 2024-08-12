@@ -39,7 +39,7 @@ import { SideMenuComponent } from './components/side-menu/side-menu.component';
 export class AppComponent implements OnInit {
   @ViewChild('sidenav') public sidenav: MatSidenav | undefined;
 
-  public showSpinner: boolean = false;
+  public showSpinner = false;
 
   public constructor(
     @Inject(IS_MOBILE) public isMobile: boolean,

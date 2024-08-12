@@ -29,7 +29,7 @@ import { SettingsMenu } from '../settings/settings.menu';
   ],
 })
 export class SideMenuComponent {
-  public isDarkMode: boolean = false;
+  public isDarkMode = false;
 
   public menuItems: IMenuItem[] = [
     {

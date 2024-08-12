@@ -1,5 +1,5 @@
 export class SettingsMenu {
-  public static Label: string = 'Settings/Title';
-  public static Icon: string = 'settings';
-  public static Path: string = 'settings';
+  public static Label = 'Settings/Title';
+  public static Icon = 'settings';
+  public static Path = 'settings';
 }

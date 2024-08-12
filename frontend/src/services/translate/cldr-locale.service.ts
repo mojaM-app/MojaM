@@ -33,7 +33,7 @@ class CldrPackAdapter implements CldrPack {
 })
 export class CldrLocaleService {
   private cldrLocaleIds: string[];
-  private cldrLocaleDict: { [langId: string]: CldrPack };
+  private cldrLocaleDict: Record<string, CldrPack>;
 
   constructor() {
     this.cldrLocaleIds = [];

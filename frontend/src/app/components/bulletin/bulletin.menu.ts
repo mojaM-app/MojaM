@@ -1,5 +1,5 @@
 export class BulletinMenu {
-  public static Label: string = 'Bulletin/Title';
-  public static Icon: string = 'local_library';
-  public static Path: string = 'bulletin';
+  public static Label = 'Bulletin/Title';
+  public static Icon = 'local_library';
+  public static Path = 'bulletin';
 }

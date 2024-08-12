@@ -26,7 +26,7 @@ import { ThemeService } from '../../../services/theme/theme.service';
 export class HeaderComponent implements OnInit, AfterViewInit {
   @Input() sidenav: MatSidenav | undefined;
 
-  public headerImageName: string = 'logo_black';
+  public headerImageName = 'logo_black';
 
   public constructor(
     @Inject(IS_MOBILE) public isMobile: boolean,
