@@ -61,7 +61,7 @@ export const appConfig: ApplicationConfig = {
     },
     {
       provide: IS_MOBILE,
-      useFactory(deviceService: DeviceService) {
+      useFactory(deviceService: DeviceService) : boolean {
         return deviceService.isMobile();
       },
       deps: [DeviceService],
