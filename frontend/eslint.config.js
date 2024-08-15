@@ -30,6 +30,8 @@ module.exports = tseslint.config(
           style: 'kebab-case',
         },
       ],
+      "@typescript-eslint/explicit-function-return-type": "error",
+      "@typescript-eslint/explicit-member-accessibility": "error"
       // 'rxjs/no-async-subscribe': 'error',
       // 'rxjs/no-ignored-observable': 'error',
       // 'rxjs/no-ignored-subscription': 'error',
