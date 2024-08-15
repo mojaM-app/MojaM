@@ -1,9 +1,9 @@
-import { FormControl } from "@angular/forms";
+import { FormControl } from '@angular/forms';
 
 export interface ISettingsForm {
-  isDarkMode : FormControl<boolean>;
+  isDarkMode: FormControl<boolean>;
 }
 
-export const SettingsFormControlNames = {
-  isDarkMode : 'isDarkMode',
+export const SettingsFormControlNames: { [K in keyof ISettingsForm]: string } = {
+  isDarkMode: 'isDarkMode',
 } as const;
