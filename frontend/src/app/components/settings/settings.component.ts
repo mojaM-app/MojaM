@@ -17,6 +17,7 @@ import {
 } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { ThemeService } from 'src/services/theme/theme.service';
 import { ISettingsForm, SettingsFormControlNames } from './settings.form';
@@ -29,13 +30,11 @@ import { ISettingsForm, SettingsFormControlNames } from './settings.form';
   styleUrl: './settings.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsComponent implements AfterViewInit {
-  @ViewChild('darkModeSwitch', { read: ElementRef }) element: ElementRef | undefined;
+export class SettingsComponent extends WithForm<ISettingsForm>() implements AfterViewInit {
+  @ViewChild('darkModeSwitch', { read: ElementRef })
+  private _element: ElementRef | undefined;
 
   public readonly formControlNames = SettingsFormControlNames;
-  public formGroup = this._formBuilder.group<ISettingsForm>({
-    isDarkMode: new FormControl(false, { nonNullable: true, validators: [Validators.required] }),
-  });
 
   private readonly darkModeChanged: Signal<boolean>;
   private readonly sun =
@@ -44,14 +43,20 @@ export class SettingsComponent implements AfterViewInit {
     'M12 21q-3.75 0-6.375-2.625T3 12q0-3.75 2.625-6.375T12 3q.2 0 .425.013 .225.013 .575.038-.9.8-1.4 1.975-.5 1.175-.5 2.475 0 2.25 1.575 3.825Q14.25 12.9 16.5 12.9q1.3 0 2.475-.463T20.95 11.15q.025.3 .038.488Q21 11.825 21 12q0 3.75-2.625 6.375T12 21Zm0-1.5q2.725 0 4.75-1.687t2.525-3.963q-.625.275-1.337.412Q17.225 14.4 16.5 14.4q-2.875 0-4.887-2.013T9.6 7.5q0-.6.125-1.287.125-.687.45-1.562-2.45.675-4.062 2.738Q4.5 9.45 4.5 12q0 3.125 2.188 5.313T12 19.5Zm-.1-7.425Z';
 
   public constructor(
-    private _formBuilder: FormBuilder,
+    formBuilder: FormBuilder,
     private _themeService: ThemeService
   ) {
+    const formGroup = formBuilder.group<ISettingsForm>({
+      isDarkMode: new FormControl(false, { nonNullable: true, validators: [Validators.required] }),
+    } satisfies ISettingsForm);
+
+    super(formGroup);
+
     this.formGroup.patchValue({
       isDarkMode: _themeService.isDarkMode(),
     });
 
-    this.darkModeChanged = toSignal(this.formGroup.controls.isDarkMode.valueChanges, {
+    this.darkModeChanged = toSignal(this.formControls.isDarkMode.valueChanges, {
       initialValue: _themeService.isDarkMode(),
     });
 
@@ -61,11 +66,11 @@ export class SettingsComponent implements AfterViewInit {
   }
 
   public ngAfterViewInit(): void {
-    if (this.element) {
-      this.element.nativeElement
+    if (this._element) {
+      this._element.nativeElement
         .querySelector('.mdc-switch__icon--on')
         .firstChild.setAttribute('d', this.moon);
-      this.element.nativeElement
+      this._element.nativeElement
         .querySelector('.mdc-switch__icon--off')
         .firstChild.setAttribute('d', this.sun);
     }
