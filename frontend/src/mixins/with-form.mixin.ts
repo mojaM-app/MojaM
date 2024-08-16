@@ -23,8 +23,20 @@ export function WithForm<
       return this.formGroup.controls as { [K in keyof TFormType]: FormControl<any> };
     }
 
-    public getControl<K extends keyof TFormType>(name: K): FormControl<any> {
+    public get isValid(): boolean {
+      return this.formGroup.valid;
+    }
+
+    public get hasErrors(): boolean {
+        return this.formGroup.errors != null;
+    }
+
+    public control<K extends keyof TFormType>(name: K | string): FormControl<any> {
       return this.formGroup.controls[name] as FormControl<any>;
+    }
+
+    public isRedyToSubmit(): boolean {
+      return this.isValid && !this.hasErrors;
     }
   };
 }
