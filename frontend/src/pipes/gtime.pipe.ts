@@ -27,7 +27,7 @@ export class GtimePipe implements PipeTransform {
         format.raw = this._cultureService.timeFormat;
       }
 
-      return this._translationService.GetGlobalize().dateFormatter(format)(value);
+      return this._translationService.getGlobalize().dateFormatter(format)(value);
     }
 
     return null;

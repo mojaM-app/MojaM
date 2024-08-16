@@ -31,13 +31,17 @@ export class TranslationService {
     return this.getFormatter(key)(interpolateParams);
   }
 
+  public getError(errorKey: string, interpolateParams?: any): string {
+    return this.getFormatter(`Errors/${errorKey}`)(interpolateParams);
+  }
+
   public getTranslation(key: string, params?: unknown | (() => unknown)): Translation {
     return Translation.FromService(this, key, params);
   }
 
   public getFormatter(key: string): (...args: any[]) => string {
     try {
-      return this.GetGlobalize().messageFormatter(key);
+      return this.getGlobalize().messageFormatter(key);
     } catch (ex) {
       if ((ex as any)?.code === 'E_MISSING_MESSAGE') {
         return () => {
@@ -70,14 +74,11 @@ export class TranslationService {
     throw new Error('Invalid language selected');
   }
 
-  public GetGlobalize(): Globalize {
+  public getGlobalize(): Globalize {
     return Globalize(this.currentLang || TranslationService.DefaultLang);
   }
 
   private isValidLang(lang: string | null | undefined): boolean {
-    return (
-      (lang?.length ?? 0) > 0 &&
-      this.langs.findIndex(element => element.id === lang) !== -1
-    );
+    return (lang?.length ?? 0) > 0 && this.langs.findIndex(element => element.id === lang) !== -1;
   }
 }

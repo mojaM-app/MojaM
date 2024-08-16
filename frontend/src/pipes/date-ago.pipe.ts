@@ -47,6 +47,6 @@ export class DateAgoPipe implements PipeTransform {
       return formatter.func(elapsed);
     }
 
-    return this._translationService.GetGlobalize().formatDate(value, { date: 'short' });
+    return this._translationService.getGlobalize().formatDate(value, { date: 'short' });
   }
 }

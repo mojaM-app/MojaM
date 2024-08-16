@@ -21,7 +21,7 @@ export class GnumberPipe implements PipeTransform {
         options.maximumFractionDigits = maximumFractionDigits;
       }
 
-      return this._translationService.GetGlobalize().numberFormatter(options)(value);
+      return this._translationService.getGlobalize().numberFormatter(options)(value);
     }
 
     return null;
