@@ -84,6 +84,14 @@ body {
     background-color: mat.get-theme-color($light-theme, secondary-container);
   }
 
+  .mat-mdc-snack-bar-container {
+    &.error {
+      --mdc-snackbar-container-color: #{mat.get-theme-color($light-theme, error)};
+      --mat-snack-bar-button-color: #{mat.get-theme-color($light-theme, error-container)};
+      --mdc-snackbar-supporting-text-color: #{mat.get-theme-color($light-theme, on-error)};
+    }
+  }
+
   &.theme-dark {
     @include mat.all-component-colors($dark-theme);
 
@@ -100,6 +108,14 @@ body {
 
     .bg-color-secondary {
       background-color: mat.get-theme-color($dark-theme, secondary-container);
+    }
+
+    .mat-mdc-snack-bar-container {
+      &.error {
+        --mdc-snackbar-container-color: #{mat.get-theme-color($dark-theme, on-error)};
+        --mat-snack-bar-button-color: #{mat.get-theme-color($dark-theme, on-error-container)};
+        --mdc-snackbar-supporting-text-color: #{mat.get-theme-color($dark-theme, error)};
+      }
     }
 
     //override calendar colors
