@@ -48,17 +48,11 @@ describe('POST /login', () => {
       expect(loginMessage).toBe(events.users.userLoggedIn);
       expect(loginArgs).toBeUndefined();
       expect(userLoggedIn.email).toBe(login);
-      const cookies = headers['set-cookie'];
-      expect(Array.isArray(cookies)).toBe(true);
-      expect(cookies.length).toBe(1);
-      const cookie = cookies[0];
-      expect(cookie).toBeDefined();
-      expect(cookie.length).toBeGreaterThan(1);
-      const token = cookie.split(';')[0].split('=')[1];
+      expect(userLoggedIn.token).toBeDefined();
       const req = {
-        cookies: {
-          Authorization: token,
-        },
+        headers: {
+          Authorization: `Bearer ${userLoggedIn.token}`,
+        }
       };
       const next: NextFunction = jest.fn();
       await setIdentity(req as any, {} as any, next);
@@ -91,17 +85,11 @@ describe('POST /login', () => {
       expect(loginMessage).toBe(events.users.userLoggedIn);
       expect(loginArgs).toBeUndefined();
       expect(userLoggedIn.phone).toBe(login);
-      const cookies = headers['set-cookie'];
-      expect(Array.isArray(cookies)).toBe(true);
-      expect(cookies.length).toBe(1);
-      const cookie = cookies[0];
-      expect(cookie).toBeDefined();
-      expect(cookie.length).toBeGreaterThan(1);
-      const token = cookie.split(';')[0].split('=')[1];
+      expect(userLoggedIn.token).toBeDefined();
       const req = {
-        cookies: {
-          Authorization: token,
-        },
+        headers: {
+          Authorization: `Bearer ${userLoggedIn.token}`,
+        }
       };
       const next: NextFunction = jest.fn();
       await setIdentity(req as any, {} as any, next);

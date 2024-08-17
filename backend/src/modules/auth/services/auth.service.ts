@@ -2,7 +2,17 @@ import { SECRET_AUDIENCE, SECRET_ISSUER, SECRET_KEY } from '@config';
 import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
-import { CryptoService, DataStoredInToken, FailedLoginAttemptEvent, InactiveUserTriesToLogInEvent, LockedUserTriesToLogInEvent, LoginDto, TokenData, UserLockedOutEvent, UserLoggedInEvent } from '@modules/auth';
+import {
+  CryptoService,
+  DataStoredInToken,
+  FailedLoginAttemptEvent,
+  InactiveUserTriesToLogInEvent,
+  LockedUserTriesToLogInEvent,
+  LoginDto,
+  TokenData,
+  UserLockedOutEvent,
+  UserLoggedInEvent,
+} from '@modules/auth';
 import { BaseService, userToIUser } from '@modules/common';
 import { PermissionsRepository, SystemPermission } from '@modules/permissions';
 import { IUser, UpdateUserReqDto, UsersRepository } from '@modules/users';
@@ -26,7 +36,7 @@ export class AuthService extends BaseService {
     this._cryptoService = Container.get(CryptoService);
   }
 
-  public async login(loginData: LoginDto): Promise<{ cookie: string; user: IUser }> {
+  public async login(loginData: LoginDto): Promise<{ user: IUser; tokenData: TokenData }> {
     if (isNullOrEmptyString(loginData?.login) || isNullOrEmptyString(loginData?.password)) {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.Invalid_Login_Or_Password);
     }
@@ -82,7 +92,10 @@ export class AuthService extends BaseService {
     const tokenData = this.createToken(user, userPermissions);
 
     this._eventDispatcher.dispatch(events.users.userLoggedIn, new UserLoggedInEvent(userDto));
-    return { cookie: this.createCookie(tokenData), user: userDto };
+    return {
+      user: userDto,
+      tokenData,
+    };
   }
 
   // public async logout(userData: IUser): Promise<IUser> {
@@ -107,9 +120,5 @@ export class AuthService extends BaseService {
         issuer: SECRET_ISSUER,
       }),
     };
-  }
-
-  private createCookie(tokenData: TokenData): string {
-    return `Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn};`;
   }
 }

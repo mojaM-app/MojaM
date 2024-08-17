@@ -15,10 +15,9 @@ export class AuthController extends BaseController {
   public logIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const loginData: LoginDto = req.body;
-      const { cookie, user } = await this.authService.login(loginData);
+      const { user, tokenData } = await this.authService.login(loginData);
 
-      res.setHeader('Set-Cookie', cookie);
-      res.status(200).json({ data: user, message: events.users.userLoggedIn });
+      res.status(200).json({ data: { ...user, token: tokenData.token }, message: events.users.userLoggedIn });
     } catch (error) {
       next(error);
     }

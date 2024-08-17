@@ -9,18 +9,22 @@ import { verify } from 'jsonwebtoken';
 import Container from 'typedi';
 
 const getAuthorization = (req: Request): string | null => {
-  const cookie: any = req.cookies?.Authorization;
-  if (!isNullOrUndefined(cookie)) {
-    return cookie;
+  let header: string | string[] | undefined = req.headers.Authorization;
+
+  if (isNullOrUndefined(header)) {
+    header = req.headers.authorization;
   }
 
-  const header: string | null | undefined = req.header('Authorization');
-  if (!isNullOrEmptyString(header)) {
-    const splittedHeader = header!.split('Bearer ');
-    return (splittedHeader?.length ?? 0) > 1 ? splittedHeader[1] : null;
+  if (Array.isArray(header) && header.length > 0) {
+    header = header[0];
   }
 
-  return null;
+  if (isNullOrUndefined(header)) {
+    return null;
+  }
+
+  const splittedHeader = (header as string).split('Bearer ');
+  return (splittedHeader?.length ?? 0) > 1 ? splittedHeader[1] : null;
 };
 
 export const setIdentity = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {

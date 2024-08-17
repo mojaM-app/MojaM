@@ -12,13 +12,6 @@ const generateValidUser = (): CreateUserDto => {
   } satisfies CreateUserDto;
 };
 
-const getJwtToken = (response: any): string => {
-  const headers = response.headers;
-  const cookies = headers['set-cookie'];
-  const cookie = cookies[0];
-  return cookie.split(';')[0].split('=')[1];
-};
-
 const loginAs = async (
   app: App,
   user: { login: string | null | undefined; password: string | null | undefined },
@@ -27,7 +20,7 @@ const loginAs = async (
   try {
     const loginResponse = await request(app.getServer()).post(new AuthRoute().loginPath).send(loginDto);
     const userLoggedIn = loginResponse.statusCode === 200 ? loginResponse.body.data : undefined;
-    const authToken = loginResponse.statusCode === 200 ? getJwtToken(loginResponse) : undefined;
+    const authToken = loginResponse.statusCode === 200 ? userLoggedIn.token : undefined;
     return { userLoggedIn, authToken };
   } catch (error) {
     console.error('Error in loginAs:', error);

@@ -6,6 +6,10 @@ export class UserLoggedInEvent extends Event {
 
   public constructor(user: IUser) {
     super();
-    this.user = user;
+    this.user = {
+      uuid: user?.uuid,
+      email: user?.email,
+      phone: user?.phone,
+    } satisfies IUser;
   }
 }
