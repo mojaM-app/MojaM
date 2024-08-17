@@ -1,4 +1,4 @@
-import { NumbersUtils } from '../../utils/numbers-utils';
+import { NumbersUtils } from '../../utils/numbers.utils';
 
 export abstract class StorageService {
   public saveObject(storageKey: string, object: any): void {
