@@ -105,8 +105,11 @@ export class AuthService extends BaseService {
   //   return findUser;
   // }
 
-  private createToken(user: IUser, permissions: SystemPermission[]): TokenData {
-    const dataStoredInToken: DataStoredInToken = { id: user.uuid, permissions };
+  private createToken(user: User, permissions: SystemPermission[]): TokenData {
+    const dataStoredInToken: DataStoredInToken = {
+      permissions,
+      userName: user.firstName + ' ' + user.lastName,
+    };
 
     const expiresIn: number = 10 * 60; // expressed in seconds
 
@@ -118,6 +121,7 @@ export class AuthService extends BaseService {
         algorithm: 'HS256',
         audience: SECRET_AUDIENCE,
         issuer: SECRET_ISSUER,
+        subject: user.uuid,
       }),
     };
   }

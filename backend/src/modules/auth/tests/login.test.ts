@@ -2,7 +2,7 @@
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
-import { AuthRoute, LoginDto, RequestWithIdentity, UserLoggedInEvent, setIdentity } from '@modules/auth';
+import { AuthRoute, LoginDto, RequestWithIdentity, setIdentity, UserLoggedInEvent } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import { IUser, UsersRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
@@ -11,6 +11,7 @@ import { registerTestEventHandlers, testEventHandlers } from '@utils/tests-event
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import { NextFunction } from 'express';
+import { decode } from 'jsonwebtoken';
 import request from 'supertest';
 
 describe('POST /login', () => {
@@ -34,7 +35,7 @@ describe('POST /login', () => {
       jest.resetAllMocks();
     });
 
-    it('(login via email and password) response should have the Set-Cookie header with the Authorization token when login data are correct', async () => {
+    it('(login via email and password) response should have set the Authorization token when login data are correct', async () => {
       const { email: login, password } = getAdminLoginData();
       const loginResponse = await request(app.getServer())
         .post(authRoute.loginPath)
@@ -60,6 +61,17 @@ describe('POST /login', () => {
       expect((req as unknown as RequestWithIdentity).identity.hasPermissionToEditUserProfile()).toBeTruthy();
       expect(next).toHaveBeenCalled();
 
+      const token = decode(userLoggedIn.token, { json: true });
+      expect(token).toBeDefined();
+      expect(token?.aud).toBeDefined();
+      expect(token?.iss).toBeDefined();
+      expect(token?.iat).toBeDefined();
+      expect(token?.exp).toBeDefined();
+      expect(token?.sub).toBeDefined();
+      expect(token?.sub).toBe(userLoggedIn.uuid);
+      expect(token?.userName).toBeDefined();
+      expect(token?.permissions).toBeDefined();
+
       // checking events running via eventDispatcher
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(new UserLoggedInEvent(userLoggedIn));
@@ -71,7 +83,7 @@ describe('POST /login', () => {
         });
     });
 
-    it('(login via phone and password) response should have the Set-Cookie header with the Authorization token when login data are correct', async () => {
+    it('(login via phone and password) response should have set the Authorization token when login data are correct', async () => {
       const { phone: login, password } = getAdminLoginData();
       const loginResponse = await request(app.getServer())
         .post(authRoute.loginPath)
@@ -96,6 +108,17 @@ describe('POST /login', () => {
       expect((req as unknown as RequestWithIdentity).identity.userUuid).toEqual(userLoggedIn.uuid);
       expect((req as unknown as RequestWithIdentity).identity.hasPermissionToEditUserProfile()).toBeTruthy();
       expect(next).toHaveBeenCalled();
+
+      const token = decode(userLoggedIn.token, { json: true });
+      expect(token).toBeDefined();
+      expect(token?.aud).toBeDefined();
+      expect(token?.iss).toBeDefined();
+      expect(token?.iat).toBeDefined();
+      expect(token?.exp).toBeDefined();
+      expect(token?.sub).toBeDefined();
+      expect(token?.sub).toBe(userLoggedIn.uuid);
+      expect(token?.userName).toBeDefined();
+      expect(token?.permissions).toBeDefined();
 
       // checking events running via eventDispatcher
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);

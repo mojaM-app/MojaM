@@ -1,11 +1,11 @@
 import { SECRET_AUDIENCE, SECRET_ISSUER, SECRET_KEY } from '@config';
 import { UnauthorizedException, errorKeys } from '@exceptions';
-import { DataStoredInToken, Identity, RequestWithIdentity } from '@modules/auth';
+import { Identity, RequestWithIdentity } from '@modules/auth';
 import { PermissionsRepository } from '@modules/permissions';
 import { UsersRepository } from '@modules/users';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { NextFunction, Request, Response } from 'express';
-import { verify } from 'jsonwebtoken';
+import { JwtPayload, verify } from 'jsonwebtoken';
 import Container from 'typedi';
 
 const getAuthorization = (req: Request): string | null => {
@@ -34,7 +34,7 @@ export const setIdentity = async (req: RequestWithIdentity, res: Response, next:
       req.identity = new Identity(undefined, []);
       next();
     } else {
-      const { id } = verify(authorization!, SECRET_KEY!, {
+      const { sub } = verify(authorization!, SECRET_KEY!, {
         complete: true,
         algorithms: ['HS256'],
         clockTolerance: 0,
@@ -42,9 +42,9 @@ export const setIdentity = async (req: RequestWithIdentity, res: Response, next:
         ignoreNotBefore: false,
         audience: SECRET_AUDIENCE,
         issuer: SECRET_ISSUER,
-      }).payload as DataStoredInToken;
+      }).payload as JwtPayload;
       const userRepository = Container.get(UsersRepository);
-      const user = await userRepository?.getByUuid(id);
+      const user = await userRepository?.getByUuid(sub);
 
       if (isNullOrUndefined(user)) {
         next(new UnauthorizedException(errorKeys.login.Wrong_Authentication_Token));
