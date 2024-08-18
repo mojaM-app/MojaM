@@ -9,7 +9,7 @@
     "dev": "cross-env NODE_ENV=development nodemon",
     "build": "swc src -d dist --source-maps --copy-files",
     "build:tsc": "tsc && tsc-alias",
-    "test": "cross-env NODE_ENV=development jest --forceExit --detectOpenHandles --no-cache",
+    "test": "cross-env NODE_ENV=development jest --forceExit --detectOpenHandles --no-cache --runInBand",
     "test:debug": "node --nolazy --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --colors --verbose",
     "test:coverage": "cross-env NODE_ENV=development jest --coverage",
     "lint": "eslint --ignore-path .gitignore --ignore-pattern src/*.test.js --ext .ts src/",
