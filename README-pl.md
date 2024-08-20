@@ -22,13 +22,15 @@ Połączenie do bazy realizowane jest za pomocą [ORM Prisma](https://www.prisma
 PORT = 5100
 
 # DATABASE
-DATABASE_CONFIG = {"type":"mysql","host":"localhost","port":3306,"username":"root","password":"admin","database":"dev"}
+
 
 
 # TOKEN
-SECRET_KEY = secretKey
+ACCESS_TOKEN_SECRET = secretKey
+REFRESH_TOKEN_SECRET = differentSecretKey
 SECRET_AUDIENCE = audience
 SECRET_ISSUER = issuer
+REFRESH_TOKEN_EXPIRE_IN = 8h
 
 # LOG
 LOG_FORMAT = dev

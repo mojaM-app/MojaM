@@ -1,4 +1,3 @@
-import { SECRET_AUDIENCE, SECRET_ISSUER, SECRET_KEY } from '@config';
 import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
@@ -9,19 +8,27 @@ import {
   InactiveUserTriesToLogInEvent,
   LockedUserTriesToLogInEvent,
   LoginDto,
-  TokenData,
   UserLockedOutEvent,
   UserLoggedInEvent,
 } from '@modules/auth';
+import {
+  ACCESS_TOKEN_ALGORITHM,
+  getAccessTokenSecret,
+  getRefreshTokenExpiration,
+  getRefreshTokenSecret,
+  getTokenAudience,
+  getTokenIssuer,
+} from '@modules/auth/middlewares/set-identity.middleware';
 import { BaseService, userToIUser } from '@modules/common';
 import { PermissionsRepository, SystemPermission } from '@modules/permissions';
-import { IUser, UpdateUserReqDto, UsersRepository } from '@modules/users';
+import { UpdateUserReqDto, UsersRepository } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
 import { isNullOrEmptyString } from '@utils';
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
 import { sign } from 'jsonwebtoken';
 import StatusCode from 'status-code-enum';
 import { Container, Service } from 'typedi';
+import { LoginResult } from '../models/LoginResult';
 
 @Service()
 export class AuthService extends BaseService {
@@ -36,7 +43,7 @@ export class AuthService extends BaseService {
     this._cryptoService = Container.get(CryptoService);
   }
 
-  public async login(loginData: LoginDto): Promise<{ user: IUser; tokenData: TokenData }> {
+  public async login(loginData: LoginDto): Promise<LoginResult> {
     if (isNullOrEmptyString(loginData?.login) || isNullOrEmptyString(loginData?.password)) {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.Invalid_Login_Or_Password);
     }
@@ -89,13 +96,16 @@ export class AuthService extends BaseService {
     }
 
     const userPermissions = await this._permissionRepository.getUserPermissions(user.id);
-    const tokenData = this.createToken(user, userPermissions);
+    const accessToken = this.createAccessToken(user, userPermissions);
+    const refreshToken = this.createRefreshToken(user);
 
     this._eventDispatcher.dispatch(events.users.userLoggedIn, new UserLoggedInEvent(userDto));
+
     return {
       user: userDto,
-      tokenData,
-    };
+      accessToken,
+      refreshToken,
+    } satisfies LoginResult;
   }
 
   // public async logout(userData: IUser): Promise<IUser> {
@@ -105,24 +115,30 @@ export class AuthService extends BaseService {
   //   return findUser;
   // }
 
-  private createToken(user: User, permissions: SystemPermission[]): TokenData {
-    const dataStoredInToken: DataStoredInToken = {
+  createRefreshToken(user: User): string {
+    return sign({ userId: user.uuid }, getRefreshTokenSecret(user.id, user.refreshTokenKey), {
+      expiresIn: getRefreshTokenExpiration(),
+      notBefore: '0',
+      algorithm: ACCESS_TOKEN_ALGORITHM,
+      audience: getTokenAudience(),
+      issuer: getTokenIssuer(),
+      subject: user.uuid,
+    });
+  }
+
+  private createAccessToken(user: User, permissions: SystemPermission[]): string {
+    const dataStoredInToken = {
       permissions,
       userName: user.firstName + ' ' + user.lastName,
-    };
+    } satisfies DataStoredInToken;
 
-    const expiresIn: number = 10 * 60; // expressed in seconds
-
-    return {
-      expiresIn,
-      token: sign(dataStoredInToken, SECRET_KEY!, {
-        expiresIn,
-        notBefore: '0', // Cannot use before now, can be configured to be deferred.
-        algorithm: 'HS256',
-        audience: SECRET_AUDIENCE,
-        issuer: SECRET_ISSUER,
-        subject: user.uuid,
-      }),
-    };
+    return sign(dataStoredInToken, getAccessTokenSecret(), {
+      expiresIn: '10m',
+      notBefore: '0',
+      algorithm: ACCESS_TOKEN_ALGORITHM,
+      audience: getTokenAudience(),
+      issuer: getTokenIssuer(),
+      subject: user.uuid,
+    });
   }
 }

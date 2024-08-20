@@ -10,4 +10,7 @@ module.exports = {
     '^.+\\.tsx?$': 'ts-jest',
   },
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/src' }),
+  bail: 1,
+  maxConcurrency : 1,
+  openHandlesTimeout : 0,
 };
