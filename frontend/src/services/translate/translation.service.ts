@@ -9,21 +9,21 @@ import { ILanguageData } from './interfaces/ILanguageData';
   providedIn: 'root',
 })
 export class TranslationService {
-  private static readonly StorageKey = 'lang';
-  private static readonly DefaultLang = 'pl';
+  private static readonly _storageKey = 'lang';
+  private static readonly _defaultLang = 'pl';
 
   public currentLang: string | null = null;
 
   public readonly langs: ILanguageData[] = SupportedLanguages.Get();
 
   public constructor(private _localStorageService: LocalStorageService) {
-    this.currentLang = this._localStorageService.loadString(TranslationService.StorageKey);
+    this.currentLang = this._localStorageService.loadString(TranslationService._storageKey);
     if (!this.isValidLang(this.currentLang)) {
       const browserLang = navigator.language;
       this.currentLang = this.isValidLang(browserLang)
         ? browserLang
-        : TranslationService.DefaultLang;
-      this._localStorageService.saveString(TranslationService.StorageKey, this.currentLang);
+        : TranslationService._defaultLang;
+      this._localStorageService.saveString(TranslationService._storageKey, this.currentLang);
     }
   }
 
@@ -64,7 +64,7 @@ export class TranslationService {
           .messages()
           .then(messages => {
             Globalize.loadMessages(messages);
-            this._localStorageService.saveString(TranslationService.StorageKey, lang);
+            this._localStorageService.saveString(TranslationService._storageKey, lang);
           })
           .catch(e => {
             console.error(`There is no language module with ${lang} id`, e);
@@ -75,7 +75,7 @@ export class TranslationService {
   }
 
   public getGlobalize(): Globalize {
-    return Globalize(this.currentLang || TranslationService.DefaultLang);
+    return Globalize(this.currentLang || TranslationService._defaultLang);
   }
 
   private isValidLang(lang: string | null | undefined): boolean {

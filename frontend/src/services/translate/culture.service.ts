@@ -7,9 +7,9 @@ import { CldrLocaleService } from './cldr-locale.service';
   providedIn: 'root',
 })
 export class CultureService {
-  public static readonly DefaultCulture = 'pl';
+  public static readonly _defaultCulture = 'pl';
 
-  public currentCulture: string = CultureService.DefaultCulture;
+  public currentCulture: string = CultureService._defaultCulture;
   public timeFormat = 'HH:mm';
   public dateFormat = 'dd.MM.yyyy';
   public dateTimeFormat: string = this.dateFormat + ' ' + this.timeFormat;
@@ -22,13 +22,13 @@ export class CultureService {
   ) {
     this.currentCulture =
       this._localStorageService.loadString(CultureService.StorageKey) ??
-      CultureService.DefaultCulture;
+      CultureService._defaultCulture;
 
     if (
       !this.currentCulture?.length ||
       !this._cldrLocaleService.getCldrLocale(this.currentCulture)
     ) {
-      this.currentCulture = CultureService.DefaultCulture;
+      this.currentCulture = CultureService._defaultCulture;
       this._localStorageService.saveString(CultureService.StorageKey, this.currentCulture);
     }
   }
