@@ -2,10 +2,11 @@
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
-import { AuthRoute, LoginDto, RequestWithIdentity, setIdentity, UserLoggedInEvent } from '@modules/auth';
+import { RequestWithIdentity } from '@interfaces';
+import { AuthRoute, LoginDto, LoginResponseDto, setIdentity, UserLoggedInEvent } from '@modules/auth';
 import { userToIUser } from '@modules/common';
 import { PermissionsRoute } from '@modules/permissions';
-import { IUser, UsersRoute } from '@modules/users';
+import { CreateUserResponseDto, UsersRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
 import { registerTestEventHandlers, testEventHandlers } from '@utils/tests-events.utils';
@@ -41,20 +42,19 @@ describe('POST /login', () => {
       const loginResponse = await request(app.getServer())
         .post(authRoute.loginPath)
         .send({ login, password } satisfies LoginDto);
-      const body = loginResponse.body;
+      const body: LoginResponseDto = loginResponse.body;
       expect(typeof body).toBe('object');
       expect(loginResponse.statusCode).toBe(200);
       const headers = loginResponse.headers;
       expect(headers['content-type']).toEqual(expect.stringContaining('json'));
-      const { data: userLoggedIn, message: loginMessage, args: loginArgs } = body;
+      const { data: userLoggedIn, message: loginMessage } = body;
       expect(loginMessage).toBe(events.users.userLoggedIn);
-      expect(loginArgs).toBeUndefined();
       expect(userLoggedIn.email).toBe(login);
       expect(userLoggedIn.accessToken).toBeDefined();
       const req = {
         headers: {
           Authorization: `Bearer ${userLoggedIn.accessToken}`,
-        }
+        },
       };
       const next: NextFunction = jest.fn();
       await setIdentity(req as any, {} as any, next);
@@ -75,7 +75,7 @@ describe('POST /login', () => {
 
       // checking events running via eventDispatcher
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(new UserLoggedInEvent(userToIUser(userLoggedIn)));
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(new UserLoggedInEvent(userToIUser(userLoggedIn as any)));
 
       Object.entries(testEventHandlers)
         .filter(([, eventHandler]) => ![testEventHandlers.onUserLoggedIn].includes(eventHandler))
@@ -89,20 +89,19 @@ describe('POST /login', () => {
       const loginResponse = await request(app.getServer())
         .post(authRoute.loginPath)
         .send({ login, password } satisfies LoginDto);
-      const body = loginResponse.body;
+      const body: LoginResponseDto = loginResponse.body;
       expect(typeof body).toBe('object');
       expect(loginResponse.statusCode).toBe(200);
       const headers = loginResponse.headers;
       expect(headers['content-type']).toEqual(expect.stringContaining('json'));
-      const { data: userLoggedIn, message: loginMessage, args: loginArgs } = body;
+      const { data: userLoggedIn, message: loginMessage } = body;
       expect(loginMessage).toBe(events.users.userLoggedIn);
-      expect(loginArgs).toBeUndefined();
       expect(userLoggedIn.phone).toBe(login);
       expect(userLoggedIn.accessToken).toBeDefined();
       const req = {
         headers: {
           Authorization: `Bearer ${userLoggedIn.accessToken}`,
-        }
+        },
       };
       const next: NextFunction = jest.fn();
       await setIdentity(req as any, {} as any, next);
@@ -123,7 +122,7 @@ describe('POST /login', () => {
 
       // checking events running via eventDispatcher
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(new UserLoggedInEvent(userToIUser(userLoggedIn)));
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(new UserLoggedInEvent(userToIUser(userLoggedIn as any)));
 
       Object.entries(testEventHandlers)
         .filter(([, eventHandler]) => ![testEventHandlers.onUserLoggedIn].includes(eventHandler))
@@ -148,14 +147,14 @@ describe('POST /login', () => {
 
       const createUser1Response = await request(app.getServer()).post(usersRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser1Response.statusCode).toBe(201);
-      const { data: newUser1Dto, message: createUser1Message } = createUser1Response.body;
+      const { data: newUser1Dto, message: createUser1Message }: CreateUserResponseDto = createUser1Response.body;
       expect(newUser1Dto?.uuid).toBeDefined();
       expect(createUser1Message).toBe(events.users.userCreated);
       expect(newUser1Dto.phone).toBe(login);
 
       const createUser2Response = await request(app.getServer()).post(usersRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser2Response.statusCode).toBe(201);
-      const { data: newUser2Dto, message: createUser2Message } = createUser2Response.body;
+      const { data: newUser2Dto, message: createUser2Message }: CreateUserResponseDto = createUser2Response.body;
       expect(newUser2Dto?.uuid).toBeDefined();
       expect(createUser2Message).toBe(events.users.userCreated);
       expect(newUser2Dto.phone).toBe(login);
@@ -204,14 +203,14 @@ describe('POST /login', () => {
 
       const createUser1Response = await request(app.getServer()).post(usersRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser1Response.statusCode).toBe(201);
-      const { data: newUser1Dto, message: createUser1Message } = createUser1Response.body;
+      const { data: newUser1Dto, message: createUser1Message }: CreateUserResponseDto = createUser1Response.body;
       expect(newUser1Dto?.uuid).toBeDefined();
       expect(createUser1Message).toBe(events.users.userCreated);
       expect(newUser1Dto.email).toBe(login);
 
       const createUser2Response = await request(app.getServer()).post(usersRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser2Response.statusCode).toBe(201);
-      const { data: newUser2Dto, message: createUser2Message } = createUser2Response.body;
+      const { data: newUser2Dto, message: createUser2Message }: CreateUserResponseDto = createUser2Response.body;
       expect(newUser2Dto?.uuid).toBeDefined();
       expect(createUser2Message).toBe(events.users.userCreated);
       expect(newUser2Dto.email).toBe(login);
@@ -283,7 +282,7 @@ describe('POST /login', () => {
 
       const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
-      const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createResponse.body;
+      const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createResponse.body;
       expect(newUserDto?.uuid).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
@@ -362,7 +361,7 @@ describe('POST /login', () => {
 
       const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
-      const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createResponse.body;
+      const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createResponse.body;
       expect(newUserDto?.uuid).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
@@ -414,7 +413,7 @@ describe('POST /login', () => {
 
       const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
-      const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createResponse.body;
+      const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createResponse.body;
       expect(newUserDto?.uuid).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
@@ -466,7 +465,7 @@ describe('POST /login', () => {
 
       const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
-      const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createResponse.body;
+      const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createResponse.body;
       expect(newUserDto?.uuid).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
@@ -534,7 +533,7 @@ describe('POST /login', () => {
 
       const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
-      const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createResponse.body;
+      const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createResponse.body;
       expect(newUserDto?.uuid).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
@@ -609,7 +608,7 @@ describe('POST /login', () => {
 
       const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
-      const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createResponse.body;
+      const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createResponse.body;
       expect(newUserDto?.uuid).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
@@ -661,7 +660,7 @@ describe('POST /login', () => {
 
       const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
-      const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createResponse.body;
+      const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createResponse.body;
       expect(newUserDto?.uuid).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
@@ -719,7 +718,7 @@ describe('POST /login', () => {
 
       const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
-      const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createResponse.body;
+      const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createResponse.body;
       expect(newUserDto?.uuid).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 

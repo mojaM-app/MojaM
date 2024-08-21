@@ -3,8 +3,8 @@ import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { LoginDto } from '@modules/auth';
-import { PermissionAddedEvent, PermissionsRoute, SystemPermission } from '@modules/permissions';
-import { IUser, UsersRoute } from '@modules/users';
+import { AddPermissionsResponseDto, PermissionAddedEvent, PermissionsRoute, SystemPermission } from '@modules/permissions';
+import { CreateUserResponseDto, DeleteUserResponseDto, IUser, UsersRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
 import { registerTestEventHandlers, testEventHandlers } from '@utils/tests-events.utils';
 import { getAdminLoginData } from '@utils/tests.utils';
@@ -114,7 +114,7 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
     const newUser = generateValidUser();
     const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
-    const { data: newUserDto }: { data: IUser } = createUserResponse.body;
+    const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
     expect(newUserDto?.uuid).toBeDefined();
 
     const deleteResponse = await request(app.getServer())
@@ -227,8 +227,8 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
       .send(requestData)
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
-    let body = createUserResponse.body;
-    const { data: user }: { data: IUser } = body;
+    let body: any = createUserResponse.body;
+    const { data: user }: CreateUserResponseDto = body;
     expect(user?.uuid).toBeDefined();
 
     const activateNewUserResponse = await request(app.getServer())
@@ -255,7 +255,7 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
     expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = deleteUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: deletedUserUuid }: { data: string } = body;
+    const { data: deletedUserUuid }: DeleteUserResponseDto = body;
     expect(deletedUserUuid).toBe(user.uuid);
 
     // checking events running via eventDispatcher
@@ -311,7 +311,7 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
     let body = createUserResponse.body;
-    const { data: user }: { data: IUser } = body;
+    const { data: user }: CreateUserResponseDto = body;
     expect(user?.uuid).toBeDefined();
 
     const activateNewUserResponse = await request(app.getServer())
@@ -326,7 +326,7 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
     expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = addPermissionResponse.body;
     expect(typeof body).toBe('object');
-    const { data: addPermission1Result, message: addPermission1Message }: { data: boolean; message: string } = body;
+    const { data: addPermission1Result, message: addPermission1Message }: AddPermissionsResponseDto = body;
     expect(addPermission1Result).toBe(true);
     expect(addPermission1Message).toBe(events.permissions.permissionAdded);
 
@@ -338,7 +338,7 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
     expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = addPermissionResponse.body;
     expect(typeof body).toBe('object');
-    const { data: addPermission2Result, message: addPermission2Message }: { data: boolean; message: string } = body;
+    const { data: addPermission2Result, message: addPermission2Message }: AddPermissionsResponseDto = body;
     expect(addPermission2Result).toBe(true);
     expect(addPermission2Message).toBe(events.permissions.permissionAdded);
 
@@ -350,7 +350,7 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
     expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = deleteUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: deletedUserUuid }: { data: string } = body;
+    const { data: deletedUserUuid }: DeleteUserResponseDto = body;
     expect(deletedUserUuid).toBe(user.uuid);
 
     // checking events running via eventDispatcher
@@ -384,7 +384,7 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
     let body = createUserResponse.body;
-    const { data: user }: { data: IUser } = body;
+    const { data: user }: CreateUserResponseDto = body;
     expect(user?.uuid).toBeDefined();
 
     const path = permissionsRoute.path + '/' + user.uuid + '/' + SystemPermission.PreviewUserList.toString();
@@ -393,7 +393,7 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
     expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = addPermissionResponse.body;
     expect(typeof body).toBe('object');
-    const { data: addPermissionResult, message: addPermissionMessage }: { data: boolean; message: string } = body;
+    const { data: addPermissionResult, message: addPermissionMessage }: AddPermissionsResponseDto = body;
     expect(addPermissionResult).toBe(true);
     expect(addPermissionMessage).toBe(events.permissions.permissionAdded);
 
@@ -402,7 +402,7 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
     expect(addPermissionAgainResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = addPermissionAgainResponse.body;
     expect(typeof body).toBe('object');
-    const { data: addPermissionAgainResult, message: addPermissionAgainMessage }: { data: boolean; message: string } = body;
+    const { data: addPermissionAgainResult, message: addPermissionAgainMessage }: AddPermissionsResponseDto = body;
     expect(addPermissionAgainResult).toBe(true);
     expect(addPermissionAgainMessage).toBe(events.permissions.permissionAdded);
 
@@ -414,7 +414,7 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
     expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = deleteUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: deletedUserUuid }: { data: string } = body;
+    const { data: deletedUserUuid }: DeleteUserResponseDto = body;
     expect(deletedUserUuid).toBe(user.uuid);
 
     // checking events running via eventDispatcher

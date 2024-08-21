@@ -5,11 +5,12 @@ import {
   CryptoService,
   DataStoredInToken,
   FailedLoginAttemptEvent,
+  ILoginResult,
   InactiveUserTriesToLogInEvent,
   LockedUserTriesToLogInEvent,
   LoginDto,
   UserLockedOutEvent,
-  UserLoggedInEvent,
+  UserLoggedInEvent
 } from '@modules/auth';
 import {
   ACCESS_TOKEN_ALGORITHM,
@@ -28,7 +29,6 @@ import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
 import { sign } from 'jsonwebtoken';
 import StatusCode from 'status-code-enum';
 import { Container, Service } from 'typedi';
-import { LoginResult } from '../models/LoginResult';
 
 @Service()
 export class AuthService extends BaseService {
@@ -43,7 +43,7 @@ export class AuthService extends BaseService {
     this._cryptoService = Container.get(CryptoService);
   }
 
-  public async login(loginData: LoginDto): Promise<LoginResult> {
+  public async login(loginData: LoginDto): Promise<ILoginResult> {
     if (isNullOrEmptyString(loginData?.login) || isNullOrEmptyString(loginData?.password)) {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.Invalid_Login_Or_Password);
     }
@@ -105,7 +105,7 @@ export class AuthService extends BaseService {
       user: userDto,
       accessToken,
       refreshToken,
-    } satisfies LoginResult;
+    } satisfies ILoginResult;
   }
 
   // public async logout(userData: IUser): Promise<IUser> {

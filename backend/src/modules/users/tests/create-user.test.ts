@@ -3,7 +3,7 @@ import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { LoginDto } from '@modules/auth';
-import { CreateUserDto, IUser, UsersRoute } from '@modules/users';
+import { CreateUserDto, CreateUserResponseDto, UsersRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
 import { isGuid } from '@utils';
 import { registerTestEventHandlers, testEventHandlers } from '@utils/tests-events.utils';
@@ -39,7 +39,7 @@ describe('POST/users should respond with a status code of 201', () => {
     expect(createUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     const body = createUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: user, message: createMessage }: { data: IUser; message: string } = body;
+    const { data: user, message: createMessage }: CreateUserResponseDto = body;
     expect(user?.uuid).toBeDefined();
     expect(isGuid(user.uuid)).toBe(true);
     expect(user?.email).toBeDefined();
@@ -141,7 +141,7 @@ describe('POST/users should respond with a status code of 400', () => {
       .send(requestData)
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse1.statusCode).toBe(201);
-    const { data: user, message: createMessage }: { data: IUser; message: string } = createUserResponse1.body;
+    const { data: user, message: createMessage }: CreateUserResponseDto = createUserResponse1.body;
     expect(createMessage).toBe(events.users.userCreated);
 
     const createUserResponse2 = await request(app.getServer())
@@ -176,7 +176,7 @@ describe('POST/users should respond with a status code of 400', () => {
       .send(requestData)
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse1.statusCode).toBe(201);
-    const { data: user, message: createMessage }: { data: IUser; message: string } = createUserResponse1.body;
+    const { data: user, message: createMessage }: CreateUserResponseDto = createUserResponse1.body;
     expect(createMessage).toBe(events.users.userCreated);
 
     requestData.email = requestData.email?.toUpperCase();
@@ -248,7 +248,7 @@ describe('POST/users should respond with a status code of 403', () => {
     expect(newUserResponse.statusCode).toBe(201);
     let body = newUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: user, message: createMessage }: { data: IUser; message: string } = body;
+    const { data: user, message: createMessage }: CreateUserResponseDto = body;
     expect(user?.uuid).toBeDefined();
     expect(user?.email).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
@@ -342,7 +342,7 @@ describe('POST/users should respond with a status code of 401', () => {
 
     const createBobResponse = await request(app.getServer()).post(usersRoute.path).send(userBob).set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createBobResponse.statusCode).toBe(201);
-    const { data: bobDto, message: bobCreateMessage }: { data: IUser; message: string } = createBobResponse.body;
+    const { data: bobDto, message: bobCreateMessage }: CreateUserResponseDto = createBobResponse.body;
     expect(bobDto?.uuid).toBeDefined();
     expect(bobCreateMessage).toBe(events.users.userCreated);
 

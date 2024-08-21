@@ -3,7 +3,7 @@ import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
-import { IUser, UsersRoute } from '@modules/users';
+import { ActivateUserResponseDto, CreateUserResponseDto, DeleteUserResponseDto, UsersRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
 import { registerTestEventHandlers, testEventHandlers } from '@utils/tests-events.utils';
 import { getAdminLoginData } from '@utils/tests.utils';
@@ -34,7 +34,7 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
     const user = generateValidUser();
     const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
-    const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createUserResponse.body;
+    const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
     expect(newUserDto?.uuid).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
 
@@ -44,9 +44,9 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateUserResponse.statusCode).toBe(200);
     expect(activateUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-    const body = activateUserResponse.body;
+    const body: ActivateUserResponseDto = activateUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: result, message }: { data: boolean; message: string } = body;
+    const { data: result, message }: ActivateUserResponseDto = body;
     expect(message).toBe(events.users.userActivated);
     expect(result).toBe(true);
 
@@ -74,7 +74,7 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
     const user = generateValidUser();
     const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
-    const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createUserResponse.body;
+    const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
     expect(newUserDto?.uuid).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
 
@@ -84,9 +84,9 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateUserResponse1.statusCode).toBe(200);
     expect(activateUserResponse1.headers['content-type']).toEqual(expect.stringContaining('json'));
-    let body = activateUserResponse1.body;
+    let body: ActivateUserResponseDto = activateUserResponse1.body;
     expect(typeof body).toBe('object');
-    const { data: result1, message: message1 }: { data: boolean; message: string } = body;
+    const { data: result1, message: message1 }: ActivateUserResponseDto = body;
     expect(message1).toBe(events.users.userActivated);
     expect(result1).toBe(true);
 
@@ -98,7 +98,7 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
     expect(activateUserResponse2.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = activateUserResponse2.body;
     expect(typeof body).toBe('object');
-    const { data: result2, message: message2 }: { data: boolean; message: string } = body;
+    const { data: result2, message: message2 }: ActivateUserResponseDto = body;
     expect(message2).toBe(events.users.userActivated);
     expect(result2).toBe(true);
 
@@ -126,7 +126,7 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
     const user = generateValidUser();
     const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
-    const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createUserResponse.body;
+    const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
     expect(newUserDto?.uuid).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
 
@@ -136,9 +136,9 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateUserResponse.statusCode).toBe(200);
     expect(activateUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-    const body = activateUserResponse.body;
+    const body: ActivateUserResponseDto = activateUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: result2, message: message2 }: { data: boolean; message: string } = body;
+    const { data: result2, message: message2 }: ActivateUserResponseDto = body;
     expect(message2).toBe(events.users.userActivated);
     expect(result2).toBe(true);
 
@@ -211,7 +211,7 @@ describe('POST/users/:id/activate should respond with a status code of 403', () 
     expect(createUserResponse.statusCode).toBe(201);
     let body = createUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: user, message: createMessage }: { data: IUser; message: string } = body;
+    const { data: user, message: createMessage }: CreateUserResponseDto = body;
     expect(user?.uuid).toBeDefined();
     expect(user?.email).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
@@ -242,7 +242,7 @@ describe('POST/users/:id/activate should respond with a status code of 403', () 
     expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = deleteUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: deletedUserUuid }: { data: string } = body;
+    const { data: deletedUserUuid }: DeleteUserResponseDto = body;
     expect(deletedUserUuid).toBe(user.uuid);
 
     // checking events running via eventDispatcher

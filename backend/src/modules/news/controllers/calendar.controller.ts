@@ -1,7 +1,6 @@
-import { events } from '@events';
-import { RequestWithIdentity } from '@modules/auth';
+import { RequestWithIdentity } from '@interfaces';
 import { BaseController } from '@modules/common';
-import { CalendarService, GetCalendarEventsDto } from '@modules/news';
+import { CalendarService, GetCalendarEventsDto, GetCalendarEventsResponseDto } from '@modules/news';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
 
@@ -16,7 +15,7 @@ export class CalendarController extends BaseController {
   public get = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const data: GetCalendarEventsDto = await this._calendarService.get();
-      res.status(200).json({ data, message: events.news.calendar.retrieved });
+      res.status(200).json(new GetCalendarEventsResponseDto(data));
     } catch (error) {
       next(error);
     }

@@ -1,6 +1,9 @@
+import { events } from '@events';
 import { errorKeys } from '@exceptions';
+import { IResponse } from '@interfaces';
 import { VALIDATOR_SETTINGS } from '@utils';
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { TLoginResult } from '../types/login.types';
 
 export class LoginDto {
   @IsNotEmpty({
@@ -24,4 +27,14 @@ export class LoginDto {
     message: errorKeys.login.Invalid_Login_Or_Password,
   })
   public password: string | null | undefined;
+}
+
+export class LoginResponseDto implements IResponse<TLoginResult> {
+  data: TLoginResult;
+  message?: string | undefined;
+
+  public constructor(data: TLoginResult) {
+    this.data = data;
+    this.message = events.users.userLoggedIn;
+  }
 }

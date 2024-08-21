@@ -1,6 +1,6 @@
 import { ForbiddenException } from '@exceptions';
-import { Routes } from '@interfaces';
-import { RequestWithIdentity, setIdentity } from '@modules/auth';
+import { RequestWithIdentity, Routes } from '@interfaces';
+import { setIdentity } from '@modules/auth';
 import { PermissionsController } from '@modules/permissions';
 import { REGEX_GUID_PATTERN, REGEX_INT_PATTERN } from '@utils';
 import express, { NextFunction, Response } from 'express';

@@ -3,8 +3,14 @@ import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { LoginDto } from '@modules/auth';
-import { PermissionDeletedEvent, PermissionsRoute, SystemPermission } from '@modules/permissions';
-import { IUser, UsersRoute } from '@modules/users';
+import {
+  AddPermissionsResponseDto,
+  DeletePermissionsResponseDto,
+  PermissionDeletedEvent,
+  PermissionsRoute,
+  SystemPermission,
+} from '@modules/permissions';
+import { CreateUserResponseDto, DeleteUserResponseDto, IUser, UsersRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
 import { registerTestEventHandlers, testEventHandlers } from '@utils/tests-events.utils';
 import { getAdminLoginData } from '@utils/tests.utils';
@@ -112,7 +118,7 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
     const newUser = generateValidUser();
     const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
-    const { data: newUserDto }: { data: IUser; message: string } = createUserResponse.body;
+    const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
     expect(newUserDto?.uuid).toBeDefined();
 
     const deleteResponse = await request(app.getServer())
@@ -227,7 +233,7 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
     expect(createUserResponse.statusCode).toBe(201);
     let body = createUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: user, message: createMessage }: { data: IUser; message: string } = body;
+    const { data: user, message: createMessage }: CreateUserResponseDto = body;
     expect(user?.uuid).toBeDefined();
     expect(user?.email).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
@@ -244,7 +250,7 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
     expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = addPermissionResponse.body;
     expect(typeof body).toBe('object');
-    const { data: addPermissionResult, message: addPermissionMessage }: { data: boolean; message: string } = body;
+    const { data: addPermissionResult, message: addPermissionMessage }: AddPermissionsResponseDto = body;
     expect(addPermissionResult).toBe(true);
     expect(addPermissionMessage).toBe(events.permissions.permissionAdded);
 
@@ -266,7 +272,7 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
     expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = deleteUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: deletedUserUuid }: { data: string } = body;
+    const { data: deletedUserUuid }: DeleteUserResponseDto = body;
     expect(deletedUserUuid).toBe(user.uuid);
 
     // checking events running via eventDispatcher
@@ -324,7 +330,7 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
     let body = createUserResponse.body;
-    const { data: user }: { data: IUser } = body;
+    const { data: user }: CreateUserResponseDto = body;
     expect(user?.uuid).toBeDefined();
 
     const activateNewUserResponse = await request(app.getServer())
@@ -339,7 +345,7 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
     expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = addPermissionResponse.body;
     expect(typeof body).toBe('object');
-    const { data: addPermission1Result, message: addPermission1Message }: { data: boolean; message: string } = body;
+    const { data: addPermission1Result, message: addPermission1Message }: AddPermissionsResponseDto = body;
     expect(addPermission1Result).toBe(true);
     expect(addPermission1Message).toBe(events.permissions.permissionAdded);
 
@@ -349,7 +355,7 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
     expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = addPermissionResponse.body;
     expect(typeof body).toBe('object');
-    const { data: addPermission2Result, message: addPermission2Message }: { data: boolean; message: string } = body;
+    const { data: addPermission2Result, message: addPermission2Message }: AddPermissionsResponseDto = body;
     expect(addPermission2Result).toBe(true);
     expect(addPermission2Message).toBe(events.permissions.permissionAdded);
 
@@ -361,7 +367,7 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
     expect(deletePermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = deletePermissionResponse.body;
     expect(typeof body).toBe('object');
-    const { data: deletePermissionResult, message: deletePermissionMessage }: { data: boolean; message: string } = body;
+    const { data: deletePermissionResult, message: deletePermissionMessage }: DeletePermissionsResponseDto = body;
     expect(deletePermissionResult).toBe(true);
     expect(deletePermissionMessage).toBe(events.permissions.permissionDeleted);
 
@@ -381,7 +387,7 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
     expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = deleteUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: deletedUserUuid }: { data: string } = body;
+    const { data: deletedUserUuid }: DeleteUserResponseDto = body;
     expect(deletedUserUuid).toBe(user.uuid);
 
     // checking events running via eventDispatcher
@@ -417,7 +423,7 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
     let body = createUserResponse.body;
-    const { data: user }: { data: IUser } = body;
+    const { data: user }: CreateUserResponseDto = body;
     expect(user?.uuid).toBeDefined();
 
     const path = permissionsRoute.path + '/' + user.uuid + '/' + SystemPermission.PreviewUserList.toString();
@@ -426,7 +432,7 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
     expect(deletePermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = deletePermissionResponse.body;
     expect(typeof body).toBe('object');
-    const { data: deletePermissionResult, message: deletePermissionMessage }: { data: boolean; message: string } = body;
+    const { data: deletePermissionResult, message: deletePermissionMessage }: DeletePermissionsResponseDto = body;
     expect(deletePermissionResult).toBe(true);
     expect(deletePermissionMessage).toBe(events.permissions.permissionDeleted);
 
@@ -438,7 +444,7 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
     expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = deleteUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: deletedUserUuid, message: deleteMessage }: { data: string; message: string } = body;
+    const { data: deletedUserUuid, message: deleteMessage }: DeleteUserResponseDto = body;
     expect(deleteMessage).toBe(events.users.userDeleted);
     expect(deletedUserUuid).toBe(user.uuid);
 
@@ -465,7 +471,7 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
     let body = createUserResponse.body;
-    const { data: user }: { data: IUser } = body;
+    const { data: user }: CreateUserResponseDto = body;
     expect(user?.uuid).toBeDefined();
 
     const activateNewUserResponse = await request(app.getServer())
@@ -480,7 +486,7 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
     expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = addPermissionResponse.body;
     expect(typeof body).toBe('object');
-    const { data: addPermission1Result, message: addPermission1Message }: { data: boolean; message: string } = body;
+    const { data: addPermission1Result, message: addPermission1Message }: AddPermissionsResponseDto = body;
     expect(addPermission1Result).toBe(true);
     expect(addPermission1Message).toBe(events.permissions.permissionAdded);
 
@@ -492,7 +498,7 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
     expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = addPermissionResponse.body;
     expect(typeof body).toBe('object');
-    const { data: addPermission2Result, message: addPermission2Message }: { data: boolean; message: string } = body;
+    const { data: addPermission2Result, message: addPermission2Message }: AddPermissionsResponseDto = body;
     expect(addPermission2Result).toBe(true);
     expect(addPermission2Message).toBe(events.permissions.permissionAdded);
 
@@ -502,7 +508,7 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
     expect(deletePermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = deletePermissionResponse.body;
     expect(typeof body).toBe('object');
-    const { data: deletePermissionResult, message: deletePermissionMessage }: { data: boolean; message: string } = body;
+    const { data: deletePermissionResult, message: deletePermissionMessage }: DeletePermissionsResponseDto = body;
     expect(deletePermissionResult).toBe(true);
     expect(deletePermissionMessage).toBe(events.permissions.permissionDeleted);
 
@@ -524,7 +530,7 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
     expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = deleteUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: deletedUserUuid, message: deleteMessage }: { data: string; message: string } = body;
+    const { data: deletedUserUuid, message: deleteMessage }: DeleteUserResponseDto = body;
     expect(deleteMessage).toBe(events.users.userDeleted);
     expect(deletedUserUuid).toBe(user.uuid);
 
@@ -532,7 +538,8 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
     Object.entries(testEventHandlers)
       .filter(
         ([, eventHandler]) =>
-          ![testEventHandlers.onUserCreated,
+          ![
+            testEventHandlers.onUserCreated,
             testEventHandlers.onUserActivated,
             testEventHandlers.onPermissionAdded,
             testEventHandlers.onUserDeleted,

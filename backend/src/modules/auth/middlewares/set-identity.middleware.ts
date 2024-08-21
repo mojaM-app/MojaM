@@ -1,6 +1,7 @@
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_EXPIRE_IN, REFRESH_TOKEN_SECRET, SECRET_AUDIENCE, SECRET_ISSUER } from '@config';
 import { UnauthorizedException, errorKeys } from '@exceptions';
-import { Identity, RequestWithIdentity } from '@modules/auth';
+import { RequestWithIdentity } from '@interfaces';
+import { Identity } from '@modules/auth';
 import { PermissionsRepository } from '@modules/permissions';
 import { UsersRepository } from '@modules/users';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';

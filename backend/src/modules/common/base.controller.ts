@@ -1,4 +1,4 @@
-import { RequestWithIdentity } from '@modules/auth';
+import { RequestWithIdentity } from '@interfaces';
 
 export abstract class BaseController {
   protected getCurrentUserId(req: RequestWithIdentity): number | undefined {

@@ -2,8 +2,8 @@ export { PermissionEventSubscriber } from './events/event.subscriber';
 
 export { PermissionsController } from './controllers/permissions.controller';
 
-export { AddPermissionReqDto } from './dtos/add-permission.dto';
-export { DeletePermissionsReqDto } from './dtos/delete-permissions.dto';
+export { AddPermissionReqDto, AddPermissionsResponseDto } from './dtos/add-permission.dto';
+export { DeletePermissionsReqDto, DeletePermissionsResponseDto } from './dtos/delete-permissions.dto';
 
 export { PermissionAddedEvent } from './events/permission-added-event';
 export { PermissionDeletedEvent } from './events/permission-deleted-event';

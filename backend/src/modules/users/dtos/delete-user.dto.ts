@@ -1,3 +1,5 @@
+import { events } from '@events';
+import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
 
 export class DeleteUserReqDto extends BaseReqDto {
@@ -6,5 +8,15 @@ export class DeleteUserReqDto extends BaseReqDto {
   public constructor(userGuid: string | undefined, currentUserId: number | undefined) {
     super(currentUserId);
     this.userGuid = userGuid;
+  }
+}
+
+export class DeleteUserResponseDto implements IResponse<string | null> {
+  data: string | null;
+  message?: string | undefined;
+
+  public constructor(data: string | null) {
+    this.data = data;
+    this.message = events.users.userDeleted;
   }
 }

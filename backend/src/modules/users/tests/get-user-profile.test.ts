@@ -3,7 +3,7 @@ import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { LoginDto } from '@modules/auth';
-import { IUser, IUserProfile, UsersRoute } from '@modules/users';
+import { CreateUserResponseDto, DeleteUserResponseDto, GetUserProfileResponseDto, UsersRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
 import { isGuid } from '@utils';
 import { registerTestEventHandlers, testEventHandlers } from '@utils/tests-events.utils';
@@ -34,7 +34,7 @@ describe('GET/users/:id should respond with a status code of 200', () => {
     const newUser = generateValidUser();
     const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
-    const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createUserResponse.body;
+    const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
     expect(newUserDto?.uuid).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
 
@@ -46,20 +46,20 @@ describe('GET/users/:id should respond with a status code of 200', () => {
     expect(getUserProfileResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     const body = getUserProfileResponse.body;
     expect(typeof body).toBe('object');
-    const { data: userProfile, message: getUserProfileMessage }: { data: IUserProfile; message: string } = body;
+    const { data: userProfile, message: getUserProfileMessage }: GetUserProfileResponseDto = body;
     expect(getUserProfileMessage).toBe(events.users.userRetrieved);
     expect(userProfile).toBeDefined();
-    expect(userProfile.uuid).toBeDefined();
-    expect(isGuid(userProfile.uuid)).toBe(true);
-    expect(userProfile.uuid).toBe(newUserDto.uuid);
+    expect(userProfile!.uuid).toBeDefined();
+    expect(isGuid(userProfile!.uuid)).toBe(true);
+    expect(userProfile!.uuid).toBe(newUserDto.uuid);
     expect(userProfile?.email).toBeDefined();
-    expect(userProfile.email).toBe(newUserDto.email);
+    expect(userProfile!.email).toBe(newUserDto.email);
     expect(userProfile?.phone).toBeDefined();
-    expect(userProfile.phone).toBe(newUserDto.phone);
-    expect(userProfile.hasOwnProperty('id')).toBe(false);
+    expect(userProfile!.phone).toBe(newUserDto.phone);
+    expect(userProfile!.hasOwnProperty('id')).toBe(false);
 
     const deleteResponse = await request(app.getServer())
-      .delete(usersRoute.path + '/' + userProfile.uuid)
+      .delete(usersRoute.path + '/' + userProfile!.uuid)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(deleteResponse.statusCode).toBe(200);
@@ -126,7 +126,7 @@ describe('GET/users/:id should respond with a status code of 403', () => {
     expect(createUserResponse.statusCode).toBe(201);
     let body = createUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = body;
+    const { data: newUserDto, message: createMessage }: CreateUserResponseDto = body;
     expect(newUserDto?.uuid).toBeDefined();
     expect(newUserDto?.email).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
@@ -157,7 +157,7 @@ describe('GET/users/:id should respond with a status code of 403', () => {
     expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = deleteResponse.body;
     expect(typeof body).toBe('object');
-    const { data: deletedUserUuid }: { data: string } = body;
+    const { data: deletedUserUuid }: DeleteUserResponseDto = body;
     expect(deletedUserUuid).toBe(newUserDto.uuid);
 
     // checking events running via eventDispatcher

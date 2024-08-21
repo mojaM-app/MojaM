@@ -1,7 +1,6 @@
-import { events } from '@events';
-import { RequestWithIdentity } from '@modules/auth';
+import { RequestWithIdentity } from '@interfaces';
 import { BaseController } from '@modules/common';
-import { CommunityService } from '@modules/community';
+import { CommunityService, GetStructureResponseDto } from '@modules/community';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
 
@@ -15,7 +14,7 @@ export class StructureController extends BaseController {
   public get = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const data: string = await this._communityService.getStructure();
-      res.status(200).json({ data, message: events.community.structure.retrieved });
+      res.status(200).json(new GetStructureResponseDto(data));
     } catch (error) {
       next(error);
     }

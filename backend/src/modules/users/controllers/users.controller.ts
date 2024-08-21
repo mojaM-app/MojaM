@@ -1,13 +1,17 @@
-import { events } from '@events';
-import { RequestWithIdentity } from '@modules/auth';
+import { RequestWithIdentity } from '@interfaces';
 import { BaseController } from '@modules/common';
 import {
   ActivateUserReqDto,
+  ActivateUserResponseDto,
   CreateUserDto,
   CreateUserReqDto,
+  CreateUserResponseDto,
   DeactivateUserReqDto,
+  DeactivateUserResponseDto,
   DeleteUserReqDto,
+  DeleteUserResponseDto,
   GetUserProfileReqDto,
+  GetUserProfileResponseDto,
   IUserProfile,
   UsersService,
 } from '@modules/users';
@@ -27,7 +31,7 @@ export class UsersController extends BaseController {
     try {
       const reqDto = new GetUserProfileReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
       const user: IUserProfile | null = await this._userService.get(reqDto);
-      res.status(200).json({ data: user, message: events.users.userRetrieved });
+      res.status(200).json(new GetUserProfileResponseDto(user));
     } catch (error) {
       next(error);
     }
@@ -38,7 +42,7 @@ export class UsersController extends BaseController {
       const userData: CreateUserDto = req.body;
       const reqDto = new CreateUserReqDto(userData, this.getCurrentUserId(req));
       const user = await this._userService.create(reqDto);
-      res.status(201).json({ data: user, message: events.users.userCreated });
+      res.status(201).json(new CreateUserResponseDto(user));
     } catch (error) {
       next(error);
     }
@@ -48,7 +52,7 @@ export class UsersController extends BaseController {
     try {
       const reqDto = new DeleteUserReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
       const data = await this._userService.delete(reqDto);
-      res.status(200).json({ data, message: events.users.userDeleted });
+      res.status(200).json(new DeleteUserResponseDto(data));
     } catch (error) {
       next(error);
     }
@@ -58,7 +62,7 @@ export class UsersController extends BaseController {
     try {
       const reqDto = new ActivateUserReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
       const data = await this._userService.activate(reqDto);
-      res.status(200).json({ data, message: events.users.userActivated });
+      res.status(200).json(new ActivateUserResponseDto(data));
     } catch (error) {
       next(error);
     }
@@ -68,7 +72,7 @@ export class UsersController extends BaseController {
     try {
       const reqDto = new DeactivateUserReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
       const data = await this._userService.deactivate(reqDto);
-      res.status(200).json({ data, message: events.users.userDeactivated });
+      res.status(200).json(new DeactivateUserResponseDto(data));
     } catch (error) {
       next(error);
     }

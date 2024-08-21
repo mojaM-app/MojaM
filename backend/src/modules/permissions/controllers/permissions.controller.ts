@@ -1,7 +1,13 @@
 import { events } from '@events';
-import { RequestWithIdentity } from '@modules/auth';
+import { RequestWithIdentity } from '@interfaces';
 import { BaseController } from '@modules/common';
-import { AddPermissionReqDto, DeletePermissionsReqDto, PermissionsService } from '@modules/permissions';
+import {
+  AddPermissionReqDto,
+  AddPermissionsResponseDto,
+  DeletePermissionsReqDto,
+  DeletePermissionsResponseDto,
+  PermissionsService,
+} from '@modules/permissions';
 import { isGuid, toNumber } from '@utils';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
@@ -19,9 +25,9 @@ export class PermissionsController extends BaseController {
       const reqDto = new AddPermissionReqDto(userGuid, permissionId, currentUserId);
       const result = await this._permissionService.add(reqDto);
       if (result) {
-        res.status(201).json({ data: result, message: events.permissions.permissionAdded });
+        res.status(201).json(new AddPermissionsResponseDto(result, events.permissions.permissionAdded));
       } else {
-        res.status(400).json({ data: result });
+        res.status(400).json(new AddPermissionsResponseDto(result));
       }
     } catch (error) {
       next(error);
@@ -34,9 +40,9 @@ export class PermissionsController extends BaseController {
       const reqDto = new DeletePermissionsReqDto(userGuid, permissionId, currentUserId);
       const result = await this._permissionService.delete(reqDto);
       if (result) {
-        res.status(200).json({ data: result, message: events.permissions.permissionDeleted });
+        res.status(200).json(new DeletePermissionsResponseDto(result, events.permissions.permissionDeleted));
       } else {
-        res.status(400).json({ data: result });
+        res.status(400).json(new DeletePermissionsResponseDto(result));
       }
     } catch (error) {
       next(error);

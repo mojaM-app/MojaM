@@ -1,12 +1,12 @@
 export { UsersController } from './controllers/users.controller';
 export { UserEventSubscriber } from './events/event.subscriber';
 
-export { ActivateUserReqDto } from './dtos/activate-user.dto';
-export { CreateUserDto, CreateUserReqDto } from './dtos/create-user.dto';
-export { DeactivateUserReqDto } from './dtos/deactivate-user.dto';
-export { DeleteUserReqDto } from './dtos/delete-user.dto';
-export { GetUserProfileReqDto } from './dtos/get-user-profile.dto';
-export { UpdateUserDto, UpdateUserReqDto } from './dtos/update-user.dto';
+export { ActivateUserReqDto, ActivateUserResponseDto } from './dtos/activate-user.dto';
+export { CreateUserDto, CreateUserReqDto, CreateUserResponseDto } from './dtos/create-user.dto';
+export { DeactivateUserReqDto, DeactivateUserResponseDto } from './dtos/deactivate-user.dto';
+export { DeleteUserReqDto, DeleteUserResponseDto } from './dtos/delete-user.dto';
+export { GetUserProfileReqDto, GetUserProfileResponseDto } from './dtos/get-user-profile.dto';
+export { UpdateUserDto, UpdateUserReqDto, UpdateUserResponseDto } from './dtos/update-user.dto';
 
 export { UserActivatedEvent } from './events/user-activated-event';
 export { UserCreatedEvent } from './events/user-created-event';

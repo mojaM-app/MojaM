@@ -1,6 +1,5 @@
 import { App } from '@/app';
-import { AuthRoute, LoginDto } from '@modules/auth';
-import { TLoginResult } from '@modules/auth/models/LoginResult';
+import { AuthRoute, LoginDto, TLoginResult } from '@modules/auth';
 import { CreateUserDto } from '@modules/users';
 import { generateRandomEmail, generateRandomNumber, generateRandomPassword } from '@utils/tests.utils';
 import request from 'supertest';

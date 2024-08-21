@@ -1,7 +1,10 @@
+import { events } from '@events';
 import { errorKeys } from '@exceptions';
+import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
 import { VALIDATOR_SETTINGS } from '@utils';
 import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString, IsStrongPassword, MaxLength } from 'class-validator';
+import { IUser } from '../interfaces/IUser';
 
 export class CreateUserDto {
   @IsString({
@@ -56,5 +59,15 @@ export class CreateUserReqDto extends BaseReqDto {
   public constructor(userData: CreateUserDto, currentUserId: number | undefined) {
     super(currentUserId);
     this.userData = userData;
+  }
+}
+
+export class CreateUserResponseDto implements IResponse<IUser> {
+  data: IUser;
+  message?: string | undefined;
+
+  public constructor(data: IUser) {
+    this.data = data;
+    this.message = events.users.userCreated;
   }
 }

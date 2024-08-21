@@ -1,7 +1,6 @@
-import { events } from '@events';
-import { RequestWithIdentity } from '@modules/auth';
+import { RequestWithIdentity } from '@interfaces';
 import { BaseController } from '@modules/common';
-import { AnnouncementsService, GetAnnouncementsDto } from '@modules/news';
+import { AnnouncementsService, GetAnnouncementsDto, GetAnnouncementsResponseDto } from '@modules/news';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
 
@@ -16,7 +15,7 @@ export class AnnouncementsController extends BaseController {
   public get = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const data: GetAnnouncementsDto = await this._announcementsService.get();
-      res.status(200).json({ data, message: events.news.announcements.retrieved });
+      res.status(200).json(new GetAnnouncementsResponseDto(data));
     } catch (error) {
       next(error);
     }

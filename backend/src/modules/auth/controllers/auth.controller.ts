@@ -1,5 +1,4 @@
-import { events } from '@events';
-import { AuthService, LoginDto } from '@modules/auth';
+import { AuthService, ILoginResult, LoginDto, LoginResponseDto } from '@modules/auth';
 import { BaseController } from '@modules/common';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
@@ -15,14 +14,11 @@ export class AuthController extends BaseController {
   public logIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const loginData: LoginDto = req.body;
-      const loginResult = await this.authService.login(loginData);
+      const loginResult: ILoginResult = await this.authService.login(loginData);
 
       res
         .status(200)
-        .json({
-          data: { ...loginResult.user, accessToken: loginResult.accessToken, refreshToken: loginResult.refreshToken },
-          message: events.users.userLoggedIn,
-        });
+        .json(new LoginResponseDto({ ...loginResult.user, accessToken: loginResult.accessToken, refreshToken: loginResult.refreshToken }));
     } catch (error) {
       next(error);
     }

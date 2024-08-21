@@ -2,8 +2,8 @@ import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { LoginDto } from '@modules/auth';
-import { PermissionsRoute } from '@modules/permissions';
-import { IUser, UsersRoute } from '@modules/users';
+import { DeletePermissionsResponseDto, PermissionsRoute } from '@modules/permissions';
+import { ActivateUserResponseDto, CreateUserResponseDto, DeactivateUserResponseDto, UsersRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
 import { registerTestEventHandlers, testEventHandlers } from '@utils/tests-events.utils';
 import { getAdminLoginData } from '@utils/tests.utils';
@@ -20,13 +20,13 @@ describe('POST/users/:id/deactivate should respond with a status code of 200', (
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, ({ login, password } satisfies LoginDto)))?.accessToken;
+    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
   });
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     jest.resetAllMocks();
   });
 
@@ -34,7 +34,7 @@ describe('POST/users/:id/deactivate should respond with a status code of 200', (
     const user = generateValidUser();
     const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
-    const { data: newUserDto, message: createMessage }: { data: IUser, message: string } = createUserResponse.body;
+    const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
     expect(newUserDto?.uuid).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
 
@@ -46,7 +46,7 @@ describe('POST/users/:id/deactivate should respond with a status code of 200', (
     expect(deactivateUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     const body = deactivateUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: result, message }: { data: boolean, message: string } = body;
+    const { data: result, message }: DeactivateUserResponseDto = body;
     expect(message).toBe(events.users.userDeactivated);
     expect(result).toBe(true);
 
@@ -58,7 +58,10 @@ describe('POST/users/:id/deactivate should respond with a status code of 200', (
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers)
-      .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeactivated, testEventHandlers.onUserDeleted].includes(eventHandler))
+      .filter(
+        ([, eventHandler]) =>
+          ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeactivated, testEventHandlers.onUserDeleted].includes(eventHandler),
+      )
       .forEach(([, eventHandler]) => {
         expect(eventHandler).not.toHaveBeenCalled();
       });
@@ -71,7 +74,7 @@ describe('POST/users/:id/deactivate should respond with a status code of 200', (
     const user = generateValidUser();
     const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
-    const { data: newUserDto, message: createMessage }: { data: IUser, message: string } = createUserResponse.body;
+    const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
     expect(newUserDto?.uuid).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
 
@@ -83,7 +86,7 @@ describe('POST/users/:id/deactivate should respond with a status code of 200', (
     expect(deactivateUserResponse1.headers['content-type']).toEqual(expect.stringContaining('json'));
     let body = deactivateUserResponse1.body;
     expect(typeof body).toBe('object');
-    const { data: result1, message: message1 }: { data: boolean, message: string } = body;
+    const { data: result1, message: message1 }: DeactivateUserResponseDto = body;
     expect(message1).toBe(events.users.userDeactivated);
     expect(result1).toBe(true);
 
@@ -95,7 +98,7 @@ describe('POST/users/:id/deactivate should respond with a status code of 200', (
     expect(deactivateUserResponse2.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = deactivateUserResponse2.body;
     expect(typeof body).toBe('object');
-    const { data: result2, message: message2 }: { data: boolean, message: string } = body;
+    const { data: result2, message: message2 }: DeactivateUserResponseDto = body;
     expect(message2).toBe(events.users.userDeactivated);
     expect(result2).toBe(true);
 
@@ -107,7 +110,10 @@ describe('POST/users/:id/deactivate should respond with a status code of 200', (
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers)
-      .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeactivated, testEventHandlers.onUserDeleted].includes(eventHandler))
+      .filter(
+        ([, eventHandler]) =>
+          ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeactivated, testEventHandlers.onUserDeleted].includes(eventHandler),
+      )
       .forEach(([, eventHandler]) => {
         expect(eventHandler).not.toHaveBeenCalled();
       });
@@ -120,7 +126,7 @@ describe('POST/users/:id/deactivate should respond with a status code of 200', (
     const user = generateValidUser();
     const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
-    const { data: newUserDto, message: createMessage }: { data: IUser, message: string } = createUserResponse.body;
+    const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
     expect(newUserDto?.uuid).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
 
@@ -132,7 +138,7 @@ describe('POST/users/:id/deactivate should respond with a status code of 200', (
     expect(activateUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     let body = activateUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: result1, message: message1 }: { data: boolean, message: string } = body;
+    const { data: result1, message: message1 }: ActivateUserResponseDto = body;
     expect(message1).toBe(events.users.userActivated);
     expect(result1).toBe(true);
 
@@ -144,7 +150,7 @@ describe('POST/users/:id/deactivate should respond with a status code of 200', (
     expect(deactivateUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = deactivateUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: result2, message: message2 }: { data: boolean, message: string } = body;
+    const { data: result2, message: message2 }: DeactivateUserResponseDto = body;
     expect(message2).toBe(events.users.userDeactivated);
     expect(result2).toBe(true);
 
@@ -156,7 +162,15 @@ describe('POST/users/:id/deactivate should respond with a status code of 200', (
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers)
-      .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserDeactivated, testEventHandlers.onUserDeleted].includes(eventHandler))
+      .filter(
+        ([, eventHandler]) =>
+          ![
+            testEventHandlers.onUserCreated,
+            testEventHandlers.onUserActivated,
+            testEventHandlers.onUserDeactivated,
+            testEventHandlers.onUserDeleted,
+          ].includes(eventHandler),
+      )
       .forEach(([, eventHandler]) => {
         expect(eventHandler).not.toHaveBeenCalled();
       });
@@ -179,13 +193,13 @@ describe('POST/users/:id/deactivate should respond with a status code of 403', (
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, ({ login, password } satisfies LoginDto)))?.accessToken;
+    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
   });
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     jest.resetAllMocks();
   });
 
@@ -207,11 +221,14 @@ describe('POST/users/:id/deactivate should respond with a status code of 403', (
 
   test('when user have no permission', async () => {
     const requestData = generateValidUser();
-    const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(requestData).set('Authorization', `Bearer ${adminAccessToken}`);
+    const createUserResponse = await request(app.getServer())
+      .post(usersRoute.path)
+      .send(requestData)
+      .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
     let body = createUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: user, message: createMessage }: { data: IUser, message: string } = body;
+    const { data: user, message: createMessage }: CreateUserResponseDto = body;
     expect(user?.uuid).toBeDefined();
     expect(user?.email).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
@@ -222,7 +239,7 @@ describe('POST/users/:id/deactivate should respond with a status code of 403', (
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateNewUserResponse.statusCode).toBe(200);
 
-    const newUserAccessToken = (await loginAs(app, ({ login: requestData.email, password: requestData.password } satisfies LoginDto)))?.accessToken;
+    const newUserAccessToken = (await loginAs(app, { login: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
     const deactivateUserResponse = await request(app.getServer())
       .post(usersRoute.path + '/' + user.uuid + '/' + usersRoute.deactivatePath)
       .send()
@@ -241,12 +258,20 @@ describe('POST/users/:id/deactivate should respond with a status code of 403', (
     expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = deleteUserResponse.body;
     expect(typeof body).toBe('object');
-    const { data: deletedUserUuid }: { data: string } = body;
+    const { data: deletedUserUuid }: DeletePermissionsResponseDto = body;
     expect(deletedUserUuid).toBe(user.uuid);
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers)
-      .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserLoggedIn, testEventHandlers.onUserDeleted].includes(eventHandler))
+      .filter(
+        ([, eventHandler]) =>
+          ![
+            testEventHandlers.onUserCreated,
+            testEventHandlers.onUserActivated,
+            testEventHandlers.onUserLoggedIn,
+            testEventHandlers.onUserDeleted,
+          ].includes(eventHandler),
+      )
       .forEach(([, eventHandler]) => {
         expect(eventHandler).not.toHaveBeenCalled();
       });
@@ -270,13 +295,13 @@ describe('POST/users/:id/deactivate should respond with a status code of 400', (
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, ({ login, password } satisfies LoginDto)))?.accessToken;
+    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
   });
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     jest.resetAllMocks();
   });
 
@@ -291,7 +316,7 @@ describe('POST/users/:id/deactivate should respond with a status code of 400', (
     const body = deactivateResponse.body;
     expect(typeof body).toBe('object');
     const data = body.data;
-    const { message: deactivateMessage, args: deactivateArgs }: { message: string, args: string[] } = data;
+    const { message: deactivateMessage, args: deactivateArgs }: { message: string; args: string[] } = data;
     expect(deactivateMessage).toBe(errorKeys.users.User_Does_Not_Exist);
     expect(deactivateArgs.length).toBe(1);
     expect(deactivateArgs[0]).toBe(userId);
@@ -316,13 +341,13 @@ describe('POST/users/:id/deactivate should respond with a status code of 404', (
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, ({ login, password } satisfies LoginDto)))?.accessToken;
+    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
   });
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     jest.resetAllMocks();
   });
 
@@ -357,13 +382,13 @@ describe('POST/users/:id/deactivate should respond with a status code of 401', (
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, ({ login, password } satisfies LoginDto)))?.accessToken;
+    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
   });
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     jest.resetAllMocks();
   });
 

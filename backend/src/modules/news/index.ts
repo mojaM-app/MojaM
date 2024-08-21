@@ -6,8 +6,8 @@ export { AnnouncementsService } from './services/announcements.service';
 export { CalendarService } from './services/calendar.service';
 export { InformationService } from './services/information.service';
 
-export { GetAnnouncementsDto } from './dtos/announcements.dto';
-export { GetCalendarEventsDto } from './dtos/calendar.dto';
-export { GetInformationDto } from './dtos/information.dto';
+export { GetAnnouncementsDto, GetAnnouncementsResponseDto } from './dtos/announcements.dto';
+export { GetCalendarEventsDto, GetCalendarEventsResponseDto } from './dtos/calendar.dto';
+export { GetInformationDto, GetInformationResponseDto } from './dtos/information.dto';
 
 export { NewsRoute } from './routes/news.routes';

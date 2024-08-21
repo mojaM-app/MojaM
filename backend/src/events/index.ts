@@ -35,6 +35,7 @@ export const events = {
     userLockedOut: 'onUserLockedOut',
     userRetrieved: 'onUserRetrieved',
     userCreated: 'onUserCreated',
+    userUpdated: 'onUserUpdated',
     userDeleted: 'onUserDeleted',
     userActivated: 'onUserActivated',
     userDeactivated: 'onUserDeactivated',
