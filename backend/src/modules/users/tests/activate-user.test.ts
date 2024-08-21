@@ -15,12 +15,12 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
   const usersRoute = new UsersRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App([usersRoute, permissionsRoute]);
-  let adminAuthToken: string | undefined;
+  let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, { login, password } satisfies LoginDto)).authToken;
+    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -32,7 +32,7 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
 
   test('when data are valid and user has permission', async () => {
     const user = generateValidUser();
-    const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAuthToken}`);
+    const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
     const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createUserResponse.body;
     expect(newUserDto?.uuid).toBeDefined();
@@ -41,7 +41,7 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
     const activateUserResponse = await request(app.getServer())
       .post(usersRoute.path + '/' + newUserDto.uuid + '/' + usersRoute.activatePath)
       .send()
-      .set('Authorization', `Bearer ${adminAuthToken}`);
+      .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateUserResponse.statusCode).toBe(200);
     expect(activateUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     const body = activateUserResponse.body;
@@ -53,7 +53,7 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
     const deleteUserResponse = await request(app.getServer())
       .delete(usersRoute.path + '/' + newUserDto.uuid)
       .send()
-      .set('Authorization', `Bearer ${adminAuthToken}`);
+      .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(deleteUserResponse.statusCode).toBe(200);
 
     // checking events running via eventDispatcher
@@ -72,7 +72,7 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
 
   test('when data are valid, user has permission and activatedUser is active', async () => {
     const user = generateValidUser();
-    const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAuthToken}`);
+    const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
     const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createUserResponse.body;
     expect(newUserDto?.uuid).toBeDefined();
@@ -81,7 +81,7 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
     const activateUserResponse1 = await request(app.getServer())
       .post(usersRoute.path + '/' + newUserDto.uuid + '/' + usersRoute.activatePath)
       .send()
-      .set('Authorization', `Bearer ${adminAuthToken}`);
+      .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateUserResponse1.statusCode).toBe(200);
     expect(activateUserResponse1.headers['content-type']).toEqual(expect.stringContaining('json'));
     let body = activateUserResponse1.body;
@@ -93,7 +93,7 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
     const activateUserResponse2 = await request(app.getServer())
       .post(usersRoute.path + '/' + newUserDto.uuid + '/' + usersRoute.activatePath)
       .send()
-      .set('Authorization', `Bearer ${adminAuthToken}`);
+      .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateUserResponse2.statusCode).toBe(200);
     expect(activateUserResponse2.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = activateUserResponse2.body;
@@ -105,7 +105,7 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
     const deleteUserResponse = await request(app.getServer())
       .delete(usersRoute.path + '/' + newUserDto.uuid)
       .send()
-      .set('Authorization', `Bearer ${adminAuthToken}`);
+      .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(deleteUserResponse.statusCode).toBe(200);
 
     // checking events running via eventDispatcher
@@ -124,7 +124,7 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
 
   test('when data are valid, user has permission and activatedUser is not active', async () => {
     const user = generateValidUser();
-    const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAuthToken}`);
+    const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
     const { data: newUserDto, message: createMessage }: { data: IUser; message: string } = createUserResponse.body;
     expect(newUserDto?.uuid).toBeDefined();
@@ -133,7 +133,7 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
     const activateUserResponse = await request(app.getServer())
       .post(usersRoute.path + '/' + newUserDto.uuid + '/' + usersRoute.activatePath)
       .send()
-      .set('Authorization', `Bearer ${adminAuthToken}`);
+      .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateUserResponse.statusCode).toBe(200);
     expect(activateUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     const body = activateUserResponse.body;
@@ -145,7 +145,7 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
     const deleteUserResponse = await request(app.getServer())
       .delete(usersRoute.path + '/' + newUserDto.uuid)
       .send()
-      .set('Authorization', `Bearer ${adminAuthToken}`);
+      .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(deleteUserResponse.statusCode).toBe(200);
 
     // checking events running via eventDispatcher
@@ -170,12 +170,12 @@ describe('POST/users/:id/activate should respond with a status code of 200', () 
 describe('POST/users/:id/activate should respond with a status code of 403', () => {
   const usersRoute = new UsersRoute();
   const app = new App([usersRoute]);
-  let adminAuthToken: string | undefined;
+  let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, { login, password } satisfies LoginDto)).authToken;
+    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -207,7 +207,7 @@ describe('POST/users/:id/activate should respond with a status code of 403', () 
     const createUserResponse = await request(app.getServer())
       .post(usersRoute.path)
       .send(requestData)
-      .set('Authorization', `Bearer ${adminAuthToken}`);
+      .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
     let body = createUserResponse.body;
     expect(typeof body).toBe('object');
@@ -219,15 +219,15 @@ describe('POST/users/:id/activate should respond with a status code of 403', () 
     const activateNewUserResponse = await request(app.getServer())
       .post(usersRoute.path + '/' + user.uuid + '/' + usersRoute.activatePath)
       .send()
-      .set('Authorization', `Bearer ${adminAuthToken}`);
+      .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateNewUserResponse.statusCode).toBe(200);
 
-    const newUserAuthToken = (await loginAs(app, { login: requestData.email, password: requestData.password } satisfies LoginDto)).authToken;
+    const newUserAccessToken = (await loginAs(app, { login: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
 
     const activateUserResponse = await request(app.getServer())
       .post(usersRoute.path + '/' + user.uuid + '/' + usersRoute.activatePath)
       .send()
-      .set('Authorization', `Bearer ${newUserAuthToken}`);
+      .set('Authorization', `Bearer ${newUserAccessToken}`);
     expect(activateUserResponse.statusCode).toBe(403);
     expect(activateUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = activateUserResponse.body;
@@ -237,7 +237,7 @@ describe('POST/users/:id/activate should respond with a status code of 403', () 
     const deleteUserResponse = await request(app.getServer())
       .delete(usersRoute.path + '/' + user.uuid)
       .send()
-      .set('Authorization', `Bearer ${adminAuthToken}`);
+      .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(deleteUserResponse.statusCode).toBe(200);
     expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     body = deleteUserResponse.body;
@@ -274,12 +274,12 @@ describe('POST/users/:id/activate should respond with a status code of 400', () 
   const usersRoute = new UsersRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App([usersRoute, permissionsRoute]);
-  let adminAuthToken: string | undefined;
+  let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, { login, password } satisfies LoginDto)).authToken;
+    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -294,7 +294,7 @@ describe('POST/users/:id/activate should respond with a status code of 400', () 
     const activateResponse = await request(app.getServer())
       .post(usersRoute.path + '/' + userId + '/' + usersRoute.activatePath)
       .send()
-      .set('Authorization', `Bearer ${adminAuthToken}`);
+      .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateResponse.statusCode).toBe(400);
     expect(activateResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     const body = activateResponse.body;
@@ -320,12 +320,12 @@ describe('POST/users/:id/activate should respond with a status code of 404', () 
   const usersRoute = new UsersRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App([usersRoute, permissionsRoute]);
-  let adminAuthToken: string | undefined;
+  let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, { login, password } satisfies LoginDto)).authToken;
+    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -339,7 +339,7 @@ describe('POST/users/:id/activate should respond with a status code of 404', () 
     const activateResponse = await request(app.getServer())
       .post(usersRoute.path + '/invalid-guid/' + usersRoute.activatePath)
       .send()
-      .set('Authorization', `Bearer ${adminAuthToken}`);
+      .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateResponse.statusCode).toBe(404);
     expect(activateResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
     const body = activateResponse.body;
@@ -361,12 +361,12 @@ describe('POST/users/:id/activate should respond with a status code of 404', () 
 describe('POST/users/:id/activate should respond with a status code of 401', () => {
   const usersRoute = new UsersRoute();
   const app = new App([usersRoute]);
-  let adminAuthToken: string | undefined;
+  let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAuthToken = (await loginAs(app, { login, password } satisfies LoginDto)).authToken;
+    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -381,7 +381,7 @@ describe('POST/users/:id/activate should respond with a status code of 401', () 
     const activateResponse = await request(app.getServer())
       .post(usersRoute.path + '/' + userId + '/' + usersRoute.activatePath)
       .send()
-      .set('Authorization', `Bearer invalid_token_${adminAuthToken}`);
+      .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
     expect(activateResponse.statusCode).toBe(401);
     const body = activateResponse.body;
     expect(typeof body).toBe('object');

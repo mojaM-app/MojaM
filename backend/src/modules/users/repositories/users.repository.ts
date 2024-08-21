@@ -102,7 +102,13 @@ export class UsersRepository extends BaseRepository {
     const userData: CreateUserDto = reqDto.userData;
     const salt = this._cryptoService.generateSalt();
     const hashedPassword = this._cryptoService.hashPassword(salt, userData.password);
-    const newUser = this._dbContext.users.create({ ...userData, password: hashedPassword, isActive: false, salt });
+    const newUser = this._dbContext.users.create({
+      ...userData,
+      password: hashedPassword,
+      isActive: false,
+      salt,
+      refreshTokenKey: this._cryptoService.generateUserRefreshTokenKey(),
+    });
     return await this._dbContext.users.save(newUser);
   }
 
@@ -123,11 +129,7 @@ export class UsersRepository extends BaseRepository {
   }
 
   public async delete(user: User, reqDto: DeleteUserReqDto): Promise<boolean> {
-    await this._dbContext.userSystemPermissions
-      .createQueryBuilder()
-      .delete()
-      .where('userId = :userId', { userId: user.id })
-      .execute();
+    await this._dbContext.userSystemPermissions.createQueryBuilder().delete().where('userId = :userId', { userId: user.id }).execute();
 
     await this._dbContext.users.delete({ id: user.id });
 
@@ -179,10 +181,7 @@ export class UsersRepository extends BaseRepository {
   }
 
   private async update(reqDto: UpdateUserReqDto): Promise<User | null> {
-    await this._dbContext.users.update(
-      reqDto.userId,
-      reqDto.userData,
-    );
+    await this._dbContext.users.update(reqDto.userId, reqDto.userData);
 
     return await this._dbContext.users.findOne({ where: { id: reqDto.userId } });
   }

@@ -72,6 +72,14 @@ export class User {
     salt: string;
 
   @Column({
+    name: 'RefreshTokenKey',
+    type: 'nvarchar',
+    length: 128,
+    nullable: false,
+  })
+    refreshTokenKey: string;
+
+  @Column({
     name: 'FirstName',
     type: 'nvarchar',
     length: 255,

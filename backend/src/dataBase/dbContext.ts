@@ -1,7 +1,7 @@
-import { SystemPermission } from '@modules/permissions/entities/system-permission.entity';
-import { UserSystemPermission } from '@modules/users/entities/user-system-permission.entity';
-import { User } from '@modules/users/entities/user.entity';
 import { DataSource, DataSourceOptions, Repository } from 'typeorm';
+import { SystemPermission } from '../modules/permissions/entities/system-permission.entity';
+import { UserSystemPermission } from '../modules/users/entities/user-system-permission.entity';
+import { User } from '../modules/users/entities/user.entity';
 
 export class DbContext extends DataSource {
   public get users(): Repository<User> {
