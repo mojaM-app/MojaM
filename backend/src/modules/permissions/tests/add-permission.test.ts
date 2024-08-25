@@ -173,7 +173,7 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
     expect(addPermissionResponse.statusCode).toBe(401);
     const body = addPermissionResponse.body;
     expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(errorKeys.login.Wrong_Authentication_Token);
+    expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -208,10 +208,10 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
   test('when token is not set', async () => {
     const path = permissionsRoute.path + '/' + Guid.EMPTY + '/' + SystemPermission.PreviewUserList.toString();
     const addPermissionResponse = await request(app.getServer()).post(path).send();
-    expect(addPermissionResponse.statusCode).toBe(403);
+    expect(addPermissionResponse.statusCode).toBe(401);
     const body = addPermissionResponse.body;
     expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
+    expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers).forEach(([, eventHandler]) => {

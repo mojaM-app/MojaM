@@ -106,10 +106,10 @@ describe('GET/users/:id should respond with a status code of 403', () => {
     const getUserProfileResponse = await request(app.getServer())
       .get(usersRoute.path + '/' + userId)
       .send();
-    expect(getUserProfileResponse.statusCode).toBe(403);
+    expect(getUserProfileResponse.statusCode).toBe(401);
     const body = getUserProfileResponse.body;
     expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
+    expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -299,7 +299,7 @@ describe('GET/users/:id should respond with a status code of 401', () => {
     expect(getUserProfileResponse.statusCode).toBe(401);
     const body = getUserProfileResponse.body;
     expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(errorKeys.login.Wrong_Authentication_Token);
+    expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers).forEach(([, eventHandler]) => {

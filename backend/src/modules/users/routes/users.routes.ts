@@ -1,4 +1,4 @@
-import { ForbiddenException } from '@exceptions';
+import { ForbiddenException, UnauthorizedException } from '@exceptions';
 import { RequestWithIdentity, Routes } from '@interfaces';
 import { validateData } from '@middlewares';
 import { setIdentity } from '@modules/auth';
@@ -23,25 +23,27 @@ export class UsersRoute implements Routes {
     this.router.get(
       `${this.path}/:id(${REGEX_GUID_PATTERN})`,
       [setIdentity, this.checkPreviewUserProfilePermission],
-      this._usersController.getUserProfile
+      this._usersController.getUserProfile,
     );
     this.router.post(`${this.path}`, [validateData(CreateUserDto), setIdentity, this.checkCreatePermission], this._usersController.create);
     this.router.post(
       `${this.path}/:id(${REGEX_GUID_PATTERN})/${this.deactivatePath}`,
       [setIdentity, this.checkDeactivatePermission],
-      this._usersController.deactivate
+      this._usersController.deactivate,
     );
     this.router.post(
       `${this.path}/:id(${REGEX_GUID_PATTERN})/${this.activatePath}`,
       [setIdentity, this.checkActivatePermission],
-      this._usersController.activate
+      this._usersController.activate,
     );
     // this.router.put(`${this.path}/:id(${REGEX_INT_PATTERN)`, ValidationMiddleware(UpdateUserDto, true),verifyToken, this._usersController.update);
     this.router.delete(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity, this.checkDeletePermission], this._usersController.delete);
   }
 
   private readonly checkPreviewUserProfilePermission = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity.hasPermissionToPreviewUserProfile()) {
+    if (!req.identity?.isAuthenticated()) {
+      next(new UnauthorizedException());
+    } else if (!req.identity.hasPermissionToPreviewUserProfile()) {
       next(new ForbiddenException());
     } else {
       next();
@@ -49,7 +51,9 @@ export class UsersRoute implements Routes {
   };
 
   private readonly checkCreatePermission = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity.hasPermissionToAddUser()) {
+    if (!req.identity?.isAuthenticated()) {
+      next(new UnauthorizedException());
+    } else if (!req.identity.hasPermissionToAddUser()) {
       next(new ForbiddenException());
     } else {
       next();
@@ -57,7 +61,9 @@ export class UsersRoute implements Routes {
   };
 
   private readonly checkDeactivatePermission = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity.hasPermissionToDeactivateUser()) {
+    if (!req.identity?.isAuthenticated()) {
+      next(new UnauthorizedException());
+    } else if (!req.identity.hasPermissionToDeactivateUser()) {
       next(new ForbiddenException());
     } else {
       next();
@@ -65,7 +71,9 @@ export class UsersRoute implements Routes {
   };
 
   private readonly checkActivatePermission = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity.hasPermissionToActivateUser()) {
+    if (!req.identity?.isAuthenticated()) {
+      next(new UnauthorizedException());
+    } else if (!req.identity.hasPermissionToActivateUser()) {
       next(new ForbiddenException());
     } else {
       next();
@@ -73,7 +81,9 @@ export class UsersRoute implements Routes {
   };
 
   private readonly checkDeletePermission = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity.hasPermissionToDeleteUser()) {
+    if (!req.identity?.isAuthenticated()) {
+      next(new UnauthorizedException());
+    } else if (!req.identity.hasPermissionToDeleteUser()) {
       next(new ForbiddenException());
     } else {
       next();

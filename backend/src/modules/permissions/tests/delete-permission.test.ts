@@ -177,7 +177,7 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
     expect(response.statusCode).toBe(401);
     const body = response.body;
     expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(errorKeys.login.Wrong_Authentication_Token);
+    expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -212,10 +212,10 @@ describe('DELETE /permissions/userId/permissionId should respond with a status c
   test('when token is not set', async () => {
     const path = permissionsRoute.path + '/' + Guid.EMPTY + '/' + SystemPermission.PreviewUserList.toString();
     const response = await request(app.getServer()).delete(path).send();
-    expect(response.statusCode).toBe(403);
+    expect(response.statusCode).toBe(401);
     const body = response.body;
     expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
+    expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers).forEach(([, eventHandler]) => {

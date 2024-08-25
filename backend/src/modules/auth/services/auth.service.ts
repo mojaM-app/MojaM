@@ -115,7 +115,7 @@ export class AuthService extends BaseService {
   //   return findUser;
   // }
 
-  createRefreshToken(user: User): string {
+  private createRefreshToken(user: User): string {
     return sign({ userId: user.uuid }, getRefreshTokenSecret(user.id, user.refreshTokenKey), {
       expiresIn: getRefreshTokenExpiration(),
       notBefore: '0',

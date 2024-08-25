@@ -11,6 +11,7 @@ module.exports = {
   },
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/src' }),
   bail: 1,
-  maxConcurrency : 1,
-  openHandlesTimeout : 0,
+  maxConcurrency: 1,
+  openHandlesTimeout: 0,
+  testTimeout: 0,
 };

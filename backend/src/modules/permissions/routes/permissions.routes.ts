@@ -1,4 +1,4 @@
-import { ForbiddenException } from '@exceptions';
+import { ForbiddenException, UnauthorizedException } from '@exceptions';
 import { RequestWithIdentity, Routes } from '@interfaces';
 import { setIdentity } from '@modules/auth';
 import { PermissionsController } from '@modules/permissions';
@@ -29,7 +29,9 @@ export class PermissionsRoute implements Routes {
   }
 
   private readonly checkAddPermission = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity.hasPermissionToAddPermission()) {
+    if (!(req.identity?.isAuthenticated())) {
+      next(new UnauthorizedException());
+    } else if (!req.identity.hasPermissionToAddPermission()) {
       next(new ForbiddenException());
     } else {
       next();
@@ -37,7 +39,9 @@ export class PermissionsRoute implements Routes {
   };
 
   private readonly checkDeletePermission = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity.hasPermissionToDeletePermission()) {
+    if (!(req.identity?.isAuthenticated())) {
+      next(new UnauthorizedException());
+    } else if (!req.identity.hasPermissionToDeletePermission()) {
       next(new ForbiddenException());
     } else {
       next();

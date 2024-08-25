@@ -105,6 +105,7 @@ export const setIdentity = async (req: RequestWithIdentity, res: Response, next:
       }
     }
   } catch (error) {
-    next(new UnauthorizedException(errorKeys.login.Wrong_Authentication_Token));
+    req.identity = new Identity(undefined, []);
+    next();
   }
 };

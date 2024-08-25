@@ -213,10 +213,10 @@ describe('DELETE/users should respond with a status code of 403', () => {
     const deleteResponse = await request(app.getServer())
       .delete(usersRoute.path + '/' + userId)
       .send();
-    expect(deleteResponse.statusCode).toBe(403);
+    expect(deleteResponse.statusCode).toBe(401);
     const body = deleteResponse.body;
     expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
+    expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -523,7 +523,7 @@ describe('DELETE/users should respond with a status code of 401', () => {
     expect(deleteResponse.statusCode).toBe(401);
     const body = deleteResponse.body;
     expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(errorKeys.login.Wrong_Authentication_Token);
+    expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers).forEach(([, eventHandler]) => {

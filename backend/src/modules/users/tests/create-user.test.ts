@@ -231,10 +231,10 @@ describe('POST/users should respond with a status code of 403', () => {
   test('when token is not set', async () => {
     const requestData = generateValidUser();
     const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(requestData);
-    expect(createUserResponse.statusCode).toBe(403);
+    expect(createUserResponse.statusCode).toBe(401);
     const body = createUserResponse.body;
     expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
+    expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -329,7 +329,7 @@ describe('POST/users should respond with a status code of 401', () => {
     expect(response.statusCode).toBe(401);
     const body = response.body;
     expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(errorKeys.login.Wrong_Authentication_Token);
+    expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
