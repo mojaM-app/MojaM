@@ -20,7 +20,7 @@ describe('GET/users/:id should respond with a status code of 200', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -91,7 +91,7 @@ describe('GET/users/:id should respond with a status code of 403', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -137,7 +137,7 @@ describe('GET/users/:id should respond with a status code of 403', () => {
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateNewUserResponse.statusCode).toBe(200);
 
-    const newUserAccessToken = (await loginAs(app, { login: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+    const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
 
     const getUserProfileResponse = await request(app.getServer())
       .get(usersRoute.path + '/' + newUserDto.uuid)
@@ -194,7 +194,7 @@ describe('GET/users/:id should respond with a status code of 400', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -239,7 +239,7 @@ describe('GET/users/:id should respond with a status code of 404', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -280,7 +280,7 @@ describe('GET/users/:id should respond with a status code of 401', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);

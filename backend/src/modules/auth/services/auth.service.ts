@@ -22,7 +22,7 @@ import {
 } from '@modules/auth/middlewares/set-identity.middleware';
 import { BaseService, userToIUser } from '@modules/common';
 import { PermissionsRepository, SystemPermission } from '@modules/permissions';
-import { UpdateUserReqDto, UsersRepository } from '@modules/users';
+import { UpdateUserDto, UpdateUserReqDto, UsersRepository } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
 import { isNullOrEmptyString } from '@utils';
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
@@ -44,11 +44,11 @@ export class AuthService extends BaseService {
   }
 
   public async login(loginData: LoginDto): Promise<ILoginResult> {
-    if (isNullOrEmptyString(loginData?.login) || isNullOrEmptyString(loginData?.password)) {
+    if (isNullOrEmptyString(loginData?.email) || isNullOrEmptyString(loginData?.password)) {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.Invalid_Login_Or_Password);
     }
 
-    const users: User[] = await this._userRepository.findManyByLogin(loginData.login);
+    const users: User[] = await this._userRepository.findManyByLogin(loginData.email, loginData.phone);
 
     if (users?.length !== 1) {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.Invalid_Login_Or_Password);
@@ -84,8 +84,8 @@ export class AuthService extends BaseService {
         await this._userRepository.lockOutUser({
           userId: user.id,
           userData: {
-            isLockedOut: user.isLockedOut,
-          },
+            isLockedOut: true,
+          } satisfies UpdateUserDto,
           currentUserId: undefined,
         } satisfies UpdateUserReqDto);
 

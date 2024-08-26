@@ -24,9 +24,9 @@ describe('POST /login', () => {
 
   let adminAccessToken: string | undefined;
   beforeAll(async () => {
-    const { email: login, password } = getAdminLoginData();
+    const { email, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -38,10 +38,10 @@ describe('POST /login', () => {
     });
 
     it('(login via email and password) response should have set the Authorization token when login data are correct', async () => {
-      const { email: login, password } = getAdminLoginData();
+      const { email, password } = getAdminLoginData();
       const loginResponse = await request(app.getServer())
         .post(authRoute.loginPath)
-        .send({ login, password } satisfies LoginDto);
+        .send({ email, password } satisfies LoginDto);
       const body: LoginResponseDto = loginResponse.body;
       expect(typeof body).toBe('object');
       expect(loginResponse.statusCode).toBe(200);
@@ -49,7 +49,7 @@ describe('POST /login', () => {
       expect(headers['content-type']).toEqual(expect.stringContaining('json'));
       const { data: userLoggedIn, message: loginMessage } = body;
       expect(loginMessage).toBe(events.users.userLoggedIn);
-      expect(userLoggedIn.email).toBe(login);
+      expect(userLoggedIn.email).toBe(email);
       expect(userLoggedIn.accessToken).toBeDefined();
       const req = {
         headers: {
@@ -84,11 +84,11 @@ describe('POST /login', () => {
         });
     });
 
-    it('(login via phone and password) response should have set the Authorization token when login data are correct', async () => {
-      const { phone: login, password } = getAdminLoginData();
+    it('(login via email, phone and password) response should have set the Authorization token when login data are correct', async () => {
+      const { email, phone, password } = getAdminLoginData();
       const loginResponse = await request(app.getServer())
         .post(authRoute.loginPath)
-        .send({ login, password } satisfies LoginDto);
+        .send({ email, phone, password } satisfies LoginDto);
       const body: LoginResponseDto = loginResponse.body;
       expect(typeof body).toBe('object');
       expect(loginResponse.statusCode).toBe(200);
@@ -96,7 +96,8 @@ describe('POST /login', () => {
       expect(headers['content-type']).toEqual(expect.stringContaining('json'));
       const { data: userLoggedIn, message: loginMessage } = body;
       expect(loginMessage).toBe(events.users.userLoggedIn);
-      expect(userLoggedIn.phone).toBe(login);
+      expect(userLoggedIn.email).toBe(email);
+      expect(userLoggedIn.phone).toBe(phone);
       expect(userLoggedIn.accessToken).toBeDefined();
       const req = {
         headers: {
@@ -130,18 +131,12 @@ describe('POST /login', () => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
     });
-  });
 
-  describe('when exist more then one user with same login', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
-    it('POST /login should respond with a status code of 400 when exist more then one user with same phone', async () => {
+    it('(login via email and password) case when exist more then one user with same phone', async () => {
       const user1 = generateValidUser();
       const user2 = generateValidUser();
-      const login = user1.phone;
-      user2.phone = login;
+      const phone = user1.phone;
+      user2.phone = phone;
       expect(user1.phone).toBe(user2.phone);
       expect(user1.email).not.toBe(user2.email);
 
@@ -150,27 +145,42 @@ describe('POST /login', () => {
       const { data: newUser1Dto, message: createUser1Message }: CreateUserResponseDto = createUser1Response.body;
       expect(newUser1Dto?.uuid).toBeDefined();
       expect(createUser1Message).toBe(events.users.userCreated);
-      expect(newUser1Dto.phone).toBe(login);
+      expect(newUser1Dto.phone).toBe(phone);
+
+      let activateNewUserResponse = await request(app.getServer())
+        .post(usersRoute.path + '/' + newUser1Dto.uuid + '/' + usersRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateNewUserResponse.statusCode).toBe(200);
 
       const createUser2Response = await request(app.getServer()).post(usersRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser2Response.statusCode).toBe(201);
       const { data: newUser2Dto, message: createUser2Message }: CreateUserResponseDto = createUser2Response.body;
       expect(newUser2Dto?.uuid).toBeDefined();
       expect(createUser2Message).toBe(events.users.userCreated);
-      expect(newUser2Dto.phone).toBe(login);
+      expect(newUser2Dto.phone).toBe(phone);
+
+      activateNewUserResponse = await request(app.getServer())
+        .post(usersRoute.path + '/' + newUser2Dto.uuid + '/' + usersRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateNewUserResponse.statusCode).toBe(200);
 
       expect(newUser1Dto.phone).toBe(newUser2Dto.phone);
+      expect(newUser1Dto.email).not.toBe(newUser2Dto.email);
 
-      const loginData: LoginDto = { login: user1.phone, password: user1.password };
+      const loginData: LoginDto = { email: user1.email, password: user1.password };
       const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
-      expect(loginResponse.statusCode).toBe(400);
-      expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      const body = loginResponse.body;
+      const body: LoginResponseDto = loginResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
-      expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
-      expect(loginArgs).toBeUndefined();
+      expect(loginResponse.statusCode).toBe(200);
+      const headers = loginResponse.headers;
+      expect(headers['content-type']).toEqual(expect.stringContaining('json'));
+      const { data: userLoggedIn, message: loginMessage } = body;
+      expect(loginMessage).toBe(events.users.userLoggedIn);
+      expect(userLoggedIn.email).toBe(user1.email);
+      expect(userLoggedIn.phone).toBe(phone);
+      expect(userLoggedIn.accessToken).toBeDefined();
 
       let deleteResponse = await request(app.getServer())
         .delete(usersRoute.path + '/' + newUser1Dto.uuid)
@@ -185,19 +195,110 @@ describe('POST /login', () => {
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
-        .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler))
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserDeleted,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onUserLoggedIn,
+            ].includes(eventHandler),
+        )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(2);
+      expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(2);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(2);
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
     });
 
-    it('POST /login should respond with a status code of 400 when exist more then one user with same email', async () => {
+    it('(login via email, phone and password) case when exist more then one user with same phone', async () => {
       const user1 = generateValidUser();
       const user2 = generateValidUser();
-      const login = user1.email;
-      user2.email = login;
+      const phone = user1.phone;
+      user2.phone = phone;
+      expect(user1.phone).toBe(user2.phone);
+      expect(user1.email).not.toBe(user2.email);
+
+      const createUser1Response = await request(app.getServer()).post(usersRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUser1Response.statusCode).toBe(201);
+      const { data: newUser1Dto, message: createUser1Message }: CreateUserResponseDto = createUser1Response.body;
+      expect(newUser1Dto?.uuid).toBeDefined();
+      expect(createUser1Message).toBe(events.users.userCreated);
+      expect(newUser1Dto.phone).toBe(phone);
+
+      let activateNewUserResponse = await request(app.getServer())
+        .post(usersRoute.path + '/' + newUser1Dto.uuid + '/' + usersRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateNewUserResponse.statusCode).toBe(200);
+
+      const createUser2Response = await request(app.getServer()).post(usersRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUser2Response.statusCode).toBe(201);
+      const { data: newUser2Dto, message: createUser2Message }: CreateUserResponseDto = createUser2Response.body;
+      expect(newUser2Dto?.uuid).toBeDefined();
+      expect(createUser2Message).toBe(events.users.userCreated);
+      expect(newUser2Dto.phone).toBe(phone);
+
+      activateNewUserResponse = await request(app.getServer())
+        .post(usersRoute.path + '/' + newUser2Dto.uuid + '/' + usersRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateNewUserResponse.statusCode).toBe(200);
+
+      expect(newUser1Dto.phone).toBe(newUser2Dto.phone);
+      expect(newUser1Dto.email).not.toBe(newUser2Dto.email);
+
+      const loginData: LoginDto = { email: user1.email, phone: user1.phone, password: user1.password };
+      const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
+      const body: LoginResponseDto = loginResponse.body;
+      expect(typeof body).toBe('object');
+      expect(loginResponse.statusCode).toBe(200);
+      const headers = loginResponse.headers;
+      expect(headers['content-type']).toEqual(expect.stringContaining('json'));
+      const { data: userLoggedIn, message: loginMessage } = body;
+      expect(loginMessage).toBe(events.users.userLoggedIn);
+      expect(userLoggedIn.email).toBe(user1.email);
+      expect(userLoggedIn.phone).toBe(phone);
+      expect(userLoggedIn.accessToken).toBeDefined();
+
+      let deleteResponse = await request(app.getServer())
+        .delete(usersRoute.path + '/' + newUser1Dto.uuid)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteResponse.statusCode).toBe(200);
+      deleteResponse = await request(app.getServer())
+        .delete(usersRoute.path + '/' + newUser2Dto.uuid)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteResponse.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserDeleted,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onUserLoggedIn,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(2);
+      expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(2);
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(2);
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
+    });
+
+    it('(login via email, phone and password) case when exist more then one user with same email', async () => {
+      const user1 = generateValidUser();
+      const user2 = generateValidUser();
+      const email = user1.email;
+      user2.email = email;
       expect(user1.email).toBe(user2.email);
       expect(user1.phone).not.toBe(user2.phone);
 
@@ -206,18 +307,118 @@ describe('POST /login', () => {
       const { data: newUser1Dto, message: createUser1Message }: CreateUserResponseDto = createUser1Response.body;
       expect(newUser1Dto?.uuid).toBeDefined();
       expect(createUser1Message).toBe(events.users.userCreated);
-      expect(newUser1Dto.email).toBe(login);
+      expect(newUser1Dto.email).toBe(email);
+
+      let activateNewUserResponse = await request(app.getServer())
+        .post(usersRoute.path + '/' + newUser1Dto.uuid + '/' + usersRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateNewUserResponse.statusCode).toBe(200);
 
       const createUser2Response = await request(app.getServer()).post(usersRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser2Response.statusCode).toBe(201);
       const { data: newUser2Dto, message: createUser2Message }: CreateUserResponseDto = createUser2Response.body;
       expect(newUser2Dto?.uuid).toBeDefined();
       expect(createUser2Message).toBe(events.users.userCreated);
-      expect(newUser2Dto.email).toBe(login);
+      expect(newUser2Dto.email).toBe(email);
 
-      expect(newUser1Dto.email).toBe(newUser1Dto.email);
+      activateNewUserResponse = await request(app.getServer())
+        .post(usersRoute.path + '/' + newUser2Dto.uuid + '/' + usersRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const loginData: LoginDto = { login, password: user1.password };
+      expect(newUser1Dto.email).toBe(newUser2Dto.email);
+      expect(newUser1Dto.phone).not.toBe(newUser2Dto.phone);
+
+      const loginData: LoginDto = { email, phone: user1.phone, password: user1.password };
+      const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
+      expect(loginResponse.statusCode).toBe(200);
+      expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body: LoginResponseDto = loginResponse.body;
+      expect(typeof body).toBe('object');
+      expect(loginResponse.statusCode).toBe(200);
+      const { data: userLoggedIn, message: loginMessage } = body;
+      expect(loginMessage).toBe(events.users.userLoggedIn);
+      expect(userLoggedIn.phone).toBe(user1.phone);
+      expect(userLoggedIn.email).toBe(email);
+      expect(userLoggedIn.accessToken).toBeDefined();
+
+      let deleteResponse = await request(app.getServer())
+        .delete(usersRoute.path + '/' + newUser1Dto.uuid)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteResponse.statusCode).toBe(200);
+      deleteResponse = await request(app.getServer())
+        .delete(usersRoute.path + '/' + newUser2Dto.uuid)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteResponse.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserDeleted,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onUserLoggedIn,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(2);
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(2);
+      expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(2);
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('when exist more then one user with same login', () => {
+    beforeEach(async () => {
+      jest.resetAllMocks();
+    });
+
+    it('login via email should respond with a status code of 400 when exist more then one user with same email', async () => {
+      const user1 = generateValidUser();
+      const user2 = generateValidUser();
+      const email = user1.email;
+      user2.email = email;
+      expect(user1.email).toBe(user2.email);
+      expect(user1.phone).not.toBe(user2.phone);
+
+      const createUser1Response = await request(app.getServer()).post(usersRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUser1Response.statusCode).toBe(201);
+      const { data: newUser1Dto, message: createUser1Message }: CreateUserResponseDto = createUser1Response.body;
+      expect(newUser1Dto?.uuid).toBeDefined();
+      expect(createUser1Message).toBe(events.users.userCreated);
+      expect(newUser1Dto.email).toBe(email);
+
+      let activateNewUserResponse = await request(app.getServer())
+        .post(usersRoute.path + '/' + newUser1Dto.uuid + '/' + usersRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateNewUserResponse.statusCode).toBe(200);
+
+      const createUser2Response = await request(app.getServer()).post(usersRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUser2Response.statusCode).toBe(201);
+      const { data: newUser2Dto, message: createUser2Message }: CreateUserResponseDto = createUser2Response.body;
+      expect(newUser2Dto?.uuid).toBeDefined();
+      expect(createUser2Message).toBe(events.users.userCreated);
+      expect(newUser2Dto.email).toBe(email);
+
+      activateNewUserResponse = await request(app.getServer())
+        .post(usersRoute.path + '/' + newUser2Dto.uuid + '/' + usersRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateNewUserResponse.statusCode).toBe(200);
+
+      expect(newUser1Dto.email).toBe(newUser2Dto.email);
+      expect(newUser1Dto.phone).not.toBe(newUser2Dto.phone);
+
+      const loginData: LoginDto = { email, password: user1.password };
       const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -241,12 +442,16 @@ describe('POST /login', () => {
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
-        .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler))
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserDeleted].includes(eventHandler),
+        )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(2);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(2);
+      expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -259,9 +464,9 @@ describe('POST /login', () => {
       const model = { password: 'strongPassword1@' };
 
       const bodyData = [
-        { ...model, login: null } satisfies LoginDto,
-        { ...model, login: undefined } satisfies LoginDto,
-        { ...model, login: '' } satisfies LoginDto,
+        { ...model, email: null } satisfies LoginDto,
+        { ...model, email: undefined } satisfies LoginDto,
+        { ...model, email: '' } satisfies LoginDto,
       ];
 
       for (const body of bodyData) {
@@ -286,7 +491,7 @@ describe('POST /login', () => {
       expect(newUserDto?.uuid).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const model = { login: user.email };
+      const model = { email: user.email };
 
       const bodyData = [
         { ...model, password: null } satisfies LoginDto,
@@ -320,7 +525,7 @@ describe('POST /login', () => {
 
     it('POST /login should respond with a status code of 400 when user with given email not exist', async () => {
       const user = generateValidUser();
-      const loginData: LoginDto = { login: user.email, password: user.password };
+      const loginData: LoginDto = { email: user.email, password: user.password };
       const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -339,7 +544,7 @@ describe('POST /login', () => {
 
     it('POST /login should respond with a status code of 400 when user with given phone not exist', async () => {
       const user = generateValidUser();
-      const loginData: LoginDto = { login: user.phone, password: user.password };
+      const loginData: LoginDto = { email: user.phone, password: user.password };
       const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -371,7 +576,7 @@ describe('POST /login', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
 
-      const loginData: LoginDto = { login: newUserDto.email, password: user.password + 'invalid_password' };
+      const loginData: LoginDto = { email: newUserDto.email, password: user.password + 'invalid_password' };
       const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -408,7 +613,7 @@ describe('POST /login', () => {
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
-    it('POST /login (via phone) should respond with a status code of 400 when password is incorrect', async () => {
+    it('POST /login (via email and phone) should respond with a status code of 400 when password is incorrect', async () => {
       const user = generateValidUser();
 
       const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
@@ -423,7 +628,7 @@ describe('POST /login', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
 
-      const loginData: LoginDto = { login: newUserDto.phone, password: user.password + 'invalid_password' };
+      const loginData: LoginDto = { email: newUserDto.email, phone: newUserDto.phone, password: user.password + 'invalid_password' };
       const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -475,7 +680,7 @@ describe('POST /login', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
 
-      const loginData: LoginDto = { login: newUserDto.email, password: user.password + 'invalid_password' };
+      const loginData: LoginDto = { email: newUserDto.email, password: user.password + 'invalid_password' };
 
       for (let index = 1; index <= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
         const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
@@ -528,7 +733,7 @@ describe('POST /login', () => {
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
-    it('POST /login (via phone) x-times should lock-out the user and should respond with a status code of 400 when password is incorrect', async () => {
+    it('POST /login (via phone and phone) x-times should lock-out the user and should respond with a status code of 400 when password is incorrect', async () => {
       const user = generateValidUser();
 
       const createResponse = await request(app.getServer()).post(usersRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
@@ -543,7 +748,7 @@ describe('POST /login', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
 
-      const loginData: LoginDto = { login: newUserDto.phone, password: user.password + 'invalid_password' };
+      const loginData: LoginDto = { email: newUserDto.email, phone: newUserDto.phone, password: user.password + 'invalid_password' };
 
       for (let index = 1; index <= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
         const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
@@ -618,7 +823,7 @@ describe('POST /login', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deactivateResponse.statusCode).toBe(200);
 
-      const loginData: LoginDto = { login: newUserDto.email, password: user.password };
+      const loginData: LoginDto = { email: newUserDto.email, password: user.password };
       const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -670,7 +875,7 @@ describe('POST /login', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deactivateResponse.statusCode).toBe(200);
 
-      const loginData: LoginDto = { login: newUserDto.email, password: user.password + 'invalid-password' };
+      const loginData: LoginDto = { email: newUserDto.email, password: user.password + 'invalid-password' };
       const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -728,7 +933,7 @@ describe('POST /login', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
 
-      const loginData: LoginDto = { login: newUserDto.email, password: user.password };
+      const loginData: LoginDto = { email: newUserDto.email, password: user.password };
       const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));

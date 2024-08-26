@@ -15,7 +15,9 @@ export class LoginDto {
   @MaxLength(VALIDATOR_SETTINGS.EMAIL_MAX_LENGTH, {
     message: errorKeys.login.Invalid_Login_Or_Password,
   })
-  public login: string | null | undefined;
+  public email: string | null | undefined;
+
+  public phone?: string;
 
   @IsNotEmpty({
     message: errorKeys.login.Invalid_Login_Or_Password,

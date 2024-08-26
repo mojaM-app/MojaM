@@ -19,7 +19,7 @@ describe('POST/users should respond with a status code of 201', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -76,7 +76,7 @@ describe('POST/users should respond with a status code of 400', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -218,7 +218,7 @@ describe('POST/users should respond with a status code of 403', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -259,7 +259,7 @@ describe('POST/users should respond with a status code of 403', () => {
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateNewUserResponse.statusCode).toBe(200);
 
-    const newUserAccessToken = (await loginAs(app, { login: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+    const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
 
     const createUserResponse = await request(app.getServer())
       .post(usersRoute.path)
@@ -310,7 +310,7 @@ describe('POST/users should respond with a status code of 401', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -352,7 +352,7 @@ describe('POST/users should respond with a status code of 401', () => {
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateBobResponse.statusCode).toBe(200);
 
-    const bobAccessToken = (await loginAs(app, { login: bobDto.email, password: userBob.password } satisfies LoginDto))?.accessToken;
+    const bobAccessToken = (await loginAs(app, { email: bobDto.email, password: userBob.password } satisfies LoginDto))?.accessToken;
 
     const deleteBobResponse = await request(app.getServer())
       .delete(usersRoute.path + '/' + bobDto.uuid)

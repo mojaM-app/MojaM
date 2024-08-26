@@ -22,7 +22,7 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    const loginResult = await loginAs(app, { login, password } satisfies LoginDto);
+    const loginResult = await loginAs(app, { email: login, password } satisfies LoginDto);
     adminAccessToken = loginResult?.accessToken;
     userLoggedIn = loginResult!;
 
@@ -84,7 +84,7 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -157,7 +157,7 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -195,7 +195,7 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -237,7 +237,7 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateNewUserResponse.statusCode).toBe(200);
 
-    const newUserAccessToken = (await loginAs(app, { login: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+    const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
 
     const path = permissionsRoute.path + '/' + user.uuid + '/' + SystemPermission.PreviewUserList.toString();
     const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
@@ -292,7 +292,7 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -330,7 +330,7 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
     expect(addPermission1Result).toBe(true);
     expect(addPermission1Message).toBe(events.permissions.permissionAdded);
 
-    const newUserAccessToken = (await loginAs(app, { login: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+    const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
 
     path = permissionsRoute.path + '/' + user.uuid + '/' + SystemPermission.PreviewUserList.toString();
     addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${newUserAccessToken}`);

@@ -75,7 +75,7 @@ describe('Cache user data tests', () => {
     usersRoute = new UsersRoute();
     app = new App([usersRoute]);
     const { email: login, password } = getAdminLoginData();
-    const adminLoginResult = await loginAs(app, { login, password } satisfies LoginDto);
+    const adminLoginResult = await loginAs(app, { email: login, password } satisfies LoginDto);
     adminAccessToken = adminLoginResult?.accessToken;
     adminUuid = adminLoginResult?.uuid;
   });

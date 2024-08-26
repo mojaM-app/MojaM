@@ -21,7 +21,7 @@ describe('DELETE/users should respond with a status code of 200', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -140,7 +140,7 @@ describe('DELETE/users should respond with a status code of 200', () => {
     expect(addPermission1Result).toBe(true);
     expect(addPermission1Message).toBe(events.permissions.permissionAdded);
 
-    const newUserAccessToken = (await loginAs(app, { login: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+    const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
 
     path = permissionsRoute.path + '/' + user.uuid + '/' + SystemPermission.PreviewUserList.toString();
     addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
@@ -198,7 +198,7 @@ describe('DELETE/users should respond with a status code of 403', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -244,7 +244,7 @@ describe('DELETE/users should respond with a status code of 403', () => {
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateNewUserResponse.statusCode).toBe(200);
 
-    const newUserAccessToken = (await loginAs(app, { login: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+    const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
 
     let deleteResponse = await request(app.getServer())
       .delete(usersRoute.path + '/' + user.uuid)
@@ -302,7 +302,7 @@ describe('DELETE/users should respond with a status code of 400', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -379,7 +379,7 @@ describe('DELETE/users should respond with a status code of 400', () => {
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateUserResponse.statusCode).toBe(200);
 
-    const user1AccessToken = (await loginAs(app, { login: user1RequestData.email, password: user1RequestData.password } satisfies LoginDto))
+    const user1AccessToken = (await loginAs(app, { email: user1RequestData.email, password: user1RequestData.password } satisfies LoginDto))
       ?.accessToken;
 
     path = permissionsRoute.path + '/' + user2.uuid + '/' + SystemPermission.PreviewUserList.toString();
@@ -463,7 +463,7 @@ describe('DELETE/users should respond with a status code of 404', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -504,7 +504,7 @@ describe('DELETE/users should respond with a status code of 401', () => {
   beforeAll(async () => {
     const { email: login, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);

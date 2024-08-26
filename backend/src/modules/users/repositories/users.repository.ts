@@ -13,7 +13,6 @@ import {
   UpdateUserReqDto,
 } from '@modules/users';
 import { isGuid, isNullOrEmptyString, isNullOrUndefined, isPositiveNumber } from '@utils';
-import { isEmail } from 'class-validator';
 import StatusCode from 'status-code-enum';
 import Container, { Service } from 'typedi';
 import { User } from './../entities/user.entity';
@@ -71,16 +70,16 @@ export class UsersRepository extends BaseRepository {
     return await this.getById(userId);
   }
 
-  public async findManyByLogin(login: string | null | undefined): Promise<User[]> {
-    if (isNullOrEmptyString(login)) {
+  public async findManyByLogin(email: string | null | undefined, phone?: string | null | undefined): Promise<User[]> {
+    if (isNullOrEmptyString(email)) {
       return [];
     }
 
     let users: User[];
-    if (isEmail(login)) {
-      users = await this._dbContext.users.findBy({ email: login! });
+    if ((phone?.length ?? 0) > 0) {
+      users = await this._dbContext.users.findBy({ email: email!, phone: phone! });
     } else {
-      users = await this._dbContext.users.findBy({ phone: login! });
+      users = await this._dbContext.users.findBy({ email: email! });
     }
 
     return users;
@@ -108,6 +107,11 @@ export class UsersRepository extends BaseRepository {
       isActive: false,
       salt,
       refreshTokenKey: this._cryptoService.generateUserRefreshTokenKey(),
+      isLockedOut: false,
+      emailConfirmed: false,
+      phoneConfirmed: false,
+      lastLoginAt: undefined,
+      failedLoginAttempts: 0,
     });
     return await this._dbContext.users.save(newUser);
   }
@@ -172,12 +176,12 @@ export class UsersRepository extends BaseRepository {
     return reqDto.userData.failedLoginAttempts!;
   }
 
-  public async lockOutUser(reqDto: UpdateUserReqDto): Promise<number> {
+  public async lockOutUser(reqDto: UpdateUserReqDto): Promise<boolean> {
     reqDto.userData.isLockedOut = true;
 
     await this.update(reqDto);
 
-    return reqDto.userData.failedLoginAttempts!;
+    return reqDto.userData.isLockedOut;
   }
 
   private async update(reqDto: UpdateUserReqDto): Promise<User | null> {

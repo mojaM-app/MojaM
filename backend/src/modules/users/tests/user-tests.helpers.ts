@@ -12,8 +12,8 @@ const generateValidUser = (): CreateUserDto => {
   } satisfies CreateUserDto;
 };
 
-const loginAs = async (app: App, user: { login: string | null | undefined; password: string | null | undefined }): Promise<TLoginResult | null> => {
-  const loginDto = { login: user.login, password: user.password } satisfies LoginDto;
+const loginAs = async (app: App, user: { email?: string; phone?: string; password?: string }): Promise<TLoginResult | null> => {
+  const loginDto = { email: user.email, phone: user.phone, password: user.password } satisfies LoginDto;
   try {
     const loginResponse = await request(app.getServer()).post(new AuthRoute().loginPath).send(loginDto);
     const loginResult: TLoginResult = loginResponse.statusCode === 200 ? loginResponse.body.data : {};
