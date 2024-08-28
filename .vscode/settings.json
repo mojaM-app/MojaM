@@ -12,5 +12,6 @@
   // The folders to exclude when doing a full text search in the workspace.
   "search.exclude": {
     "node_modules": true
-  }
+  },
+  "jest.runMode": "on-demand"
 }
