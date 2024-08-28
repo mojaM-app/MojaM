@@ -18,7 +18,7 @@ export class AuthRoute implements Routes {
 
   private initializeRoutes(): void {
     this.router.post(this.loginPath, [validateData(LoginDto)], this._authController.logIn);
-    this.router.post(this.checkLoginPath, [validateData(String)], this._authController.isLoginValid);
+    this.router.post(this.checkLoginPath, this._authController.isLoginValid);
     // this.router.post(`${this.path}logout`, verifyToken, this._authController.logOut);
   }
 }

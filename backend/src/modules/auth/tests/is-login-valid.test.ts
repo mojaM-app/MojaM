@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
-import { AuthRoute, LoginDto } from '@modules/auth';
+import { AuthRoute, IsLoginValidResponseDto, LoginDto } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, UsersRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
@@ -33,28 +33,31 @@ describe('POST /auth/check-login', () => {
 
     it('when exist only one user with given e-mail', async () => {
       const { email } = getAdminLoginData();
-      const response = await request(app.getServer()).post(authRoute.checkLoginPath).send(email);
-      const body: boolean = response.body;
-      expect(typeof body).toBe('boolean');
+      const response = await request(app.getServer()).post(authRoute.checkLoginPath).send({ email });
       expect(response.statusCode).toBe(200);
+      const body: IsLoginValidResponseDto = response.body;
+      expect(typeof body).toBe('object');
+      expect(body.data).toBe(true);
     });
 
     it('when NO user with given e-mail', async () => {
       const email = generateRandomEmail();
-      const response = await request(app.getServer()).post(authRoute.checkLoginPath).send(email);
-      const body: boolean = response.body;
-      expect(typeof body).toBe('boolean');
+      const response = await request(app.getServer()).post(authRoute.checkLoginPath).send({ email });
       expect(response.statusCode).toBe(200);
+      const body: IsLoginValidResponseDto = response.body;
+      expect(typeof body).toBe('object');
+      expect(body.data).toBe(true);
     });
 
     it('when e-mail empty or null', async () => {
       const testData: any[] = [null, ''];
 
       for (const email of testData) {
-        const response = await request(app.getServer()).post(authRoute.checkLoginPath).send(email);
-        const body: boolean = response.body;
-        expect(typeof body).toBe('boolean');
+        const response = await request(app.getServer()).post(authRoute.checkLoginPath).send({ email });
         expect(response.statusCode).toBe(200);
+        const body: IsLoginValidResponseDto = response.body;
+        expect(typeof body).toBe('object');
+        expect(body.data).toBe(true);
       }
     });
   });
@@ -100,10 +103,11 @@ describe('POST /auth/check-login', () => {
 
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
-      const response = await request(app.getServer()).post(authRoute.checkLoginPath).send(email);
-      const body: boolean = response.body;
-      expect(typeof body).toBe('boolean');
+      const response = await request(app.getServer()).post(authRoute.checkLoginPath).send({ email });
       expect(response.statusCode).toBe(200);
+      const body: IsLoginValidResponseDto = response.body;
+      expect(typeof body).toBe('object');
+      expect(body.data).toBe(false);
 
       let deleteResponse = await request(app.getServer())
         .delete(usersRoute.path + '/' + newUser1Dto.uuid)
@@ -147,10 +151,11 @@ describe('POST /auth/check-login', () => {
 
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
-      const response = await request(app.getServer()).post(authRoute.checkLoginPath).send(email);
-      const body: boolean = response.body;
-      expect(typeof body).toBe('boolean');
+      const response = await request(app.getServer()).post(authRoute.checkLoginPath).send({ email });
       expect(response.statusCode).toBe(200);
+      const body: IsLoginValidResponseDto = response.body;
+      expect(typeof body).toBe('object');
+      expect(body.data).toBe(false);
 
       let deleteResponse = await request(app.getServer())
         .delete(usersRoute.path + '/' + newUser1Dto.uuid)
@@ -188,10 +193,11 @@ describe('POST /auth/check-login', () => {
 
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
-      const response = await request(app.getServer()).post(authRoute.checkLoginPath).send(email);
-      const body: boolean = response.body;
-      expect(typeof body).toBe('boolean');
+      const response = await request(app.getServer()).post(authRoute.checkLoginPath).send({ email });
       expect(response.statusCode).toBe(200);
+      const body: IsLoginValidResponseDto = response.body;
+      expect(typeof body).toBe('object');
+      expect(body.data).toBe(false);
 
       let deleteResponse = await request(app.getServer())
         .delete(usersRoute.path + '/' + newUser1Dto.uuid)

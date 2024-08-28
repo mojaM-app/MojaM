@@ -7,6 +7,7 @@ import {
   FailedLoginAttemptEvent,
   ILoginResult,
   InactiveUserTriesToLogInEvent,
+  IsLoginValid,
   LockedUserTriesToLogInEvent,
   LoginDto,
   UserLockedOutEvent,
@@ -24,7 +25,7 @@ import { BaseService, userToIUser } from '@modules/common';
 import { PermissionsRepository, SystemPermission } from '@modules/permissions';
 import { UpdateUserDto, UpdateUserReqDto, UsersRepository } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
-import { isNullOrEmptyString } from '@utils';
+import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
 import { sign } from 'jsonwebtoken';
 import StatusCode from 'status-code-enum';
@@ -108,12 +109,12 @@ export class AuthService extends BaseService {
     } satisfies ILoginResult;
   }
 
-  public async isEmailSufficientToLogIn(email: string): Promise<boolean> {
-    if (isNullOrEmptyString(email)) {
+  public async isEmailSufficientToLogIn(data: IsLoginValid): Promise<boolean> {
+    if (isNullOrUndefined(data) || isNullOrEmptyString(data.email)) {
       return true;
     }
 
-    const users: User[] = await this._userRepository.findManyByLogin(email);
+    const users: User[] = await this._userRepository.findManyByLogin(data.email);
 
     return (users?.length ?? 0) < 2;
   }

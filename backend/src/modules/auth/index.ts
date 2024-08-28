@@ -6,10 +6,12 @@ export { LockedUserTriesToLogInEvent } from './events/locked-user-tries-to-log-i
 export { UserLockedOutEvent } from './events/user-locked-out-event';
 export { UserLoggedInEvent } from './events/user-logged-in-event';
 
+export { IsLoginValidResponseDto } from './dtos/is-login-valid.dto';
 export { LoginDto, LoginResponseDto } from './dtos/login.dto';
 
 export type { DataStoredInToken } from './models/DataStoredInToken';
 export { Identity } from './models/Identity';
+export { IsLoginValid } from './models/IsLoginValid';
 
 export type { ILoginResult } from './interfaces/login.interfaces';
 export type { TLoginResult } from './types/login.types';
