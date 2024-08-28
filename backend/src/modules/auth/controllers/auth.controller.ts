@@ -24,6 +24,17 @@ export class AuthController extends BaseController {
     }
   };
 
+  public isLoginValid = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const email: string = req.body.email;
+      const isValid: boolean = await this.authService.isEmailSufficientToLogIn(email);
+
+      res.status(200).json(isValid);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   // public logOut = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
   //   try {
   //     const userData: IUser = req.user;

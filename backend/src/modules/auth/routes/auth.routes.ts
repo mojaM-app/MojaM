@@ -4,8 +4,9 @@ import { AuthController, LoginDto } from '@modules/auth';
 import express from 'express';
 
 export class AuthRoute implements Routes {
-  public path = '/';
-  public loginPath = `${this.path}login`;
+  public path = '/auth';
+  public loginPath = '/login';
+  public checkLoginPath = `${this.path}/check-login`;
   public router = express.Router();
 
   private readonly _authController: AuthController;
@@ -17,6 +18,7 @@ export class AuthRoute implements Routes {
 
   private initializeRoutes(): void {
     this.router.post(this.loginPath, [validateData(LoginDto)], this._authController.logIn);
+    this.router.post(this.checkLoginPath, [validateData(String)], this._authController.isLoginValid);
     // this.router.post(`${this.path}logout`, verifyToken, this._authController.logOut);
   }
 }

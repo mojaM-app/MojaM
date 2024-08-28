@@ -108,6 +108,16 @@ export class AuthService extends BaseService {
     } satisfies ILoginResult;
   }
 
+  public async isEmailSufficientToLogIn(email: string): Promise<boolean> {
+    if (isNullOrEmptyString(email)) {
+      return true;
+    }
+
+    const users: User[] = await this._userRepository.findManyByLogin(email);
+
+    return (users?.length ?? 0) < 2;
+  }
+
   // public async logout(userData: IUser): Promise<IUser> {
   //   const findUser: IUser = await this.users.findFirst({ where: { email: userData.email, password: userData.password } });
   //   if (!findUser) throw new HttpException(409, "User doesn't exist");
