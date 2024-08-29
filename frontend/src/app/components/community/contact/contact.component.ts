@@ -8,16 +8,16 @@ import { environment } from '../../../../environments/environment';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactComponent {
-  get communityEmail(): string {
+  public get communityEmail(): string {
     return environment.communityEmail;
   }
-  get communityWebPage(): string {
+  public get communityWebPage(): string {
     return environment.communityWebPage;
   }
-  get communityPhone(): string {
+  public get communityPhone(): string {
     return environment.communityPhone;
   }
-  get communityAddress(): string {
+  public get communityAddress(): string {
     return environment.communityAddress;
   }
 }

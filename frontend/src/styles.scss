@@ -136,12 +136,12 @@ body {
   --mat-sidenav-container-width: 300px;
 }
 
-.size-md {
-  &.mat-toolbar-multiple-rows,
-  &.mat-toolbar-row {
-    --mat-toolbar-standard-height: 48px;
-  }
-}
+// .size-md {
+//   &.mat-toolbar-multiple-rows,
+//   &.mat-toolbar-row {
+//     --mat-toolbar-standard-height: 48px;
+//   }
+// }
 
 .d-grid-with-header-and-footer {
   display: grid;
