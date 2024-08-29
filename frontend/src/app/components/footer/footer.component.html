@@ -3,7 +3,7 @@
     mat-flat-button
     class="footer-button px-md-3 px-2"
     (click)="navigateTo(AnnouncementsMenu.Path)">
-    <mat-icon class="m-0">{{ AnnouncementsMenu.Icon }}</mat-icon>
+    <mat-icon class="m-0 d-none d-sm-block">{{ AnnouncementsMenu.Icon }}</mat-icon>
     <span class="d-block d-sm-inline ms-sm-2">{{ AnnouncementsMenu.Label | gmessage }}</span>
   </button>
 
@@ -11,7 +11,7 @@
     mat-flat-button
     class="footer-button mx-sm-4 px-md-3 mx-3 px-2"
     (click)="navigateTo(BulletinMenu.Path)">
-    <mat-icon class="m-0">{{ BulletinMenu.Icon }}</mat-icon>
+    <mat-icon class="m-0 d-none d-sm-block">{{ BulletinMenu.Icon }}</mat-icon>
     <span class="d-block d-sm-inline ms-sm-2">{{ BulletinMenu.Label | gmessage }}</span>
   </button>
 
@@ -19,7 +19,7 @@
     mat-flat-button
     class="footer-button px-md-3 px-2"
     (click)="navigateTo(CommunityMenu.Path)">
-    <mat-icon class="m-0">{{ CommunityMenu.Icon }}</mat-icon>
+    <mat-icon class="m-0 d-none d-sm-block">{{ CommunityMenu.Icon }}</mat-icon>
     <span class="d-block d-sm-inline ms-sm-2">{{ CommunityMenu.Label | gmessage }}</span>
   </button>
 </mat-toolbar>
