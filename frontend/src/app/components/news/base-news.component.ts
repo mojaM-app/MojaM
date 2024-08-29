@@ -6,13 +6,13 @@ import { NewsHeaderComponent } from './header/header.component';
 })
 export abstract class BaseNewsComponent {
   @ViewChild('header')
-  public header: NewsHeaderComponent | null = null;
+  private _header: NewsHeaderComponent | undefined = undefined;
 
   public selectNextTab(): void {
-    this.header?.setNextTab();
+    this._header?.setNextTab();
   }
 
   public selectPrevTab(): void {
-    this.header?.setPrevTab();
+    this._header?.setPrevTab();
   }
 }

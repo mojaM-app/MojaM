@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { BulletinMenu } from '../bulletin/bulletin.menu';
 import { CommunityMenu } from '../community/community.menu';
-import { NewsMenu } from '../news/news.menu';
+import { AnnouncementsMenu } from '../news/news.menu';
 
 @Component({
   selector: 'app-footer',
@@ -17,7 +17,7 @@ import { NewsMenu } from '../news/news.menu';
   imports: [PipesModule, MatIconModule, MatToolbarModule, MatButtonModule],
 })
 export class FooterComponent {
-  public NewsMenu = NewsMenu;
+  public AnnouncementsMenu = AnnouncementsMenu;
   public BulletinMenu = BulletinMenu;
   public CommunityMenu = CommunityMenu;
 

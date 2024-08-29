@@ -1,0 +1,88 @@
+<div class="row">
+  <form [formGroup]="formGroup">
+    @if (showStepOne()) {
+      <div class="row mb-4">
+        <mat-form-field>
+          <mat-label>{{ 'Login/Email' | gmessage }}</mat-label>
+          <input
+            #emailInput
+            type="text"
+            matInput
+            [placeholder]="'Login/EmailPlaceholder' | gmessage"
+            [formControlName]="formControlNames.email" />
+          <mat-hint>{{ 'Login/EmailHint' | gmessage }}</mat-hint>
+          @if (control(formControlNames.email).errors) {
+            <mat-error>{{ 'Login/EmailHint' | gmessage }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+      <div class="row mb-2">
+        <div class="col-12 offset-sm-6 col-sm-6">
+          <button mat-raised-button class="w-100" type="submit" (click)="goToStepTwo()">
+            {{ 'Shared/BtnNext' | gmessage }}
+          </button>
+        </div>
+      </div>
+    }
+    @if (showStepTwo()) {
+      <div class="row mb-4">
+        <mat-form-field>
+          <mat-label>{{ 'Login/Phone' | gmessage }}</mat-label>
+          <input
+            #phoneInput
+            type="text"
+            matInput
+            [placeholder]="'Login/PhonePlaceholder' | gmessage"
+            [formControlName]="formControlNames.phone" />
+          <mat-hint>{{ 'Login/PhoneHint' | gmessage }}</mat-hint>
+          @if (control(formControlNames.phone).errors) {
+            <mat-error>{{ 'Login/PhoneHint' | gmessage }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+      <div class="row mb-2">
+        <div class="col-6">
+          <button mat-raised-button class="w-100" type="button" (click)="goToStepOne()">
+            {{ 'Shared/BtnBack' | gmessage }}
+          </button>
+        </div>
+        <div class="col-6">
+          <button mat-raised-button class="w-100" type="submit" (click)="goToStepThree()">
+            {{ 'Shared/BtnNext' | gmessage }}
+          </button>
+        </div>
+      </div>
+    }
+    @if (showStepThree()) {
+      <div class="row mb-2">
+        <mat-form-field>
+          <mat-label>{{ 'Login/Password' | gmessage }}</mat-label>
+          <input
+            #passwordInput
+            type="password"
+            matInput
+            [placeholder]="'Login/PasswordPlaceholder' | gmessage"
+            [formControlName]="formControlNames.password" />
+        </mat-form-field>
+      </div>
+      <div class="row mb-2">
+        <div class="col-6">
+          <button mat-raised-button class="w-100" type="button" (click)="goToStepOne()">
+            {{ 'Shared/BtnBack' | gmessage }}
+          </button>
+        </div>
+        <div class="col-6">
+          <button mat-raised-button class="w-100" type="submit" (click)="login()">
+            {{ 'Login/BtnLogin' | gmessage }}
+          </button>
+        </div>
+      </div>
+    }
+
+    @if (loginError()) {
+      <p class="mat-mdc-form-field-error">
+        {{ loginError() }}
+      </p>
+    }
+  </form>
+</div>

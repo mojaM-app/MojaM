@@ -1,23 +1,26 @@
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
-import { HTTP_INTERCEPTORS, provideHttpClient } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import {
   APP_INITIALIZER,
   ApplicationConfig,
+  ErrorHandler,
   importProvidersFrom,
   InjectionToken,
   provideZoneChangeDetection,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
+import { GlobalErrorHandler } from 'src/core/global-error-handler';
 import { DirectivesModule } from 'src/directives/directives.module';
-import { HttpErrorInterceptor } from 'src/interceptors/error.interceptor';
 import { PipesModule } from 'src/pipes/pipes.module';
+import { AuthorizationHeaderInterceptor } from 'src/services/auth/authorization-token.interceptor';
 import { DeviceService } from 'src/services/device/device.service';
 import { LocalStorageService } from 'src/services/storage/localstorage.service';
 import { TranslationInitService } from 'src/services/translate/translation-init.service';
@@ -43,7 +46,7 @@ export const appConfig: ApplicationConfig = {
     ),
     provideRouter(routes),
     provideAnimationsAsync(),
-    provideHttpClient(),
+    provideHttpClient(withInterceptorsFromDi()),
     LocalStorageService,
     {
       provide: APP_INITIALIZER,
@@ -55,17 +58,25 @@ export const appConfig: ApplicationConfig = {
     },
     { provide: LocationStrategy, useClass: HashLocationStrategy },
     {
-      provide: HTTP_INTERCEPTORS,
-      useClass: HttpErrorInterceptor,
-      multi: true,
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandler,
     },
     {
       provide: IS_MOBILE,
-      useFactory(deviceService: DeviceService) : boolean {
+      useFactory(deviceService: DeviceService): boolean {
         return deviceService.isMobile();
       },
       deps: [DeviceService],
       multi: false,
+    },
+    {
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+      useValue: { subscriptSizing: 'dynamic' },
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthorizationHeaderInterceptor,
+      multi: true,
     },
   ],
 };

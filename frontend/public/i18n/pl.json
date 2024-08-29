@@ -1,11 +1,20 @@
 {
   "Shared": {
     "MainMenuTitle": "Wspólnota Miriam",
+    "MainMenuTitleMobile": "Miriam",
     "AppName": "Moja Miriam",
-    "Name": "Wspólnota Miriam Odnowa w Duchu Świętym",
-    "BtnOk": "OK"
+    "Name": "Wspólnota Miriam\nOdnowa w Duchu Świętym",
+    "BtnOk": "OK",
+    "BtnCancel": "Anuluj",
+    "BtnNext": "Dalej",
+    "BtnBack": "Wstecz"
   },
-  "Header": {},
+  "Header": {
+    "Menu": {
+      "Login": "Zaloguj się",
+      "Logout": "Wyloguj się"
+    }
+  },
   "Footer": {},
   "Community": {
     "Title": "Wspólnota",
@@ -25,7 +34,7 @@
     "Structure": {
       "Title": "Struktura"
     },
-    "Regulations":{
+    "Regulations": {
       "Title": "Regulamin"
     }
   },
@@ -39,7 +48,7 @@
       "Today": "Dziś",
       "Prev": "Poprzedni",
       "Next": "Następny",
-      "CalendarView":{
+      "CalendarView": {
         "Month": "Miesiąc",
         "Week": "Tydzień",
         "Day": "Dzień"
@@ -47,7 +56,7 @@
     },
     "Announcements": {
       "Title": "Ogłoszenia",
-      "AnnouncementsOfTheDay" : "Ogłoszenia z dnia"
+      "AnnouncementsOfTheDay": "Ogłoszenia z dnia"
     }
   },
   "Bulletin": {
@@ -59,6 +68,18 @@
     "LightTheme": "Jasny",
     "DarkTheme": "Ciemny",
     "ThemeDescription": "Włącz tryb ciemny"
+  },
+  "Login": {
+    "Title": "Logowanie",
+    "Email": "E-mail",
+    "EmailPlaceholder": "Wprowadź e-mail",
+    "EmailHint": "Proszę podać adres e-mail podany podczas zapisów do wspólnoty.",
+    "Phone": "Telefon",
+    "PhonePlaceholder": "Wprowadź numer telefonu",
+    "PhoneHint": "Proszę podać numer telefonu podany podczas zapisów do wspólnoty.",
+    "Password": "Hasło",
+    "PasswordPlaceholder": "Wprowadź hasło",
+    "BtnLogin": "Zaloguj się"
   },
   "Error404": {
     "PageNotFound": "Strona nie istnieje"
@@ -73,5 +94,13 @@
       "months": "ponad {0, plural, zero {{0} miesięcy} one {miesiąc} two {{0} miesiące} few {{0} miesiące} many {{0} miesięcy} other {{0} miesiące} } temu",
       "years": "ponad {0, plural, zero {{0} lat} one {rok} two {{0} lata} few {{0} lata} many {{0} lat} other {{0} lata} } temu"
     }
+  },
+  "Errors": {
+    "Unhandled_Error": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.",
+    "No_Connection": "Brak połączenia z serwerem. Upewnij się, że masz połączenie z internetem.",
+    "Unauthorized": "Nie masz uprawnień do wykonania tej operacji.",
+    "Bad_Request": "Wystąpił błąd podczas przetwarzania żądania. Spróbuj ponownie później.",
+    "Wrong_Authentication_Token": "Nieprawidłowy token autoryzacyjny. Zaloguj się ponownie.",
+    "Invalid_Login_Or_Password": "Wprowadzono nieprawidłowe dane logowania."
   }
 }

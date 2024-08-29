@@ -1,7 +1,7 @@
 <mat-toolbar class="size-md border-bottom">
   <mat-toolbar-row class="size-md">
     @if (this.isMobile || this.sidenav?.opened !== true) {
-      <button mat-icon-button color="accent" class="me-2 header-button" (click)="openSidenav()">
+      <button mat-icon-button color="accent" class="header-button me-2" (click)="openSidenav()">
         <mat-icon class="icon">menu</mat-icon>
       </button>
     }
@@ -10,7 +10,37 @@
       src="{{ './images/' + headerImageName + '.png' }}"
       alt="{{ 'Shared/Name' | gmessage }}"
       title="{{ 'Shared/Name' | gmessage }}" />
-    <span>{{ 'Shared/MainMenuTitle' | gmessage }}</span>
+    @if (isMobile) {
+      <span>{{ 'Shared/MainMenuTitleMobile' | gmessage }}</span>
+    } @else {
+      <span>{{ 'Shared/MainMenuTitle' | gmessage }}</span>
+    }
     <span class="spacer"></span>
+    @if (userName) {
+      @if (initials) {
+        <button mat-button class="menu-button" [matMenuTriggerFor]="menu">
+          {{ initials }}
+        </button>
+      } @else {
+        <button mat-icon-button [matMenuTriggerFor]="menu">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+      }
+
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="logOut()">
+          <mat-icon>logout</mat-icon>{{ 'Header/Menu/Logout' | gmessage }}
+        </button>
+      </mat-menu>
+    } @else {
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="showLoginDialog()">
+          <mat-icon>login</mat-icon>{{ 'Header/Menu/Login' | gmessage }}
+        </button>
+      </mat-menu>
+    }
   </mat-toolbar-row>
 </mat-toolbar>
