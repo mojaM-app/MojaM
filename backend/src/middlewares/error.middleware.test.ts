@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { HttpException } from '@exceptions/HttpException';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import { logger } from '@utils/logger';

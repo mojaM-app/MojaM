@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { getAdminLoginData } from '@utils/tests.utils';
 import { CryptoService } from './crypto.service';
 

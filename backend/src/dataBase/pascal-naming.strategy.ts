@@ -5,7 +5,7 @@ export class TitleCaseNamingStrategy
   extends DefaultNamingStrategy
   implements NamingStrategyInterface {
   tableName(className: string, customName: string): string {
-    return customName || titleCase(className);
+    return (customName?.length ?? 0) > 0 ? customName : titleCase(className);
   }
 
   columnName(
@@ -15,7 +15,7 @@ export class TitleCaseNamingStrategy
   ): string {
     return (
       titleCase(embeddedPrefixes.concat('').join('_')) +
-      (customName || titleCase(propertyName))
+      ((customName?.length ?? 0) > 0 ? customName : titleCase(propertyName))
     );
   }
 
@@ -48,7 +48,7 @@ export class TitleCaseNamingStrategy
     columnName?: string,
   ): string {
     return titleCase(
-      tableName + '_' + (columnName || propertyName),
+      tableName + '_' + ((columnName?.length ?? 0) > 0 ? columnName : propertyName),
     );
   }
 
