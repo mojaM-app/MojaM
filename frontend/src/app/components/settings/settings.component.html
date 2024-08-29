@@ -10,12 +10,12 @@
         <div class="card-body">
           <div class="row mb-2">
             <mat-label
-              class="col-sm-2 align-self-center"
+              class="col-6 col-sm-3 align-self-center"
               for="is-dark-mode-input-button"
               id="is-dark-mode-input-label"
               >{{ 'Settings/Theme' | gmessage }}</mat-label
             >
-            <div class="col-sm-9 align-self-center">
+            <div class="col-6 col-sm-9 align-self-center">
               {{ 'Settings/LightTheme' | gmessage }}
               <mat-slide-toggle
                 #darkModeSwitch
@@ -25,50 +25,15 @@
               {{ 'Settings/DarkTheme' | gmessage }}
             </div>
           </div>
-
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
-          <p>akapit</p>
         </div>
       </main>
-      <footer class="sticky-bottom">
-        <div class="card-footer text-body-secondary">
-          <button mat-raised-button color="primary">Save</button>
-        </div>
-      </footer>
+      @if (showSaveButton()) {
+        <footer class="sticky-bottom">
+          <div class="card-footer text-body-secondary text-end">
+            <button mat-raised-button color="primary">Save</button>
+          </div>
+        </footer>
+      }
     </div>
   </form>
 </div>

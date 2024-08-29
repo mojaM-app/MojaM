@@ -1,11 +1,11 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   effect,
   ElementRef,
+  signal,
   Signal,
-  ViewChild,
+  viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -21,19 +21,27 @@ import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { ThemeService } from 'src/services/theme/theme.service';
 import { ISettingsForm, SettingsFormControlNames } from './settings.form';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [PipesModule, MatSlideToggleModule, ReactiveFormsModule, FormsModule, MatInputModule],
+  imports: [
+    PipesModule,
+    MatSlideToggleModule,
+    ReactiveFormsModule,
+    FormsModule,
+    MatInputModule,
+    MatButtonModule,
+  ],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsComponent extends WithForm<ISettingsForm>() implements AfterViewInit {
-  @ViewChild('darkModeSwitch', { read: ElementRef })
-  private _element: ElementRef | undefined;
+export class SettingsComponent extends WithForm<ISettingsForm>() {
+  private _element = viewChild.required('darkModeSwitch', { read: ElementRef });
 
+  public readonly showSaveButton: Signal<boolean> = signal<boolean>(false);
   public readonly formControlNames = SettingsFormControlNames;
 
   private readonly darkModeChanged: Signal<boolean>;
@@ -62,17 +70,15 @@ export class SettingsComponent extends WithForm<ISettingsForm>() implements Afte
 
     effect(() => {
       this._themeService.onOffDarkMode(this.darkModeChanged());
-    });
-  }
 
-  public ngAfterViewInit(): void {
-    if (this._element) {
-      this._element.nativeElement
-        .querySelector('.mdc-switch__icon--on')
-        .firstChild.setAttribute('d', this.moon);
-      this._element.nativeElement
-        .querySelector('.mdc-switch__icon--off')
-        .firstChild.setAttribute('d', this.sun);
-    }
+      if (this._element()) {
+        this._element()
+          .nativeElement.querySelector('.mdc-switch__icon--on')
+          .firstChild.setAttribute('d', this.moon);
+        this._element()
+          .nativeElement.querySelector('.mdc-switch__icon--off')
+          .firstChild.setAttribute('d', this.sun);
+      }
+    });
   }
 }
