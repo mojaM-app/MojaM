@@ -8,6 +8,7 @@ export interface IToast {
   message: string;
   action: string;
   config: MatSnackBarConfig;
+  timeStamp: number;
 }
 
 @Injectable({
@@ -20,7 +21,12 @@ export class SnackBarService {
   public constructor(private _translationService: TranslationService) {
     this._emitToast
       .pipe(
-        distinctUntilChanged((prev, curr) => StringUtils.ciEquals(prev.message, curr.message)),
+        distinctUntilChanged((prev, curr) => {
+          return (
+            StringUtils.ciEquals(prev.message, curr.message) &&
+            curr.timeStamp - prev.timeStamp < 2000
+          );
+        }),
         concatMap(toast => this.waitForSnackbarDismiss(toast)),
         tap(toast => this._snackBar.open(toast.message, toast.action, toast.config))
       )
@@ -31,6 +37,7 @@ export class SnackBarService {
     this._emitToast.next({
       message: message,
       action: this._translationService.get('Shared/BtnOk'),
+      timeStamp: new Date().getTime(),
       config: {
         panelClass: ['error'],
       } satisfies MatSnackBarConfig,
