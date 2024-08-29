@@ -17,12 +17,6 @@ export class StructureService extends BaseService {
     return this._httpClient
       .request()
       .withUrl(this.API_ROUTES.community.getStructure())
-      .get<IGetStructureResponse>()
-      .pipe(
-        map((response: IGetStructureResponse) => response.data),
-        map((resp: string) => {
-          return resp;
-        })
-      );
+      .get<string>();
   }
 }

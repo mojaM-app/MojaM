@@ -1,10 +1,7 @@
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
-import {
-  IAnnouncements,
-  IGetAnnouncementsResponse,
-} from '../../../interfaces/news/announcements/announcements';
+import { IAnnouncements } from '../../../interfaces/news/announcements/announcements';
 import { BaseService } from '../base.service';
 import { HttpClientService } from '../httpClient.service';
 
@@ -20,9 +17,8 @@ export class AnnouncementsService extends BaseService {
     return this._httpClient
       .request()
       .withUrl(this.API_ROUTES.news.getAnnouncements())
-      .get<IGetAnnouncementsResponse>()
+      .get<IAnnouncements>()
       .pipe(
-        map((response: IGetAnnouncementsResponse) => response.data),
         map((resp: IAnnouncements) => {
           resp.date = new Date(resp.date);
           return resp;

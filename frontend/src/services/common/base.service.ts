@@ -25,8 +25,13 @@ export class BaseService {
         `${environment.backendUrl}/${this.API_ROUTES.news.path}/announcements`,
     },
     auth: {
+      path: 'auth',
       login: (): string => `${environment.backendUrl}/login`,
       logout: (): string => `${environment.backendUrl}/logout`,
+      checkLogin: (): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.auth.path}/check-login`,
+      refreshToken: (): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.auth.path}/refresh-token`,
     },
   };
 }
