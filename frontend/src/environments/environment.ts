@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  backendUrl: 'http://localhost:5100',
+  backendUrl: 'https://miriamrzeszow.cfolks.pl/api',
 
   communityEmail: 'miriam.rzeszow@gmail.com',
   communityWebPage: 'https://www.miriam.rzeszow.pl/',
