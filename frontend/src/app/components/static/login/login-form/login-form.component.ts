@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  Inject,
   output,
   signal,
   viewChild
@@ -16,6 +17,7 @@ import {
 import { MatButton } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { IS_MOBILE } from 'src/app/app.config';
 import { IResponseError } from 'src/interfaces/errors/response.error';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
@@ -54,7 +56,8 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
 
   public constructor(
     formBuilder: FormBuilder,
-    private _authService: AuthService
+    private _authService: AuthService,
+    @Inject(IS_MOBILE) private _isMobile: boolean
   ) {
     const formGroup = formBuilder.group<ILoginForm>({
       email: new FormControl(null, { validators: [Validators.required, Validators.email] }),
@@ -140,14 +143,23 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
   }
 
   public focusEmailInput(): void {
+    if (this._isMobile) {
+      return;
+    }
     setTimeout(() => this._emailInput()?.nativeElement.focus(), 100);
   }
 
   private focusPhoneInput(): void {
+    if (this._isMobile) {
+      return;
+    }
     setTimeout(() => this._phoneInput()?.nativeElement.focus(), 100);
   }
 
   private focusPasswordInput(): void {
+    if (this._isMobile) {
+      return;
+    }
     setTimeout(() => this._passwordInput()?.nativeElement.focus(), 100);
   }
 }
