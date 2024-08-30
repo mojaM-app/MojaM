@@ -1,9 +1,8 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  effect,
   ElementRef,
+  Inject,
   output,
   signal,
   viewChild,
@@ -25,6 +24,7 @@ import { ILoginForm, LoginFormControlNames } from './login.form';
 import { MatButton } from '@angular/material/button';
 import { conditionalValidator } from 'src/validators/conditional-validator';
 import { phoneValidator } from 'src/validators/phone.validator';
+import { IS_MOBILE } from 'src/app/app.config';
 
 @Component({
   selector: 'app-login-form',
@@ -56,7 +56,8 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
 
   public constructor(
     formBuilder: FormBuilder,
-    private _authService: AuthService
+    private _authService: AuthService,
+    @Inject(IS_MOBILE) private _isMobile: boolean
   ) {
     const formGroup = formBuilder.group<ILoginForm>({
       email: new FormControl(null, { validators: [Validators.required, Validators.email] }),
@@ -142,14 +143,23 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
   }
 
   public focusEmailInput(): void {
+    if (this._isMobile) {
+      return;
+    }
     setTimeout(() => this._emailInput()?.nativeElement.focus(), 100);
   }
 
   private focusPhoneInput(): void {
+    if (this._isMobile) {
+      return;
+    }
     setTimeout(() => this._phoneInput()?.nativeElement.focus(), 100);
   }
 
   private focusPasswordInput(): void {
+    if (this._isMobile) {
+      return;
+    }
     setTimeout(() => this._passwordInput()?.nativeElement.focus(), 100);
   }
 }
