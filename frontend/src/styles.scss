@@ -51,6 +51,12 @@ body {
 
   //override mat variables
   --mat-list-active-indicator-shape: 0.5rem;
+  //size of icon in left menu
+  --mdc-list-list-item-leading-icon-size: 1.25rem;
+  .mdc-list-item--with-leading-icon .mdc-list-item__start {
+    width: auto;
+    height: auto;
+  }
 
   //override bootstrap colors
   --bs-body-bg: #{--mat-app-background-color};
