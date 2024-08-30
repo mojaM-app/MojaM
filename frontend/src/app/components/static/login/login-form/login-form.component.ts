@@ -143,23 +143,14 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
   }
 
   public focusEmailInput(): void {
-    if (this._isMobile) {
-      return;
-    }
     setTimeout(() => this._emailInput()?.nativeElement.focus(), 100);
   }
 
   private focusPhoneInput(): void {
-    if (this._isMobile) {
-      return;
-    }
     setTimeout(() => this._phoneInput()?.nativeElement.focus(), 100);
   }
 
   private focusPasswordInput(): void {
-    if (this._isMobile) {
-      return;
-    }
     setTimeout(() => this._passwordInput()?.nativeElement.focus(), 100);
   }
 }

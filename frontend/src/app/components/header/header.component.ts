@@ -88,7 +88,6 @@ export class HeaderComponent implements OnInit, AfterViewInit {
       width: '90%',
       maxWidth: '35rem',
       position: (this.isMobile ? { top: '10%', } : {}),
-      autoFocus: 'email-input'
     });
 
     dialogRef.afterClosed().subscribe(() => this._menuTrigger().focus());
