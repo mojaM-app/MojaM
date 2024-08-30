@@ -6,6 +6,7 @@ import {
   ErrorHandler,
   importProvidersFrom,
   InjectionToken,
+  isDevMode,
   provideZoneChangeDetection,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,6 +18,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
+import { provideServiceWorker } from '@angular/service-worker';
 import { GlobalErrorHandler } from 'src/core/global-error-handler';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { PipesModule } from 'src/pipes/pipes.module';
@@ -78,5 +80,9 @@ export const appConfig: ApplicationConfig = {
       useClass: AuthorizationHeaderInterceptor,
       multi: true,
     },
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
   ],
 };
