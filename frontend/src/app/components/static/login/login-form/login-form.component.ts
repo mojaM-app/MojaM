@@ -1,12 +1,10 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  effect,
   ElementRef,
   output,
   signal,
-  viewChild,
+  viewChild
 } from '@angular/core';
 import {
   FormBuilder,
@@ -15,16 +13,16 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { MatButton } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { IResponseError } from 'src/interfaces/errors/response.error';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthService } from 'src/services/auth/auth.service';
-import { ILoginForm, LoginFormControlNames } from './login.form';
-import { MatButton } from '@angular/material/button';
 import { conditionalValidator } from 'src/validators/conditional-validator';
 import { phoneValidator } from 'src/validators/phone.validator';
+import { ILoginForm, LoginFormControlNames } from './login.form';
 
 @Component({
   selector: 'app-login-form',

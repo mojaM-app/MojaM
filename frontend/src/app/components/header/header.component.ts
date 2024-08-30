@@ -10,6 +10,7 @@ import {
   OnInit,
   viewChild,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,13 +18,12 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatSidenav } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { IS_MOBILE } from 'src/app/app.config';
+import { ITokenChangedEvent } from 'src/interfaces/auth/auth.events';
 import { PipesModule } from 'src/pipes/pipes.module';
+import { AuthTokenService } from 'src/services/auth/auth-token.service';
+import { AuthService } from 'src/services/auth/auth.service';
 import { ThemeService } from '../../../services/theme/theme.service';
 import { LoginDialogComponent } from '../static/login/login-dialog/login-dialog.component';
-import { AuthService } from 'src/services/auth/auth.service';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { AuthTokenService } from 'src/services/auth/auth-token.service';
-import { ITokenChangedEvent } from 'src/interfaces/auth/auth.events';
 
 @Component({
   selector: 'app-header',
@@ -87,6 +87,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
       restoreFocus: false,
       width: '90%',
       maxWidth: '35rem',
+      position: (this.isMobile ? { top: '10%', } : {}),
+      autoFocus: 'email-input'
     });
 
     dialogRef.afterClosed().subscribe(() => this._menuTrigger().focus());
