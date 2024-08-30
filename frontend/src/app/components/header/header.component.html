@@ -1,7 +1,7 @@
-<mat-toolbar class="size-md border-bottom">
-  <mat-toolbar-row class="size-md">
+<mat-toolbar class="border-bottom">
+  <mat-toolbar-row>
     @if (this.isMobile || this.sidenav?.opened !== true) {
-      <button mat-icon-button color="accent" class="header-button me-2" (click)="openSidenav()">
+      <button mat-icon-button class="header-button me-2" (click)="openSidenav()">
         <mat-icon class="icon">menu</mat-icon>
       </button>
     }
