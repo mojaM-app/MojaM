@@ -4,14 +4,14 @@ import { TranslatableHttpException } from '@exceptions/TranslatableHttpException
 import {
   CryptoService,
   DataStoredInToken,
+  EmailPhoneDto,
   FailedLoginAttemptEvent,
   ILoginResult,
   InactiveUserTriesToLogInEvent,
-  IsLoginValid,
   LockedUserTriesToLogInEvent,
   LoginDto,
   UserLockedOutEvent,
-  UserLoggedInEvent
+  UserLoggedInEvent,
 } from '@modules/auth';
 import {
   ACCESS_TOKEN_ALGORITHM,
@@ -56,6 +56,11 @@ export class AuthService extends BaseService {
     }
 
     const user: User = users[0];
+
+    if (isNullOrEmptyString(user.password)) {
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.User_Password_Is_Not_Set);
+    }
+
     const userDto = userToIUser(user);
 
     if (!user.isActive) {
@@ -68,7 +73,7 @@ export class AuthService extends BaseService {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.User_Is_Locked_Out);
     }
 
-    const isPasswordMatching: boolean = this._cryptoService.passwordMatches(loginData.password ?? '', user.salt, user.password);
+    const isPasswordMatching: boolean = this._cryptoService.passwordMatches(loginData.password ?? '', user.salt, user.password!);
 
     if (!isPasswordMatching) {
       const failedLoginAttempts = await this._userRepository.increaseFailedLoginAttempts({
@@ -109,7 +114,7 @@ export class AuthService extends BaseService {
     } satisfies ILoginResult;
   }
 
-  public async isEmailSufficientToLogIn(data: IsLoginValid): Promise<boolean> {
+  public async isEmailSufficientToLogIn(data: EmailPhoneDto): Promise<boolean> {
     if (isNullOrUndefined(data) || isNullOrEmptyString(data.email)) {
       return true;
     }
@@ -117,6 +122,16 @@ export class AuthService extends BaseService {
     const users: User[] = await this._userRepository.findManyByLogin(data.email);
 
     return (users?.length ?? 0) < 2;
+  }
+
+  public async isPasswordSet(data: EmailPhoneDto): Promise<boolean> {
+    if (isNullOrUndefined(data) || isNullOrEmptyString(data.email)) {
+      return true;
+    }
+
+    const users: User[] = await this._userRepository.findManyByLogin(data.email, data.phone);
+
+    return (users?.length ?? 0) === 1 && !isNullOrEmptyString(users[0].password);
   }
 
   // public async logout(userData: IUser): Promise<IUser> {

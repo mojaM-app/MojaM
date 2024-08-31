@@ -801,6 +801,48 @@ describe('POST /login', () => {
       expect(testEventHandlers.onUserLockedOut).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
+
+    test('POST /login should response with status code od 400 when user has no password', async () => {
+      const requestData = generateValidUser();
+      requestData.password = undefined;
+      const createUserResponse = await request(app.getServer())
+        .post(usersRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(201);
+      expect(createUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      let body = createUserResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: user, message: createMessage }: CreateUserResponseDto = body;
+      expect(user?.uuid).toBeDefined();
+      expect(createMessage).toBe(events.users.userCreated);
+
+      const loginData: LoginDto = { email: user.email, password: 'some_StrongP@ssword!' };
+      const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
+      expect(loginResponse.statusCode).toBe(400);
+      expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = loginResponse.body;
+      expect(typeof body).toBe('object');
+      const data = body.data;
+      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      expect(loginMessage).toBe(errorKeys.login.User_Password_Is_Not_Set);
+      expect(loginArgs).toBeUndefined();
+
+      const deleteResponse = await request(app.getServer())
+        .delete(usersRoute.path + '/' + user.uuid)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteResponse.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('when user is not active', () => {

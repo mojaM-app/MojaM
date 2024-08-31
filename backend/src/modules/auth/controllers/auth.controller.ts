@@ -1,4 +1,4 @@
-import { AuthService, ILoginResult, IsLoginValid, IsLoginValidResponseDto, LoginDto, LoginResponseDto } from '@modules/auth';
+import { AuthService, EmailPhoneDto, ILoginResult, IsLoginValidResponseDto, LoginDto, LoginResponseDto } from '@modules/auth';
 import { BaseController } from '@modules/common';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
@@ -26,7 +26,7 @@ export class AuthController extends BaseController {
 
   public isLoginValid = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const data: IsLoginValid = req.body;
+      const data: EmailPhoneDto = req.body;
       const isValid: boolean = await this.authService.isEmailSufficientToLogIn(data);
 
       res.status(200).json(new IsLoginValidResponseDto(isValid));

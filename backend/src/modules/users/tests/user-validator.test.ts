@@ -131,24 +131,15 @@ describe('user validator test', () => {
     });
 
     test('validation should be correct when PASSWORD is valid', () => {
-      const passwords: string[] = [
+      const passwords: Array<string | null | undefined> = [
+        null,
+        undefined,
+        '',
         'PaasssworD!',
         'PaasssworD@!',
-        'PaasssworD123@$',
-        'PaasssworD123@$',
-        'PaasssworD123@$',
         'Passwordd',
         'Passwordd1',
         'Passwordd!',
-        'PaasssworD123@$',
-        'PaasssworD123@$',
-        'PaasssworD123@$',
-        'PaasssworD123@$',
-        'PaasssworD123@$',
-        'PaasssworD123@$',
-        'PaasssworD123@$',
-        'PaasssworD123@$',
-        'PaasssworD123@$',
         'PaasssworD123@$',
       ];
       for (const password of passwords) {
@@ -160,7 +151,7 @@ describe('user validator test', () => {
     });
 
     test('validation should be incorrect when PASSWORD is invalid', () => {
-      const passwords: Array<string | null | undefined> = [null, undefined, '', 'paasssword', 'P@sswo2!', 'more_than_50_chars_password!10P@sswo2!10P@sswo2!101'];
+      const passwords: string[] = ['paasssword', 'P@sswo2!', 'more_than_50_chars_password!10P@sswo2!10P@sswo2!101'];
       for (const password of passwords) {
         const user = { ...generateValidUser(), password };
         const dto = plainToInstance(CreateUserDto, user);

@@ -59,9 +59,9 @@ export class User {
     name: 'Password',
     type: 'nvarchar',
     length: 1024,
-    nullable: false,
+    nullable: true,
   })
-    password: string;
+    password: string | null;
 
   @Column({
     name: 'Salt',

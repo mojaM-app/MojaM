@@ -100,7 +100,9 @@ export class UsersRepository extends BaseRepository {
   public async create(reqDto: CreateUserReqDto): Promise<User> {
     const userData: CreateUserDto = reqDto.userData;
     const salt = this._cryptoService.generateSalt();
-    const hashedPassword = this._cryptoService.hashPassword(salt, userData.password);
+    const hashedPassword = (userData.password?.length ?? 0) > 0
+      ? this._cryptoService.hashPassword(salt, userData.password!)
+      : null;
     const newUser = this._dbContext.users.create({
       ...userData,
       password: hashedPassword,

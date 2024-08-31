@@ -2,9 +2,42 @@ import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
-import { VALIDATOR_SETTINGS } from '@utils';
-import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString, IsStrongPassword, MaxLength } from 'class-validator';
+import { isNullOrEmptyString, VALIDATOR_SETTINGS } from '@utils';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsPhoneNumber,
+  IsString,
+  isStrongPassword,
+  maxLength,
+  MaxLength,
+  registerDecorator,
+  ValidationArguments,
+  ValidationOptions,
+} from 'class-validator';
 import { IUser } from '../interfaces/IUser';
+
+export function IsPasswordEmptyOrValid(validationOptions?: ValidationOptions) {
+  return function (object: object, propertyName: string) {
+    registerDecorator({
+      name: 'isPasswordEmptyOrValid',
+      target: object.constructor,
+      propertyName,
+      constraints: [],
+      options: validationOptions,
+      validator: {
+        validate(value: any, args: ValidationArguments) {
+          if (isNullOrEmptyString(value)) {
+            return true;
+          }
+
+          return maxLength(value, VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH) &&
+              isStrongPassword(value, VALIDATOR_SETTINGS.IS_STRONG_PASSWORD_OPTIONS);
+        },
+      },
+    });
+  };
+}
 
 export class CreateUserDto {
   @IsString({
@@ -38,19 +71,10 @@ export class CreateUserDto {
   })
   public phone: string;
 
-  @IsString({
+  @IsPasswordEmptyOrValid({
     message: errorKeys.users.Invalid_Password,
   })
-  @IsNotEmpty({
-    message: errorKeys.users.Invalid_Password,
-  })
-  @MaxLength(VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH, {
-    message: errorKeys.users.Password_To_Long,
-  })
-  @IsStrongPassword(VALIDATOR_SETTINGS.IS_STRONG_PASSWORD_OPTIONS, {
-    message: errorKeys.users.Invalid_Password,
-  })
-  public password: string;
+  public password?: string;
 }
 
 export class CreateUserReqDto extends BaseReqDto {

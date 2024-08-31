@@ -6,6 +6,7 @@ export const errorKeys = {
   },
   login: {
     Invalid_Login_Or_Password: 'Invalid_Login_Or_Password',
+    User_Password_Is_Not_Set: 'User_Password_Is_Not_Set',
     Wrong_Authentication_Token: 'Wrong_Authentication_Token',
     User_Not_Authenticated: 'User_Not_Authenticated',
     User_Not_Authorized: 'User_Not_Authorized',

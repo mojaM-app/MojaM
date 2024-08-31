@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
-import { AuthRoute, IsLoginValidResponseDto, LoginDto } from '@modules/auth';
+import { AuthRoute, EmailPhoneDto, IsLoginValidResponseDto, LoginDto } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, UsersRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
@@ -33,7 +33,9 @@ describe('POST /auth/check-login', () => {
 
     it('when exist only one user with given e-mail', async () => {
       const { email } = getAdminLoginData();
-      const response = await request(app.getServer()).post(authRoute.checkLoginPath).send({ email });
+      const response = await request(app.getServer())
+        .post(authRoute.checkLoginPath)
+        .send({ email } satisfies EmailPhoneDto);
       expect(response.statusCode).toBe(200);
       const body: IsLoginValidResponseDto = response.body;
       expect(typeof body).toBe('object');
@@ -42,7 +44,9 @@ describe('POST /auth/check-login', () => {
 
     it('when NO user with given e-mail', async () => {
       const email = generateRandomEmail();
-      const response = await request(app.getServer()).post(authRoute.checkLoginPath).send({ email });
+      const response = await request(app.getServer())
+        .post(authRoute.checkLoginPath)
+        .send({ email } satisfies EmailPhoneDto);
       expect(response.statusCode).toBe(200);
       const body: IsLoginValidResponseDto = response.body;
       expect(typeof body).toBe('object');
@@ -53,7 +57,9 @@ describe('POST /auth/check-login', () => {
       const testData: any[] = [null, ''];
 
       for (const email of testData) {
-        const response = await request(app.getServer()).post(authRoute.checkLoginPath).send({ email });
+        const response = await request(app.getServer())
+          .post(authRoute.checkLoginPath)
+          .send({ email } satisfies EmailPhoneDto);
         expect(response.statusCode).toBe(200);
         const body: IsLoginValidResponseDto = response.body;
         expect(typeof body).toBe('object');
@@ -103,7 +109,9 @@ describe('POST /auth/check-login', () => {
 
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
-      const response = await request(app.getServer()).post(authRoute.checkLoginPath).send({ email });
+      const response = await request(app.getServer())
+        .post(authRoute.checkLoginPath)
+        .send({ email } satisfies EmailPhoneDto);
       expect(response.statusCode).toBe(200);
       const body: IsLoginValidResponseDto = response.body;
       expect(typeof body).toBe('object');
@@ -151,7 +159,9 @@ describe('POST /auth/check-login', () => {
 
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
-      const response = await request(app.getServer()).post(authRoute.checkLoginPath).send({ email });
+      const response = await request(app.getServer())
+        .post(authRoute.checkLoginPath)
+        .send({ email } satisfies EmailPhoneDto);
       expect(response.statusCode).toBe(200);
       const body: IsLoginValidResponseDto = response.body;
       expect(typeof body).toBe('object');
@@ -193,7 +203,9 @@ describe('POST /auth/check-login', () => {
 
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
-      const response = await request(app.getServer()).post(authRoute.checkLoginPath).send({ email });
+      const response = await request(app.getServer())
+        .post(authRoute.checkLoginPath)
+        .send({ email } satisfies EmailPhoneDto);
       expect(response.statusCode).toBe(200);
       const body: IsLoginValidResponseDto = response.body;
       expect(typeof body).toBe('object');

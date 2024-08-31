@@ -18,7 +18,7 @@ import {
   UserRetrievedEvent,
   UsersRepository,
 } from '@modules/users';
-import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
+import { isNullOrUndefined } from '@utils';
 import StatusCode from 'status-code-enum';
 import { Container, Service } from 'typedi';
 
@@ -52,10 +52,6 @@ export class UsersService extends BaseService {
 
     if (userExists) {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.User_Already_Exists, [userData.email, userData.phone]);
-    }
-
-    if (isNullOrEmptyString(userData?.password)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.Invalid_Password);
     }
 
     const user = await this._userRepository.create(reqDto);

@@ -63,6 +63,41 @@ describe('POST/users should respond with a status code of 201', () => {
     expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
   });
 
+  test('when try to create user without password and user has permission', async () => {
+    const requestData = generateValidUser();
+    requestData.password = undefined;
+    const createUserResponse = await request(app.getServer())
+      .post(usersRoute.path)
+      .send(requestData)
+      .set('Authorization', `Bearer ${adminAccessToken}`);
+    expect(createUserResponse.statusCode).toBe(201);
+    expect(createUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+    const body = createUserResponse.body;
+    expect(typeof body).toBe('object');
+    const { data: user, message: createMessage }: CreateUserResponseDto = body;
+    expect(user?.uuid).toBeDefined();
+    expect(isGuid(user.uuid)).toBe(true);
+    expect(user?.email).toBeDefined();
+    expect(user?.phone).toBeDefined();
+    expect(user.hasOwnProperty('id')).toBe(false);
+    expect(createMessage).toBe(events.users.userCreated);
+
+    const deleteResponse = await request(app.getServer())
+      .delete(usersRoute.path + '/' + user.uuid)
+      .send()
+      .set('Authorization', `Bearer ${adminAccessToken}`);
+    expect(deleteResponse.statusCode).toBe(200);
+
+    // checking events running via eventDispatcher
+    Object.entries(testEventHandlers)
+      .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler))
+      .forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
+    expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
+  });
+
   afterAll(async () => {
     jest.resetAllMocks();
   });
