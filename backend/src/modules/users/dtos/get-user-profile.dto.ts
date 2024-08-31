@@ -13,8 +13,8 @@ export class GetUserProfileReqDto extends BaseReqDto {
 }
 
 export class GetUserProfileResponseDto implements IResponse<IUserProfile | null> {
-  data: IUserProfile | null;
-  message?: string | undefined;
+  public readonly data: IUserProfile | null;
+  public readonly message?: string | undefined;
 
   public constructor(data: IUserProfile | null) {
     this.data = data;

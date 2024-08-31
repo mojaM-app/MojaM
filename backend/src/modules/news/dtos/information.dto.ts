@@ -4,8 +4,8 @@ import { IResponse } from '@interfaces';
 export class GetInformationDto {}
 
 export class GetInformationResponseDto implements IResponse<GetInformationDto> {
-  data: GetInformationDto;
-  message?: string | undefined;
+  public readonly data: GetInformationDto;
+  public readonly message?: string | undefined;
 
   public constructor(data: GetInformationDto) {
     this.data = data;

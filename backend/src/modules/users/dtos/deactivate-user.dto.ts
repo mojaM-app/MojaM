@@ -12,8 +12,8 @@ export class DeactivateUserReqDto extends BaseReqDto {
 }
 
 export class DeactivateUserResponseDto implements IResponse<boolean> {
-  data: boolean;
-  message?: string | undefined;
+  public readonly data: boolean;
+  public readonly message?: string | undefined;
 
   public constructor(data: boolean) {
     this.data = data;

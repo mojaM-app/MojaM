@@ -4,8 +4,8 @@ import { IResponse } from '@interfaces';
 export class GetCalendarEventsDto {}
 
 export class GetCalendarEventsResponseDto implements IResponse<GetCalendarEventsDto> {
-  data: GetCalendarEventsDto;
-  message?: string | undefined;
+  public readonly data: GetCalendarEventsDto;
+  public readonly message?: string | undefined;
 
   public constructor(data: GetCalendarEventsDto) {
     this.data = data;

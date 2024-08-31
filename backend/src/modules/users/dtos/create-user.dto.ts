@@ -87,8 +87,8 @@ export class CreateUserReqDto extends BaseReqDto {
 }
 
 export class CreateUserResponseDto implements IResponse<IUser> {
-  data: IUser;
-  message?: string | undefined;
+  public readonly data: IUser;
+  public readonly message?: string | undefined;
 
   public constructor(data: IUser) {
     this.data = data;

@@ -2,8 +2,8 @@ import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
 
 export class AddPermissionReqDto extends BaseReqDto {
-  userGuid: string | undefined;
-  permissionId: number | undefined;
+  public readonly userGuid: string | undefined;
+  public readonly permissionId: number | undefined;
 
   constructor(userGuid: string | undefined, permissionId: number | undefined, currentUserId: number | undefined) {
     super(currentUserId);
@@ -13,8 +13,8 @@ export class AddPermissionReqDto extends BaseReqDto {
 }
 
 export class AddPermissionsResponseDto implements IResponse<boolean> {
-  data: boolean;
-  message?: string | undefined;
+  public readonly data: boolean;
+  public readonly message?: string | undefined;
 
   constructor(data: boolean, message?: string) {
     this.data = data;

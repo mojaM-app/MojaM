@@ -12,8 +12,8 @@ export class DeleteUserReqDto extends BaseReqDto {
 }
 
 export class DeleteUserResponseDto implements IResponse<string | null> {
-  data: string | null;
-  message?: string | undefined;
+  public readonly data: string | null;
+  public readonly message?: string | undefined;
 
   public constructor(data: string | null) {
     this.data = data;

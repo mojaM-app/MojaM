@@ -7,8 +7,8 @@ export class GetAnnouncementsDto {
 }
 
 export class GetAnnouncementsResponseDto implements IResponse<GetAnnouncementsDto> {
-  data: GetAnnouncementsDto;
-  message?: string | undefined;
+  public readonly data: GetAnnouncementsDto;
+  public readonly message?: string | undefined;
 
   public constructor(data: GetAnnouncementsDto) {
     this.data = data;

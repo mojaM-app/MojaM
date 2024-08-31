@@ -21,8 +21,8 @@ export class UpdateUserReqDto extends BaseReqDto {
 }
 
 export class UpdateUserResponseDto implements IResponse<IUser> {
-  data: IUser;
-  message?: string | undefined;
+  public readonly data: IUser;
+  public readonly message?: string | undefined;
 
   public constructor(data: IUser) {
     this.data = data;

@@ -32,8 +32,8 @@ export class LoginDto {
 }
 
 export class LoginResponseDto implements IResponse<TLoginResult> {
-  data: TLoginResult;
-  message?: string | undefined;
+  public readonly data: TLoginResult;
+  public readonly message?: string | undefined;
 
   public constructor(data: TLoginResult) {
     this.data = data;
