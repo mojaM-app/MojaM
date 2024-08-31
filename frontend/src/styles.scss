@@ -57,6 +57,8 @@ body {
     width: auto;
     height: auto;
   }
+  //padding of dialog header title
+  --mat-dialog-headline-padding: 0 0 0.25rem 24px;
 
   //override bootstrap colors
   --bs-body-bg: #{--mat-app-background-color};
@@ -170,7 +172,7 @@ body {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding-right: 2rem;
+  padding-right: 24px;
 }
 
 .mat-icon {
