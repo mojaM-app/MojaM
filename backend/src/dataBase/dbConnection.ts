@@ -25,11 +25,11 @@ export class DbConnection {
     }
   }
 
-  // public async close(): Promise<void> {
-  //   if ((DbConnection.instance?._dataSource ?? null) !== null && DbConnection.instance!._dataSource!.isInitialized) {
-  //     await DbConnection.instance!._dataSource!.destroy();
-  //   }
-  // }
+  public async close(): Promise<void> {
+    if ((DbConnection.instance?._dataContext ?? null) !== null && DbConnection.instance!._dataContext!.isInitialized) {
+      await DbConnection.instance!._dataContext!.destroy();
+    }
+  }
 
   public static getDbContext(): DbContext {
     const connection = DbConnection.getConnection();

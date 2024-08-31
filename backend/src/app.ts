@@ -19,6 +19,8 @@ export class App {
   public env: string;
   public port: string | number;
 
+  private _connection: DbConnection | undefined = undefined;
+
   constructor(routes: Routes[]) {
     this.app = express();
     this.env = NODE_ENV ?? 'development';
@@ -41,6 +43,10 @@ export class App {
 
   public getServer(): express.Application {
     return this.app;
+  }
+
+  public async closeDbConnection(): Promise<void> {
+    await this._connection?.close();
   }
 
   private initializeMiddlewares(): void {
@@ -87,8 +93,8 @@ export class App {
     // establish database connection
     logger.info('==================== establish database connection ====================');
 
-    const connection: DbConnection = DbConnection.getConnection();
-    connection
+    this._connection = DbConnection.getConnection();
+    this._connection
       .connect()
       .then(() => {
         logger.info('Data Source has been initialized!');

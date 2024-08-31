@@ -998,6 +998,7 @@ describe('POST /login', () => {
   });
 
   afterAll(async () => {
+    await app.closeDbConnection();
     jest.resetAllMocks();
   });
 });

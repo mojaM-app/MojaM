@@ -80,10 +80,6 @@ describe('Cache user data tests', () => {
     adminUuid = adminLoginResult?.uuid;
   });
 
-  afterAll(async () => {
-    jest.resetAllMocks();
-  });
-
   it('Should store userId', async () => {
     let response = await request(app.getServer()).get(`${usersRoute.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);
     expect(response.statusCode).toBe(200);
@@ -92,5 +88,10 @@ describe('Cache user data tests', () => {
     expect(response.statusCode).toBe(200);
 
     expect(findOneByFn).toHaveBeenCalledTimes(5);
+  });
+
+  afterAll(async () => {
+    await app.closeDbConnection();
+    jest.resetAllMocks();
   });
 });
