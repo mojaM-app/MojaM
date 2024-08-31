@@ -12,10 +12,6 @@ export class GlobalErrorHandler implements ErrorHandler {
   ) {}
 
   public handleError(error: any): void {
-    if (!(error instanceof HttpErrorResponse) && !(error as IResponseError)?.errorMessage) {
-      error = error.rejection;
-    }
-
     let message = error?.message;
     if (error?.status >= 0) {
       switch (error.status) {
