@@ -1,3 +1,4 @@
+/* eslint-disable n/no-callback-literal */
 import { NOTIFICATIONS_EMAIL, REQ_RESET_PASSWORD_TITLE, SMTP_SERVICE_HOST, SMTP_SERVICE_PORT, SMTP_USER_NAME, SMTP_USER_PASSWORD } from '@config';
 import { IUserProfileDto } from '@modules/users';
 import { toNumber } from '@utils';
@@ -37,28 +38,27 @@ export class EmailService {
           };
         };
 
-        const result = this.sendEmail(options());
-        resolve(result);
+        this.sendEmail(options(), (success: boolean) => {
+          resolve(success);
+        });
       } catch (error) {
         resolve(false);
       }
     });
   }
 
-  private sendEmail(options: Mail.Options): boolean {
+  private sendEmail(options: Mail.Options, callback: (success: boolean) => void): void {
     const transporter = this.createTransporter();
 
     transporter.sendMail(options, (error, info) => {
       if (error !== null && error !== undefined) {
         transporter.close();
-        return false;
+        callback(false);
       } else {
         transporter.close();
-        return true;
+        callback(true);
       }
     });
-
-    return true;
   }
 
   private createTransporter(): nodemailer.Transporter<SMTPTransport.SentMessageInfo> {

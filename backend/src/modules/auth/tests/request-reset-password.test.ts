@@ -32,7 +32,7 @@ describe('POST /auth/request-reset-password', () => {
     jest.resetAllMocks();
 
     mockSendMail = jest.fn().mockImplementation((mailoptions: any, callback: (error: any, info: any) => void) => {
-      return true;
+      callback(null, null);
     });
 
     jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
