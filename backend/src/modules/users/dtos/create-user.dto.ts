@@ -15,7 +15,7 @@ import {
   ValidationArguments,
   ValidationOptions,
 } from 'class-validator';
-import { IUser } from '../interfaces/IUser';
+import { IUserDto } from './get-user-profile.dto';
 
 export function IsPasswordEmptyOrValid(validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string) {
@@ -86,11 +86,11 @@ export class CreateUserReqDto extends BaseReqDto {
   }
 }
 
-export class CreateUserResponseDto implements IResponse<IUser> {
-  public readonly data: IUser;
+export class CreateUserResponseDto implements IResponse<IUserDto> {
+  public readonly data: IUserDto;
   public readonly message?: string | undefined;
 
-  public constructor(data: IUser) {
+  public constructor(data: IUserDto) {
     this.data = data;
     this.message = events.users.userCreated;
   }

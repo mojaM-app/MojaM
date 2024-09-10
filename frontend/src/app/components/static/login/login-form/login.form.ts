@@ -11,3 +11,10 @@ export const LoginFormControlNames: { [K in keyof ILoginForm]: string } = {
   phone: 'phone',
   password: 'password',
 } as const;
+
+export enum LoginFormSteps {
+  EnterEmail,
+  EnterPhone,
+  ResetPassword,
+  EnterPassword,
+}

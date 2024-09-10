@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, Generated, OneToMany, PrimaryGeneratedColumn, Relation, Unique, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Generated, OneToMany, OneToOne, PrimaryGeneratedColumn, Relation, Unique, UpdateDateColumn } from 'typeorm';
+import { UserResetPasswordToken } from './../../auth/entities/user-reset-password-tokens.entity';
 import { UserSystemPermission } from './user-system-permission.entity';
 
 @Unique('UQ_User_Email_Phone', ['email', 'phone'])
@@ -164,4 +165,7 @@ export class User {
 
   @OneToMany(() => UserSystemPermission, (assignedPermissions: UserSystemPermission) => assignedPermissions.assignedBy)
     assignedSystemPermissions: Relation<UserSystemPermission[]>;
+
+  @OneToOne(() => UserResetPasswordToken, (user: UserResetPasswordToken) => user.user)
+    resetPasswordToken: Relation<UserResetPasswordToken>;
 }

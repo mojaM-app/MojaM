@@ -1,5 +1,10 @@
 import { IUser } from '../users/users.interfaces';
 
+export interface UserWhoLogsInResult {
+  isLoginSufficientToLogIn: boolean;
+  isPasswordSet?: boolean;
+}
+
 export interface ILoginModel {
   email: string;
   phone?: string;

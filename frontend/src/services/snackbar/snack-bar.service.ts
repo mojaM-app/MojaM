@@ -44,6 +44,23 @@ export class SnackBarService {
     } satisfies IToast);
   }
 
+  public showSuccess(message: string): void {
+    this._emitToast.next({
+      message: message,
+      action: this._translationService.get('Shared/BtnOk'),
+      timeStamp: new Date().getTime(),
+      config: {
+        panelClass: ['success'],
+      } satisfies MatSnackBarConfig,
+    } satisfies IToast);
+  }
+
+  public translateAndShowSuccess(message: string) : void{
+    message = this._translationService.get(message);
+
+    return this.showSuccess(message);
+  }
+
   private waitForSnackbarDismiss(message: IToast): Observable<IToast> {
     const snackbarRef = this._snackBar._openedSnackBarRef;
     if (snackbarRef) {

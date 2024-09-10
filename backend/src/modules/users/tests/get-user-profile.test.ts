@@ -35,11 +35,11 @@ describe('GET/users/:id should respond with a status code of 200', () => {
     const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
     const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
-    expect(newUserDto?.uuid).toBeDefined();
+    expect(newUserDto?.id).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
 
     const getUserProfileResponse = await request(app.getServer())
-      .get(usersRoute.path + '/' + newUserDto.uuid)
+      .get(usersRoute.path + '/' + newUserDto.id)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(getUserProfileResponse.statusCode).toBe(200);
@@ -49,17 +49,17 @@ describe('GET/users/:id should respond with a status code of 200', () => {
     const { data: userProfile, message: getUserProfileMessage }: GetUserProfileResponseDto = body;
     expect(getUserProfileMessage).toBe(events.users.userRetrieved);
     expect(userProfile).toBeDefined();
-    expect(userProfile!.uuid).toBeDefined();
-    expect(isGuid(userProfile!.uuid)).toBe(true);
-    expect(userProfile!.uuid).toBe(newUserDto.uuid);
+    expect(userProfile!.id).toBeDefined();
+    expect(isGuid(userProfile!.id)).toBe(true);
+    expect(userProfile!.id).toBe(newUserDto.id);
     expect(userProfile?.email).toBeDefined();
     expect(userProfile!.email).toBe(newUserDto.email);
     expect(userProfile?.phone).toBeDefined();
     expect(userProfile!.phone).toBe(newUserDto.phone);
-    expect(userProfile!.hasOwnProperty('id')).toBe(false);
+    expect(userProfile!.hasOwnProperty('uuid')).toBe(false);
 
     const deleteResponse = await request(app.getServer())
-      .delete(usersRoute.path + '/' + userProfile!.uuid)
+      .delete(usersRoute.path + '/' + userProfile!.id)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(deleteResponse.statusCode).toBe(200);
@@ -127,12 +127,12 @@ describe('GET/users/:id should respond with a status code of 403', () => {
     let body = createUserResponse.body;
     expect(typeof body).toBe('object');
     const { data: newUserDto, message: createMessage }: CreateUserResponseDto = body;
-    expect(newUserDto?.uuid).toBeDefined();
+    expect(newUserDto?.id).toBeDefined();
     expect(newUserDto?.email).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
 
     const activateNewUserResponse = await request(app.getServer())
-      .post(usersRoute.path + '/' + newUserDto.uuid + '/' + usersRoute.activatePath)
+      .post(usersRoute.path + '/' + newUserDto.id + '/' + usersRoute.activatePath)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateNewUserResponse.statusCode).toBe(200);
@@ -140,7 +140,7 @@ describe('GET/users/:id should respond with a status code of 403', () => {
     const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
 
     const getUserProfileResponse = await request(app.getServer())
-      .get(usersRoute.path + '/' + newUserDto.uuid)
+      .get(usersRoute.path + '/' + newUserDto.id)
       .send()
       .set('Authorization', `Bearer ${newUserAccessToken}`);
     expect(getUserProfileResponse.statusCode).toBe(403);
@@ -150,7 +150,7 @@ describe('GET/users/:id should respond with a status code of 403', () => {
     expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
     const deleteResponse = await request(app.getServer())
-      .delete(usersRoute.path + '/' + newUserDto.uuid)
+      .delete(usersRoute.path + '/' + newUserDto.id)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(deleteResponse.statusCode).toBe(200);
@@ -158,7 +158,7 @@ describe('GET/users/:id should respond with a status code of 403', () => {
     body = deleteResponse.body;
     expect(typeof body).toBe('object');
     const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-    expect(deletedUserUuid).toBe(newUserDto.uuid);
+    expect(deletedUserUuid).toBe(newUserDto.id);
 
     // checking events running via eventDispatcher
     Object.entries(testEventHandlers)

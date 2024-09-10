@@ -1,6 +1,6 @@
-import { IUser } from '@modules/users';
+import { IUserDto } from '@modules/users';
 
-export type TLoginResult = IUser & {
+export type TLoginResult = IUserDto & {
   accessToken: string;
   refreshToken: string;
 };

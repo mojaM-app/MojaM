@@ -1,4 +1,13 @@
-import { AuthService, EmailPhoneDto, ILoginResult, IsLoginValidResponseDto, LoginDto, LoginResponseDto } from '@modules/auth';
+import {
+  AuthService,
+  GetUserWhoLogsInResponseDto,
+  ILoginResult,
+  LoginDto,
+  LoginResponseDto,
+  ResetPasswordResponseDto,
+  UserWhoLogsIn,
+  UserWhoLogsInResult,
+} from '@modules/auth';
 import { BaseController } from '@modules/common';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
@@ -9,6 +18,26 @@ export class AuthController extends BaseController {
   public constructor() {
     super();
     this.authService = Container.get(AuthService);
+  }
+
+  public getUserWhoLogsIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data: UserWhoLogsIn = req.body;
+      const user: UserWhoLogsInResult = await this.authService.getUserWhoLogsIn(data);
+      res.status(200).json(new GetUserWhoLogsInResponseDto(user));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public requestResetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data: UserWhoLogsIn = req.body;
+      const result = await this.authService.requestResetPassword(data);
+      res.status(200).json(new ResetPasswordResponseDto(result));
+    } catch (error) {
+      next(error);
+    }
   }
 
   public logIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -24,21 +53,10 @@ export class AuthController extends BaseController {
     }
   };
 
-  public isLoginValid = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const data: EmailPhoneDto = req.body;
-      const isValid: boolean = await this.authService.isEmailSufficientToLogIn(data);
-
-      res.status(200).json(new IsLoginValidResponseDto(isValid));
-    } catch (error) {
-      next(error);
-    }
-  }
-
   // public logOut = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
   //   try {
-  //     const userData: IUser = req.user;
-  //     const logOutUserData: IUser = await this.authService.logout(userData);
+  //     const userData: IUserDto = req.user;
+  //     const logOutUserData: IUserDto = await this.authService.logout(userData);
 
   //     res.setHeader('Set-Cookie', ['Authorization=; Max-age=0']);
   //     res.status(200).json({ data: logOutUserData, message: 'logout' });

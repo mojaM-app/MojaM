@@ -1,6 +1,6 @@
 <div class="row">
   <form [formGroup]="formGroup">
-    @if (showStepOne()) {
+    @if (showStep() === formSteps.EnterEmail) {
       <div class="row mb-4">
         <mat-form-field>
           <mat-label>{{ 'Login/Email' | gmessage }}</mat-label>
@@ -18,13 +18,13 @@
       </div>
       <div class="row mb-2">
         <div class="col-12 offset-sm-6 col-sm-6">
-          <button mat-raised-button class="w-100" type="submit" (click)="goToStepTwo()">
+          <button mat-raised-button class="w-100" type="submit" (click)="goToStepEnterPhone()">
             {{ 'Shared/BtnNext' | gmessage }}
           </button>
         </div>
       </div>
     }
-    @if (showStepTwo()) {
+    @if (showStep() === formSteps.EnterPhone) {
       <div class="row mb-4">
         <mat-form-field>
           <mat-label>{{ 'Login/Phone' | gmessage }}</mat-label>
@@ -42,18 +42,33 @@
       </div>
       <div class="row mb-2">
         <div class="col-6">
-          <button mat-raised-button class="w-100" type="button" (click)="goToStepOne()">
+          <button mat-raised-button class="w-100" type="button" (click)="goToStepEnterEmail()">
             {{ 'Shared/BtnBack' | gmessage }}
           </button>
         </div>
         <div class="col-6">
-          <button mat-raised-button class="w-100" type="submit" (click)="goToStepThree()">
+          <button mat-raised-button class="w-100" type="submit" (click)="goToStepEnterPassword()">
             {{ 'Shared/BtnNext' | gmessage }}
           </button>
         </div>
       </div>
     }
-    @if (showStepThree()) {
+    @if (showStep() === formSteps.ResetPassword) {
+      <div class="row">
+        <div class="col-12 mb-3">
+          {{ 'Login/PasswordNotSetError' | gmessage }}
+        </div>
+        <div class="col-12 mb-3">
+          <button mat-stroked-button class="w-100" type="button" (click)="sendEmailResetPassword()">
+            {{ 'Login/BtnSetPassword' | gmessage }}
+          </button>
+        </div>
+        <div class="col-12">
+          <mat-hint>{{ 'Login/BtnSetPasswordHint' | gmessage }}</mat-hint>
+        </div>
+      </div>
+    }
+    @if (showStep() === formSteps.EnterPassword) {
       <div class="row mb-2">
         <mat-form-field>
           <mat-label>{{ 'Login/Password' | gmessage }}</mat-label>
@@ -67,7 +82,7 @@
       </div>
       <div class="row mb-2">
         <div class="col-6">
-          <button mat-raised-button class="w-100" type="button" (click)="goToStepOne()">
+          <button mat-raised-button class="w-100" type="button" (click)="goToStepEnterEmail()">
             {{ 'Shared/BtnBack' | gmessage }}
           </button>
         </div>

@@ -122,7 +122,7 @@ export class AuthTokenService {
   private getTokenChangedEventData(): ITokenChangedEvent {
     return {
       isValid: this.isTokenValid(),
-      userUuid: this.getUserId(),
+      userId: this.getUserId(),
     } satisfies ITokenChangedEvent;
   }
 }

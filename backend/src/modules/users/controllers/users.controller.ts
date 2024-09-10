@@ -12,7 +12,7 @@ import {
   DeleteUserResponseDto,
   GetUserProfileReqDto,
   GetUserProfileResponseDto,
-  IUserProfile,
+  IUserProfileDto,
   UsersService,
 } from '@modules/users';
 import { isGuid } from '@utils';
@@ -30,7 +30,7 @@ export class UsersController extends BaseController {
   public getUserProfile = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const reqDto = new GetUserProfileReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
-      const user: IUserProfile | null = await this._userService.get(reqDto);
+      const user: IUserProfileDto | null = await this._userService.get(reqDto);
       res.status(200).json(new GetUserProfileResponseDto(user));
     } catch (error) {
       next(error);

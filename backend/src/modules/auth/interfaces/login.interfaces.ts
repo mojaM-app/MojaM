@@ -1,7 +1,7 @@
-import { IUser } from '@modules/users';
+import { IUserDto } from '@modules/users';
 
 export interface ILoginResult {
-  user: IUser;
+  user: IUserDto;
   accessToken: string;
   refreshToken: string;
 }

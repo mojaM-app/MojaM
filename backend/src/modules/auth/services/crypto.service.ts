@@ -23,4 +23,8 @@ export class CryptoService {
   public generateUserRefreshTokenKey(): string {
     return crypto.randomBytes(32).toString('hex');
   }
+
+  public generateResetPasswordToken(): string {
+    return crypto.randomBytes(32).toString('hex');
+  }
 }

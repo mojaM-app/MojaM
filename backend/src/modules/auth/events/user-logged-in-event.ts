@@ -1,10 +1,10 @@
 import { Event } from '@events';
-import { IUser } from '@modules/users';
+import { IUserDto } from '@modules/users';
 
 export class UserLoggedInEvent extends Event {
-  public readonly user: IUser;
+  public readonly user: IUserDto;
 
-  public constructor(user: IUser) {
+  public constructor(user: IUserDto) {
     super();
     this.user = user;
   }

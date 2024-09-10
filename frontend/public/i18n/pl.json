@@ -77,9 +77,13 @@
     "Phone": "Telefon",
     "PhonePlaceholder": "Wprowadź numer telefonu",
     "PhoneHint": "Proszę podać numer telefonu podany podczas zapisów do wspólnoty.",
+    "PasswordNotSetError": "Twoje konto nie zostało w pełni aktywowane - nie ustawiono hasła.",
     "Password": "Hasło",
     "PasswordPlaceholder": "Wprowadź hasło",
-    "BtnLogin": "Zaloguj"
+    "BtnLogin": "Zaloguj",
+    "BtnSetPassword": "Ustaw hasło teraz",
+    "BtnSetPasswordHint": "Kliknij, aby ustawić hasło do swojego konta.",
+    "RequestResetPasswordSent": "Na podany adres e-mail został wysłany link do resetowania hasła. Sprawdź pocztę. Jeśli nie otrzymano wiadomości, sprawdź folder ze spamem."
   },
   "Error404": {
     "PageNotFound": "Strona nie istnieje"

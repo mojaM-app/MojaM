@@ -1,20 +1,20 @@
-import { IUser, IUserProfile } from '@modules/users';
+import { IUserDto, IUserProfileDto } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
 
-export function userToIUser(user: User): IUser {
+export function userToIUser(user: User): IUserDto {
   return {
-    uuid: user.uuid,
+    id: user.uuid,
     email: user.email,
     phone: user.phone,
-  } satisfies IUser;
+  } satisfies IUserDto;
 }
 
-export function userToIUserProfile(user: User): IUserProfile {
+export function userToIUserProfile(user: User): IUserProfileDto {
   return {
-    uuid: user.uuid,
+    id: user.uuid,
     email: user.email,
     phone: user.phone,
     firstName: user.firstName,
     lastName: user.lastName,
-  } satisfies IUserProfile;
+  } satisfies IUserProfileDto;
 }

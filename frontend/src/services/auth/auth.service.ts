@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of, tap } from 'rxjs';
-import { ILoginModel, ILoginResponse } from 'src/interfaces/auth/auth.models';
+import { ILoginModel, ILoginResponse, UserWhoLogsInResult } from 'src/interfaces/auth/auth.models';
 import { BaseService } from '../common/base.service';
 import { HttpClientService } from '../common/httpClient.service';
-import { AuthTokenService } from './auth-token.service';
 import { LocalStorageService } from '../storage/localstorage.service';
+import { AuthTokenService } from './auth-token.service';
 
 @Injectable({
   providedIn: 'root',
@@ -27,6 +27,22 @@ export class AuthService extends BaseService {
     super();
 
     this._isLoggedIn$.next(this._authTokenService.isTokenValid());
+  }
+
+  public getUserWhoLogsIn(email: string, phone?: string): Observable<UserWhoLogsInResult> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.auth.getUserWhoLogsIn())
+      .withBody({ email, phone })
+      .post<UserWhoLogsInResult>();
+  }
+
+  public sendEmailResetPassword(email: string, phone?: string): Observable<boolean> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.auth.requestResetPasswordPath())
+      .withBody({ email, phone })
+      .post<boolean>();
   }
 
   public login(
@@ -52,14 +68,6 @@ export class AuthService extends BaseService {
           this._isLoggedIn$.next(this._authTokenService.isTokenValid());
         })
       );
-  }
-
-  public isEmailSufficientToLogIn(email: string): Observable<boolean> {
-    return this._httpClient
-      .request()
-      .withUrl(this.API_ROUTES.auth.checkLogin())
-      .withBody({ email })
-      .post<boolean>();
   }
 
   public logout(): void {

@@ -1,6 +1,7 @@
 import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
+import { ResetPasswordTokensRepository } from '@modules/auth/repositories/reset-password-tokens.repository';
 import { BaseService, userToIUser, userToIUserProfile } from '@modules/common';
 import {
   ActivateUserReqDto,
@@ -9,8 +10,8 @@ import {
   DeactivateUserReqDto,
   DeleteUserReqDto,
   GetUserProfileReqDto,
-  IUser,
-  IUserProfile,
+  IUserDto,
+  IUserProfileDto,
   UserActivatedEvent,
   UserCreatedEvent,
   UserDeactivatedEvent,
@@ -25,13 +26,15 @@ import { Container, Service } from 'typedi';
 @Service()
 export class UsersService extends BaseService {
   private readonly _userRepository: UsersRepository;
+  private readonly _resetPasswordTokensRepository: ResetPasswordTokensRepository;
 
   public constructor() {
     super();
     this._userRepository = Container.get(UsersRepository);
+    this._resetPasswordTokensRepository = Container.get(ResetPasswordTokensRepository);
   }
 
-  public async get(reqDto: GetUserProfileReqDto): Promise<IUserProfile | null> {
+  public async get(reqDto: GetUserProfileReqDto): Promise<IUserProfileDto | null> {
     const user = await this._userRepository.getByUuid(reqDto.userGuid);
 
     if (isNullOrUndefined(user)) {
@@ -45,7 +48,7 @@ export class UsersService extends BaseService {
     return userProfile;
   }
 
-  public async create(reqDto: CreateUserReqDto): Promise<IUser> {
+  public async create(reqDto: CreateUserReqDto): Promise<IUserDto> {
     const userData: CreateUserDto = reqDto.userData;
 
     const userExists = await this._userRepository.checkIfExists({ email: userData?.email, phone: userData?.phone });
@@ -61,8 +64,8 @@ export class UsersService extends BaseService {
     return userDto;
   }
 
-  // public async updateUser(userId: number, userData: UpdateUserDto): Promise<IUser> {
-  //   const findUser: IUser = await this.users.findUnique({ where: { id: userId } });
+  // public async updateUser(userId: number, userData: UpdateUserDto): Promise<IUserDto> {
+  //   const findUser: IUserDto = await this.users.findUnique({ where: { id: userId } });
   //   if (!findUser) throw new HttpException(409, "User doesn't exist");
 
   //   const hashedPassword = await hash(userData.password, 10);
@@ -87,6 +90,7 @@ export class UsersService extends BaseService {
       );
     }
 
+    await this._resetPasswordTokensRepository.deleteTokens(user!.id);
     await this._userRepository.delete(user!, reqDto);
 
     this._eventDispatcher.dispatch(events.users.userDeleted, new UserDeletedEvent(userToIUser(user!), reqDto.currentUserId));

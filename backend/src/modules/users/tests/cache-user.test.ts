@@ -77,7 +77,7 @@ describe('Cache user data tests', () => {
     const { email: login, password } = getAdminLoginData();
     const adminLoginResult = await loginAs(app, { email: login, password } satisfies LoginDto);
     adminAccessToken = adminLoginResult?.accessToken;
-    adminUuid = adminLoginResult?.uuid;
+    adminUuid = adminLoginResult?.id;
   });
 
   it('Should store userId', async () => {

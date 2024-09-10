@@ -1,10 +1,10 @@
 import { Event } from '@events';
-import { IUser } from '../interfaces/IUser';
+import { IUserDto } from '../dtos/get-user-profile.dto';
 
 export class UserActivatedEvent extends Event {
-  public readonly user: IUser;
+  public readonly user: IUserDto;
 
-  public constructor(user: IUser, currentUserId: number | undefined) {
+  public constructor(user: IUserDto, currentUserId: number | undefined) {
     super(currentUserId);
     this.user = user;
   }

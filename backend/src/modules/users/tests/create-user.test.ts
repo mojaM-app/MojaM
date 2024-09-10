@@ -40,15 +40,15 @@ describe('POST/users should respond with a status code of 201', () => {
     const body = createUserResponse.body;
     expect(typeof body).toBe('object');
     const { data: user, message: createMessage }: CreateUserResponseDto = body;
-    expect(user?.uuid).toBeDefined();
-    expect(isGuid(user.uuid)).toBe(true);
+    expect(user?.id).toBeDefined();
+    expect(isGuid(user.id)).toBe(true);
     expect(user?.email).toBeDefined();
     expect(user?.phone).toBeDefined();
-    expect(user.hasOwnProperty('id')).toBe(false);
+    expect(user.hasOwnProperty('uuid')).toBe(false);
     expect(createMessage).toBe(events.users.userCreated);
 
     const deleteResponse = await request(app.getServer())
-      .delete(usersRoute.path + '/' + user.uuid)
+      .delete(usersRoute.path + '/' + user.id)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(deleteResponse.statusCode).toBe(200);
@@ -75,15 +75,15 @@ describe('POST/users should respond with a status code of 201', () => {
     const body = createUserResponse.body;
     expect(typeof body).toBe('object');
     const { data: user, message: createMessage }: CreateUserResponseDto = body;
-    expect(user?.uuid).toBeDefined();
-    expect(isGuid(user.uuid)).toBe(true);
+    expect(user?.id).toBeDefined();
+    expect(isGuid(user.id)).toBe(true);
     expect(user?.email).toBeDefined();
     expect(user?.phone).toBeDefined();
-    expect(user.hasOwnProperty('id')).toBe(false);
+    expect(user.hasOwnProperty('uuid')).toBe(false);
     expect(createMessage).toBe(events.users.userCreated);
 
     const deleteResponse = await request(app.getServer())
-      .delete(usersRoute.path + '/' + user.uuid)
+      .delete(usersRoute.path + '/' + user.id)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(deleteResponse.statusCode).toBe(200);
@@ -189,7 +189,7 @@ describe('POST/users should respond with a status code of 400', () => {
     expect(body.data.message).toBe(errorKeys.users.User_Already_Exists);
 
     const deleteUserResponse = await request(app.getServer())
-      .delete(usersRoute.path + '/' + user.uuid)
+      .delete(usersRoute.path + '/' + user.id)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(deleteUserResponse.statusCode).toBe(200);
@@ -225,7 +225,7 @@ describe('POST/users should respond with a status code of 400', () => {
     expect(body.data.message).toBe(errorKeys.users.User_Already_Exists);
 
     const deleteUserResponse = await request(app.getServer())
-      .delete(usersRoute.path + '/' + user.uuid)
+      .delete(usersRoute.path + '/' + user.id)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(deleteUserResponse.statusCode).toBe(200);
@@ -284,12 +284,12 @@ describe('POST/users should respond with a status code of 403', () => {
     let body = newUserResponse.body;
     expect(typeof body).toBe('object');
     const { data: user, message: createMessage }: CreateUserResponseDto = body;
-    expect(user?.uuid).toBeDefined();
+    expect(user?.id).toBeDefined();
     expect(user?.email).toBeDefined();
     expect(createMessage).toBe(events.users.userCreated);
 
     const activateNewUserResponse = await request(app.getServer())
-      .post(usersRoute.path + '/' + user.uuid + '/' + usersRoute.activatePath)
+      .post(usersRoute.path + '/' + user.id + '/' + usersRoute.activatePath)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateNewUserResponse.statusCode).toBe(200);
@@ -307,7 +307,7 @@ describe('POST/users should respond with a status code of 403', () => {
     expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
     const deleteResponse = await request(app.getServer())
-      .delete(usersRoute.path + '/' + user.uuid)
+      .delete(usersRoute.path + '/' + user.id)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(deleteResponse.statusCode).toBe(200);
@@ -378,11 +378,11 @@ describe('POST/users should respond with a status code of 401', () => {
     const createBobResponse = await request(app.getServer()).post(usersRoute.path).send(userBob).set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createBobResponse.statusCode).toBe(201);
     const { data: bobDto, message: bobCreateMessage }: CreateUserResponseDto = createBobResponse.body;
-    expect(bobDto?.uuid).toBeDefined();
+    expect(bobDto?.id).toBeDefined();
     expect(bobCreateMessage).toBe(events.users.userCreated);
 
     const activateBobResponse = await request(app.getServer())
-      .post(usersRoute.path + '/' + bobDto.uuid + '/' + usersRoute.activatePath)
+      .post(usersRoute.path + '/' + bobDto.id + '/' + usersRoute.activatePath)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateBobResponse.statusCode).toBe(200);
@@ -390,7 +390,7 @@ describe('POST/users should respond with a status code of 401', () => {
     const bobAccessToken = (await loginAs(app, { email: bobDto.email, password: userBob.password } satisfies LoginDto))?.accessToken;
 
     const deleteBobResponse = await request(app.getServer())
-      .delete(usersRoute.path + '/' + bobDto.uuid)
+      .delete(usersRoute.path + '/' + bobDto.id)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(deleteBobResponse.statusCode).toBe(200);

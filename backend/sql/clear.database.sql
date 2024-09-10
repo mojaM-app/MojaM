@@ -1,4 +1,5 @@
-DROP TABLE IF EXISTS 
+DROP TABLE IF EXISTS
+user_reset_password_tokens,
 user_to_systempermissions, 
 system_permissions, 
 users;

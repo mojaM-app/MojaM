@@ -1,7 +1,17 @@
 import { events } from '@events';
 import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
-import { IUserProfile } from '../interfaces/IUserProfile';
+
+export interface IUserDto {
+  id: string;
+  email: string;
+  phone: string;
+}
+
+export interface IUserProfileDto extends IUserDto {
+  firstName?: string | null;
+  lastName?: string | null;
+}
 
 export class GetUserProfileReqDto extends BaseReqDto {
   public readonly userGuid: string | undefined;
@@ -12,11 +22,11 @@ export class GetUserProfileReqDto extends BaseReqDto {
   }
 }
 
-export class GetUserProfileResponseDto implements IResponse<IUserProfile | null> {
-  public readonly data: IUserProfile | null;
+export class GetUserProfileResponseDto implements IResponse<IUserProfileDto | null> {
+  public readonly data: IUserProfileDto | null;
   public readonly message?: string | undefined;
 
-  public constructor(data: IUserProfile | null) {
+  public constructor(data: IUserProfileDto | null) {
     this.data = data;
     this.message = events.users.userRetrieved;
   }

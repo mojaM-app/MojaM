@@ -5,7 +5,7 @@ import {
   Inject,
   output,
   signal,
-  viewChild
+  viewChild,
 } from '@angular/core';
 import {
   FormBuilder,
@@ -18,13 +18,15 @@ import { MatButton } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { IS_MOBILE } from 'src/app/app.config';
+import { UserWhoLogsInResult } from 'src/interfaces/auth/auth.models';
 import { IResponseError } from 'src/interfaces/errors/response.error';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthService } from 'src/services/auth/auth.service';
+import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { conditionalValidator } from 'src/validators/conditional-validator';
 import { phoneValidator } from 'src/validators/phone.validator';
-import { ILoginForm, LoginFormControlNames } from './login.form';
+import { ILoginForm, LoginFormControlNames, LoginFormSteps } from './login.form';
 
 @Component({
   selector: 'app-login-form',
@@ -44,10 +46,9 @@ import { ILoginForm, LoginFormControlNames } from './login.form';
 export class LoginFormComponent extends WithForm<ILoginForm>() {
   public afterLogIn = output<boolean>();
   public readonly formControlNames = LoginFormControlNames;
+  public readonly formSteps = LoginFormSteps;
 
-  public showStepOne = signal<boolean>(true);
-  public showStepTwo = signal<boolean>(false);
-  public showStepThree = signal<boolean>(false);
+  public showStep = signal<LoginFormSteps>(LoginFormSteps.EnterEmail);
   public loginError = signal<string | undefined>(undefined);
 
   private _emailInput = viewChild('emailInput', { read: ElementRef });
@@ -57,25 +58,24 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
   public constructor(
     formBuilder: FormBuilder,
     private _authService: AuthService,
+    private _snackBarService : SnackBarService,
     @Inject(IS_MOBILE) private _isMobile: boolean
   ) {
     const formGroup = formBuilder.group<ILoginForm>({
       email: new FormControl(null, { validators: [Validators.required, Validators.email] }),
       phone: new FormControl(null, {
         validators: [
-          conditionalValidator(() => this.showStepTwo() === true, Validators.required),
+          conditionalValidator(
+            () => this.showStep() === LoginFormSteps.EnterPhone,
+            Validators.required
+          ),
           phoneValidator(),
         ],
       }),
       password: new FormControl(null, { validators: [Validators.required] }),
     } satisfies ILoginForm);
-    super(formGroup);
 
-    this.formGroup.patchValue({
-      email: 'admin@domain.com',
-      phone: '123456789',
-      password: 'P@ssWord!1',
-    });
+    super(formGroup);
   }
 
   public login(): void {
@@ -103,43 +103,82 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
       });
   }
 
-  public goToStepOne(): void {
-    this.showStepTwo.set(false);
-    this.showStepThree.set(false);
-    this.showStepOne.set(true);
+  public goToStepEnterEmail(): void {
+    this.showStep.set(LoginFormSteps.EnterEmail);
+    this.loginError.set('');
     this.focusEmailInput();
   }
 
-  public goToStepTwo(): void {
-    const control = this.formControls.email;
-    const value = control.value;
-    if (!control.valid || !value) {
+  public goToStepEnterPhone(): void {
+    const controlEmail = this.formControls.email;
+    const email = controlEmail.value;
+    if (!controlEmail.valid || !email) {
       return;
     }
 
-    this._authService.isEmailSufficientToLogIn(value).subscribe((isEmailSufficient: boolean) => {
-      this.showStepOne.set(false);
-      if (isEmailSufficient) {
-        this.goToStepThree();
+    this._authService.getUserWhoLogsIn(email).subscribe((response: UserWhoLogsInResult) => {
+      if (response.isLoginSufficientToLogIn === true) {
+        if (response.isPasswordSet === true) {
+          this.goToStepEnterPassword();
+        } else {
+          this.goToStepResetPassword();
+        }
       } else {
-        this.showStepTwo.set(true);
+        this.showStep.set(LoginFormSteps.EnterPhone);
         this.focusPhoneInput();
       }
     });
   }
 
-  public goToStepThree(): void {
-    if (this.showStepTwo() === true) {
-      const control = this.formControls.phone;
-      const value = control.value;
-      if (!control.valid || !value) {
+  public goToStepEnterPassword(): void {
+    const showStepEnterPassword = (): void => {
+      this.showStep.set(LoginFormSteps.EnterPassword);
+      this.focusPasswordInput();
+    };
+
+    if (this.showStep() === LoginFormSteps.EnterPhone) {
+      const controlPhone = this.formControls.phone;
+      const phone = controlPhone.value;
+      if (!controlPhone.valid || !phone) {
         return;
       }
-    }
 
-    this.showStepTwo.set(false);
-    this.showStepThree.set(true);
-    this.focusPasswordInput();
+      this._authService
+        .getUserWhoLogsIn(this.formControls.email.value, phone)
+        .subscribe((response: UserWhoLogsInResult) => {
+          if (response.isPasswordSet === true) {
+            showStepEnterPassword();
+          } else {
+            this.goToStepResetPassword();
+          }
+        });
+    } else {
+      showStepEnterPassword();
+    }
+  }
+
+  public goToStepResetPassword(): void {
+    this.loginError.set(undefined);
+    this.showStep.set(LoginFormSteps.ResetPassword);
+  }
+
+  public sendEmailResetPassword(): void {
+    this._authService
+      .sendEmailResetPassword(this.formControls.email.value, this.formControls.phone.value)
+      .subscribe({
+        next: () => {
+          this.loginError.set('');
+          this.goToStepEnterPassword();
+          this._snackBarService.translateAndShowSuccess('Login/RequestResetPasswordSent');
+        },
+        error: (error: unknown) => {
+          if ((error as IResponseError)?.errorMessage) {
+            this.loginError.set((error as IResponseError).errorMessage);
+          } else {
+            throw error;
+          }
+        },
+      });
   }
 
   public focusEmailInput(): void {

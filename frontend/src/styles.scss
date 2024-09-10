@@ -98,6 +98,11 @@ body {
       --mat-snack-bar-button-color: #{mat.get-theme-color($light-theme, error-container)};
       --mdc-snackbar-supporting-text-color: #{mat.get-theme-color($light-theme, on-error)};
     }
+    &.success {
+      --mdc-snackbar-container-color: #{mat.get-theme-color($light-theme, tertiary-container)};
+      --mat-snack-bar-button-color: #{mat.get-theme-color($light-theme, primary)};
+      --mdc-snackbar-supporting-text-color: #{mat.get-theme-color($light-theme, on-tertiary-container)};
+    }
   }
 
   &.theme-dark {
@@ -123,6 +128,11 @@ body {
         --mdc-snackbar-container-color: #{mat.get-theme-color($dark-theme, on-error)};
         --mat-snack-bar-button-color: #{mat.get-theme-color($dark-theme, on-error-container)};
         --mdc-snackbar-supporting-text-color: #{mat.get-theme-color($dark-theme, error)};
+      }
+      &.success {
+        --mdc-snackbar-container-color: #{mat.get-theme-color($dark-theme, secondary-container)};
+        --mat-snack-bar-button-color: #{mat.get-theme-color($dark-theme, primary)};
+        --mdc-snackbar-supporting-text-color: #{mat.get-theme-color($dark-theme, on-secondary-container)};
       }
     }
 

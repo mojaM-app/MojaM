@@ -5,7 +5,7 @@ export { ActivateUserReqDto, ActivateUserResponseDto } from './dtos/activate-use
 export { CreateUserDto, CreateUserReqDto, CreateUserResponseDto } from './dtos/create-user.dto';
 export { DeactivateUserReqDto, DeactivateUserResponseDto } from './dtos/deactivate-user.dto';
 export { DeleteUserReqDto, DeleteUserResponseDto } from './dtos/delete-user.dto';
-export { GetUserProfileReqDto, GetUserProfileResponseDto } from './dtos/get-user-profile.dto';
+export { GetUserProfileReqDto, GetUserProfileResponseDto, type IUserDto, type IUserProfileDto } from './dtos/get-user-profile.dto';
 export { UpdateUserDto, UpdateUserReqDto, UpdateUserResponseDto } from './dtos/update-user.dto';
 
 export { UserActivatedEvent } from './events/user-activated-event';
@@ -13,9 +13,6 @@ export { UserCreatedEvent } from './events/user-created-event';
 export { UserDeactivatedEvent } from './events/user-deactivated-event';
 export { UserDeletedEvent } from './events/user-deleted-event';
 export { UserRetrievedEvent } from './events/user-retrieved-event';
-
-export type { IUser } from './interfaces/IUser';
-export type { IUserProfile } from './interfaces/IUserProfile';
 
 export { UsersRepository } from './repositories/users.repository';
 export { UsersService } from './services/users.service';

@@ -6,9 +6,10 @@ export { LockedUserTriesToLogInEvent } from './events/locked-user-tries-to-log-i
 export { UserLockedOutEvent } from './events/user-locked-out-event';
 export { UserLoggedInEvent } from './events/user-logged-in-event';
 
-export { IsLoginValidResponseDto } from './dtos/is-login-valid.dto';
+export { GetUserWhoLogsInResponseDto } from './dtos/get-user-who-logs-in.dto';
 export { LoginDto, LoginResponseDto } from './dtos/login.dto';
-export { EmailPhoneDto } from './models/email-phone.dto';
+export { ResetPasswordResponseDto } from './dtos/reset-password.dto';
+export type { UserWhoLogsIn, UserWhoLogsInResult } from './interfaces/user-who-logs-in.interfaces';
 
 export type { DataStoredInToken } from './models/DataStoredInToken';
 export { Identity } from './models/Identity';

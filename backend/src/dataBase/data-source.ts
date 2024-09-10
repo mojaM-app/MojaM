@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import { UserResetPasswordToken } from '../modules/auth/entities/user-reset-password-tokens.entity';
 import { SystemPermission } from '../modules/permissions/entities/system-permission.entity';
 import { UserSystemPermission } from '../modules/users/entities/user-system-permission.entity';
 import { User } from '../modules/users/entities/user.entity';
@@ -14,7 +15,7 @@ export const AppDataSource = new DbContext({
   database: 'dev',
   synchronize: false,
   logging: true,
-  entities: [User, SystemPermission, UserSystemPermission],
+  entities: [User, SystemPermission, UserSystemPermission, UserResetPasswordToken],
   subscribers: [],
   namingStrategy: new TitleCaseNamingStrategy(),
   migrationsTableName: '_migrations_history',
