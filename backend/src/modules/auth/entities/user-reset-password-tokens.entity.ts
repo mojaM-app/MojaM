@@ -1,5 +1,5 @@
 /* eslint-disable no-use-before-define */
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryColumn, Relation } from 'typeorm';
 import { User } from './../../users/entities/user.entity';
 
 @Entity({
@@ -18,7 +18,7 @@ export class UserResetPasswordToken {
     type: 'int',
     nullable: false,
   })
-  public user: User;
+  public user: Relation<User>;
 
   @Column({
     name: 'Token',

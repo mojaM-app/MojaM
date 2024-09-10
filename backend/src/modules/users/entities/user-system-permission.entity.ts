@@ -19,7 +19,7 @@ export class UserSystemPermission {
     type: 'int',
     nullable: false,
   })
-  public user: User;
+  public user: Relation<User>;
 
   @ManyToOne(() => SystemPermission, (systemPermission: SystemPermission) => systemPermission.users,
     { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })

@@ -166,6 +166,6 @@ export class User {
   @OneToMany(() => UserSystemPermission, (assignedPermissions: UserSystemPermission) => assignedPermissions.assignedBy)
     assignedSystemPermissions: Relation<UserSystemPermission[]>;
 
-  @OneToOne(() => UserResetPasswordToken, (user: UserResetPasswordToken) => user.user)
+  @OneToOne(() => UserResetPasswordToken, (token: UserResetPasswordToken) => token.user)
     resetPasswordToken: Relation<UserResetPasswordToken>;
 }
