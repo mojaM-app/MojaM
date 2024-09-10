@@ -12,10 +12,12 @@ import { Service } from 'typedi';
 
 @Service()
 export class EmailService {
+  private readonly language: 'pl';
+
   public async sendEmailResetPassword(user: IUserProfileDto, link: string): Promise<boolean> {
     return await new Promise((resolve, reject) => {
       try {
-        const source = readFileSync(join(__dirname, './../email.templates/requestResetPassword.handlebars'), 'utf8');
+        const source = readFileSync(join(__dirname, `./../email.templates/requestResetPassword.${this.language}.handlebars`), 'utf8');
 
         const compiledTemplate = compile(source);
 
