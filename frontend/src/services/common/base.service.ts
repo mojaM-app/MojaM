@@ -35,5 +35,9 @@ export class BaseService {
       refreshToken: (): string =>
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/refresh-token`,
     },
+    userList: {
+      path: 'user-list',
+      get: (): string => `${environment.backendUrl}/${this.API_ROUTES.userList.path}`,
+    }
   };
 }

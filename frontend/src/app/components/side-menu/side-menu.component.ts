@@ -1,14 +1,18 @@
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, signal, WritableSignal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
-import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { IS_MOBILE } from 'src/app/app.config';
+import { SystemPermissionValue } from 'src/core/system-permission.enum';
 import { IMenuItem } from 'src/interfaces/menu/menu-item';
 import { PipesModule } from 'src/pipes/pipes.module';
+import { AuthTokenService } from 'src/services/auth/auth-token.service';
+import { PermissionService } from 'src/services/auth/permission.service';
 import { ThemeService } from '../../../services/theme/theme.service';
 import { BulletinMenu } from '../bulletin/bulletin.menu';
 import { CommunityMenu } from '../community/community.menu';
+import { ManagementMenu, ManagementMenuUserList } from '../management/management.menu';
 import { AnnouncementsMenu, CalendarMenu, InformationMenu } from '../news/news.menu';
 import { SettingsMenu } from '../settings/settings.menu';
 
@@ -30,53 +34,82 @@ import { SettingsMenu } from '../settings/settings.menu';
 })
 export class SideMenuComponent {
   public isDarkMode = false;
+  public readonly menuItems: WritableSignal<IMenuItem[]> = signal<IMenuItem[]>([]);
 
-  public menuItems: IMenuItem[] = [
+  private readonly _menuItems: IMenuItem[] = [
     {
       name: InformationMenu.Label,
       icon: InformationMenu.Icon,
       route: InformationMenu.Path,
+      isVisible: (): boolean => true,
     },
     {
       name: CalendarMenu.Label,
       icon: CalendarMenu.Icon,
       route: CalendarMenu.Path,
+      isVisible: (): boolean => true,
     },
     {
       name: AnnouncementsMenu.Label,
       icon: AnnouncementsMenu.Icon,
       route: AnnouncementsMenu.Path,
+      isVisible: (): boolean => true,
     },
     {
       name: BulletinMenu.Label,
       icon: BulletinMenu.Icon,
       route: BulletinMenu.Path,
+      isVisible: (): boolean => true,
     },
     {
       name: CommunityMenu.Label,
       icon: CommunityMenu.Icon,
       route: CommunityMenu.Path,
+      isVisible: (): boolean => true,
     },
     {
       name: SettingsMenu.Label,
       icon: SettingsMenu.Icon,
       route: SettingsMenu.Path,
+      isVisible: (): boolean => true,
+    },
+    {
+      name: ManagementMenu.Label,
+      icon: ManagementMenu.Icon,
+      isVisible: (): boolean => {
+        return this._permissionService.hasAnyPermission([SystemPermissionValue.PreviewUserList]);
+      },
+      children: [
+        {
+          name: ManagementMenuUserList.Label,
+          icon: ManagementMenuUserList.Icon,
+          route: ManagementMenuUserList.Path,
+          isVisible: (): boolean => {
+            return this._permissionService.hasAnyPermission([
+              SystemPermissionValue.PreviewUserList,
+            ]);
+          },
+        },
+      ],
     },
   ];
 
   public constructor(
     @Inject(IS_MOBILE) public isMobile: boolean,
-    public router: Router,
-    private _themeService: ThemeService
+    private _permissionService: PermissionService,
+    themeService: ThemeService,
+    authTokenService: AuthTokenService
   ) {
-    this.isDarkMode = this._themeService.isDarkMode();
-  }
+    this.isDarkMode = themeService.isDarkMode();
 
-  public changed(arg: MatSlideToggleChange) {
-    this._themeService.onOffDarkMode(arg.checked);
-  }
-
-  public showInfo(link: any) {
-    console.log(link);
+    authTokenService.tokenChanged.subscribe(() => {
+      const filteredMenuItems = this._menuItems.filter(item => item.isVisible());
+      filteredMenuItems.forEach(menuItem => {
+        if (menuItem.children) {
+          menuItem.children = menuItem.children.filter(child => child.isVisible());
+        }
+      });
+      this.menuItems.set(filteredMenuItems);
+    });
   }
 }

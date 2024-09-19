@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
-import { IGetStructureResponse } from '../../../interfaces/community/structure';
 import { BaseService } from '../base.service';
 import { HttpClientService } from '../httpClient.service';
 

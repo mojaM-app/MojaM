@@ -1,6 +1,4 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorHandler, Injectable } from '@angular/core';
-import { IResponseError } from 'src/interfaces/errors/response.error';
 import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { TranslationService } from 'src/services/translate/translation.service';
 

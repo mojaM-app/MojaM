@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of, tap } from 'rxjs';
 import { ILoginModel, ILoginResponse, UserWhoLogsInResult } from 'src/interfaces/auth/auth.models';
 import { BaseService } from '../common/base.service';
@@ -20,7 +19,6 @@ export class AuthService extends BaseService {
 
   public constructor(
     private _httpClient: HttpClientService,
-    private _router: Router,
     private _authTokenService: AuthTokenService,
     private _localStorageService: LocalStorageService
   ) {

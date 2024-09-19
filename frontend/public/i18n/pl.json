@@ -85,8 +85,24 @@
     "BtnSetPasswordHint": "Kliknij, aby ustawić hasło do swojego konta.",
     "RequestResetPasswordSent": "Na podany adres e-mail został wysłany link do resetowania hasła. Sprawdź pocztę. Jeśli nie otrzymano wiadomości, sprawdź folder ze spamem."
   },
+  "Management": {
+    "Title": "Zarządzanie",
+    "UserList": {
+      "Title": "Lista użytkowników",
+      "PaginationAriaLabel": "Wybierz stronę",
+      "GridColumns": {
+        "FirstName": "Imię",
+        "LastName": "Nazwisko",
+        "Email": "E-mail",
+        "Phone": "Telefon"
+      }
+    }
+  },
   "Error404": {
     "PageNotFound": "Strona nie istnieje"
+  },
+  "Error403": {
+    "AccessDenied": "Nie masz dostępu do tej strony"
   },
   "Pipes": {
     "date-ago": {
@@ -106,5 +122,14 @@
     "Bad_Request": "Wystąpił błąd podczas przetwarzania żądania. Spróbuj ponownie później.",
     "Wrong_Authentication_Token": "Nieprawidłowy token autoryzacyjny. Zaloguj się ponownie.",
     "Invalid_Login_Or_Password": "Wprowadzono nieprawidłowe dane logowania."
+  },
+  "Paginator": {
+    "ItemsPerPageLabel": "Ilość elementów na stronie",
+    "NextPageLabel": "Następna strona",
+    "PreviousPageLabel": "Poprzednia strona",
+    "FirstPageLabel": "Pierwsza strona",
+    "LastPageLabel": "Ostatnia strona",
+    "RangePageLabel1": "0 z {length}",
+    "RangePageLabel2": "{startIndex} - {endIndex} z {length}"
   }
 }

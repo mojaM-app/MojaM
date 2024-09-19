@@ -1,19 +1,20 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AnnouncementsMenu, CalendarMenu, InformationMenu } from './news.menu';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'information', pathMatch: 'full' },
+  { path: '', redirectTo: InformationMenu.Route, pathMatch: 'full' },
   {
-    path: 'announcements',
+    path: AnnouncementsMenu.Route,
     loadChildren: () =>
       import('./announcements/announcements.module').then(m => m.AnnouncementsModule),
   },
   {
-    path: 'calendar',
+    path: CalendarMenu.Route,
     loadChildren: () => import('./calendar/calendar.module').then(m => m.NewsCalendarModule),
   },
   {
-    path: 'information',
+    path: InformationMenu.Route,
     loadChildren: () => import('./information/information.module').then(m => m.InformationModule),
   }
 ];

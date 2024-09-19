@@ -1,0 +1,19 @@
+.card {
+  height: 100%;
+  //height: var(--main-container-height);
+
+  .d-grid-with-header {
+    //height: var(--main-container-height);
+
+    main {
+      //height: calc(var(--main-container-height) - var(--page-header-height));
+
+      .content-container {
+        .table-container {
+          //height: calc(var(--main-container-height) - var(--page-header-height) - var(--mat-paginator-container-size));
+          overflow: auto;
+        }
+      }
+    }
+  }
+}

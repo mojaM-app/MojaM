@@ -29,8 +29,8 @@ export class IndexComponent {
     this.scrollTab();
   }
 
-  private scrollTab(){
-    const ntvEl = this.tabGroup?._elementRef?.nativeElement as any;
+  private scrollTab(): void {
+    const ntvEl = this.tabGroup?._elementRef?.nativeElement;
 
     if (ntvEl) {
       ntvEl.scrollIntoView();

@@ -1,4 +1,4 @@
-import { IUser } from '../users/users.interfaces';
+import { IUser } from '../users/user.interfaces';
 
 export interface UserWhoLogsInResult {
   isLoginSufficientToLogIn: boolean;

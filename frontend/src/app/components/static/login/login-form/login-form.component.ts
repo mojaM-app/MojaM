@@ -18,6 +18,7 @@ import { MatButton } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { IS_MOBILE } from 'src/app/app.config';
+import { environment } from 'src/environments/environment';
 import { UserWhoLogsInResult } from 'src/interfaces/auth/auth.models';
 import { IResponseError } from 'src/interfaces/errors/response.error';
 import { WithForm } from 'src/mixins/with-form.mixin';
@@ -58,7 +59,7 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
   public constructor(
     formBuilder: FormBuilder,
     private _authService: AuthService,
-    private _snackBarService : SnackBarService,
+    private _snackBarService: SnackBarService,
     @Inject(IS_MOBILE) private _isMobile: boolean
   ) {
     const formGroup = formBuilder.group<ILoginForm>({
@@ -76,6 +77,13 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
     } satisfies ILoginForm);
 
     super(formGroup);
+
+    if (environment.production === false) {
+      formGroup.patchValue({
+        email: 'admin@domain.com',
+        password: 'P@ssWord!1',
+      });
+    }
   }
 
   public login(): void {

@@ -1,6 +1,6 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, EMPTY, map, Observable, retry, tap, throwError } from 'rxjs';
+import { catchError, EMPTY, map, Observable, retry, throwError } from 'rxjs';
 import { IResponseError } from 'src/interfaces/errors/response.error';
 import { TranslationService } from '../translate/translation.service';
 
@@ -21,6 +21,7 @@ export class HttpClientService {
 export class RequestBuilder {
   private _url: string | undefined;
   private _body: Record<string, unknown> | undefined;
+  private _params = new HttpParams();
   private readonly _headers: HttpHeaders;
 
   public constructor(
@@ -36,7 +37,7 @@ export class RequestBuilder {
     }
 
     return this._http
-      .get<{ message: string; data: TResponse }>(this._url!, { headers: this._headers })
+      .get<{ message: string; data: TResponse }>(this._url!, { headers: this._headers, params: this._params })
       .pipe(
         retry(1),
         map(response => response.data),
@@ -73,6 +74,19 @@ export class RequestBuilder {
 
   public withBody(body: Record<string, unknown>): RequestBuilder {
     this._body = body;
+    return this;
+  }
+
+  public withParams(params: Record<string, unknown>): RequestBuilder {
+    for (const key in params) {
+      if (Object.prototype.hasOwnProperty.call(params, key)) {
+        const value = params[key];
+        if (value === null || value === undefined) {
+          continue;
+        }
+        this._params = this._params.set(key, value.toString());
+      }
+    }
     return this;
   }
 

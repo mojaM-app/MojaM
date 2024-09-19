@@ -15,13 +15,13 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { ThemeService } from 'src/services/theme/theme.service';
 import { ISettingsForm, SettingsFormControlNames } from './settings.form';
-import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-settings',
