@@ -12,7 +12,9 @@ import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterOutlet } from '@angular/router';
 import { NgxResizeObserverModule } from 'ngx-resize-observer';
+import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
+import { BrowserWindowSize } from 'src/services/browser/browser-window-size';
 import { BrowserWindowService } from 'src/services/browser/browser-window.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
 import { IS_MOBILE } from './app.config';
@@ -39,23 +41,38 @@ import { SideMenuComponent } from './components/side-menu/side-menu.component';
   styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppComponent implements OnInit {
+export class AppComponent extends WithUnsubscribe() implements OnInit {
   @ViewChild('sidenav') public sidenav: MatSidenav | undefined;
 
   public showSpinner = false;
+
+  public width: number | undefined;
+  public height: number | undefined;
 
   public constructor(
     @Inject(IS_MOBILE) public isMobile: boolean,
     private _changeDetectorRef: ChangeDetectorRef,
     private _spinnerService: SpinnerService,
     private _browserService: BrowserWindowService
-  ) {}
+  ) {
+    super();
+  }
 
   public ngOnInit(): void {
-    this._spinnerService.onStateChanged$().subscribe((state: boolean) => {
-      this.showSpinner = state;
-      this._changeDetectorRef.detectChanges();
-    });
+    this.addSubscription(
+      this._spinnerService.onStateChanged$().subscribe((state: boolean) => {
+        this.showSpinner = state;
+        this._changeDetectorRef.detectChanges();
+      })
+    );
+
+    this.addSubscription(
+      this._browserService.onResize$.subscribe((size: BrowserWindowSize) => {
+        this.width = size.width;
+        this.height = size.height;
+        this._changeDetectorRef.detectChanges();
+      })
+    );
   }
 
   public closeSidenav(): void {
@@ -63,7 +80,6 @@ export class AppComponent implements OnInit {
   }
 
   public onResize(mainContainerSize: ResizeObserverEntry): void {
-    console.log('mainContainerSize', mainContainerSize);
     this._browserService.emitEventOnWindowResize(mainContainerSize);
   }
 }
