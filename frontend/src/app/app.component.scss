@@ -54,7 +54,6 @@
     }
 
     .layout {
-      --main-container-height: calc(100vh - calc(100vh - 100%));
       height: var(--main-container-height);
 
       display: grid;
@@ -68,20 +67,19 @@
     .header {
       grid-area: header;
       height: var(--mat-toolbar-standard-height);
-
       @media (max-width: 599px) {
         height: var(--mat-toolbar-mobile-height);
       }
     }
+
     .main {
       grid-area: main;
       overflow: auto;
-      height: var(--main-container-height);
     }
+
     .footer {
       grid-area: footer;
       height: var(--mat-toolbar-standard-height);
-
       @media (max-width: 599px) {
         height: var(--mat-toolbar-mobile-height);
       }

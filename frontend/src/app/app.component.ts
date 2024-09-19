@@ -46,9 +46,6 @@ export class AppComponent extends WithUnsubscribe() implements OnInit {
 
   public showSpinner = false;
 
-  public width: number | undefined;
-  public height: number | undefined;
-
   public constructor(
     @Inject(IS_MOBILE) public isMobile: boolean,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -68,9 +65,9 @@ export class AppComponent extends WithUnsubscribe() implements OnInit {
 
     this.addSubscription(
       this._browserService.onResize$.subscribe((size: BrowserWindowSize) => {
-        this.width = size.width;
-        this.height = size.height;
-        this._changeDetectorRef.detectChanges();
+        document.documentElement.style.setProperty('--main-container-width', size.width + 'px');
+        document.documentElement.style.setProperty('--main-container-height', size.height + 'px');
+        document.documentElement.style.setProperty('--is-mobile', this.isMobile ? '1' : '0');
       })
     );
   }

@@ -40,7 +40,7 @@ body {
   width: 100%;
   height: 100vh;
   margin: 0;
-  background-color: blue;
+  background-color: #00B3E6;
 
   @include mat.all-component-themes($light-theme);
 
@@ -64,9 +64,6 @@ body {
     --bs-card-inner-border-radius: 0;
     --bs-card-cap-bg: #{mat.get-theme-color($light-theme, surface-container)};
   }
-
-  //custom variables
-  --page-header-height: 3rem;
 
   //override calendar colors
   @include cal-theme(
@@ -158,48 +155,132 @@ body {
   --mat-sidenav-container-width: 300px;
 }
 
-// .d-grid-with-header-and-footer {
-//   display: grid;
-//   grid-template-columns: 1fr;
-//   grid-template-rows: auto 1fr auto;
-//   grid-template-areas:
-//     'header'
-//     'main'
-//     'footer';
+.d-grid-with-header-and-footer {
+  height: calc(
+    var(--main-container-height) - var(--mat-toolbar-standard-height) - var(
+        --mat-toolbar-standard-height
+      ) * var(--is-mobile)
+  );
+  @media (max-width: 599px) {
+    height: calc(
+      var(--main-container-height) - var(--mat-toolbar-mobile-height) - var(
+          --mat-toolbar-mobile-height
+        ) * var(--is-mobile)
+    );
+  }
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    'header'
+    'main'
+    'footer';
 
-//   header {
-//     grid-area: header;
-//     font-size: large;
-//     height: var(--page-header-height);
-//   }
+  header {
+    grid-area: header;
+    height: calc(
+      var(--bs-card-cap-padding-y) * 2 + var(--mat-toolbar-title-text-line-height) +
+        var(--bs-card-border-width)
+    );
+  }
 
-//   main {
-//     grid-area: main;
-//   }
+  main {
+    grid-area: main;
+    height: 100%;
+    overflow: hidden;
 
-//   footer {
-//     grid-area: footer;
-//   }
-// }
+    height: calc(
+      var(--main-container-height) - var(--mat-toolbar-standard-height) - var(
+          --mat-toolbar-standard-height
+        ) * var(--is-mobile) - var(--bs-card-cap-padding-y) * 2 - var(
+          --mat-toolbar-title-text-line-height
+        ) - var(--bs-card-border-width)
+    );
+    @media (max-width: 599px) {
+      height: calc(
+        var(--main-container-height) - var(--mat-toolbar-mobile-height) - var(
+            --mat-toolbar-mobile-height
+          ) * var(--is-mobile) - var(--bs-card-cap-padding-y) * 2 - var(
+            --mat-toolbar-title-text-line-height
+          ) - var(--bs-card-border-width)
+      );
+    }
+  }
 
-// .d-grid-with-header {
-//   display: grid;
-//   grid-template-columns: 1fr;
-//   grid-template-rows: auto 1fr;
-//   grid-template-areas:
-//     'header'
-//     'main';
+  footer {
+    grid-area: footer;
+  }
+}
 
-//   header {
-//     grid-area: header;
-//     font-size: large;
-//     height: var(--page-header-height);
-//   }
+.d-grid-with-header {
+  height: calc(
+    var(--main-container-height) - var(--mat-toolbar-standard-height) - var(
+        --mat-toolbar-standard-height
+      ) * var(--is-mobile)
+  );
+  @media (max-width: 599px) {
+    height: calc(
+      var(--main-container-height) - var(--mat-toolbar-mobile-height) - var(
+          --mat-toolbar-mobile-height
+        ) * var(--is-mobile)
+    );
+  }
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    'header'
+    'main';
 
-//   main {
-//     grid-area: main;
-//   }
-// }
+  header {
+    grid-area: header;
+    height: calc(
+      var(--bs-card-cap-padding-y) * 2 + var(--mat-toolbar-title-text-line-height) +
+        var(--bs-card-border-width)
+    );
+  }
+
+  main {
+    grid-area: main;
+    height: 100%;
+    overflow: hidden;
+    height: calc(
+      var(--main-container-height) - var(--mat-toolbar-standard-height) - var(
+          --mat-toolbar-standard-height
+        ) * var(--is-mobile) - var(--bs-card-cap-padding-y) * 2 - var(
+          --mat-toolbar-title-text-line-height
+        ) - var(--bs-card-border-width)
+    );
+    @media (max-width: 599px) {
+      height: calc(
+        var(--main-container-height) - var(--mat-toolbar-mobile-height) - var(
+            --mat-toolbar-mobile-height
+          ) * var(--is-mobile) - var(--bs-card-cap-padding-y) * 2 - var(
+            --mat-toolbar-title-text-line-height
+          ) - var(--bs-card-border-width)
+      );
+    }
+
+    .table-container {
+      height: calc(
+        var(--main-container-height) - var(--mat-toolbar-standard-height) - var(
+            --mat-toolbar-standard-height
+          ) * var(--is-mobile) - var(--bs-card-cap-padding-y) * 2 - var(
+            --mat-toolbar-title-text-line-height
+          ) - var(--bs-card-border-width) - var(--mat-paginator-container-size)
+      );
+      @media (max-width: 599px) {
+        height: calc(
+          var(--main-container-height) - var(--mat-toolbar-mobile-height) - var(
+              --mat-toolbar-mobile-height
+            ) * var(--is-mobile) - var(--bs-card-cap-padding-y) * 2 - var(
+              --mat-toolbar-title-text-line-height
+            ) - var(--bs-card-border-width) - var(--mat-paginator-container-size)
+        );
+      }
+    }
+  }
+}
 
 .dialog-header {
   display: flex;
