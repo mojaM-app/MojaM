@@ -31,6 +31,7 @@
     "globalize": "^1.7.0",
     "guid-typescript": "^1.0.9",
     "ngx-device-detector": "^8.0.0",
+    "ngx-resize-observer": "^2.7.0",
     "rxjs": "~7.8.1",
     "tslib": "^2.7.0",
     "zone.js": "~0.14.3"
