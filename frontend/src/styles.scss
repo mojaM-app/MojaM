@@ -36,16 +36,11 @@ html {
   width: 100%;
 }
 
-app-root {
-  height: 100%;
-  width: 100%;
-  display: block;
-}
-
 body {
-  height: 100%;
   width: 100%;
+  height: 100vh;
   margin: 0;
+  background-color: blue;
 
   @include mat.all-component-themes($light-theme);
 
@@ -69,6 +64,9 @@ body {
     --bs-card-inner-border-radius: 0;
     --bs-card-cap-bg: #{mat.get-theme-color($light-theme, surface-container)};
   }
+
+  //custom variables
+  --page-header-height: 3rem;
 
   //override calendar colors
   @include cal-theme(
@@ -101,7 +99,10 @@ body {
     &.success {
       --mdc-snackbar-container-color: #{mat.get-theme-color($light-theme, tertiary-container)};
       --mat-snack-bar-button-color: #{mat.get-theme-color($light-theme, primary)};
-      --mdc-snackbar-supporting-text-color: #{mat.get-theme-color($light-theme, on-tertiary-container)};
+      --mdc-snackbar-supporting-text-color: #{mat.get-theme-color(
+          $light-theme,
+          on-tertiary-container
+        )};
     }
   }
 
@@ -132,7 +133,10 @@ body {
       &.success {
         --mdc-snackbar-container-color: #{mat.get-theme-color($dark-theme, secondary-container)};
         --mat-snack-bar-button-color: #{mat.get-theme-color($dark-theme, primary)};
-        --mdc-snackbar-supporting-text-color: #{mat.get-theme-color($dark-theme, on-secondary-container)};
+        --mdc-snackbar-supporting-text-color: #{mat.get-theme-color(
+            $dark-theme,
+            on-secondary-container
+          )};
       }
     }
 
@@ -154,28 +158,48 @@ body {
   --mat-sidenav-container-width: 300px;
 }
 
-.d-grid-with-header-and-footer {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto 1fr auto;
-  grid-template-areas:
-    'header'
-    'main'
-    'footer';
+// .d-grid-with-header-and-footer {
+//   display: grid;
+//   grid-template-columns: 1fr;
+//   grid-template-rows: auto 1fr auto;
+//   grid-template-areas:
+//     'header'
+//     'main'
+//     'footer';
 
-  header {
-    grid-area: header;
-    font-size: large;
-  }
+//   header {
+//     grid-area: header;
+//     font-size: large;
+//     height: var(--page-header-height);
+//   }
 
-  main {
-    grid-area: main;
-  }
+//   main {
+//     grid-area: main;
+//   }
 
-  footer {
-    grid-area: footer;
-  }
-}
+//   footer {
+//     grid-area: footer;
+//   }
+// }
+
+// .d-grid-with-header {
+//   display: grid;
+//   grid-template-columns: 1fr;
+//   grid-template-rows: auto 1fr;
+//   grid-template-areas:
+//     'header'
+//     'main';
+
+//   header {
+//     grid-area: header;
+//     font-size: large;
+//     height: var(--page-header-height);
+//   }
+
+//   main {
+//     grid-area: main;
+//   }
+// }
 
 .dialog-header {
   display: flex;

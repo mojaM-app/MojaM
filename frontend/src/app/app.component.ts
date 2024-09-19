@@ -11,7 +11,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterOutlet } from '@angular/router';
+import { NgxResizeObserverModule } from 'ngx-resize-observer';
 import { PipesModule } from 'src/pipes/pipes.module';
+import { BrowserWindowService } from 'src/services/browser/browser-window.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
 import { IS_MOBILE } from './app.config';
 import { FooterComponent } from './components/footer/footer.component';
@@ -31,6 +33,7 @@ import { SideMenuComponent } from './components/side-menu/side-menu.component';
     MatButtonModule,
     MatIconModule,
     PipesModule,
+    NgxResizeObserverModule,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -44,7 +47,8 @@ export class AppComponent implements OnInit {
   public constructor(
     @Inject(IS_MOBILE) public isMobile: boolean,
     private _changeDetectorRef: ChangeDetectorRef,
-    private _spinnerService: SpinnerService
+    private _spinnerService: SpinnerService,
+    private _browserService: BrowserWindowService
   ) {}
 
   public ngOnInit(): void {
@@ -56,5 +60,10 @@ export class AppComponent implements OnInit {
 
   public closeSidenav(): void {
     this.sidenav?.close();
+  }
+
+  public onResize(mainContainerSize: ResizeObserverEntry): void {
+    console.log('mainContainerSize', mainContainerSize);
+    this._browserService.emitEventOnWindowResize(mainContainerSize);
   }
 }

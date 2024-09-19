@@ -1,65 +1,90 @@
-.mat-drawer-container {
+.app-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: red;
+  height: 100vh;
+  width: 100vw;
   padding: 0;
   margin: 0;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  border: none;
+  overflow: hidden;
 
-  .menu-title {
-    width: 100%;
-    text-align: center;
-  }
+  .mat-drawer-container {
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 
-  .toolbar-row-with-image {
-    display: flex;
-    flex-direction: row;
-    height: auto;
+    .menu-title {
+      width: 100%;
+      text-align: center;
+    }
 
-    .image-wrapper {
-      width: 64px;
-      height: 64px;
+    .toolbar-row-with-image {
       display: flex;
-      justify-content: center;
-      background-color: white;
+      flex-direction: row;
+      height: auto;
 
-      img {
-        width: 100%;
-        height: auto;
-        margin: auto;
-        padding: 0.125rem;
+      .image-wrapper {
+        width: 64px;
+        height: 64px;
+        display: flex;
+        justify-content: center;
+        background-color: white;
+
+        img {
+          width: 100%;
+          height: auto;
+          margin: auto;
+          padding: 0.125rem;
+        }
+      }
+
+      span {
+        white-space: break-spaces;
+        font-size: 60%;
+        line-height: 1.2;
+        max-width: 200px;
+        padding-left: 1rem;
       }
     }
 
-    span {
-      white-space: break-spaces;
-      font-size: 60%;
-      line-height: 1.2;
-      max-width: 200px;
-      padding-left: 1rem;
+    .layout {
+      --main-container-height: calc(100vh - calc(100vh - 100%));
+      height: var(--main-container-height);
+
+      display: grid;
+      grid:
+        'header' auto
+        'main' 1fr
+        'footer' auto
+        / 1fr;
     }
-  }
 
-  .layout {
-    height: calc(100vh - calc(100vh - 100%));
+    .header {
+      grid-area: header;
+      height: var(--mat-toolbar-standard-height);
 
-    display: grid;
-    grid:
-      'header' auto
-      'main' 1fr
-      'footer' auto
-      / 1fr;
-  }
+      @media (max-width: 599px) {
+        height: var(--mat-toolbar-mobile-height);
+      }
+    }
+    .main {
+      grid-area: main;
+      overflow: auto;
+      height: var(--main-container-height);
+    }
+    .footer {
+      grid-area: footer;
+      height: var(--mat-toolbar-standard-height);
 
-  .header {
-    grid-area: header;
-  }
-  .main {
-    grid-area: main;
-    overflow: auto;
-  }
-  .footer {
-    grid-area: footer;
+      @media (max-width: 599px) {
+        height: var(--mat-toolbar-mobile-height);
+      }
+    }
   }
 }

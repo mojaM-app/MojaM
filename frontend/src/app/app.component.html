@@ -1,45 +1,50 @@
-<mat-sidenav-container class="mat-drawer-container">
-  <mat-sidenav #sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile"
-  class="overflow-hidden border-0">
-    <mat-toolbar>
-      <mat-toolbar-row>
-        <button mat-icon-button class="mr-1" (click)="closeSidenav()">
-          <mat-icon class="icon">close</mat-icon>
-        </button>
-        <span class="menu-title">{{ 'Shared/AppName' | gmessage }}</span>
-      </mat-toolbar-row>
-      <mat-toolbar-row class="toolbar-row-with-image bg-color-primary">
-        <div class="image-wrapper border border-2">
-          <img
-            src="./images/logo_black.png"
-            alt="{{ 'Shared/Name' | gmessage }}"
-            title="{{ 'Shared/Name' | gmessage }}" />
-        </div>
-        <span class="small">{{ 'Shared/Name' | gmessage }}</span>
-      </mat-toolbar-row>
-    </mat-toolbar>
-    <app-side-menu></app-side-menu>
-  </mat-sidenav>
+<div class="app-container" (onResize)="onResize($event)">
+  <!-- <mat-sidenav-container class="mat-drawer-container">
+    <mat-sidenav
+      #sidenav
+      [mode]="isMobile ? 'over' : 'side'"
+      [opened]="!isMobile"
+      class="overflow-hidden border-0">
+      <mat-toolbar>
+        <mat-toolbar-row>
+          <button mat-icon-button class="mr-1" (click)="closeSidenav()">
+            <mat-icon class="icon">close</mat-icon>
+          </button>
+          <span class="menu-title">{{ 'Shared/AppName' | gmessage }}</span>
+        </mat-toolbar-row>
+        <mat-toolbar-row class="toolbar-row-with-image bg-color-primary">
+          <div class="image-wrapper border border-2">
+            <img
+              src="./images/logo_black.png"
+              alt="{{ 'Shared/Name' | gmessage }}"
+              title="{{ 'Shared/Name' | gmessage }}" />
+          </div>
+          <span class="small">{{ 'Shared/Name' | gmessage }}</span>
+        </mat-toolbar-row>
+      </mat-toolbar>
+      <app-side-menu></app-side-menu>
+    </mat-sidenav>
 
-  <mat-sidenav-content>
-    <section class="layout">
-      <div class="header">
-        <app-header [sidenav]="sidenav"></app-header>
-      </div>
-      <div class="main">
-        <router-outlet></router-outlet>
-      </div>
-      @if (isMobile) {
-        <div class="footer">
-          <app-footer></app-footer>
+    <mat-sidenav-content>
+      <section class="layout">
+        <div class="header">
+          <app-header [sidenav]="sidenav"></app-header>
         </div>
-      }
-    </section>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+        <div class="main">
+          <router-outlet></router-outlet>
+        </div>
+        @if (isMobile) {
+          <div class="footer">
+            <app-footer></app-footer>
+          </div>
+        }
+      </section>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
 
-@if (showSpinner) {
-  <svg class="spinner" viewBox="0 0 50 50">
-    <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
-  </svg>
-}
+  @if (showSpinner) {
+    <svg class="spinner" viewBox="0 0 50 50">
+      <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+    </svg>
+  } -->
+</div>
