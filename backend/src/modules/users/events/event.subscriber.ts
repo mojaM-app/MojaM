@@ -5,6 +5,7 @@ import { UserCreatedEvent } from '../events/user-created-event';
 import { UserDeactivatedEvent } from '../events/user-deactivated-event';
 import { UserDeletedEvent } from '../events/user-deleted-event';
 import { UserRetrievedEvent } from '../events/user-retrieved-event';
+import { UserListRetrievedEvent } from './user-list-retrieved-event';
 
 @EventSubscriber()
 export class UserEventSubscriber {
@@ -31,5 +32,13 @@ export class UserEventSubscriber {
   @On(events.users.userDeactivated)
   public onUserDeactivated(data: UserDeactivatedEvent): void {
     console.log(`User ${data?.user?.email} (phone: ${data?.user?.phone}) deactivated!`);
+  }
+}
+
+@EventSubscriber()
+export class UserListEventSubscriber {
+  @On(events.users.userListRetrieved)
+  public onUserListRetrieved(data: UserListRetrievedEvent): void {
+    console.log(`User list retrieved by user with ID: ${data?.currentUserId}`);
   }
 }

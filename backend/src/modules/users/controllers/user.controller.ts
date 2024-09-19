@@ -13,13 +13,13 @@ import {
   GetUserProfileReqDto,
   GetUserProfileResponseDto,
   IUserProfileDto,
-  UsersService,
+  UsersService
 } from '@modules/users';
 import { isGuid } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
 
-export class UsersController extends BaseController {
+export class UserController extends BaseController {
   private readonly _userService: UsersService;
 
   public constructor() {
@@ -27,7 +27,7 @@ export class UsersController extends BaseController {
     this._userService = Container.get(UsersService);
   }
 
-  public getUserProfile = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  public getProfile = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const reqDto = new GetUserProfileReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
       const user: IUserProfileDto | null = await this._userService.get(reqDto);

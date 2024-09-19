@@ -15,10 +15,10 @@ import {
 import { isGuid, isNullOrEmptyString, isNullOrUndefined, isPositiveNumber } from '@utils';
 import StatusCode from 'status-code-enum';
 import Container, { Service } from 'typedi';
-import { User } from './../entities/user.entity';
+import { User } from '../entities/user.entity';
 
 @Service()
-export class UsersRepository extends BaseRepository {
+export class UserRepository extends BaseRepository {
   private readonly _cryptoService: CryptoService;
 
   public constructor() {
@@ -178,7 +178,7 @@ export class UsersRepository extends BaseRepository {
     return reqDto.userData.failedLoginAttempts!;
   }
 
-  public async lockOutUser(reqDto: UpdateUserReqDto): Promise<boolean> {
+  public async lockOut(reqDto: UpdateUserReqDto): Promise<boolean> {
     reqDto.userData.isLockedOut = true;
 
     await this.update(reqDto);

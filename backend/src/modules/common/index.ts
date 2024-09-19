@@ -7,4 +7,4 @@ export { CacheService } from './cache.service';
 
 export { BaseReqDto } from './base.request.dto';
 
-export { userToIUser, userToIUserProfile } from '@modules/users/helpers/users.helper';
+export { userToIUser, userToIUserGridItemDto, userToIUserProfile } from '@modules/users/helpers/users.helper';

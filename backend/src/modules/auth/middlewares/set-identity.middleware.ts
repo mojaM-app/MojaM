@@ -3,7 +3,7 @@ import { UnauthorizedException, errorKeys } from '@exceptions';
 import { RequestWithIdentity } from '@interfaces';
 import { Identity } from '@modules/auth';
 import { PermissionsRepository } from '@modules/permissions';
-import { UsersRepository } from '@modules/users';
+import { UserRepository } from '@modules/users';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { JwtPayload, verify } from 'jsonwebtoken';
@@ -92,7 +92,7 @@ export const setIdentity = async (req: RequestWithIdentity, res: Response, next:
         audience: getTokenAudience(),
         issuer: getTokenIssuer(),
       }).payload as JwtPayload;
-      const userRepository = Container.get(UsersRepository);
+      const userRepository = Container.get(UserRepository);
       const user = await userRepository?.getByUuid(sub);
 
       if (isNullOrUndefined(user)) {

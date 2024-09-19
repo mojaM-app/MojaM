@@ -3,7 +3,7 @@ import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { LoginDto } from '@modules/auth';
-import { CreateUserDto, CreateUserResponseDto, UsersRoute } from '@modules/users';
+import { CreateUserDto, CreateUserResponseDto, UserRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
 import { isGuid } from '@utils';
 import { registerTestEventHandlers, testEventHandlers } from '@utils/tests-events.utils';
@@ -12,8 +12,8 @@ import { EventDispatcher } from 'event-dispatch';
 import request from 'supertest';
 
 describe('POST/users should respond with a status code of 201', () => {
-  const usersRoute = new UsersRoute();
-  const app = new App([usersRoute]);
+  const userRouter = new UserRoute();
+  const app = new App([userRouter]);
 
   let adminAccessToken: string | undefined;
   beforeAll(async () => {
@@ -32,7 +32,7 @@ describe('POST/users should respond with a status code of 201', () => {
   test('when data are valid and user has permission', async () => {
     const requestData = generateValidUser();
     const createUserResponse = await request(app.getServer())
-      .post(usersRoute.path)
+      .post(userRouter.path)
       .send(requestData)
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
@@ -48,7 +48,7 @@ describe('POST/users should respond with a status code of 201', () => {
     expect(createMessage).toBe(events.users.userCreated);
 
     const deleteResponse = await request(app.getServer())
-      .delete(usersRoute.path + '/' + user.id)
+      .delete(userRouter.path + '/' + user.id)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(deleteResponse.statusCode).toBe(200);
@@ -67,7 +67,7 @@ describe('POST/users should respond with a status code of 201', () => {
     const requestData = generateValidUser();
     requestData.password = undefined;
     const createUserResponse = await request(app.getServer())
-      .post(usersRoute.path)
+      .post(userRouter.path)
       .send(requestData)
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(201);
@@ -83,7 +83,7 @@ describe('POST/users should respond with a status code of 201', () => {
     expect(createMessage).toBe(events.users.userCreated);
 
     const deleteResponse = await request(app.getServer())
-      .delete(usersRoute.path + '/' + user.id)
+      .delete(userRouter.path + '/' + user.id)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(deleteResponse.statusCode).toBe(200);
@@ -104,8 +104,8 @@ describe('POST/users should respond with a status code of 201', () => {
 });
 
 describe('POST/users should respond with a status code of 400', () => {
-  const usersRoute = new UsersRoute();
-  const app = new App([usersRoute]);
+  const userRouter = new UserRoute();
+  const app = new App([userRouter]);
 
   let adminAccessToken: string | undefined;
   beforeAll(async () => {
@@ -124,7 +124,7 @@ describe('POST/users should respond with a status code of 400', () => {
   test('when password is invalid', async () => {
     const requestData = { email: 'email@domain.com', phone: '123456789', password: 'paasssword' } satisfies CreateUserDto;
     const createUserResponse = await request(app.getServer())
-      .post(usersRoute.path)
+      .post(userRouter.path)
       .send(requestData)
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(400);
@@ -140,7 +140,7 @@ describe('POST/users should respond with a status code of 400', () => {
   test('when email is invalid', async () => {
     const requestData = { password: 'strongPassword1@', phone: '123456789', email: 'invalid email' } satisfies CreateUserDto;
     const createUserResponse = await request(app.getServer())
-      .post(usersRoute.path)
+      .post(userRouter.path)
       .send(requestData)
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(400);
@@ -156,7 +156,7 @@ describe('POST/users should respond with a status code of 400', () => {
   test('when phone is invalid', async () => {
     const requestData = { email: 'email@domain.com', password: 'strongPassword1@', phone: 'invalid phone' } satisfies CreateUserDto;
     const createUserResponse = await request(app.getServer())
-      .post(usersRoute.path)
+      .post(userRouter.path)
       .send(requestData)
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse.statusCode).toBe(400);
@@ -172,7 +172,7 @@ describe('POST/users should respond with a status code of 400', () => {
   test('when exist user with same email and phone', async () => {
     const requestData = generateValidUser();
     const createUserResponse1 = await request(app.getServer())
-      .post(usersRoute.path)
+      .post(userRouter.path)
       .send(requestData)
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse1.statusCode).toBe(201);
@@ -180,7 +180,7 @@ describe('POST/users should respond with a status code of 400', () => {
     expect(createMessage).toBe(events.users.userCreated);
 
     const createUserResponse2 = await request(app.getServer())
-      .post(usersRoute.path)
+      .post(userRouter.path)
       .send(requestData)
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse2.statusCode).toBe(400);
@@ -189,7 +189,7 @@ describe('POST/users should respond with a status code of 400', () => {
     expect(body.data.message).toBe(errorKeys.users.User_Already_Exists);
 
     const deleteUserResponse = await request(app.getServer())
-      .delete(usersRoute.path + '/' + user.id)
+      .delete(userRouter.path + '/' + user.id)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(deleteUserResponse.statusCode).toBe(200);
@@ -207,7 +207,7 @@ describe('POST/users should respond with a status code of 400', () => {
   test('when exist user with same email and phone (different letters size)', async () => {
     const requestData = generateValidUser();
     const createUserResponse1 = await request(app.getServer())
-      .post(usersRoute.path)
+      .post(userRouter.path)
       .send(requestData)
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse1.statusCode).toBe(201);
@@ -216,7 +216,7 @@ describe('POST/users should respond with a status code of 400', () => {
 
     requestData.email = requestData.email?.toUpperCase();
     const createUserResponse2 = await request(app.getServer())
-      .post(usersRoute.path)
+      .post(userRouter.path)
       .send(requestData)
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createUserResponse2.statusCode).toBe(400);
@@ -225,7 +225,7 @@ describe('POST/users should respond with a status code of 400', () => {
     expect(body.data.message).toBe(errorKeys.users.User_Already_Exists);
 
     const deleteUserResponse = await request(app.getServer())
-      .delete(usersRoute.path + '/' + user.id)
+      .delete(userRouter.path + '/' + user.id)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(deleteUserResponse.statusCode).toBe(200);
@@ -246,8 +246,8 @@ describe('POST/users should respond with a status code of 400', () => {
 });
 
 describe('POST/users should respond with a status code of 403', () => {
-  const usersRoute = new UsersRoute();
-  const app = new App([usersRoute]);
+  const userRouter = new UserRoute();
+  const app = new App([userRouter]);
 
   let adminAccessToken: string | undefined;
   beforeAll(async () => {
@@ -265,7 +265,7 @@ describe('POST/users should respond with a status code of 403', () => {
 
   test('when token is not set', async () => {
     const requestData = generateValidUser();
-    const createUserResponse = await request(app.getServer()).post(usersRoute.path).send(requestData);
+    const createUserResponse = await request(app.getServer()).post(userRouter.path).send(requestData);
     expect(createUserResponse.statusCode).toBe(401);
     const body = createUserResponse.body;
     expect(typeof body).toBe('object');
@@ -279,7 +279,7 @@ describe('POST/users should respond with a status code of 403', () => {
 
   test('when user have no permission', async () => {
     const requestData = generateValidUser();
-    const newUserResponse = await request(app.getServer()).post(usersRoute.path).send(requestData).set('Authorization', `Bearer ${adminAccessToken}`);
+    const newUserResponse = await request(app.getServer()).post(userRouter.path).send(requestData).set('Authorization', `Bearer ${adminAccessToken}`);
     expect(newUserResponse.statusCode).toBe(201);
     let body = newUserResponse.body;
     expect(typeof body).toBe('object');
@@ -289,7 +289,7 @@ describe('POST/users should respond with a status code of 403', () => {
     expect(createMessage).toBe(events.users.userCreated);
 
     const activateNewUserResponse = await request(app.getServer())
-      .post(usersRoute.path + '/' + user.id + '/' + usersRoute.activatePath)
+      .post(userRouter.path + '/' + user.id + '/' + userRouter.activatePath)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateNewUserResponse.statusCode).toBe(200);
@@ -297,7 +297,7 @@ describe('POST/users should respond with a status code of 403', () => {
     const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
 
     const createUserResponse = await request(app.getServer())
-      .post(usersRoute.path)
+      .post(userRouter.path)
       .send(generateValidUser())
       .set('Authorization', `Bearer ${newUserAccessToken}`);
     expect(createUserResponse.statusCode).toBe(403);
@@ -307,7 +307,7 @@ describe('POST/users should respond with a status code of 403', () => {
     expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
     const deleteResponse = await request(app.getServer())
-      .delete(usersRoute.path + '/' + user.id)
+      .delete(userRouter.path + '/' + user.id)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(deleteResponse.statusCode).toBe(200);
@@ -338,8 +338,8 @@ describe('POST/users should respond with a status code of 403', () => {
 });
 
 describe('POST/users should respond with a status code of 401', () => {
-  const usersRoute = new UsersRoute();
-  const app = new App([usersRoute]);
+  const userRouter = new UserRoute();
+  const app = new App([userRouter]);
 
   let adminAccessToken: string | undefined;
   beforeAll(async () => {
@@ -358,7 +358,7 @@ describe('POST/users should respond with a status code of 401', () => {
   test('when token is invalid', async () => {
     const requestData = generateValidUser();
     const response = await request(app.getServer())
-      .post(usersRoute.path)
+      .post(userRouter.path)
       .send(requestData)
       .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
     expect(response.statusCode).toBe(401);
@@ -375,14 +375,14 @@ describe('POST/users should respond with a status code of 401', () => {
   test('when try to use token from user that not exists', async () => {
     const userBob = generateValidUser();
 
-    const createBobResponse = await request(app.getServer()).post(usersRoute.path).send(userBob).set('Authorization', `Bearer ${adminAccessToken}`);
+    const createBobResponse = await request(app.getServer()).post(userRouter.path).send(userBob).set('Authorization', `Bearer ${adminAccessToken}`);
     expect(createBobResponse.statusCode).toBe(201);
     const { data: bobDto, message: bobCreateMessage }: CreateUserResponseDto = createBobResponse.body;
     expect(bobDto?.id).toBeDefined();
     expect(bobCreateMessage).toBe(events.users.userCreated);
 
     const activateBobResponse = await request(app.getServer())
-      .post(usersRoute.path + '/' + bobDto.id + '/' + usersRoute.activatePath)
+      .post(userRouter.path + '/' + bobDto.id + '/' + userRouter.activatePath)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(activateBobResponse.statusCode).toBe(200);
@@ -390,13 +390,13 @@ describe('POST/users should respond with a status code of 401', () => {
     const bobAccessToken = (await loginAs(app, { email: bobDto.email, password: userBob.password } satisfies LoginDto))?.accessToken;
 
     const deleteBobResponse = await request(app.getServer())
-      .delete(usersRoute.path + '/' + bobDto.id)
+      .delete(userRouter.path + '/' + bobDto.id)
       .send()
       .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(deleteBobResponse.statusCode).toBe(200);
 
     const createUserUsingBobAccessTokenResponse = await request(app.getServer())
-      .post(usersRoute.path)
+      .post(userRouter.path)
       .send(generateValidUser())
       .set('Authorization', `Bearer ${bobAccessToken}`);
     expect(createUserUsingBobAccessTokenResponse.statusCode).toBe(401);

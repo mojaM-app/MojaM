@@ -25,6 +25,10 @@ export class Identity {
     return (this.userId ?? 0) > 0;
   }
 
+  public hasPermissionToPreviewUserList(): boolean {
+    return this.hasPermission(SystemPermission.PreviewUserList);
+  }
+
   public hasPermissionToPreviewUserProfile(): boolean {
     return this.hasPermission(SystemPermission.PreviewUserProfile);
   }

@@ -2,14 +2,14 @@ import { App } from '@/app';
 import { DbConnection } from '@db';
 import { LoginDto } from '@modules/auth';
 import { SystemPermission } from '@modules/permissions';
-import { UsersRoute } from '@modules/users';
+import { UserRoute } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
 import { loginAs } from '@modules/users/tests/user-tests.helpers';
 import { getAdminLoginData } from '@utils/tests.utils';
 import request from 'supertest';
 
 describe('Cache user data tests', () => {
-  let usersRoute: UsersRoute;
+  let userRouter: UserRoute;
   let app: App;
   let findOneByFn: any;
   let adminAccessToken: string | undefined;
@@ -72,8 +72,8 @@ describe('Cache user data tests', () => {
       return dbMock;
     });
 
-    usersRoute = new UsersRoute();
-    app = new App([usersRoute]);
+    userRouter = new UserRoute();
+    app = new App([userRouter]);
     const { email: login, password } = getAdminLoginData();
     const adminLoginResult = await loginAs(app, { email: login, password } satisfies LoginDto);
     adminAccessToken = adminLoginResult?.accessToken;
@@ -81,10 +81,10 @@ describe('Cache user data tests', () => {
   });
 
   it('Should store userId', async () => {
-    let response = await request(app.getServer()).get(`${usersRoute.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);
+    let response = await request(app.getServer()).get(`${userRouter.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);
     expect(response.statusCode).toBe(200);
 
-    response = await request(app.getServer()).get(`${usersRoute.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);
+    response = await request(app.getServer()).get(`${userRouter.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);
     expect(response.statusCode).toBe(200);
 
     expect(findOneByFn).toHaveBeenCalledTimes(5);

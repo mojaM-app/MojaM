@@ -2,45 +2,40 @@ import { ForbiddenException, UnauthorizedException } from '@exceptions';
 import { RequestWithIdentity, Routes } from '@interfaces';
 import { validateData } from '@middlewares';
 import { setIdentity } from '@modules/auth';
-import { CreateUserDto, UsersController } from '@modules/users';
+import { CreateUserDto, UserController } from '@modules/users';
 import { REGEX_GUID_PATTERN } from '@utils';
 import express, { NextFunction, Response } from 'express';
 
-export class UsersRoute implements Routes {
-  public path = '/users';
+export class UserRoute implements Routes {
+  public path = '/user';
   public deactivatePath = 'deactivate';
   public activatePath = 'activate';
   public router = express.Router();
-  private readonly _usersController: UsersController;
+  private readonly _userController: UserController;
 
   public constructor() {
-    this._usersController = new UsersController();
+    this._userController = new UserController();
     this.initializeRoutes();
   }
 
   private initializeRoutes(): void {
-    // this.router.get(`${this.path}`,verifyToken, this.usersController.getUsers);
-    this.router.get(
-      `${this.path}/:id(${REGEX_GUID_PATTERN})`,
-      [setIdentity, this.checkPreviewUserProfilePermission],
-      this._usersController.getUserProfile,
-    );
-    this.router.post(`${this.path}`, [validateData(CreateUserDto), setIdentity, this.checkCreatePermission], this._usersController.create);
+    this.router.get(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity, this.checkPreviewProfilePermission], this._userController.getProfile);
+    this.router.post(`${this.path}`, [validateData(CreateUserDto), setIdentity, this.checkCreatePermission], this._userController.create);
     this.router.post(
       `${this.path}/:id(${REGEX_GUID_PATTERN})/${this.deactivatePath}`,
       [setIdentity, this.checkDeactivatePermission],
-      this._usersController.deactivate,
+      this._userController.deactivate,
     );
     this.router.post(
       `${this.path}/:id(${REGEX_GUID_PATTERN})/${this.activatePath}`,
       [setIdentity, this.checkActivatePermission],
-      this._usersController.activate,
+      this._userController.activate,
     );
-    // this.router.put(`${this.path}/:id(${REGEX_INT_PATTERN)`, ValidationMiddleware(UpdateUserDto, true),verifyToken, this._usersController.update);
-    this.router.delete(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity, this.checkDeletePermission], this._usersController.delete);
+    // this.router.put(`${this.path}/:id(${REGEX_INT_PATTERN)`, ValidationMiddleware(UpdateUserDto, true),verifyToken, this._userController.update);
+    this.router.delete(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity, this.checkDeletePermission], this._userController.delete);
   }
 
-  private readonly checkPreviewUserProfilePermission = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  private readonly checkPreviewProfilePermission = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     if (!req.identity?.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToPreviewUserProfile()) {

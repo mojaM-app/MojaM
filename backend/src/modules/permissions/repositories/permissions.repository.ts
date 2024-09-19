@@ -1,16 +1,16 @@
 import { BaseRepository } from '@modules/common';
 import { AddPermissionReqDto, DeletePermissionsReqDto, SystemPermission } from '@modules/permissions';
-import { UsersRepository } from '@modules/users';
+import { UserRepository } from '@modules/users';
 import { getUtcNow, isArrayEmpty, isEnumValue, isNullOrUndefined, isPositiveNumber } from '@utils';
 import Container, { Service } from 'typedi';
 
 @Service()
 export class PermissionsRepository extends BaseRepository {
-  private readonly _userRepository: UsersRepository;
+  private readonly _userRepository: UserRepository;
 
   public constructor() {
     super();
-    this._userRepository = Container.get(UsersRepository);
+    this._userRepository = Container.get(UserRepository);
   }
 
   public async getUserPermissions(userId: number): Promise<SystemPermission[]> {

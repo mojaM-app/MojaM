@@ -16,8 +16,8 @@ import {
   UserCreatedEvent,
   UserDeactivatedEvent,
   UserDeletedEvent,
-  UserRetrievedEvent,
-  UsersRepository,
+  UserRepository,
+  UserRetrievedEvent
 } from '@modules/users';
 import { isNullOrUndefined } from '@utils';
 import StatusCode from 'status-code-enum';
@@ -25,12 +25,12 @@ import { Container, Service } from 'typedi';
 
 @Service()
 export class UsersService extends BaseService {
-  private readonly _userRepository: UsersRepository;
+  private readonly _userRepository: UserRepository;
   private readonly _resetPasswordTokensRepository: ResetPasswordTokensRepository;
 
   public constructor() {
     super();
-    this._userRepository = Container.get(UsersRepository);
+    this._userRepository = Container.get(UserRepository);
     this._resetPasswordTokensRepository = Container.get(ResetPasswordTokensRepository);
   }
 

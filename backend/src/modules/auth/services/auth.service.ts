@@ -27,7 +27,7 @@ import {
 import { BaseService, userToIUser, userToIUserProfile } from '@modules/common';
 import { EmailService } from '@modules/notifications';
 import { PermissionsRepository, SystemPermission } from '@modules/permissions';
-import { UpdateUserDto, UpdateUserReqDto, UsersRepository } from '@modules/users';
+import { UpdateUserDto, UpdateUserReqDto, UserRepository } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
@@ -38,7 +38,7 @@ import { ResetPasswordTokensRepository } from '../repositories/reset-password-to
 
 @Service()
 export class AuthService extends BaseService {
-  private readonly _userRepository: UsersRepository;
+  private readonly _userRepository: UserRepository;
   private readonly _permissionRepository: PermissionsRepository;
   private readonly _cryptoService: CryptoService;
   private readonly _resetPasswordTokensRepository: ResetPasswordTokensRepository;
@@ -46,7 +46,7 @@ export class AuthService extends BaseService {
 
   public constructor() {
     super();
-    this._userRepository = Container.get(UsersRepository);
+    this._userRepository = Container.get(UserRepository);
     this._permissionRepository = Container.get(PermissionsRepository);
     this._cryptoService = Container.get(CryptoService);
     this._resetPasswordTokensRepository = Container.get(ResetPasswordTokensRepository);
@@ -153,7 +153,7 @@ export class AuthService extends BaseService {
       this._eventDispatcher.dispatch(events.users.failedLoginAttempt, new FailedLoginAttemptEvent(userDto));
 
       if (failedLoginAttempts >= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS) {
-        await this._userRepository.lockOutUser({
+        await this._userRepository.lockOut({
           userId: user.id,
           userData: {
             isLockedOut: true,
