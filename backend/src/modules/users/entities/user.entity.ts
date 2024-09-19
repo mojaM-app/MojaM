@@ -160,6 +160,14 @@ export class User {
   })
     isLockedOut: boolean;
 
+  @Column({
+    name: 'IsDeleted',
+    type: 'boolean',
+    nullable: false,
+    default: false,
+  })
+    isDeleted: boolean;
+
   @OneToMany(() => UserSystemPermission, (permissions: UserSystemPermission) => permissions.user)
     systemPermissions: Relation<UserSystemPermission[]>;
 
