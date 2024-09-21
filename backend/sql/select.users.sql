@@ -1,2 +1,2 @@
-SELECT * FROM dev.users;
-DELETE FROM dev.users WHERE Id > 7;
+SELECT * FROM users;
+DELETE FROM users WHERE Id > 7;

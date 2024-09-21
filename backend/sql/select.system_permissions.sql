@@ -1,4 +1,4 @@
-SELECT * FROM dev.system_permissions;
+SELECT * FROM system_permissions;
 
 /*
 DELETE FROM dev.system_permissions
