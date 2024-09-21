@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
+import { isNumber } from '@/utils';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { LoginDto } from '@modules/auth';
@@ -12,7 +13,7 @@ import { EventDispatcher } from 'event-dispatch';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
 
-describe('POST /permissions/userId/permissionId should respond with a status code of 404', () => {
+describe('POST /permissions', () => {
   const userRouter = new UserRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App([userRouter, permissionsRoute]);
@@ -30,408 +31,420 @@ describe('POST /permissions/userId/permissionId should respond with a status cod
     registerTestEventHandlers(eventDispatcher);
   });
 
-  beforeEach(async () => {
-    jest.resetAllMocks();
-  });
+  describe('POST should respond with a status code of 404', () => {
+    beforeEach(async () => {
+      jest.resetAllMocks();
+    });
 
-  it('POST /permissions/userId/permissionId should respond with a status code of 404 when userId is missing', async () => {
-    const path = permissionsRoute.path + '/' + SystemPermission.ActivateUser.toString();
-    const response = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(response.statusCode).toBe(404);
-  });
+    it('POST should respond with a status code of 404 when userId is missing', async () => {
+      const path = permissionsRoute.path + '/' + SystemPermission.ActivateUser.toString();
+      const response = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(response.statusCode).toBe(404);
+    });
 
-  it('POST /permissions/userId/permissionId should respond with a status code of 404 when userId is invalid', async () => {
-    const path = permissionsRoute.path + '/invalid-user-id/' + SystemPermission.ActivateUser.toString();
-    const response = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(response.statusCode).toBe(404);
-  });
+    it('POST should respond with a status code of 404 when userId is invalid', async () => {
+      const path = permissionsRoute.path + '/invalid-user-id/' + SystemPermission.ActivateUser.toString();
+      const response = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(response.statusCode).toBe(404);
+    });
 
-  it('POST /permissions/userId/permissionId should respond with a status code of 404 when permissionId is missing', async () => {
-    const path = permissionsRoute.path + '/' + userLoggedIn.id;
-    const response = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(response.statusCode).toBe(404);
-  });
+    it('POST should respond with a status code of 404 when permissionId is missing', async () => {
+      const path = permissionsRoute.path + '/' + userLoggedIn.id;
+      const response = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(response.statusCode).toBe(404);
+    });
 
-  it('POST /permissions/userId/permissionId should respond with a status code of 404 when permissionId is invalid', async () => {
-    const path = permissionsRoute.path + '/' + userLoggedIn.id + '/invalid-permission-id';
-    const response = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(response.statusCode).toBe(404);
-  });
+    it('POST should respond with a status code of 404 when permissionId is invalid', async () => {
+      const path = permissionsRoute.path + '/' + userLoggedIn.id + '/invalid-permission-id';
+      const response = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(response.statusCode).toBe(404);
+    });
 
-  it('POST /permissions/userId/permissionId should respond with a status code of 404 when userId and permissionId are missing', async () => {
-    const path = permissionsRoute.path;
-    const response = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(response.statusCode).toBe(404);
-  });
+    it('POST should respond with a status code of 404 when userId and permissionId are missing', async () => {
+      const path = permissionsRoute.path;
+      const response = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(response.statusCode).toBe(404);
+    });
 
-  it('POST /permissions/userId/permissionId should respond with a status code of 404 when userId and permissionId are invalid', async () => {
-    const path = permissionsRoute.path + '/invalid-user-id/invalid-permission-id';
-    const response = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(response.statusCode).toBe(404);
-  });
-
-  afterAll(async () => {
-    jest.resetAllMocks();
-  });
-});
-
-describe('POST /permissions/userId/permissionId should respond with a status code of 400', () => {
-  const userRouter = new UserRoute();
-  const permissionsRoute = new PermissionsRoute();
-  const app = new App([userRouter, permissionsRoute]);
-
-  let adminAccessToken: string | undefined;
-  beforeAll(async () => {
-    const { email: login, password } = getAdminLoginData();
-
-    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
-
-    const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
-    registerTestEventHandlers(eventDispatcher);
-  });
-
-  beforeEach(async () => {
-    jest.resetAllMocks();
-  });
-
-  test('POST /permissions/userId/permissionId should respond with a status code of 400 when user not exist', async () => {
-    const path = permissionsRoute.path + '/' + Guid.EMPTY + '/' + SystemPermission.ActivateUser.toString();
-    const response = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(response.statusCode).toBe(400);
-    expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
-    const body = response.body;
-    expect(typeof body).toBe('object');
-    const data = body.data;
-    expect(data).toBe(false);
-
-    // checking events running via eventDispatcher
-    Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-      expect(eventHandler).not.toHaveBeenCalled();
+    it('POST should respond with a status code of 404 when userId and permissionId are invalid', async () => {
+      const path = permissionsRoute.path + '/invalid-user-id/invalid-permission-id';
+      const response = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(response.statusCode).toBe(404);
     });
   });
 
-  test('POST /permissions/userId/permissionId should respond with a status code of 400 when permission not exist', async () => {
-    const newUser = generateValidUser();
-    const createUserResponse = await request(app.getServer()).post(userRouter.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(createUserResponse.statusCode).toBe(201);
-    const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
-    expect(newUserDto?.id).toBeDefined();
+  describe('POST should respond with a status code of 400', () => {
+    beforeEach(async () => {
+      jest.resetAllMocks();
+    });
 
-    const deleteResponse = await request(app.getServer())
-      .delete(userRouter.path + '/' + newUserDto.id)
-      .send()
-      .set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(deleteResponse.statusCode).toBe(200);
+    it('POST should respond with a status code of 400 when user not exist', async () => {
+      const path = permissionsRoute.path + '/' + Guid.EMPTY + '/' + SystemPermission.ActivateUser.toString();
+      const response = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(response.statusCode).toBe(400);
+      expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = response.body;
+      expect(typeof body).toBe('object');
+      const data = body.data;
+      expect(data).toBe(false);
 
-    const path = permissionsRoute.path + '/' + newUserDto.id + '/' + (SystemPermission.PreviewUserList - 1).toString();
-    const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(addPermissionResponse.statusCode).toBe(400);
-    expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-    const body = addPermissionResponse.body;
-    expect(typeof body).toBe('object');
-    const data = body.data;
-    expect(data).toBe(false);
-
-    // checking events running via eventDispatcher
-    Object.entries(testEventHandlers)
-      .filter(
-        ([, eventHandler]) =>
-          ![testEventHandlers.onUserCreated, testEventHandlers.onUserRetrieved, testEventHandlers.onUserDeleted].includes(eventHandler),
-      )
-      .forEach(([, eventHandler]) => {
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
         expect(eventHandler).not.toHaveBeenCalled();
       });
+    });
+
+    it('POST should respond with a status code of 400 when permission not exist', async () => {
+      const newUser = generateValidUser();
+      const createUserResponse = await request(app.getServer())
+        .post(userRouter.path)
+        .send(newUser)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(201);
+      const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
+      expect(newUserDto?.id).toBeDefined();
+
+      const deleteResponse = await request(app.getServer())
+        .delete(userRouter.path + '/' + newUserDto.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteResponse.statusCode).toBe(200);
+
+      const path = permissionsRoute.path + '/' + newUserDto.id + '/' + (SystemPermission.PreviewUserList - 1).toString();
+      const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(addPermissionResponse.statusCode).toBe(400);
+      expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = addPermissionResponse.body;
+      expect(typeof body).toBe('object');
+      const data = body.data;
+      expect(data).toBe(false);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onUserCreated, testEventHandlers.onUserRetrieved, testEventHandlers.onUserDeleted].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+    });
   });
 
-  afterAll(async () => {
-    jest.resetAllMocks();
-  });
-});
+  describe('POST should respond with a status code of 401', () => {
+    beforeEach(async () => {
+      jest.resetAllMocks();
+    });
 
-describe('POST /permissions/userId/permissionId should respond with a status code of 401', () => {
-  const userRouter = new UserRoute();
-  const permissionsRoute = new PermissionsRoute();
-  const app = new App([userRouter, permissionsRoute]);
+    it('when token is invalid', async () => {
+      const path = permissionsRoute.path + '/' + Guid.EMPTY + '/' + SystemPermission.PreviewUserList.toString();
+      const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
+      expect(addPermissionResponse.statusCode).toBe(401);
+      const body = addPermissionResponse.body;
+      expect(typeof body).toBe('object');
+      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
 
-  let adminAccessToken: string | undefined;
-  beforeAll(async () => {
-    const { email: login, password } = getAdminLoginData();
-
-    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
-
-    const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
-    registerTestEventHandlers(eventDispatcher);
-  });
-
-  beforeEach(async () => {
-    jest.resetAllMocks();
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
   });
 
-  test('when token is invalid', async () => {
-    const path = permissionsRoute.path + '/' + Guid.EMPTY + '/' + SystemPermission.PreviewUserList.toString();
-    const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
-    expect(addPermissionResponse.statusCode).toBe(401);
-    const body = addPermissionResponse.body;
-    expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+  describe('POST should respond with a status code of 403', () => {
+    beforeEach(async () => {
+      jest.resetAllMocks();
+    });
 
-    // checking events running via eventDispatcher
-    Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-      expect(eventHandler).not.toHaveBeenCalled();
+    it('when token is not set', async () => {
+      const path = permissionsRoute.path + '/' + Guid.EMPTY + '/' + SystemPermission.PreviewUserList.toString();
+      const addPermissionResponse = await request(app.getServer()).post(path).send();
+      expect(addPermissionResponse.statusCode).toBe(401);
+      const body = addPermissionResponse.body;
+      expect(typeof body).toBe('object');
+      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    it('when user has no permission', async () => {
+      const requestData = generateValidUser();
+
+      const createUserResponse = await request(app.getServer())
+        .post(userRouter.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(201);
+      let body: any = createUserResponse.body;
+      const { data: user }: CreateUserResponseDto = body;
+      expect(user?.id).toBeDefined();
+
+      const activateNewUserResponse = await request(app.getServer())
+        .post(userRouter.path + '/' + user.id + '/' + userRouter.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateNewUserResponse.statusCode).toBe(200);
+
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+
+      const path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.PreviewUserList.toString();
+      const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
+      expect(addPermissionResponse.statusCode).toBe(403);
+      expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = addPermissionResponse.body;
+      expect(typeof body).toBe('object');
+      expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
+
+      const deleteUserResponse = await request(app.getServer())
+        .delete(userRouter.path + '/' + user.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteUserResponse.statusCode).toBe(200);
+      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = deleteUserResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
+      expect(deletedUserUuid).toBe(user.id);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onUserLoggedIn,
+              testEventHandlers.onUserDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
+    });
+
+    it('when user have all permissions expect AddPermission', async () => {
+      const requestData = generateValidUser();
+
+      const createUserResponse = await request(app.getServer())
+        .post(userRouter.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(201);
+      let body: any = createUserResponse.body;
+      const { data: user }: CreateUserResponseDto = body;
+      expect(user?.id).toBeDefined();
+
+      const activateNewUserResponse = await request(app.getServer())
+        .post(userRouter.path + '/' + user.id + '/' + userRouter.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateNewUserResponse.statusCode).toBe(200);
+
+      const systemPermissions = Object.values(SystemPermission);
+      systemPermissions.forEach(async permission => {
+        if (isNumber(permission)) {
+          const value = permission as number;
+          if (value !== SystemPermission.AddPermission) {
+            const path = permissionsRoute.path + '/' + user.id + '/' + permission.toString();
+            const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+            expect(addPermissionResponse.statusCode).toBe(201);
+            expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+            body = addPermissionResponse.body;
+            expect(typeof body).toBe('object');
+            const { data: addPermission1Result, message: addPermission1Message }: AddPermissionsResponseDto = body;
+            expect(addPermission1Result).toBe(true);
+            expect(addPermission1Message).toBe(events.permissions.permissionAdded);
+          }
+        }
+      });
+
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+
+      const path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.PreviewUserList.toString();
+      const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
+      expect(addPermissionResponse.statusCode).toBe(403);
+      expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = addPermissionResponse.body;
+      expect(typeof body).toBe('object');
+      expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
+
+      const deleteUserResponse = await request(app.getServer())
+        .delete(userRouter.path + '/' + user.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteUserResponse.statusCode).toBe(200);
+      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = deleteUserResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
+      expect(deletedUserUuid).toBe(user.id);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onUserLoggedIn,
+              testEventHandlers.onUserDeleted,
+              testEventHandlers.onPermissionAdded,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
+    });
+  });
+
+  describe('POST should respond with a status code of 200', () => {
+    beforeEach(async () => {
+      jest.resetAllMocks();
+    });
+
+    it('when user have permissions to add systemPermission', async () => {
+      const requestData = generateValidUser();
+
+      const createUserResponse = await request(app.getServer())
+        .post(userRouter.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(201);
+      let body = createUserResponse.body;
+      const { data: user }: CreateUserResponseDto = body;
+      expect(user?.id).toBeDefined();
+
+      const activateNewUserResponse = await request(app.getServer())
+        .post(userRouter.path + '/' + user.id + '/' + userRouter.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateNewUserResponse.statusCode).toBe(200);
+
+      let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.AddPermission.toString();
+      let addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(addPermissionResponse.statusCode).toBe(201);
+      expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = addPermissionResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: addPermission1Result, message: addPermission1Message }: AddPermissionsResponseDto = body;
+      expect(addPermission1Result).toBe(true);
+      expect(addPermission1Message).toBe(events.permissions.permissionAdded);
+
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+
+      path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.PreviewUserList.toString();
+      addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
+      expect(addPermissionResponse.statusCode).toBe(201);
+      expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = addPermissionResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: addPermission2Result, message: addPermission2Message }: AddPermissionsResponseDto = body;
+      expect(addPermission2Result).toBe(true);
+      expect(addPermission2Message).toBe(events.permissions.permissionAdded);
+
+      const deleteUserResponse = await request(app.getServer())
+        .delete(userRouter.path + '/' + user.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteUserResponse.statusCode).toBe(200);
+      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = deleteUserResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
+      expect(deletedUserUuid).toBe(user.id);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserDeleted,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onPermissionAdded,
+              testEventHandlers.onUserLoggedIn,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
+      expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
+      expect(testEventHandlers.onPermissionAdded).toHaveBeenCalled();
+    });
+
+    it('when user have permissions to add systemPermission and the user to whom we grant permissions already has this permission', async () => {
+      const requestData = generateValidUser();
+
+      const createUserResponse = await request(app.getServer())
+        .post(userRouter.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(201);
+      let body = createUserResponse.body;
+      const { data: user }: CreateUserResponseDto = body;
+      expect(user?.id).toBeDefined();
+
+      const path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.PreviewUserList.toString();
+      const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(addPermissionResponse.statusCode).toBe(201);
+      expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = addPermissionResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: addPermissionResult, message: addPermissionMessage }: AddPermissionsResponseDto = body;
+      expect(addPermissionResult).toBe(true);
+      expect(addPermissionMessage).toBe(events.permissions.permissionAdded);
+
+      const addPermissionAgainResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(addPermissionAgainResponse.statusCode).toBe(201);
+      expect(addPermissionAgainResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = addPermissionAgainResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: addPermissionAgainResult, message: addPermissionAgainMessage }: AddPermissionsResponseDto = body;
+      expect(addPermissionAgainResult).toBe(true);
+      expect(addPermissionAgainMessage).toBe(events.permissions.permissionAdded);
+
+      const deleteUserResponse = await request(app.getServer())
+        .delete(userRouter.path + '/' + user.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteUserResponse.statusCode).toBe(200);
+      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = deleteUserResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
+      expect(deletedUserUuid).toBe(user.id);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted, testEventHandlers.onPermissionAdded].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
+      expect(testEventHandlers.onPermissionAdded).toHaveBeenCalledWith(new PermissionAddedEvent(user.id, SystemPermission.PreviewUserList, 1));
     });
   });
 
   afterAll(async () => {
-    jest.resetAllMocks();
-  });
-});
-
-describe('POST /permissions/userId/permissionId should respond with a status code of 403', () => {
-  const userRouter = new UserRoute();
-  const permissionsRoute = new PermissionsRoute();
-  const app = new App([userRouter, permissionsRoute]);
-
-  let adminAccessToken: string | undefined;
-  beforeAll(async () => {
-    const { email: login, password } = getAdminLoginData();
-
-    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
-
-    const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
-    registerTestEventHandlers(eventDispatcher);
-  });
-
-  beforeEach(async () => {
-    jest.resetAllMocks();
-  });
-
-  test('when token is not set', async () => {
-    const path = permissionsRoute.path + '/' + Guid.EMPTY + '/' + SystemPermission.PreviewUserList.toString();
-    const addPermissionResponse = await request(app.getServer()).post(path).send();
-    expect(addPermissionResponse.statusCode).toBe(401);
-    const body = addPermissionResponse.body;
-    expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
-
-    // checking events running via eventDispatcher
-    Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-      expect(eventHandler).not.toHaveBeenCalled();
-    });
-  });
-
-  test('when user have no permission', async () => {
-    const requestData = generateValidUser();
-
-    const createUserResponse = await request(app.getServer())
-      .post(userRouter.path)
-      .send(requestData)
-      .set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(createUserResponse.statusCode).toBe(201);
-    let body: any = createUserResponse.body;
-    const { data: user }: CreateUserResponseDto = body;
-    expect(user?.id).toBeDefined();
-
-    const activateNewUserResponse = await request(app.getServer())
-      .post(userRouter.path + '/' + user.id + '/' + userRouter.activatePath)
-      .send()
-      .set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(activateNewUserResponse.statusCode).toBe(200);
-
-    const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
-
-    const path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.PreviewUserList.toString();
-    const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
-    expect(addPermissionResponse.statusCode).toBe(403);
-    expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-    body = addPermissionResponse.body;
-    expect(typeof body).toBe('object');
-    expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
-
-    const deleteUserResponse = await request(app.getServer())
-      .delete(userRouter.path + '/' + user.id)
-      .send()
-      .set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(deleteUserResponse.statusCode).toBe(200);
-    expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-    body = deleteUserResponse.body;
-    expect(typeof body).toBe('object');
-    const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-    expect(deletedUserUuid).toBe(user.id);
-
-    // checking events running via eventDispatcher
-    Object.entries(testEventHandlers)
-      .filter(
-        ([, eventHandler]) =>
-          ![
-            testEventHandlers.onUserCreated,
-            testEventHandlers.onUserActivated,
-            testEventHandlers.onUserLoggedIn,
-            testEventHandlers.onUserDeleted,
-          ].includes(eventHandler),
-      )
-      .forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
-    expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
-    expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
-    expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
-  });
-
-  afterAll(async () => {
-    jest.resetAllMocks();
-  });
-});
-
-describe('POST /permissions/userId/permissionId should respond with a status code of 200', () => {
-  const userRouter = new UserRoute();
-  const permissionsRoute = new PermissionsRoute();
-  const app = new App([userRouter, permissionsRoute]);
-
-  let adminAccessToken: string | undefined;
-  beforeAll(async () => {
-    const { email: login, password } = getAdminLoginData();
-
-    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
-
-    const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
-    registerTestEventHandlers(eventDispatcher);
-  });
-
-  beforeEach(async () => {
-    jest.resetAllMocks();
-  });
-
-  test('when user have permissions to add systemPermission', async () => {
-    const requestData = generateValidUser();
-
-    const createUserResponse = await request(app.getServer())
-      .post(userRouter.path)
-      .send(requestData)
-      .set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(createUserResponse.statusCode).toBe(201);
-    let body = createUserResponse.body;
-    const { data: user }: CreateUserResponseDto = body;
-    expect(user?.id).toBeDefined();
-
-    const activateNewUserResponse = await request(app.getServer())
-      .post(userRouter.path + '/' + user.id + '/' + userRouter.activatePath)
-      .send()
-      .set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(activateNewUserResponse.statusCode).toBe(200);
-
-    let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.AddPermission.toString();
-    let addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(addPermissionResponse.statusCode).toBe(201);
-    expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-    body = addPermissionResponse.body;
-    expect(typeof body).toBe('object');
-    const { data: addPermission1Result, message: addPermission1Message }: AddPermissionsResponseDto = body;
-    expect(addPermission1Result).toBe(true);
-    expect(addPermission1Message).toBe(events.permissions.permissionAdded);
-
-    const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
-
-    path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.PreviewUserList.toString();
-    addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
-    expect(addPermissionResponse.statusCode).toBe(201);
-    expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-    body = addPermissionResponse.body;
-    expect(typeof body).toBe('object');
-    const { data: addPermission2Result, message: addPermission2Message }: AddPermissionsResponseDto = body;
-    expect(addPermission2Result).toBe(true);
-    expect(addPermission2Message).toBe(events.permissions.permissionAdded);
-
-    const deleteUserResponse = await request(app.getServer())
-      .delete(userRouter.path + '/' + user.id)
-      .send()
-      .set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(deleteUserResponse.statusCode).toBe(200);
-    expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-    body = deleteUserResponse.body;
-    expect(typeof body).toBe('object');
-    const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-    expect(deletedUserUuid).toBe(user.id);
-
-    // checking events running via eventDispatcher
-    Object.entries(testEventHandlers)
-      .filter(
-        ([, eventHandler]) =>
-          ![
-            testEventHandlers.onUserCreated,
-            testEventHandlers.onUserDeleted,
-            testEventHandlers.onUserActivated,
-            testEventHandlers.onPermissionAdded,
-            testEventHandlers.onUserLoggedIn,
-          ].includes(eventHandler),
-      )
-      .forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
-    expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
-    expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
-    expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
-    expect(testEventHandlers.onPermissionAdded).toHaveBeenCalled();
-  });
-
-  test('when the user to whom we grant permissions already has this permission', async () => {
-    const requestData = generateValidUser();
-
-    const createUserResponse = await request(app.getServer())
-      .post(userRouter.path)
-      .send(requestData)
-      .set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(createUserResponse.statusCode).toBe(201);
-    let body = createUserResponse.body;
-    const { data: user }: CreateUserResponseDto = body;
-    expect(user?.id).toBeDefined();
-
-    const path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.PreviewUserList.toString();
-    const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(addPermissionResponse.statusCode).toBe(201);
-    expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-    body = addPermissionResponse.body;
-    expect(typeof body).toBe('object');
-    const { data: addPermissionResult, message: addPermissionMessage }: AddPermissionsResponseDto = body;
-    expect(addPermissionResult).toBe(true);
-    expect(addPermissionMessage).toBe(events.permissions.permissionAdded);
-
-    const addPermissionAgainResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(addPermissionAgainResponse.statusCode).toBe(201);
-    expect(addPermissionAgainResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-    body = addPermissionAgainResponse.body;
-    expect(typeof body).toBe('object');
-    const { data: addPermissionAgainResult, message: addPermissionAgainMessage }: AddPermissionsResponseDto = body;
-    expect(addPermissionAgainResult).toBe(true);
-    expect(addPermissionAgainMessage).toBe(events.permissions.permissionAdded);
-
-    const deleteUserResponse = await request(app.getServer())
-      .delete(userRouter.path + '/' + user.id)
-      .send()
-      .set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(deleteUserResponse.statusCode).toBe(200);
-    expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-    body = deleteUserResponse.body;
-    expect(typeof body).toBe('object');
-    const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-    expect(deletedUserUuid).toBe(user.id);
-
-    // checking events running via eventDispatcher
-    Object.entries(testEventHandlers)
-      .filter(
-        ([, eventHandler]) =>
-          ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted, testEventHandlers.onPermissionAdded].includes(eventHandler),
-      )
-      .forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
-    expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
-    expect(testEventHandlers.onPermissionAdded).toHaveBeenCalledWith(new PermissionAddedEvent(user.id, SystemPermission.PreviewUserList, 1));
-  });
-
-  afterAll(async () => {
+    await app.closeDbConnection();
     jest.resetAllMocks();
   });
 });

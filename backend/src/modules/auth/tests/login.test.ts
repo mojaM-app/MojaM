@@ -460,7 +460,7 @@ describe('POST /login', () => {
       jest.resetAllMocks();
     });
 
-    it('POST /login should respond with a status code of 400 when login is invalid', async () => {
+    it('should respond with a status code of 400 when login is invalid', async () => {
       const model = { password: 'strongPassword1@' };
 
       const bodyData = [
@@ -482,7 +482,7 @@ describe('POST /login', () => {
       });
     });
 
-    it('POST /login should respond with a status code of 400 when password is invalid', async () => {
+    it('should respond with a status code of 400 when password is invalid', async () => {
       const user = generateValidUser();
 
       const createResponse = await request(app.getServer()).post(userRouter.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
@@ -523,7 +523,7 @@ describe('POST /login', () => {
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
-    it('POST /login should respond with a status code of 400 when user with given email not exist', async () => {
+    it('should respond with a status code of 400 when user with given email not exist', async () => {
       const user = generateValidUser();
       const loginData: LoginDto = { email: user.email, password: user.password };
       const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
@@ -542,7 +542,7 @@ describe('POST /login', () => {
       });
     });
 
-    it('POST /login should respond with a status code of 400 when user with given phone not exist', async () => {
+    it('should respond with a status code of 400 when user with given phone not exist', async () => {
       const user = generateValidUser();
       const loginData: LoginDto = { email: user.phone, password: user.password };
       const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
@@ -561,7 +561,7 @@ describe('POST /login', () => {
       });
     });
 
-    it('POST /login (via email) should respond with a status code of 400 when password is incorrect', async () => {
+    it('login (via email) should respond with a status code of 400 when password is incorrect', async () => {
       const user = generateValidUser();
 
       const createResponse = await request(app.getServer()).post(userRouter.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
@@ -613,7 +613,7 @@ describe('POST /login', () => {
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
-    it('POST /login (via email and phone) should respond with a status code of 400 when password is incorrect', async () => {
+    it('login (via email and phone) should respond with a status code of 400 when password is incorrect', async () => {
       const user = generateValidUser();
 
       const createResponse = await request(app.getServer()).post(userRouter.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
@@ -665,7 +665,7 @@ describe('POST /login', () => {
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
-    it('POST /login (via email) x-times should lock-out the user and should respond with a status code of 400 when password is incorrect', async () => {
+    it('login (via email) x-times should lock-out the user and should respond with a status code of 400 when password is incorrect', async () => {
       const user = generateValidUser();
 
       const createResponse = await request(app.getServer()).post(userRouter.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
@@ -733,7 +733,7 @@ describe('POST /login', () => {
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
-    it('POST /login (via phone and phone) x-times should lock-out the user and should respond with a status code of 400 when password is incorrect', async () => {
+    it('login (via phone and phone) x-times should lock-out the user and should respond with a status code of 400 when password is incorrect', async () => {
       const user = generateValidUser();
 
       const createResponse = await request(app.getServer()).post(userRouter.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
@@ -802,7 +802,7 @@ describe('POST /login', () => {
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
-    test('POST /login should response with status code od 400 when user has no password', async () => {
+    test('login should response with status code od 400 when user has no password', async () => {
       const requestData = generateValidUser();
       requestData.password = undefined;
       const createUserResponse = await request(app.getServer())
@@ -850,7 +850,7 @@ describe('POST /login', () => {
       jest.resetAllMocks();
     });
 
-    it('POST /login should respond with a status code of 400 when user is not active and password is correct', async () => {
+    it('should respond with a status code of 400 when user is not active and password is correct', async () => {
       const user = generateValidUser();
 
       const createResponse = await request(app.getServer()).post(userRouter.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
@@ -902,7 +902,7 @@ describe('POST /login', () => {
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
-    it('POST /login should respond with a status code of 400 when user is not active and password is incorrect', async () => {
+    it('should respond with a status code of 400 when user is not active and password is incorrect', async () => {
       const user = generateValidUser();
 
       const createResponse = await request(app.getServer()).post(userRouter.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
@@ -960,7 +960,7 @@ describe('POST /login', () => {
       jest.resetAllMocks();
     });
 
-    it('POST /login should respond with a status code of 400 when user is deleted', async () => {
+    it('should respond with a status code of 400 when user is deleted', async () => {
       const user = generateValidUser();
 
       const createResponse = await request(app.getServer()).post(userRouter.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
