@@ -22,7 +22,7 @@ export class UserListService extends BaseService {
   public async get(reqDto: GetUserListReqDto): Promise<UsersGridPageDto> {
     const usersWithTotal: IGridPageResponseDto<User> = await this._userListRepository.get(reqDto.page, reqDto.sort);
 
-    this._eventDispatcher.dispatch(events.users.userRetrieved, new UserListRetrievedEvent(reqDto.currentUserId));
+    this._eventDispatcher.dispatch(events.users.userListRetrieved, new UserListRetrievedEvent(reqDto.currentUserId));
 
     return {
       items: usersWithTotal.items.map(user => userToIUserGridItemDto(user)),

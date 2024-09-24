@@ -20,7 +20,7 @@ export class PermissionGuard {
     }
 
     // when no permissions explicitly set for this route, check for parents permissions
-    const permissions = route.data?.['permissions'] || this.parentPermissions(route);
+    const permissions = route.data?.['permissions'] || this.getParentPermissions(route);
     if (!permissions?.length) {
       return true;
     }
@@ -37,15 +37,15 @@ export class PermissionGuard {
     return this.canActivate(route, state);
   }
 
-  private parentPermissions(route: ActivatedRouteSnapshot): SystemPermissionValue[] {
+  private getParentPermissions(route: ActivatedRouteSnapshot): SystemPermissionValue[] {
     if (!route?.parent) {
       return [];
     }
 
-    if (route.parent?.data?.['permissions']) {
+    if (route.parent.data?.['permissions']) {
       return route.parent.data?.['permissions'] || [];
     } else {
-      return this.parentPermissions(route.parent);
+      return this.getParentPermissions(route.parent);
     }
   }
 }

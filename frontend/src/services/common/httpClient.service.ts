@@ -96,13 +96,13 @@ export class RequestBuilder {
   // }
 
   private handleError(error: any, translationService: TranslationService): Observable<never> {
-    if ('data' in error.error) {
+    if ('error' in error && 'data' in error.error) {
       const data = error.error.data;
       if ('message' in data) {
         data.errorMessage = translationService.getError(data.message);
       }
       return throwError(() => {
-        return { ...data, status: error.status } satisfies IResponseError;
+        return { ...data, status: error.status, httpMessage: error?.message } satisfies IResponseError;
       });
     }
 

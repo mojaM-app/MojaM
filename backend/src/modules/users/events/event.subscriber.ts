@@ -11,7 +11,7 @@ import { UserListRetrievedEvent } from './user-list-retrieved-event';
 export class UserEventSubscriber {
   @On(events.users.userRetrieved)
   public onUserRetrieved(data: UserRetrievedEvent): void {
-    console.log(`User ${data?.user?.email} (phone: ${data?.user?.phone}) created!`);
+    console.log(`User ${data?.user?.email} (phone: ${data?.user?.phone}) retrieved!`);
   }
 
   @On(events.users.userCreated)

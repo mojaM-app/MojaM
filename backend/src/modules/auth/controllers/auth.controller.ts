@@ -4,6 +4,8 @@ import {
   ILoginResult,
   LoginDto,
   LoginResponseDto,
+  RefreshTokenDto,
+  RefreshTokenResponseDto,
   RequestResetPasswordResponseDto,
   UserInfoBeforeLogInResultDto,
   UserTryingToLogInDto,
@@ -22,9 +24,9 @@ export class AuthController extends BaseController {
 
   public getUserInfoBeforeLogIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const data: UserTryingToLogInDto = req.body;
-      const user: UserInfoBeforeLogInResultDto = await this.authService.getUserWhoLogsIn(data);
-      res.status(200).json(new GetUserInfoBeforeLogInResponseDto(user));
+      const user: UserTryingToLogInDto = req.body;
+      const info: UserInfoBeforeLogInResultDto = await this.authService.getUserInfoBeforeLogIn(user);
+      res.status(200).json(new GetUserInfoBeforeLogInResponseDto(info));
     } catch (error) {
       next(error);
     }
@@ -48,6 +50,16 @@ export class AuthController extends BaseController {
       res
         .status(200)
         .json(new LoginResponseDto({ ...loginResult.user, accessToken: loginResult.accessToken, refreshToken: loginResult.refreshToken }));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public refreshAccessToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const refreshToken: RefreshTokenDto = req.body;
+      const accessToken: string | null = await this.authService.refreshAccessToken(refreshToken);
+      res.status(200).json(new RefreshTokenResponseDto(accessToken));
     } catch (error) {
       next(error);
     }

@@ -5,8 +5,10 @@ export { InactiveUserTriesToLogInEvent } from './events/inactive-user-tries-to-l
 export { LockedUserTriesToLogInEvent } from './events/locked-user-tries-to-log-in-event';
 export { UserLockedOutEvent } from './events/user-locked-out-event';
 export { UserLoggedInEvent } from './events/user-logged-in-event';
+export { UserRefreshedTokenEvent } from './events/user-refreshed-token-event';
 
 export { LoginDto, LoginResponseDto } from './dtos/login.dto';
+export { RefreshTokenDto, RefreshTokenResponseDto } from './dtos/refresh-token.dto';
 export { RequestResetPasswordResponseDto } from './dtos/request-reset-password.dto';
 export { GetUserInfoBeforeLogInResponseDto, UserTryingToLogInDto, type UserInfoBeforeLogInResultDto } from './dtos/user-trying-to-log-in.dto';
 

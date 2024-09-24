@@ -5,6 +5,7 @@ import { InactiveUserTriesToLogInEvent } from './inactive-user-tries-to-log-in-e
 import { LockedUserTriesToLogInEvent } from './locked-user-tries-to-log-in-event';
 import { UserLockedOutEvent } from './user-locked-out-event';
 import { UserLoggedInEvent } from './user-logged-in-event';
+import { UserRefreshedTokenEvent } from './user-refreshed-token-event';
 
 @EventSubscriber()
 export class LoginEventSubscriber {
@@ -31,5 +32,10 @@ export class LoginEventSubscriber {
   @On(events.users.userLockedOut)
   public onUserLockedOut(data: UserLockedOutEvent): void {
     console.log(`User ${data?.user?.email} logged in!`);
+  }
+
+  @On(events.users.userRefreshedToken)
+  public onUserRefreshedToken(data: UserRefreshedTokenEvent): void {
+    console.log(`User ${data?.user?.email} refreshed token!`);
   }
 }

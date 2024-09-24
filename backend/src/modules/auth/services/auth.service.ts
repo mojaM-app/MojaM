@@ -3,26 +3,28 @@ import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import {
-    AuthRoute,
-    CryptoService,
-    DataStoredInToken,
-    FailedLoginAttemptEvent,
-    ILoginResult,
-    InactiveUserTriesToLogInEvent,
-    LockedUserTriesToLogInEvent,
-    LoginDto,
-    UserInfoBeforeLogInResultDto,
-    UserLockedOutEvent,
-    UserLoggedInEvent,
-    UserTryingToLogInDto,
+  AuthRoute,
+  CryptoService,
+  DataStoredInToken,
+  FailedLoginAttemptEvent,
+  ILoginResult,
+  InactiveUserTriesToLogInEvent,
+  LockedUserTriesToLogInEvent,
+  LoginDto,
+  RefreshTokenDto,
+  UserInfoBeforeLogInResultDto,
+  UserLockedOutEvent,
+  UserLoggedInEvent,
+  UserRefreshedTokenEvent,
+  UserTryingToLogInDto,
 } from '@modules/auth';
 import {
-    ACCESS_TOKEN_ALGORITHM,
-    getAccessTokenSecret,
-    getRefreshTokenExpiration,
-    getRefreshTokenSecret,
-    getTokenAudience,
-    getTokenIssuer,
+  ACCESS_TOKEN_ALGORITHM,
+  getAccessTokenSecret,
+  getRefreshTokenExpiration,
+  getRefreshTokenSecret,
+  getTokenAudience,
+  getTokenIssuer,
 } from '@modules/auth/middlewares/set-identity.middleware';
 import { BaseService, userToIUser, userToIUserProfile } from '@modules/common';
 import { EmailService } from '@modules/notifications';
@@ -31,7 +33,7 @@ import { UpdateUserDto, UpdateUserReqDto, UserRepository } from '@modules/users'
 import { User } from '@modules/users/entities/user.entity';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
-import { sign } from 'jsonwebtoken';
+import { decode, JwtPayload, sign, verify } from 'jsonwebtoken';
 import StatusCode from 'status-code-enum';
 import { Container, Service } from 'typedi';
 import { ResetPasswordTokensRepository } from '../repositories/reset-password-tokens.repository';
@@ -53,7 +55,7 @@ export class AuthService extends BaseService {
     this._emailService = Container.get(EmailService);
   }
 
-  public async getUserWhoLogsIn(data: UserTryingToLogInDto): Promise<UserInfoBeforeLogInResultDto> {
+  public async getUserInfoBeforeLogIn(data: UserTryingToLogInDto): Promise<UserInfoBeforeLogInResultDto> {
     const result = {
       isLoginSufficientToLogIn: true,
       isPasswordSet: true,
@@ -180,6 +182,37 @@ export class AuthService extends BaseService {
     } satisfies ILoginResult;
   }
 
+  public async refreshAccessToken(data: RefreshTokenDto): Promise<string | null> {
+    if (isNullOrEmptyString(data?.refreshToken)) {
+      return null;
+    }
+
+    const userUuid = this.getUserIdFromRefreshToken(data.refreshToken!);
+
+    const user = await this._userRepository.getByUuid(userUuid);
+
+    if (isNullOrUndefined(user)) {
+      return null;
+    }
+
+    verify(data.refreshToken!, getRefreshTokenSecret(user!.id, user!.refreshTokenKey), {
+      complete: true,
+      algorithms: [ACCESS_TOKEN_ALGORITHM],
+      clockTolerance: 0,
+      ignoreExpiration: false,
+      ignoreNotBefore: false,
+      audience: getTokenAudience(),
+      issuer: getTokenIssuer(),
+    }).payload as JwtPayload;
+
+    const userPermissions = await this._permissionRepository.getUserPermissions(user!.id);
+    const accessToken = this.createAccessToken(user!, userPermissions);
+
+    this._eventDispatcher.dispatch(events.users.userRefreshedToken, new UserRefreshedTokenEvent(userToIUser(user!)));
+
+    return accessToken;
+  }
+
   // public async logout(userData: IUserDto): Promise<IUserDto> {
   //   const findUser: IUserDto = await this.users.findFirst({ where: { email: userData.email, password: userData.password } });
   //   if (!findUser) throw new HttpException(409, "User doesn't exist");
@@ -205,12 +238,21 @@ export class AuthService extends BaseService {
     } satisfies DataStoredInToken;
 
     return sign(dataStoredInToken, getAccessTokenSecret(), {
-      expiresIn: '10m',
+      expiresIn: '1m',
       notBefore: '0',
       algorithm: ACCESS_TOKEN_ALGORITHM,
       audience: getTokenAudience(),
       issuer: getTokenIssuer(),
       subject: user.uuid,
     });
+  }
+
+  private getUserIdFromRefreshToken(refreshToken: string): string | null {
+    const { userId } = decode(refreshToken, {
+      complete: true,
+      json: true,
+    })?.payload as JwtPayload;
+
+    return userId ?? null;
   }
 }

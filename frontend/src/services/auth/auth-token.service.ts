@@ -75,10 +75,6 @@ export class AuthTokenService {
   }
 
   public getUserPermissions(): number[] {
-    if (!this.isTokenValid()) {
-      return [];
-    }
-
     const payload = this.getPayload();
 
     if (!payload || !payload.permissions || !payload.permissions.length) {
