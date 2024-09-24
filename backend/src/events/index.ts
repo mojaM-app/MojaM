@@ -29,6 +29,7 @@ export const events = {
   },
   users: {
     userLoggedIn: 'onUserLoggedIn',
+    userRefreshedToken: 'onUserRefreshedToken',
     inactiveUserTriesToLogIn: 'inactiveUserTriesToLogIn',
     lockedUserTriesToLogIn: 'lockedUserTriesToLogIn',
     failedLoginAttempt: 'onFailedLoginAttempt',
