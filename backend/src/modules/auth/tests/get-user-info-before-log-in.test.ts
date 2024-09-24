@@ -26,7 +26,7 @@ describe('POST /auth/get-user-who-logs-in', () => {
     registerTestEventHandlers(eventDispatcher);
   });
 
-  describe('when login data are valid (given email is unique, not exist or is empty)', () => {
+  describe('when login data are valid (given email is unique or not exist)', () => {
     beforeEach(async () => {
       jest.resetAllMocks();
     });
@@ -95,7 +95,7 @@ describe('POST /auth/get-user-who-logs-in', () => {
     });
   });
 
-  describe('when login data are invalid (given email is NOT unique)', () => {
+  describe('when login data are invalid (eg. given email is NOT unique)', () => {
     beforeEach(async () => {
       jest.resetAllMocks();
     });
