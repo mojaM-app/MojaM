@@ -1,12 +1,12 @@
 import {
   AuthService,
-  GetUserWhoLogsInResponseDto,
+  GetUserInfoBeforeLogInResponseDto,
   ILoginResult,
   LoginDto,
   LoginResponseDto,
   ResetPasswordResponseDto,
-  UserWhoLogsIn,
-  UserWhoLogsInResult,
+  UserInfoBeforeLogInResultDto,
+  UserTryingToLogInDto,
 } from '@modules/auth';
 import { BaseController } from '@modules/common';
 import { NextFunction, Request, Response } from 'express';
@@ -20,11 +20,11 @@ export class AuthController extends BaseController {
     this.authService = Container.get(AuthService);
   }
 
-  public getUserWhoLogsIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getUserInfoBeforeLogIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const data: UserWhoLogsIn = req.body;
-      const user: UserWhoLogsInResult = await this.authService.getUserWhoLogsIn(data);
-      res.status(200).json(new GetUserWhoLogsInResponseDto(user));
+      const data: UserTryingToLogInDto = req.body;
+      const user: UserInfoBeforeLogInResultDto = await this.authService.getUserWhoLogsIn(data);
+      res.status(200).json(new GetUserInfoBeforeLogInResponseDto(user));
     } catch (error) {
       next(error);
     }
@@ -32,7 +32,7 @@ export class AuthController extends BaseController {
 
   public requestResetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const data: UserWhoLogsIn = req.body;
+      const data: UserTryingToLogInDto = req.body;
       const result = await this.authService.requestResetPassword(data);
       res.status(200).json(new ResetPasswordResponseDto(result));
     } catch (error) {

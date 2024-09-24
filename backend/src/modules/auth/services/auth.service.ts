@@ -3,26 +3,26 @@ import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import {
-  AuthRoute,
-  CryptoService,
-  DataStoredInToken,
-  FailedLoginAttemptEvent,
-  ILoginResult,
-  InactiveUserTriesToLogInEvent,
-  LockedUserTriesToLogInEvent,
-  LoginDto,
-  UserLockedOutEvent,
-  UserLoggedInEvent,
-  UserWhoLogsIn,
-  UserWhoLogsInResult,
+    AuthRoute,
+    CryptoService,
+    DataStoredInToken,
+    FailedLoginAttemptEvent,
+    ILoginResult,
+    InactiveUserTriesToLogInEvent,
+    LockedUserTriesToLogInEvent,
+    LoginDto,
+    UserInfoBeforeLogInResultDto,
+    UserLockedOutEvent,
+    UserLoggedInEvent,
+    UserTryingToLogInDto,
 } from '@modules/auth';
 import {
-  ACCESS_TOKEN_ALGORITHM,
-  getAccessTokenSecret,
-  getRefreshTokenExpiration,
-  getRefreshTokenSecret,
-  getTokenAudience,
-  getTokenIssuer,
+    ACCESS_TOKEN_ALGORITHM,
+    getAccessTokenSecret,
+    getRefreshTokenExpiration,
+    getRefreshTokenSecret,
+    getTokenAudience,
+    getTokenIssuer,
 } from '@modules/auth/middlewares/set-identity.middleware';
 import { BaseService, userToIUser, userToIUserProfile } from '@modules/common';
 import { EmailService } from '@modules/notifications';
@@ -53,11 +53,11 @@ export class AuthService extends BaseService {
     this._emailService = Container.get(EmailService);
   }
 
-  public async getUserWhoLogsIn(data: UserWhoLogsIn): Promise<UserWhoLogsInResult> {
+  public async getUserWhoLogsIn(data: UserTryingToLogInDto): Promise<UserInfoBeforeLogInResultDto> {
     const result = {
       isLoginSufficientToLogIn: true,
       isPasswordSet: true,
-    } satisfies UserWhoLogsInResult;
+    } satisfies UserInfoBeforeLogInResultDto;
 
     if (isNullOrUndefined(data) || isNullOrEmptyString(data.email)) {
       return result;
@@ -72,17 +72,17 @@ export class AuthService extends BaseService {
     if (users.length > 1) {
       return {
         isLoginSufficientToLogIn: false,
-      } satisfies UserWhoLogsInResult;
+      } satisfies UserInfoBeforeLogInResultDto;
     }
 
     const user = users[0];
     return {
       isLoginSufficientToLogIn: true,
       isPasswordSet: !isNullOrEmptyString(user.password),
-    } satisfies UserWhoLogsInResult;
+    } satisfies UserInfoBeforeLogInResultDto;
   }
 
-  public async requestResetPassword(data: UserWhoLogsIn): Promise<boolean> {
+  public async requestResetPassword(data: UserTryingToLogInDto): Promise<boolean> {
     if (isNullOrUndefined(data) || isNullOrEmptyString(data.email)) {
       return true;
     }

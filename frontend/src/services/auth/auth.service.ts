@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, tap } from 'rxjs';
-import { ILoginModel, ILoginResponse, UserWhoLogsInResult } from 'src/interfaces/auth/auth.models';
+import { ILoginModel, ILoginResponse, UserInfoBeforeLogInResult } from 'src/interfaces/auth/auth.models';
 import { BaseService } from '../common/base.service';
 import { HttpClientService } from '../common/httpClient.service';
 import { LocalStorageService } from '../storage/localstorage.service';
@@ -27,12 +27,12 @@ export class AuthService extends BaseService {
     this._isLoggedIn$.next(this._authTokenService.isTokenValid());
   }
 
-  public getUserWhoLogsIn(email: string, phone?: string): Observable<UserWhoLogsInResult> {
+  public getUserInfoBeforeLogIn(email: string, phone?: string): Observable<UserInfoBeforeLogInResult> {
     return this._httpClient
       .request()
-      .withUrl(this.API_ROUTES.auth.getUserWhoLogsIn())
+      .withUrl(this.API_ROUTES.auth.getUserInfoBeforeLogIn())
       .withBody({ email, phone })
-      .post<UserWhoLogsInResult>();
+      .post<UserInfoBeforeLogInResult>();
   }
 
   public sendEmailResetPassword(email: string, phone?: string): Observable<boolean> {

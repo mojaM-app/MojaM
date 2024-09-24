@@ -28,8 +28,8 @@ export class BaseService {
       path: 'auth',
       login: (): string => `${environment.backendUrl}/login`,
       logout: (): string => `${environment.backendUrl}/logout`,
-      getUserWhoLogsIn: (): string =>
-        `${environment.backendUrl}/${this.API_ROUTES.auth.path}/get-user-who-logs-in`,
+      getUserInfoBeforeLogIn: (): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.auth.path}/get-user-info-before-log-in`,
       requestResetPasswordPath: (): string =>
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/request-reset-password`,
       refreshToken: (): string =>

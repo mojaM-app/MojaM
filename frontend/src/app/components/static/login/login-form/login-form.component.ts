@@ -19,7 +19,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { IS_MOBILE } from 'src/app/app.config';
 import { environment } from 'src/environments/environment';
-import { UserWhoLogsInResult } from 'src/interfaces/auth/auth.models';
+import { UserInfoBeforeLogInResult } from 'src/interfaces/auth/auth.models';
 import { IResponseError } from 'src/interfaces/errors/response.error';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
@@ -124,7 +124,7 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
       return;
     }
 
-    this._authService.getUserWhoLogsIn(email).subscribe((response: UserWhoLogsInResult) => {
+    this._authService.getUserInfoBeforeLogIn(email).subscribe((response: UserInfoBeforeLogInResult) => {
       if (response.isLoginSufficientToLogIn === true) {
         if (response.isPasswordSet === true) {
           this.goToStepEnterPassword();
@@ -152,8 +152,8 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
       }
 
       this._authService
-        .getUserWhoLogsIn(this.formControls.email.value, phone)
-        .subscribe((response: UserWhoLogsInResult) => {
+        .getUserInfoBeforeLogIn(this.formControls.email.value, phone)
+        .subscribe((response: UserInfoBeforeLogInResult) => {
           if (response.isPasswordSet === true) {
             showStepEnterPassword();
           } else {

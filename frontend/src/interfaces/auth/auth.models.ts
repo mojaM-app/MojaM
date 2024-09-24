@@ -1,6 +1,6 @@
 import { IUser } from '../users/user.interfaces';
 
-export interface UserWhoLogsInResult {
+export interface UserInfoBeforeLogInResult {
   isLoginSufficientToLogIn: boolean;
   isPasswordSet?: boolean;
 }

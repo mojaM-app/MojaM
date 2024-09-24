@@ -6,10 +6,9 @@ export { LockedUserTriesToLogInEvent } from './events/locked-user-tries-to-log-i
 export { UserLockedOutEvent } from './events/user-locked-out-event';
 export { UserLoggedInEvent } from './events/user-logged-in-event';
 
-export { GetUserWhoLogsInResponseDto } from './dtos/get-user-who-logs-in.dto';
 export { LoginDto, LoginResponseDto } from './dtos/login.dto';
 export { ResetPasswordResponseDto } from './dtos/reset-password.dto';
-export type { UserWhoLogsIn, UserWhoLogsInResult } from './interfaces/user-who-logs-in.interfaces';
+export { GetUserInfoBeforeLogInResponseDto, UserTryingToLogInDto, type UserInfoBeforeLogInResultDto } from './dtos/user-trying-to-log-in.dto';
 
 export type { DataStoredInToken } from './models/DataStoredInToken';
 export { Identity } from './models/Identity';
