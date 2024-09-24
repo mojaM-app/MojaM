@@ -1,6 +1,6 @@
 import { IResponse } from '@interfaces';
 
-export class ResetPasswordResponseDto implements IResponse<boolean> {
+export class RequestResetPasswordResponseDto implements IResponse<boolean> {
   public readonly data: boolean;
 
   public constructor(data: boolean) {

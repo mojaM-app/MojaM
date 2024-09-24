@@ -4,7 +4,7 @@ import {
   ILoginResult,
   LoginDto,
   LoginResponseDto,
-  ResetPasswordResponseDto,
+  RequestResetPasswordResponseDto,
   UserInfoBeforeLogInResultDto,
   UserTryingToLogInDto,
 } from '@modules/auth';
@@ -34,7 +34,7 @@ export class AuthController extends BaseController {
     try {
       const data: UserTryingToLogInDto = req.body;
       const result = await this.authService.requestResetPassword(data);
-      res.status(200).json(new ResetPasswordResponseDto(result));
+      res.status(200).json(new RequestResetPasswordResponseDto(result));
     } catch (error) {
       next(error);
     }

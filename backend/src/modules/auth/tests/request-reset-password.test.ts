@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
-import { AuthRoute, LoginDto, ResetPasswordResponseDto, UserTryingToLogInDto } from '@modules/auth';
+import { AuthRoute, LoginDto, RequestResetPasswordResponseDto, UserTryingToLogInDto } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
@@ -48,7 +48,7 @@ describe('POST /auth/request-reset-password', () => {
         .post(authRoute.requestResetPasswordPath)
         .send({ email } satisfies UserTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: ResetPasswordResponseDto = response.body;
+      const body: RequestResetPasswordResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -76,7 +76,7 @@ describe('POST /auth/request-reset-password', () => {
         .post(authRoute.requestResetPasswordPath)
         .send({ email: newUser1Dto.email } satisfies UserTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: ResetPasswordResponseDto = response.body;
+      const body: RequestResetPasswordResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -95,7 +95,7 @@ describe('POST /auth/request-reset-password', () => {
         .post(authRoute.requestResetPasswordPath)
         .send({ email } satisfies UserTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: ResetPasswordResponseDto = response.body;
+      const body: RequestResetPasswordResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -123,7 +123,7 @@ describe('POST /auth/request-reset-password', () => {
         .post(authRoute.requestResetPasswordPath)
         .send({ email: user.email } satisfies UserTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      let body: ResetPasswordResponseDto = response.body;
+      let body: RequestResetPasswordResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -186,7 +186,7 @@ describe('POST /auth/request-reset-password', () => {
         .post(authRoute.requestResetPasswordPath)
         .send({ email } satisfies UserTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: ResetPasswordResponseDto = response.body;
+      const body: RequestResetPasswordResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -238,7 +238,7 @@ describe('POST /auth/request-reset-password', () => {
         .post(authRoute.requestResetPasswordPath)
         .send({ email } satisfies UserTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: ResetPasswordResponseDto = response.body;
+      const body: RequestResetPasswordResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -284,7 +284,7 @@ describe('POST /auth/request-reset-password', () => {
         .post(authRoute.requestResetPasswordPath)
         .send({ email } satisfies UserTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: ResetPasswordResponseDto = response.body;
+      const body: RequestResetPasswordResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -343,7 +343,7 @@ describe('POST /auth/request-reset-password', () => {
         .post(authRoute.requestResetPasswordPath)
         .send({ email } satisfies UserTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: ResetPasswordResponseDto = response.body;
+      const body: RequestResetPasswordResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -403,7 +403,7 @@ describe('POST /auth/request-reset-password', () => {
         .post(authRoute.requestResetPasswordPath)
         .send({ email } satisfies UserTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: ResetPasswordResponseDto = response.body;
+      const body: RequestResetPasswordResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 

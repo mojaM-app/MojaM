@@ -7,7 +7,7 @@ export { UserLockedOutEvent } from './events/user-locked-out-event';
 export { UserLoggedInEvent } from './events/user-logged-in-event';
 
 export { LoginDto, LoginResponseDto } from './dtos/login.dto';
-export { ResetPasswordResponseDto } from './dtos/reset-password.dto';
+export { RequestResetPasswordResponseDto } from './dtos/request-reset-password.dto';
 export { GetUserInfoBeforeLogInResponseDto, UserTryingToLogInDto, type UserInfoBeforeLogInResultDto } from './dtos/user-trying-to-log-in.dto';
 
 export type { DataStoredInToken } from './models/DataStoredInToken';
