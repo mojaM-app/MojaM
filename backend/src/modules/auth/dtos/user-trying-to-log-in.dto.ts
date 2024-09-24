@@ -26,7 +26,7 @@ export interface UserInfoBeforeLogInResultDto {
 export class GetUserInfoBeforeLogInResponseDto implements IResponse<UserInfoBeforeLogInResultDto> {
   public readonly data: UserInfoBeforeLogInResultDto;
 
-  public constructor(data: UserInfoBeforeLogInResultDto) {
-    this.data = data;
+  public constructor(userInfo: UserInfoBeforeLogInResultDto) {
+    this.data = userInfo;
   }
 }

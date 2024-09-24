@@ -33,10 +33,10 @@ export class LoginDto {
 
 export class LoginResponseDto implements IResponse<TLoginResult> {
   public readonly data: TLoginResult;
-  public readonly message?: string | undefined;
+  public readonly message: string;
 
-  public constructor(data: TLoginResult) {
-    this.data = data;
+  public constructor(loginResult: TLoginResult) {
+    this.data = loginResult;
     this.message = events.users.userLoggedIn;
   }
 }
