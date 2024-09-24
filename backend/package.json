@@ -11,7 +11,7 @@
     "build:tsc": "tsc && tsc-alias",
     "test": "cross-env NODE_ENV=development jest --forceExit --detectOpenHandles --no-cache --runInBand",
     "test:debug": "node --nolazy --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --colors --verbose",
-    "test:coverage": "cross-env NODE_ENV=development jest --coverage",
+    "test:coverage": "cross-env NODE_ENV=development jest --coverage --maxWorkers=1",
     "lint": "eslint --ignore-path .gitignore --ignore-pattern src/*.test.js --ext .ts src/",
     "lint:fix": "npm run lint -- --fix",
     "npm-check-updates": "npx npm-check-updates",
