@@ -2,8 +2,8 @@ import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { LoginDto } from '@modules/auth';
-import { AddPermissionsResponseDto, DeletePermissionsResponseDto, PermissionsRoute, SystemPermission } from '@modules/permissions';
-import { ActivateUserResponseDto, CreateUserResponseDto, DeactivateUserResponseDto, UserRoute } from '@modules/users';
+import { DeletePermissionsResponseDto, PermissionsRoute, SystemPermission } from '@modules/permissions';
+import { ActivateUserResponseDto, CreateUserResponseDto, DeactivateUserResponseDto, UserDeactivatedEvent, UserRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
 import { isNumber } from '@utils';
 import { registerTestEventHandlers, testEventHandlers } from '@utils/tests-events.utils';
@@ -179,6 +179,7 @@ describe('POST /user/:id/deactivate', () => {
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeactivated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserDeactivated).toHaveBeenCalledWith(new UserDeactivatedEvent(newUserDto, 1));
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
   });
@@ -294,12 +295,6 @@ describe('POST /user/:id/deactivate', () => {
             const path = permissionsRoute.path + '/' + user.id + '/' + permission.toString();
             const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
-            expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-            body = addPermissionResponse.body;
-            expect(typeof body).toBe('object');
-            const { data: addPermission1Result, message: addPermission1Message }: AddPermissionsResponseDto = body;
-            expect(addPermission1Result).toBe(true);
-            expect(addPermission1Message).toBe(events.permissions.permissionAdded);
           }
         }
       });

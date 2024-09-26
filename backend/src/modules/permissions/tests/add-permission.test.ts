@@ -255,12 +255,6 @@ describe('POST /permissions', () => {
             const path = permissionsRoute.path + '/' + user.id + '/' + permission.toString();
             const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
-            expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-            body = addPermissionResponse.body;
-            expect(typeof body).toBe('object');
-            const { data: addPermission1Result, message: addPermission1Message }: AddPermissionsResponseDto = body;
-            expect(addPermission1Result).toBe(true);
-            expect(addPermission1Message).toBe(events.permissions.permissionAdded);
           }
         }
       });

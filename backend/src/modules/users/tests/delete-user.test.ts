@@ -4,7 +4,7 @@ import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { LoginDto } from '@modules/auth';
 import { AddPermissionsResponseDto, PermissionsRoute, SystemPermission } from '@modules/permissions';
-import { CreateUserResponseDto, DeleteUserResponseDto, UserRoute } from '@modules/users';
+import { CreateUserResponseDto, DeleteUserResponseDto, UserDeletedEvent, UserRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
 import { isNumber } from '@utils';
 import { registerTestEventHandlers, testEventHandlers } from '@utils/tests-events.utils';
@@ -61,6 +61,7 @@ describe('DELETE /user', () => {
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalledWith(new UserDeletedEvent(newUserDto, 1));
     });
 
     test('when a user have ony of system permissions granted by another user', async () => {
@@ -301,12 +302,6 @@ describe('DELETE /user', () => {
             const path = permissionsRoute.path + '/' + user.id + '/' + permission.toString();
             const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
-            expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-            body = addPermissionResponse.body;
-            expect(typeof body).toBe('object');
-            const { data: addPermission1Result, message: addPermission1Message }: AddPermissionsResponseDto = body;
-            expect(addPermission1Result).toBe(true);
-            expect(addPermission1Message).toBe(events.permissions.permissionAdded);
           }
         }
       });

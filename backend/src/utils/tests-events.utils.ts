@@ -7,7 +7,7 @@ import {
   UserRefreshedTokenEvent,
 } from '@modules/auth';
 import { PermissionAddedEvent, PermissionDeletedEvent } from '@modules/permissions';
-import { UserActivatedEvent, UserCreatedEvent, UserDeactivatedEvent, UserDeletedEvent, UserRetrievedEvent } from '@modules/users';
+import { UserActivatedEvent, UserCreatedEvent, UserDeactivatedEvent, UserDeletedEvent, UserListRetrievedEvent, UserRetrievedEvent } from '@modules/users';
 import { EventDispatcher } from 'event-dispatch';
 
 const testEventHandlers: {
@@ -19,6 +19,7 @@ const testEventHandlers: {
   onUserLockedOut: (data: any) => void;
   onUserCreated: (data: any) => void;
   onUserRetrieved: (data: any) => void;
+  onUserListRetrieved: (data: any) => void;
   onUserDeleted: (data: any) => void;
   onUserActivated: (data: any) => void;
   onUserDeactivated: (data: any) => void;
@@ -33,6 +34,7 @@ const testEventHandlers: {
   onUserLockedOut: jest.fn((data: UserLockedOutEvent) => {}),
   onUserCreated: jest.fn((data: UserCreatedEvent) => {}),
   onUserRetrieved: jest.fn((data: UserRetrievedEvent) => {}),
+  onUserListRetrieved: jest.fn((data: UserListRetrievedEvent) => {}),
   onUserDeleted: jest.fn((data: UserDeletedEvent) => {}),
   onUserActivated: jest.fn((data: UserActivatedEvent) => {}),
   onUserDeactivated: jest.fn((data: UserDeactivatedEvent) => {}),
