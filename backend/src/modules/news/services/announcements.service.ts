@@ -1,6 +1,6 @@
 import { BaseService } from '@modules/common';
 import { GetAnnouncementsDto } from '@modules/news';
-import { getUtcNow } from '@utils';
+import { getDateTimeNow } from '@utils';
 import { Service } from 'typedi';
 
 @Service()
@@ -16,7 +16,7 @@ export class AnnouncementsService extends BaseService {
     return await new Promise(resolve => {
       resolve(({
         announcements,
-        date: getUtcNow(),
+        date: getDateTimeNow(),
       } satisfies GetAnnouncementsDto));
     });
   }

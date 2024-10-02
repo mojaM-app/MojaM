@@ -40,9 +40,9 @@ describe('POST /auth/get-user-who-logs-in', () => {
       const body: GetUserInfoBeforeLogInResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
-      expect(body.data.isLoginSufficientToLogIn).toBe(true);
+      expect(body.data.isEmailSufficientToLogIn).toBe(true);
       expect(body.data.isPasswordSet).toBe(true);
-      expect(body.data).toStrictEqual({ isLoginSufficientToLogIn: true, isPasswordSet: true } satisfies UserInfoBeforeLogInResultDto);
+      expect(body.data).toStrictEqual({ isEmailSufficientToLogIn: true, isPasswordSet: true } satisfies UserInfoBeforeLogInResultDto);
     });
 
     it('when exist only one user with given e-mail and user password is NOT set', async () => {
@@ -69,9 +69,9 @@ describe('POST /auth/get-user-who-logs-in', () => {
       const body: GetUserInfoBeforeLogInResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
-      expect(body.data.isLoginSufficientToLogIn).toBe(true);
+      expect(body.data.isEmailSufficientToLogIn).toBe(true);
       expect(body.data.isPasswordSet).toBe(false);
-      expect(body.data).toStrictEqual({ isLoginSufficientToLogIn: true, isPasswordSet: false } satisfies UserInfoBeforeLogInResultDto);
+      expect(body.data).toStrictEqual({ isEmailSufficientToLogIn: true, isPasswordSet: false } satisfies UserInfoBeforeLogInResultDto);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRouter.path + '/' + newUser1Dto.id)
@@ -89,9 +89,9 @@ describe('POST /auth/get-user-who-logs-in', () => {
       const body: GetUserInfoBeforeLogInResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
-      expect(body.data.isLoginSufficientToLogIn).toBe(true);
+      expect(body.data.isEmailSufficientToLogIn).toBe(true);
       expect(body.data.isPasswordSet).toBe(true);
-      expect(body.data).toStrictEqual({ isLoginSufficientToLogIn: true, isPasswordSet: true } satisfies UserInfoBeforeLogInResultDto);
+      expect(body.data).toStrictEqual({ isEmailSufficientToLogIn: true, isPasswordSet: true } satisfies UserInfoBeforeLogInResultDto);
     });
   });
 
@@ -143,7 +143,7 @@ describe('POST /auth/get-user-who-logs-in', () => {
       const body: GetUserInfoBeforeLogInResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
-      expect(body.data).toStrictEqual({ isLoginSufficientToLogIn: false } satisfies UserInfoBeforeLogInResultDto);
+      expect(body.data).toStrictEqual({ isEmailSufficientToLogIn: false } satisfies UserInfoBeforeLogInResultDto);
 
       let deleteResponse = await request(app.getServer())
         .delete(userRouter.path + '/' + newUser1Dto.id)
@@ -194,7 +194,7 @@ describe('POST /auth/get-user-who-logs-in', () => {
       const body: GetUserInfoBeforeLogInResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
-      expect(body.data).toStrictEqual({ isLoginSufficientToLogIn: false } satisfies UserInfoBeforeLogInResultDto);
+      expect(body.data).toStrictEqual({ isEmailSufficientToLogIn: false } satisfies UserInfoBeforeLogInResultDto);
 
       let deleteResponse = await request(app.getServer())
         .delete(userRouter.path + '/' + newUser1Dto.id)
@@ -239,7 +239,7 @@ describe('POST /auth/get-user-who-logs-in', () => {
       const body: GetUserInfoBeforeLogInResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
-      expect(body.data).toStrictEqual({ isLoginSufficientToLogIn: false } satisfies UserInfoBeforeLogInResultDto);
+      expect(body.data).toStrictEqual({ isEmailSufficientToLogIn: false } satisfies UserInfoBeforeLogInResultDto);
 
       let deleteResponse = await request(app.getServer())
         .delete(userRouter.path + '/' + newUser1Dto.id)
@@ -297,7 +297,7 @@ describe('POST /auth/get-user-who-logs-in', () => {
       const body: GetUserInfoBeforeLogInResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
-      expect(body.data).toStrictEqual({ isLoginSufficientToLogIn: false } satisfies UserInfoBeforeLogInResultDto);
+      expect(body.data).toStrictEqual({ isEmailSufficientToLogIn: false } satisfies UserInfoBeforeLogInResultDto);
 
       let deleteResponse = await request(app.getServer())
         .delete(userRouter.path + '/' + newUser1Dto.id)
@@ -356,7 +356,7 @@ describe('POST /auth/get-user-who-logs-in', () => {
       const body: GetUserInfoBeforeLogInResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
-      expect(body.data).toStrictEqual({ isLoginSufficientToLogIn: false } satisfies UserInfoBeforeLogInResultDto);
+      expect(body.data).toStrictEqual({ isEmailSufficientToLogIn: false } satisfies UserInfoBeforeLogInResultDto);
 
       let deleteResponse = await request(app.getServer())
         .delete(userRouter.path + '/' + newUser1Dto.id)

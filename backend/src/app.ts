@@ -91,7 +91,7 @@ export class App {
 
   private initializeDatabase(): void {
     // establish database connection
-    logger.info('==================== establish database connection ====================');
+    logger.info('=== establish database connection ===');
 
     this._connection = DbConnection.getConnection();
     this._connection

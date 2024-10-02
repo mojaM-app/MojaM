@@ -1,8 +1,13 @@
 import { IUser } from '../users/user.interfaces';
 
 export interface UserInfoBeforeLogInResult {
-  isLoginSufficientToLogIn: boolean;
+  isEmailSufficientToLogIn: boolean;
   isPasswordSet?: boolean;
+}
+
+export interface CheckResetPasswordTokenResult {
+  isValid: boolean;
+  userEmail?: string;
 }
 
 export interface ILoginModel {

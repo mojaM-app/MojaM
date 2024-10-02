@@ -1,17 +1,19 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   Inject,
   OnInit,
+  signal,
   ViewChild,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { NgxResizeObserverModule } from 'ngx-resize-observer';
+import { distinctUntilChanged, filter } from 'rxjs';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { BrowserWindowSize } from 'src/services/browser/browser-window-size';
@@ -36,6 +38,7 @@ import { SideMenuComponent } from './components/side-menu/side-menu.component';
     MatIconModule,
     PipesModule,
     NgxResizeObserverModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -44,22 +47,31 @@ import { SideMenuComponent } from './components/side-menu/side-menu.component';
 export class AppComponent extends WithUnsubscribe() implements OnInit {
   @ViewChild('sidenav') public sidenav: MatSidenav | undefined;
 
-  public showSpinner = false;
+  public readonly footerShouldBeVisible = signal<boolean>(true);
+  public readonly showSpinner = signal<boolean>(false);
 
   public constructor(
     @Inject(IS_MOBILE) public isMobile: boolean,
-    private _changeDetectorRef: ChangeDetectorRef,
     private _spinnerService: SpinnerService,
-    private _browserService: BrowserWindowService
+    private _browserService: BrowserWindowService,
+    router: Router
   ) {
     super();
+
+    this.addSubscription(
+      router.events
+        .pipe(
+          filter(e => e instanceof NavigationEnd),
+          distinctUntilChanged()
+        )
+        .subscribe(event => this.setFooterShouldBeVisible(event as NavigationEnd))
+    );
   }
 
   public ngOnInit(): void {
     this.addSubscription(
       this._spinnerService.onStateChanged$().subscribe((state: boolean) => {
-        this.showSpinner = state;
-        this._changeDetectorRef.detectChanges();
+        this.showSpinner.set(state);
       })
     );
 
@@ -78,5 +90,16 @@ export class AppComponent extends WithUnsubscribe() implements OnInit {
 
   public onResize(mainContainerSize: ResizeObserverEntry): void {
     this._browserService.emitEventOnWindowResize(mainContainerSize);
+  }
+
+  private setFooterShouldBeVisible(location: NavigationEnd): void {
+    const hideFooterOnPaths = ['/reset-password/'];
+
+    if (hideFooterOnPaths.some(path => location?.url?.startsWith(path) === true)) {
+      this.footerShouldBeVisible.set(false);
+      return;
+    }
+
+    this.footerShouldBeVisible.set(true);
   }
 }

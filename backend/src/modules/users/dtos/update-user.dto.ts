@@ -7,6 +7,7 @@ export class UpdateUserDto {
   public isActive?: boolean;
   public failedLoginAttempts?: number;
   public isLockedOut?: boolean;
+  public lastLoginAt?: Date;
 }
 
 export class UpdateUserReqDto extends BaseReqDto {

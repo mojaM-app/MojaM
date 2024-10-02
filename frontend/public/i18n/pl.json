@@ -83,7 +83,29 @@
     "BtnLogin": "Zaloguj",
     "BtnSetPassword": "Ustaw hasło teraz",
     "BtnSetPasswordHint": "Kliknij, aby ustawić hasło do swojego konta.",
-    "RequestResetPasswordSent": "Na podany adres e-mail został wysłany link do resetowania hasła. Sprawdź pocztę. Jeśli nie otrzymano wiadomości, sprawdź folder ze spamem."
+    "RequestResetPasswordSent": "Na podany adres e-mail został wysłany link do resetowania hasła. Sprawdź pocztę. Jeśli nie otrzymano wiadomości, sprawdź folder ze spamem.",
+    "ForgotPassword": "Nie pamiętasz hasła?",
+    "ResetPasswordMessage": "Na podany adres e-mail zostanie wysłana wiadomość z instrukcją do resetowania hasła.",
+    "BtnResetPassword": "Resetuj hasło",
+    "BtnResetPasswordHint": "Kliknij w powyższy przycisk, aby zresetować hasło do swojego konta. Następnie sprawdź pocztę. Jeśli nie otrzymano wiadomości, sprawdź folder ze spamem."
+  },
+  "ResetPassword": {
+    "ChangePasswordTitle": "Zmiana hasła",
+    "EnterNewPassword": "Wprowadź nowe hasło dla konta {email}",
+    "Password": "Nowe hasło",
+    "PasswordPlaceholder": "wprowadź nowe hasło",
+    "PasswordRequiredError": "Wprowadź nowe hasło",
+    "ConfirmPassword": "Potwierdź hasło",
+    "ConfirmPasswordPlaceholder": "potwierdź nowe hasło",
+    "ConfirmPasswordRequiredError": "Potwierdź nowe hasło",
+    "ConfirmPasswordMismatchError": "Hasła nie są takie same",
+    "PasswordTooLongError": "Hasło jest zbyt długie. Maksymalnie 50 znaków.",
+    "PasswordNotEnoughStrongError": "Hasło jest zbyt słabe. Musi zawierać co najmniej dziewięć znaków w tym minimum jedną dużą literę i minimum jedną małą literę. Cyfry i znaki specjalne są opcjonalne.",
+    "ChangePassword": "Zmień hasło",
+    "ChangePasswordNotPossible": "Nie można zmienić hasła",
+    "InvalidToken": "Nieprawidłowy token resetujący hasło!",
+    "TryAgain": "Spróbuj ponownie raz jeszcze.",
+    "InvalidTokenHint": "Link do resetu hasła może być użyty tylko raz i jest ważny przez godzinę. Po tym czasie traci ważność i należy wysłać kolejną prośbę o zmianę hasła."
   },
   "Management": {
     "Title": "Zarządzanie",

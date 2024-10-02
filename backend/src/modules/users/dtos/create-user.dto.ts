@@ -32,7 +32,7 @@ export function IsPasswordEmptyOrValid(validationOptions?: ValidationOptions) {
           }
 
           return maxLength(value, VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH) &&
-              isStrongPassword(value, VALIDATOR_SETTINGS.IS_STRONG_PASSWORD_OPTIONS);
+              isStrongPassword(value, VALIDATOR_SETTINGS.STRONG_PASSWORD_OPTIONS);
         },
       },
     });

@@ -50,6 +50,9 @@ describe('Cache user data tests', () => {
         update: () => {
           return { _is_from_mock_: true };
         },
+        findOne: () => {
+          return { _is_from_mock_: true };
+        },
       },
       userSystemPermissions: {
         createQueryBuilder: () => {

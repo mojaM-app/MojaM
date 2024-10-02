@@ -80,6 +80,15 @@
             [formControlName]="formControlNames.password" />
         </mat-form-field>
       </div>
+      @if (showResetPasswordButton()) {
+        <div class="row mb-2">
+          <div class="offset-3 col-9 offset-sm-6 col-sm-6">
+            <button mat-button class="w-100" type="submit" (click)="goToStepForgotPassword()">
+              {{ 'Login/ForgotPassword' | gmessage }}
+            </button>
+          </div>
+        </div>
+      }
       <div class="row mb-2">
         <div class="col-6">
           <button mat-raised-button class="w-100" type="button" (click)="goToStepEnterEmail()">
@@ -90,6 +99,21 @@
           <button mat-raised-button class="w-100" type="submit" (click)="login()">
             {{ 'Login/BtnLogin' | gmessage }}
           </button>
+        </div>
+      </div>
+    }
+    @if (showStep() === formSteps.ForgotPassword) {
+      <div class="row">
+        <div class="col-12 mb-3">
+          {{ 'Login/ResetPasswordMessage' | gmessage }}
+        </div>
+        <div class="col-12 mb-3">
+          <button mat-stroked-button class="w-100" type="button" (click)="sendEmailResetPassword()">
+            {{ 'Login/BtnResetPassword' | gmessage }}
+          </button>
+        </div>
+        <div class="col-12">
+          <mat-hint>{{ 'Login/BtnResetPasswordHint' | gmessage }}</mat-hint>
         </div>
       </div>
     }

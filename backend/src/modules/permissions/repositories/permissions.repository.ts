@@ -1,7 +1,7 @@
 import { BaseRepository } from '@modules/common';
 import { AddPermissionReqDto, DeletePermissionsReqDto, SystemPermission } from '@modules/permissions';
 import { UserRepository } from '@modules/users';
-import { getUtcNow, isArrayEmpty, isEnumValue, isNullOrUndefined, isPositiveNumber } from '@utils';
+import { getDateTimeNow, isArrayEmpty, isEnumValue, isNullOrUndefined, isPositiveNumber } from '@utils';
 import Container, { Service } from 'typedi';
 
 @Service()
@@ -51,7 +51,7 @@ export class PermissionsRepository extends BaseRepository {
     await this._dbContext.userSystemPermissions.save({
       user: { id: userId },
       systemPermission: { id: reqDto.permissionId },
-      assignedAt: getUtcNow(),
+      assignedAt: getDateTimeNow(),
       assignedBy: { id: reqDto.currentUserId },
     });
 

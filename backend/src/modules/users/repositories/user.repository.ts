@@ -12,7 +12,7 @@ import {
   UpdateUserDto,
   UpdateUserReqDto,
 } from '@modules/users';
-import { isGuid, isNullOrEmptyString, isNullOrUndefined, isPositiveNumber } from '@utils';
+import { getDateTimeNow, isGuid, isNullOrEmptyString, isNullOrUndefined, isPositiveNumber } from '@utils';
 import StatusCode from 'status-code-enum';
 import Container, { Service } from 'typedi';
 import { User } from '../entities/user.entity';
@@ -100,9 +100,7 @@ export class UserRepository extends BaseRepository {
   public async create(reqDto: CreateUserReqDto): Promise<User> {
     const userData: CreateUserDto = reqDto.userData;
     const salt = this._cryptoService.generateSalt();
-    const hashedPassword = (userData.password?.length ?? 0) > 0
-      ? this._cryptoService.hashPassword(salt, userData.password!)
-      : null;
+    const hashedPassword = (userData.password?.length ?? 0) > 0 ? this._cryptoService.hashPassword(salt, userData.password!) : null;
     const newUser = this._dbContext.users.create({
       ...userData,
       password: hashedPassword,
@@ -161,29 +159,56 @@ export class UserRepository extends BaseRepository {
         isActive: false,
       } satisfies UpdateUserDto,
       reqDto.currentUserId,
-    );
+    ) satisfies UpdateUserReqDto;
 
     return await this.update(updateReqDto);
   }
 
-  public async increaseFailedLoginAttempts(reqDto: UpdateUserReqDto): Promise<number> {
+  public async increaseFailedLoginAttempts(userId: number, currentFailedLoginAttempts: number): Promise<number> {
+    const reqDto = {
+      userId,
+      userData: {
+        failedLoginAttempts: currentFailedLoginAttempts,
+      },
+      currentUserId: undefined,
+    } satisfies UpdateUserReqDto;
+
     if (isNullOrUndefined(reqDto.userData.failedLoginAttempts)) {
       reqDto.userData.failedLoginAttempts = 0;
     }
 
-    reqDto.userData.failedLoginAttempts!++;
+    reqDto.userData.failedLoginAttempts++;
 
     await this.update(reqDto);
 
-    return reqDto.userData.failedLoginAttempts!;
+    return reqDto.userData.failedLoginAttempts;
   }
 
-  public async lockOut(reqDto: UpdateUserReqDto): Promise<boolean> {
-    reqDto.userData.isLockedOut = true;
+  public async lockOut(userId: number): Promise<boolean> {
+    const reqDto = {
+      userId,
+      userData: {
+        isLockedOut: true,
+      } satisfies UpdateUserDto,
+      currentUserId: undefined,
+    } satisfies UpdateUserReqDto;
 
     await this.update(reqDto);
 
     return reqDto.userData.isLockedOut;
+  }
+
+  public async updateAfterLogin(userId: number): Promise<void> {
+    const reqDto = {
+      userId,
+      userData: {
+        lastLoginAt: getDateTimeNow(),
+        failedLoginAttempts: 0,
+      } satisfies UpdateUserDto,
+      currentUserId: undefined,
+    } satisfies UpdateUserReqDto;
+
+    await this.update(reqDto);
   }
 
   private async update(reqDto: UpdateUserReqDto): Promise<User | null> {

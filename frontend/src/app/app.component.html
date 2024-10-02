@@ -33,7 +33,7 @@
         <div class="main">
           <router-outlet></router-outlet>
         </div>
-        @if (isMobile) {
+        @if (isMobile && footerShouldBeVisible()) {
           <div class="footer">
             <app-footer></app-footer>
           </div>
@@ -42,9 +42,9 @@
     </mat-sidenav-content>
   </mat-sidenav-container>
 
-  @if (showSpinner) {
-    <svg class="spinner" viewBox="0 0 50 50">
-      <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
-    </svg>
+  @if (showSpinner()) {
+    <div class="spinner-container">
+      <mat-spinner></mat-spinner>
+    </div>
   }
 </div>

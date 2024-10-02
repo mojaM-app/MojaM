@@ -17,4 +17,5 @@ export enum LoginFormSteps {
   EnterPhone,
   ResetPassword,
   EnterPassword,
+  ForgotPassword,
 }

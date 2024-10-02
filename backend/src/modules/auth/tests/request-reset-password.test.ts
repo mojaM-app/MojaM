@@ -41,7 +41,7 @@ describe('POST /auth/request-reset-password', () => {
     } as any);
   });
 
-  describe('when login data are valid (given email is unique, not exist or is empty)', () => {
+  describe('when login data are valid (given email is unique, not exist)', () => {
     it('when exist only one user with given e-mail and user password is set', async () => {
       const { email } = getAdminLoginData();
       const response = await request(app.getServer())
@@ -89,17 +89,19 @@ describe('POST /auth/request-reset-password', () => {
       expect(mockSendMail).toHaveBeenCalledTimes(1);
     });
 
-    it('when NO user with given e-mail', async () => {
-      const email = generateRandomEmail();
-      const response = await request(app.getServer())
-        .post(authRoute.requestResetPasswordPath)
-        .send({ email } satisfies UserTryingToLogInDto);
-      expect(response.statusCode).toBe(200);
-      const body: RequestResetPasswordResponseDto = response.body;
-      expect(typeof body).toBe('object');
-      expect(body.data).toBe(true);
+    it('when NO user with given e-mail (or email is invalid)', async () => {
+      const testData: any[] = [generateRandomEmail(), ' ', 'not-email', 'not-email@', 'not-email@domain', 'not-email@domain.', 'not-email@.com'];
+      for (const email of testData) {
+        const response = await request(app.getServer())
+          .post(authRoute.requestResetPasswordPath)
+          .send({ email } satisfies UserTryingToLogInDto);
+        expect(response.statusCode).toBe(200);
+        const body: RequestResetPasswordResponseDto = response.body;
+        expect(typeof body).toBe('object');
+        expect(body.data).toBe(true);
 
-      expect(mockSendMail).toHaveBeenCalledTimes(0);
+        expect(mockSendMail).toHaveBeenCalledTimes(0);
+      }
     });
 
     it('email is sent only once when token is still valid (not expired)', async () => {
@@ -145,7 +147,7 @@ describe('POST /auth/request-reset-password', () => {
     });
   });
 
-  describe('when login data are invalid (given email is NOT unique)', () => {
+  describe('when login data are invalid (given email is NOT unique, is empty or invalid)', () => {
     it('when exist more then one user with given email and both are activated', async () => {
       const user1 = generateValidUser();
       const user2 = generateValidUser();

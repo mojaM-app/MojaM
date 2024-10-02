@@ -7,6 +7,7 @@ export { UserLockedOutEvent } from './events/user-locked-out-event';
 export { UserLoggedInEvent } from './events/user-logged-in-event';
 export { UserRefreshedTokenEvent } from './events/user-refreshed-token-event';
 
+export { CheckResetPasswordTokenReqDto, CheckResetPasswordTokenResponseDto, type CheckResetPasswordTokenResultDto } from './dtos/check-reset-password-token.dto';
 export { LoginDto, LoginResponseDto } from './dtos/login.dto';
 export { RefreshTokenDto, RefreshTokenResponseDto } from './dtos/refresh-token.dto';
 export { RequestResetPasswordResponseDto } from './dtos/request-reset-password.dto';

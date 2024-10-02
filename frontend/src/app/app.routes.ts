@@ -28,6 +28,10 @@ export const routes: Routes = [
     loadChildren: () => import('./components/management/management.module').then(m => m.ManagementModule),
   },
   {
+    path: 'reset-password/:userId/:token',
+    loadComponent: () => import('./components/static/reset-password/reset-password.component').then(m => m.ResetPasswordComponent),
+  },
+  {
     path: 'not-found',
     loadComponent: () => import('./components/static/not-found/not-found.component').then(m => m.NotFoundComponent),
   },

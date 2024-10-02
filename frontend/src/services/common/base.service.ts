@@ -32,6 +32,8 @@ export class BaseService {
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/get-user-info-before-log-in`,
       requestResetPasswordPath: (): string =>
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/request-reset-password`,
+      checkResetPasswordToken: (userId: string, token: string): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.auth.path}/check-reset-password-token/${userId}/${token}`,
       refreshToken: (): string =>
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/refresh-token`,
     },

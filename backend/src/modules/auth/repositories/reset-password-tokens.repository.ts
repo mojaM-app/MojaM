@@ -14,15 +14,19 @@ export class ResetPasswordTokensRepository extends BaseRepository {
     this._cryptoService = Container.get(CryptoService);
   }
 
-  public async hasLastTokenExpired(userId: number): Promise<boolean> {
+  public async isLastTokenExpired(userId: number): Promise<boolean> {
     const lastToken = await this.getLastToken(userId);
 
-    if (lastToken === null) {
-      return false;
+    return this.isTokenExpired(lastToken);
+  }
+
+  public isTokenExpired(token: UserResetPasswordToken | null): boolean {
+    if (isNullOrUndefined(token)) {
+      return true;
     }
 
-    const expirationPeriod = toNumber(RESET_PASSWORD_TOKEN_EXPIRE_IN)! * 1000;
-    return lastToken.createdAt.getTime() + expirationPeriod > new Date().getTime();
+    const expirationPeriod = toNumber(RESET_PASSWORD_TOKEN_EXPIRE_IN)! * 60 * 1000;
+    return new Date().getTime() > (token!.createdAt.getTime() + expirationPeriod);
   }
 
   public async createToken(userId: number, token: string): Promise<UserResetPasswordToken> {
@@ -47,18 +51,12 @@ export class ResetPasswordTokensRepository extends BaseRepository {
     return !isNullOrUndefined(deleteResult);
   }
 
-  private async getLastToken(userId: number): Promise<UserResetPasswordToken | null> {
+  public async getLastToken(userId: number): Promise<UserResetPasswordToken | null> {
     const queryBuilder = this._dbContext.userResetPasswordTokens
       .createQueryBuilder()
       .where('UserId = :userId', { userId })
       .orderBy('CreatedAt', 'DESC')
       .take(1);
-
-    const count = await queryBuilder.getCount();
-
-    if (count === 0) {
-      return null;
-    }
 
     return await queryBuilder.getOne();
   }

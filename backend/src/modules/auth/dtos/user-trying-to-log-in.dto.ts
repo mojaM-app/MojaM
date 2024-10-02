@@ -19,7 +19,7 @@ export class UserTryingToLogInDto {
 }
 
 export interface UserInfoBeforeLogInResultDto {
-  isLoginSufficientToLogIn: boolean;
+  isEmailSufficientToLogIn: boolean;
   isPasswordSet?: boolean;
 }
 

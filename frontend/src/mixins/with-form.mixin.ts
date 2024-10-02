@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, ValidationErrors } from '@angular/forms';
 import { Constructor, Empty, IForm } from './shared.mixin';
 
 export function WithForm<
@@ -28,11 +28,19 @@ export function WithForm<
     }
 
     public get hasErrors(): boolean {
-        return this.formGroup.errors != null;
+      return this.formGroup.errors != null;
     }
 
     public control<K extends keyof TFormType>(name: K | string): FormControl<any> {
       return this.formGroup.controls[name] as FormControl<any>;
+    }
+
+    public getErrors<K extends keyof TFormType>(name: K | string): ValidationErrors {
+      return this.control(name)?.errors || {};
+    }
+
+    public getFormGroupErrors(): ValidationErrors {
+      return this.formGroup.errors || {};
     }
 
     public isRedyToSubmit(): boolean {

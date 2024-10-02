@@ -7,7 +7,7 @@ import { TranslationService } from '../services/translate/translation.service';
 export class GmessagePipe implements PipeTransform {
   public constructor(private _translationService: TranslationService) {}
 
-  public transform(value: string, ...args: string[]): string {
+  public transform(value: string, args?: string[] | Record<string, unknown>): string {
     return this._translationService.get(value, args);
   }
 }

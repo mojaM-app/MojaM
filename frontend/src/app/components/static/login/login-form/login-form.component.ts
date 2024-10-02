@@ -14,7 +14,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatButton } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { IS_MOBILE } from 'src/app/app.config';
@@ -25,7 +25,7 @@ import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthService } from 'src/services/auth/auth.service';
 import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
-import { conditionalValidator } from 'src/validators/conditional-validator';
+import { conditionalValidator } from 'src/validators/conditional.validator';
 import { phoneValidator } from 'src/validators/phone.validator';
 import { ILoginForm, LoginFormControlNames, LoginFormSteps } from './login.form';
 
@@ -35,7 +35,7 @@ import { ILoginForm, LoginFormControlNames, LoginFormSteps } from './login.form'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
-    MatButton,
+    MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
     PipesModule,
@@ -51,6 +51,7 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
 
   public showStep = signal<LoginFormSteps>(LoginFormSteps.EnterEmail);
   public loginError = signal<string | undefined>(undefined);
+  public showResetPasswordButton = signal<boolean>(false);
 
   private _emailInput = viewChild('emailInput', { read: ElementRef });
   private _phoneInput = viewChild('phoneInput', { read: ElementRef });
@@ -125,7 +126,8 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
     }
 
     this._authService.getUserInfoBeforeLogIn(email).subscribe((response: UserInfoBeforeLogInResult) => {
-      if (response.isLoginSufficientToLogIn === true) {
+      this.showResetPasswordButton.set(response.isPasswordSet === true);
+      if (response.isEmailSufficientToLogIn === true) {
         if (response.isPasswordSet === true) {
           this.goToStepEnterPassword();
         } else {
@@ -154,6 +156,7 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
       this._authService
         .getUserInfoBeforeLogIn(this.formControls.email.value, phone)
         .subscribe((response: UserInfoBeforeLogInResult) => {
+          this.showResetPasswordButton.set(response.isPasswordSet === true);
           if (response.isPasswordSet === true) {
             showStepEnterPassword();
           } else {
@@ -187,6 +190,11 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
           }
         },
       });
+  }
+
+  public goToStepForgotPassword(): void {
+    this.loginError.set(undefined);
+    this.showStep.set(LoginFormSteps.ForgotPassword);
   }
 
   public focusEmailInput(): void {

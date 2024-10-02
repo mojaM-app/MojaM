@@ -4,6 +4,8 @@ import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import {
   AuthRoute,
+  CheckResetPasswordTokenReqDto,
+  CheckResetPasswordTokenResultDto,
   CryptoService,
   DataStoredInToken,
   FailedLoginAttemptEvent,
@@ -29,7 +31,7 @@ import {
 import { BaseService, userToIUser, userToIUserProfile } from '@modules/common';
 import { EmailService } from '@modules/notifications';
 import { PermissionsRepository, SystemPermission } from '@modules/permissions';
-import { UpdateUserDto, UpdateUserReqDto, UserRepository } from '@modules/users';
+import { UserRepository } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
@@ -42,22 +44,22 @@ import { ResetPasswordTokensRepository } from '../repositories/reset-password-to
 export class AuthService extends BaseService {
   private readonly _userRepository: UserRepository;
   private readonly _permissionRepository: PermissionsRepository;
-  private readonly _cryptoService: CryptoService;
   private readonly _resetPasswordTokensRepository: ResetPasswordTokensRepository;
+  private readonly _cryptoService: CryptoService;
   private readonly _emailService: EmailService;
 
   public constructor() {
     super();
     this._userRepository = Container.get(UserRepository);
     this._permissionRepository = Container.get(PermissionsRepository);
-    this._cryptoService = Container.get(CryptoService);
     this._resetPasswordTokensRepository = Container.get(ResetPasswordTokensRepository);
+    this._cryptoService = Container.get(CryptoService);
     this._emailService = Container.get(EmailService);
   }
 
   public async getUserInfoBeforeLogIn(data: UserTryingToLogInDto): Promise<UserInfoBeforeLogInResultDto> {
     const result = {
-      isLoginSufficientToLogIn: true,
+      isEmailSufficientToLogIn: true,
       isPasswordSet: true,
     } satisfies UserInfoBeforeLogInResultDto;
 
@@ -73,13 +75,13 @@ export class AuthService extends BaseService {
 
     if (users.length > 1) {
       return {
-        isLoginSufficientToLogIn: false,
+        isEmailSufficientToLogIn: false,
       } satisfies UserInfoBeforeLogInResultDto;
     }
 
     const user = users[0];
     return {
-      isLoginSufficientToLogIn: true,
+      isEmailSufficientToLogIn: true,
       isPasswordSet: !isNullOrEmptyString(user.password),
     } satisfies UserInfoBeforeLogInResultDto;
   }
@@ -97,7 +99,7 @@ export class AuthService extends BaseService {
 
     const user = users[0];
 
-    if (await this._resetPasswordTokensRepository.hasLastTokenExpired(user.id)) {
+    if (!(await this._resetPasswordTokensRepository.isLastTokenExpired(user.id))) {
       return true;
     }
 
@@ -107,9 +109,36 @@ export class AuthService extends BaseService {
 
     const resetPasswordToken = await this._resetPasswordTokensRepository.createToken(user.id, token);
 
-    const link = `${CLIENT_APP_URL}/${AuthRoute.resetPassword}?token=${resetPasswordToken.token}&id=${user.uuid}`;
+    const link = `${CLIENT_APP_URL}/${AuthRoute.resetPassword}/${user.uuid}/${resetPasswordToken.token}`;
 
     return await this._emailService.sendEmailResetPassword(userToIUserProfile(user), link);
+  }
+
+  public async checkResetPasswordToken(data: CheckResetPasswordTokenReqDto): Promise<CheckResetPasswordTokenResultDto> {
+    const userId = await this._userRepository.getIdByUuid(data.userGuid);
+
+    if (isNullOrUndefined(userId)) {
+      return {
+        isValid: false,
+      } satisfies CheckResetPasswordTokenResultDto;
+    }
+
+    const token = await this._resetPasswordTokensRepository.getLastToken(userId!);
+
+    if (isNullOrUndefined(token) ||
+      this._resetPasswordTokensRepository.isTokenExpired(token) ||
+      token!.token !== data.resetPasswordToken) {
+      return {
+        isValid: false,
+      } satisfies CheckResetPasswordTokenResultDto;
+    }
+
+    const user = await this._userRepository.getById(userId);
+
+    return {
+      isValid: true,
+      userEmail: user?.email,
+    } satisfies CheckResetPasswordTokenResultDto;
   }
 
   public async login(loginData: LoginDto): Promise<ILoginResult> {
@@ -144,29 +173,19 @@ export class AuthService extends BaseService {
     const isPasswordMatching: boolean = this._cryptoService.passwordMatches(loginData.password ?? '', user.salt, user.password!);
 
     if (!isPasswordMatching) {
-      const failedLoginAttempts = await this._userRepository.increaseFailedLoginAttempts({
-        userId: user.id,
-        userData: {
-          failedLoginAttempts: user.failedLoginAttempts,
-        },
-        currentUserId: undefined,
-      } satisfies UpdateUserReqDto);
+      const failedLoginAttempts = await this._userRepository.increaseFailedLoginAttempts(user.id, user.failedLoginAttempts);
 
       this._eventDispatcher.dispatch(events.users.failedLoginAttempt, new FailedLoginAttemptEvent(userDto));
 
       if (failedLoginAttempts >= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS) {
-        await this._userRepository.lockOut({
-          userId: user.id,
-          userData: {
-            isLockedOut: true,
-          } satisfies UpdateUserDto,
-          currentUserId: undefined,
-        } satisfies UpdateUserReqDto);
+        await this._userRepository.lockOut(user.id);
 
         this._eventDispatcher.dispatch(events.users.userLockedOut, new UserLockedOutEvent(userDto));
       }
 
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.Invalid_Login_Or_Password);
+    } else {
+      await this._userRepository.updateAfterLogin(user.id);
     }
 
     const userPermissions = await this._permissionRepository.getUserPermissions(user.id);

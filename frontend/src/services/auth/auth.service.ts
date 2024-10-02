@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, tap } from 'rxjs';
-import { ILoginModel, ILoginResponse, UserInfoBeforeLogInResult } from 'src/interfaces/auth/auth.models';
+import { CheckResetPasswordTokenResult, ILoginModel, ILoginResponse, UserInfoBeforeLogInResult } from 'src/interfaces/auth/auth.models';
 import { BaseService } from '../common/base.service';
 import { HttpClientService } from '../common/httpClient.service';
 import { LocalStorageService } from '../storage/localstorage.service';
@@ -72,6 +72,13 @@ export class AuthService extends BaseService {
     this.removeRefreshToken();
     this._authTokenService.removeToken();
     this._isLoggedIn$.next(this._authTokenService.isTokenValid());
+  }
+
+  public checkResetPasswordToken(userId: string, token: string): Observable<CheckResetPasswordTokenResult> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.auth.checkResetPasswordToken(userId, token))
+      .post<CheckResetPasswordTokenResult>();
   }
 
   public refreshAccessToken(): Observable<string | null> {
