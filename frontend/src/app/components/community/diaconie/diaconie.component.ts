@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { finalize } from 'rxjs';
-import { DiaconieService } from '../../../../services/common/community/diaconie.service';
+import { DiaconieService } from 'src/services/community/diaconie.service';
 
 @Component({
   selector: 'app-community-diaconie',

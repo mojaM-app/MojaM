@@ -38,26 +38,23 @@
       "Title": "Regulamin"
     }
   },
-  "News": {
-    "Title": "Aktualności",
-    "Information": {
-      "Title": "Aktualności"
-    },
-    "Calendar": {
-      "Title": "Kalendarz",
-      "Today": "Dziś",
-      "Prev": "Poprzedni",
-      "Next": "Następny",
-      "CalendarView": {
-        "Month": "Miesiąc",
-        "Week": "Tydzień",
-        "Day": "Dzień"
-      }
-    },
-    "Announcements": {
-      "Title": "Ogłoszenia",
-      "AnnouncementsOfTheDay": "Ogłoszenia z dnia"
+  "Calendar": {
+    "Title": "Kalendarz",
+    "Today": "Dziś",
+    "Prev": "Poprzedni",
+    "Next": "Następny",
+    "CalendarView": {
+      "Month": "Miesiąc",
+      "Week": "Tydzień",
+      "Day": "Dzień"
     }
+  },
+  "Announcements": {
+    "Title": "Ogłoszenia",
+    "AnnouncementsOfTheDay": "Ogłoszenia z dnia"
+  },
+  "News":{
+    "Title": "Aktualności"
   },
   "Bulletin": {
     "Title": "Biuletyn"

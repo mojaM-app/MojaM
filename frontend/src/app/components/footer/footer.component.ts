@@ -4,9 +4,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
 import { PipesModule } from 'src/pipes/pipes.module';
+import { AnnouncementsMenu } from '../announcements/announcements.menu';
 import { BulletinMenu } from '../bulletin/bulletin.menu';
 import { CommunityMenu } from '../community/community.menu';
-import { AnnouncementsMenu } from '../news/news.menu';
 
 @Component({
   selector: 'app-footer',

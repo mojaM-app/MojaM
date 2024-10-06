@@ -1,0 +1,19 @@
+<div class="content" [loading]="announcements === null">
+  <ng-container *ngIf="announcementsDate">
+    <h5 class="m-0 p-0 py-2 text-center">
+      {{ 'Announcements/AnnouncementsOfTheDay' | gmessage }}
+
+      {{ announcementsDate | gdate: 'short' }}
+    </h5>
+  </ng-container>
+  <ng-container *ngIf="announcements?.length">
+    <div class="announcement-list">
+      <ul class="list-group list-group-flush">
+        <li
+          class="list-group-item"
+          *ngFor="let announcement of announcements"
+          [innerHtml]="announcement"></li>
+      </ul>
+    </div>
+  </ng-container>
+</div>

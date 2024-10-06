@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { finalize } from 'rxjs';
-import { MissionService } from '../../../../services/common/community/mission.service';
+import { MissionService } from 'src/services/community/mission.service';
 
 @Component({
   selector: 'app-community-mission',

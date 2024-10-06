@@ -6,14 +6,14 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { PipesModule } from 'src/pipes/pipes.module';
-import { NewsComponent } from './news.component';
-import { InformationRoutingModule } from './news.routing';
+import { AnnouncementsComponent } from './announcements.component';
+import { AnnouncementsRoutingModule } from './announcements.routing';
 
 @NgModule({
-  declarations: [NewsComponent],
+  declarations: [AnnouncementsComponent],
   imports: [
     CommonModule,
-    InformationRoutingModule,
+    AnnouncementsRoutingModule,
     MatToolbarModule,
     MatTabsModule,
     MatIconModule,
@@ -22,4 +22,4 @@ import { InformationRoutingModule } from './news.routing';
     DirectivesModule,
   ],
 })
-export class NewsModule {}
+export class AnnouncementsModule {}

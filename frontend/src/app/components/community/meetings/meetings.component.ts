@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { finalize } from 'rxjs';
-import { MeetingsService } from '../../../../services/common/community/meetings.service';
+import { MeetingsService } from 'src/services/community/meetings.service';
 
 @Component({
   selector: 'app-community-meetings',
