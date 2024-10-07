@@ -1,17 +1,16 @@
 import { Routes } from '@interfaces';
+import { AnnouncementsController } from '@modules/announcements';
 import { setIdentity } from '@modules/auth';
-import { NewsController } from '@modules/news';
 import express from 'express';
 
-export class NewsRoutes implements Routes {
-  public path = '/news';
+export class AnnouncementsRout implements Routes {
+  public path = '/announcements';
   public router = express.Router();
 
-  private readonly _controller: NewsController;
+  private readonly _controller: AnnouncementsController;
 
-  public constructor(
-  ) {
-    this._controller = new NewsController();
+  public constructor() {
+    this._controller = new AnnouncementsController();
     this.initializeRoutes();
   }
 

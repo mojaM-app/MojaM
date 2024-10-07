@@ -1,5 +1,5 @@
+import { GetAnnouncementsDto } from '@modules/announcements';
 import { BaseService } from '@modules/common';
-import { GetAnnouncementsDto } from '@modules/news';
 import { getDateTimeNow } from '@utils';
 import { Service } from 'typedi';
 

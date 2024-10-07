@@ -1,6 +1,6 @@
 import { RequestWithIdentity } from '@interfaces';
+import { AnnouncementsService, GetAnnouncementsDto, GetAnnouncementsResponseDto } from '@modules/announcements';
 import { BaseController } from '@modules/common';
-import { AnnouncementsService, GetAnnouncementsDto, GetAnnouncementsResponseDto } from '@modules/news';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
 
