@@ -7,13 +7,13 @@ import { RouterModule } from '@angular/router';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { NewsComponent } from './news.component';
-import { InformationRoutingModule } from './news.routing';
+import { NewsRoutingModule } from './news.routing';
 
 @NgModule({
   declarations: [NewsComponent],
   imports: [
     CommonModule,
-    InformationRoutingModule,
+    NewsRoutingModule,
     MatToolbarModule,
     MatTabsModule,
     MatIconModule,
