@@ -6,7 +6,7 @@
           mat-flat-button
           class="button"
           (click)="setView(CalendarView.Month)"
-          [class.active]="view === CalendarView.Month">
+          [class.active]="view() === CalendarView.Month">
           <mat-icon>calendar_view_month</mat-icon>
           <span class="d-none d-lg-inline mx-lg-2 lh-1">{{
             'Calendar/CalendarView/Month' | gmessage
@@ -16,7 +16,7 @@
           mat-flat-button
           class="button"
           (click)="setView(CalendarView.Week)"
-          [class.active]="view === CalendarView.Week">
+          [class.active]="view() === CalendarView.Week">
           <mat-icon>calendar_view_week</mat-icon>
           <span class="d-none d-lg-inline mx-lg-2 lh-1">{{
             'Calendar/CalendarView/Week' | gmessage
@@ -26,7 +26,7 @@
           mat-flat-button
           class="button"
           (click)="setView(CalendarView.Day)"
-          [class.active]="view === CalendarView.Day">
+          [class.active]="view() === CalendarView.Day">
           <mat-icon>calendar_view_day</mat-icon>
           <span class="d-none d-lg-inline mx-lg-2 lh-1">{{
             'Calendar/CalendarView/Day' | gmessage
@@ -34,10 +34,9 @@
         </button>
       </div>
     </div>
-    <div class="col-md-4 col-sm-6 col-10 d-inline-flex align-items-center justify-content-center">
-      {{
-        viewDate | calendarDate: view + 'ViewTitle' : cultureService.currentCulture : weekStartsOn
-      }}
+    <div
+      class="col-md-4 col-sm-6 col-10 d-inline-flex align-items-center justify-content-center fw-semibold">
+      {{ viewDate() | calendarDate: view() + 'ViewTitle' : locale() : weekStartsOn }}
     </div>
     <div class="col-md-4 col-sm-3 col-2 text-end">
       <div class="btn-group">
@@ -45,23 +44,28 @@
           mat-flat-button
           class="button d-none d-sm-inline-flex"
           mwlCalendarPreviousView
-          [view]="view"
-          [(viewDate)]="viewDate">
+          [view]="view()"
+          [viewDate]="viewDate()"
+          (viewDateChange)="viewDateChange($event)">
           <mat-icon>arrow_back_ios_new</mat-icon>
           <span class="d-none d-lg-inline mx-lg-2 lh-1">{{ 'Calendar/Prev' | gmessage }}</span>
         </button>
-        <button mat-flat-button class="button" mwlCalendarToday [(viewDate)]="viewDate">
+        <button
+          mat-flat-button
+          class="button"
+          mwlCalendarToday
+          [viewDate]="viewDate()"
+          (viewDateChange)="viewDateChange($event)">
           <mat-icon>today</mat-icon>
-          <span class="d-none d-md-inline mx-lg-2 lh-1">{{
-            'Calendar/Today' | gmessage
-          }}</span>
+          <span class="d-none d-md-inline mx-lg-2 lh-1">{{ 'Calendar/Today' | gmessage }}</span>
         </button>
         <button
           mat-flat-button
           class="button d-none d-sm-inline-flex"
           mwlCalendarNextView
-          [view]="view"
-          [(viewDate)]="viewDate">
+          [view]="view()"
+          [viewDate]="viewDate()"
+          (viewDateChange)="viewDateChange($event)">
           <span class="d-none d-lg-inline mx-lg-2 lh-1">{{ 'Calendar/Next' | gmessage }}</span>
           <mat-icon>arrow_forward_ios</mat-icon>
         </button>
@@ -69,28 +73,35 @@
     </div>
   </div>
 
-  <div [ngSwitch]="view" class="calendar-container">
-    <mwl-calendar-month-view
-      *ngSwitchCase="'month'"
-      [viewDate]="viewDate"
-      [events]="events"
-      [locale]="cultureService.currentCulture"
-      [weekStartsOn]="weekStartsOn"
-      [weekendDays]="weekendDays">
-    </mwl-calendar-month-view>
-    <mwl-calendar-week-view
-      *ngSwitchCase="'week'"
-      [viewDate]="viewDate"
-      [events]="events"
-      [locale]="cultureService.currentCulture"
-      [weekStartsOn]="weekStartsOn"
-      [weekendDays]="weekendDays">
-    </mwl-calendar-week-view>
-    <mwl-calendar-day-view
-      *ngSwitchCase="'day'"
-      [viewDate]="viewDate"
-      [events]="events"
-      [locale]="cultureService.currentCulture">
-    </mwl-calendar-day-view>
-  </div>
+  @switch (view()) {
+    @case (CalendarView.Month) {
+      <div class="calendar-container">
+        <mwl-calendar-month-view
+          [viewDate]="viewDate()"
+          [events]="events()"
+          [locale]="locale()"
+          [weekStartsOn]="weekStartsOn"
+          [weekendDays]="weekendDays">
+        </mwl-calendar-month-view>
+      </div>
+    }
+    @case (CalendarView.Week) {
+      <div class="calendar-container">
+        <mwl-calendar-week-view
+          [viewDate]="viewDate()"
+          [events]="events()"
+          [locale]="locale()"
+          [weekStartsOn]="weekStartsOn"
+          [weekendDays]="weekendDays">
+        </mwl-calendar-week-view>
+      </div>
+    }
+    @case (CalendarView.Day) {
+      <div class="calendar-container">
+        <mwl-calendar-day-view
+         [viewDate]="viewDate()" [events]="events()" [locale]="locale()">
+        </mwl-calendar-day-view>
+      </div>
+    }
+  }
 </div>
