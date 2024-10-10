@@ -84,6 +84,6 @@ export class TranslationInitService {
   }
 
   private getCurrentCulture(): string {
-    return this._cultureService.currentCulture || CultureService._defaultCulture;
+    return this._cultureService.currentCulture || CultureService.DefaultCulture;
   }
 }
