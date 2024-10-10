@@ -19,10 +19,13 @@ export class BaseService {
       getRegulations: (): string =>
         `${environment.backendUrl}/${this.API_ROUTES.community.path}/regulations`,
     },
-    news: {
-      path: 'news',
-      getAnnouncements: (): string =>
-        `${environment.backendUrl}/${this.API_ROUTES.news.path}/announcements`,
+    announcements: {
+      path: 'announcements',
+      get: (): string => `${environment.backendUrl}/${this.API_ROUTES.announcements.path}`,
+    },
+    calendar: {
+      path: 'calendar',
+      getEvents: (): string => `${environment.backendUrl}/${this.API_ROUTES.calendar.path}/events`,
     },
     auth: {
       path: 'auth',
@@ -40,6 +43,6 @@ export class BaseService {
     userList: {
       path: 'user-list',
       get: (): string => `${environment.backendUrl}/${this.API_ROUTES.userList.path}`,
-    }
+    },
   };
 }
