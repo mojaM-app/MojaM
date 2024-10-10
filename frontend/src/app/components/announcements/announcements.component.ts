@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { finalize } from 'rxjs';
 import { IS_MOBILE } from 'src/app/app.config';
-import { IAnnouncements } from 'src/interfaces/news/announcements/announcements';
+import { IAnnouncements } from 'src/interfaces/announcements/announcements';
 import { AnnouncementsService } from 'src/services/announcements/announcements.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
 
