@@ -1,5 +1,23 @@
 <div class="content" touch (swipeNext)="setNextView()" (swipePrev)="setPrevView()">
   <div class="row clearfix calendar-header text-center">
+    <div class="col-2 d-sm-none text-start">
+      <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>more_vert</mat-icon></button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="setView(CalendarView.Month)">
+          <mat-icon>calendar_view_month</mat-icon>
+          {{ 'Calendar/CalendarView/Month' | gmessage }}
+        </button>
+        <button mat-menu-item (click)="setView(CalendarView.Week)">
+          <mat-icon>calendar_view_week</mat-icon>
+          {{ 'Calendar/CalendarView/Week' | gmessage }}
+        </button>
+        <button mat-menu-item (click)="setView(CalendarView.Day)">
+          <mat-icon>calendar_view_day</mat-icon>
+          {{ 'Calendar/CalendarView/Day' | gmessage }}
+        </button>
+      </mat-menu>
+    </div>
+
     <div class="col-md-4 col-sm-3 d-sm-block d-none text-start">
       <div class="btn-group">
         <button
@@ -35,7 +53,7 @@
       </div>
     </div>
     <div
-      class="col-md-4 col-sm-6 col-10 d-inline-flex align-items-center justify-content-center fw-semibold">
+      class="col-md-4 col-sm-6 col-8 d-inline-flex align-items-center justify-content-center fw-semibold">
       {{ viewDate() | calendarDate: view() + 'ViewTitle' : locale() : weekStartsOn }}
     </div>
     <div class="col-md-4 col-sm-3 col-2 text-end">
@@ -73,6 +91,23 @@
     </div>
   </div>
 
+  <ng-template #monthViewCellTemplate let-day="day" let-locale="locale">
+    <div class="cal-day-number mx-0 my-2 p-0 text-center">
+      {{ day.date | calendarDate: 'monthViewDayNumber' : locale }}
+    </div>
+    @if (day.events?.length > 0) {
+      @for (event of day.events; track event) {
+        <div class="cal-week-view border-0 bg-transparent">
+          <div class="cal-event cell-month-day text-nowrap">
+            <div class="cal-event-title">
+              {{ event.title }}
+            </div>
+          </div>
+        </div>
+      }
+    }
+  </ng-template>
+
   @switch (view()) {
     @case (CalendarView.Month) {
       <div class="calendar-container">
@@ -81,7 +116,8 @@
           [events]="events()"
           [locale]="locale()"
           [weekStartsOn]="weekStartsOn"
-          [weekendDays]="weekendDays">
+          [weekendDays]="weekendDays"
+          [cellTemplate]="monthViewCellTemplate">
         </mwl-calendar-month-view>
       </div>
     }
@@ -98,8 +134,7 @@
     }
     @case (CalendarView.Day) {
       <div class="calendar-container">
-        <mwl-calendar-day-view
-         [viewDate]="viewDate()" [events]="events()" [locale]="locale()">
+        <mwl-calendar-day-view [viewDate]="viewDate()" [events]="events()" [locale]="locale()">
         </mwl-calendar-day-view>
       </div>
     }

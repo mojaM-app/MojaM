@@ -157,7 +157,7 @@ body {
         border-color: mat.get-theme-color($dark-theme, primary-container),
         gray: mat.get-theme-color($dark-theme, tertiary),
         today-bg: mat.get-theme-color($dark-theme, primary-container),
-        event-color-primary: mat.get-theme-color($dark-theme, primary),
+        event-color-primary: mat.get-theme-color($dark-theme, primary-container),
       )
     );
   }
@@ -303,4 +303,24 @@ body {
 .mat-icon {
   width: auto !important;
   height: auto !important;
+}
+
+.calendar-container {
+  .cal-month-view .cal-day-cell {
+    width: 10px;
+    padding: 0 0.125rem;
+  }
+
+  .cal-month-view .cal-day-cell.cal-out-month .cal-day-number {
+    opacity: 0.75;
+  }
+
+  .cal-month-view .cal-day-number {
+    opacity: 1;
+    font-size: 1rem;
+  }
+
+  .cal-month-view .cal-day-cell.cal-today .cal-day-number {
+    font-size: 1rem;
+  }
 }
