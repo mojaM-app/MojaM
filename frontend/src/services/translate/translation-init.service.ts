@@ -24,12 +24,12 @@ export class TranslationInitService {
       registerLocaleData(locale.data, locale.localeId, locale.extraData);
     });
 
-    const settingsToLoad: Array<Promise<Response>> = [
+    const settingsToLoad: Promise<Response>[] = [
       fetch(`./assets/cldr-data/supplemental/plurals.json`).then(response => response.json()),
       fetch(`./assets/cldr-data/supplemental/likelySubtags.json`).then(response => response.json())
     ];
 
-    const resourcesToLoad: Array<Promise<Response>> = [
+    const resourcesToLoad: Promise<Response>[] = [
       fetch(`./assets/cldr-data/supplemental/currencyData.json`).then(response => response.json()),
       fetch(`./assets/cldr-data/supplemental/weekData.json`).then(response => response.json()),
       fetch(`./assets/cldr-data/supplemental/languageData.json`).then(response => response.json()),
@@ -43,7 +43,7 @@ export class TranslationInitService {
       fetch(`./assets/cldr-data/main/pl/dateFields.json`).then(response => response.json())
     ];
 
-    const messagesToLoad: Array<Promise<{ [key: string]: any }>> = [];
+    const messagesToLoad: Promise<Record<string, unknown>>[] = [];
     for (const lang of this._translationService.langs) {
       if (lang.id === this._translationService.currentLang) {
         messagesToLoad.push(lang.messages());
@@ -77,7 +77,7 @@ export class TranslationInitService {
       });
   }
 
-  private getSupportedLocales(): { data: any; localeId: string; extraData: any }[] {
+  private getSupportedLocales(): { data: unknown; localeId: string; extraData: unknown }[] {
     return [
       { data: localePL, localeId: 'pl', extraData: localePlExtra },
     ];
