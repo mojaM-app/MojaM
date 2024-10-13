@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@angular/core';
 import Globalize from 'globalize/dist/globalize';
 import { LocalStorageService } from '../storage/localstorage.service';
@@ -27,11 +28,11 @@ export class TranslationService {
     }
   }
 
-  public get(key: string, interpolateParams?: any): string {
+  public get(key: string, interpolateParams?: unknown): string {
     return this.getFormatter(key)(interpolateParams);
   }
 
-  public getError(errorKey: string, interpolateParams?: any): string {
+  public getError(errorKey: string, interpolateParams?: unknown): string {
     return this.getFormatter(`Errors/${errorKey}`)(interpolateParams);
   }
 

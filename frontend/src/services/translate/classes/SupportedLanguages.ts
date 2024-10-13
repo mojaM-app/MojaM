@@ -11,7 +11,7 @@ export class SupportedLanguages {
           id: 'pl',
           label: 'język polski',
           icon: 'svg/languages/pl.svg',
-          messages: (): Promise<Record<string, any>> =>
+          messages: (): Promise<Record<string, unknown>> =>
             fetch(`./i18n/pl.json?${DateUtils.toDateString(new Date())}`)
               .then(response => response.json())
               .then(messages => ({ pl: messages })),

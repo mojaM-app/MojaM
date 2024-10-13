@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export class NumbersUtils {
   public static parse(value: any): number | null {
     if (typeof value === 'number') {

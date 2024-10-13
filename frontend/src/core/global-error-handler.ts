@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ErrorHandler, Injectable } from '@angular/core';
 import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { TranslationService } from 'src/services/translate/translation.service';

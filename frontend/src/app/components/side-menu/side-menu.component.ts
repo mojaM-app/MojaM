@@ -10,10 +10,12 @@ import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthTokenService } from 'src/services/auth/auth-token.service';
 import { PermissionService } from 'src/services/auth/permission.service';
 import { ThemeService } from '../../../services/theme/theme.service';
+import { AnnouncementsMenu } from '../announcements/announcements.menu';
 import { BulletinMenu } from '../bulletin/bulletin.menu';
+import { CalendarMenu } from '../calendar/calendar.menu';
 import { CommunityMenu } from '../community/community.menu';
 import { ManagementMenu, ManagementMenuUserList } from '../management/management.menu';
-import { AnnouncementsMenu, CalendarMenu, InformationMenu } from '../news/news.menu';
+import { NewsMenu } from '../news/news.menu';
 import { SettingsMenu } from '../settings/settings.menu';
 
 @Component({
@@ -38,9 +40,9 @@ export class SideMenuComponent {
 
   private readonly _menuItems: IMenuItem[] = [
     {
-      name: InformationMenu.Label,
-      icon: InformationMenu.Icon,
-      route: InformationMenu.Path,
+      name: NewsMenu.Label,
+      icon: NewsMenu.Icon,
+      route: NewsMenu.Path,
       isVisible: (): boolean => true,
     },
     {

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 interface CldrPack {
   langId: string;
   cldrDataId: string;
-  cldrDataLanguagesJson(): Promise<any>;
+  cldrDataLanguagesJson(): Promise<unknown>;
 }
 
 interface CldrPackData {
@@ -13,17 +13,17 @@ interface CldrPackData {
 }
 
 class CldrPackAdapter implements CldrPack {
-  constructor(private readonly data: CldrPackData) {}
+  public constructor(private readonly data: CldrPackData) {}
 
-  get langId(): string {
+  public get langId(): string {
     return this.data.langId;
   }
 
-  get cldrDataId(): string {
+  public get cldrDataId(): string {
     return this.data.cldrDataId;
   }
 
-  public cldrDataLanguagesJson(): Promise<any> {
+  public cldrDataLanguagesJson(): Promise<unknown> {
     return fetch(this.data.cldrDataLanguagesJson).then(response => response.json());
   }
 }
@@ -35,7 +35,7 @@ export class CldrLocaleService {
   private cldrLocaleIds: string[];
   private cldrLocaleDict: Record<string, CldrPack>;
 
-  constructor() {
+  public constructor() {
     this.cldrLocaleIds = [];
     this.cldrLocaleDict = {};
     for (const data of this.getAvailableLocales()) {

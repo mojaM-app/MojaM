@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { finalize } from 'rxjs';
-import { StructureService } from '../../../../services/common/community/structure.service';
+import { StructureService } from 'src/services/community/structure.service';
 
 @Component({
   selector: 'app-community-structure',

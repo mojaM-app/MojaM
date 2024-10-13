@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Pipe, PipeTransform } from '@angular/core';
 import * as Globalize from 'globalize';
 import { TranslationService } from 'src/services/translate/translation.service';

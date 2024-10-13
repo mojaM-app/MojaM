@@ -1,4 +1,13 @@
-import { OnInit, OnChanges, Directive, Input, HostBinding, Renderer2, ElementRef, SimpleChanges } from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  HostBinding,
+  Input,
+  OnChanges,
+  OnInit,
+  Renderer2,
+  SimpleChanges,
+} from '@angular/core';
 import { Guid } from 'guid-typescript';
 
 @Directive({
@@ -17,7 +26,7 @@ export class LoadingDirective implements OnInit, OnChanges {
     private renderer: Renderer2
   ) {}
 
-  public ngOnInit() {
+  public ngOnInit(): void {
     this.uid = 'loading-container-' + Guid.create();
 
     const loadingContainer = this.renderer.createElement('div');
@@ -35,7 +44,7 @@ export class LoadingDirective implements OnInit, OnChanges {
     this.renderer.appendChild(this.targetEl.nativeElement, loadingContainer);
   }
 
-  ngOnChanges(simpleChanges: SimpleChanges) {
+  public ngOnChanges(simpleChanges: SimpleChanges): void {
     if (simpleChanges['loading']) {
       const container = this.targetEl.nativeElement;
       const div = container.querySelector('.' + this.uid);

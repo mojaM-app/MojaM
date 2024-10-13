@@ -1,0 +1,142 @@
+<div class="content" touch (swipeNext)="setNextView()" (swipePrev)="setPrevView()">
+  <div class="row clearfix calendar-header text-center">
+    <div class="col-2 d-sm-none text-start">
+      <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>more_vert</mat-icon></button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="setView(CalendarView.Month)">
+          <mat-icon>calendar_view_month</mat-icon>
+          {{ 'Calendar/CalendarView/Month' | gmessage }}
+        </button>
+        <button mat-menu-item (click)="setView(CalendarView.Week)">
+          <mat-icon>calendar_view_week</mat-icon>
+          {{ 'Calendar/CalendarView/Week' | gmessage }}
+        </button>
+        <button mat-menu-item (click)="setView(CalendarView.Day)">
+          <mat-icon>calendar_view_day</mat-icon>
+          {{ 'Calendar/CalendarView/Day' | gmessage }}
+        </button>
+      </mat-menu>
+    </div>
+
+    <div class="col-md-4 col-sm-3 d-sm-block d-none text-start">
+      <div class="btn-group">
+        <button
+          mat-flat-button
+          class="button"
+          (click)="setView(CalendarView.Month)"
+          [class.active]="view() === CalendarView.Month">
+          <mat-icon>calendar_view_month</mat-icon>
+          <span class="d-none d-lg-inline mx-lg-2 lh-1">{{
+            'Calendar/CalendarView/Month' | gmessage
+          }}</span>
+        </button>
+        <button
+          mat-flat-button
+          class="button"
+          (click)="setView(CalendarView.Week)"
+          [class.active]="view() === CalendarView.Week">
+          <mat-icon>calendar_view_week</mat-icon>
+          <span class="d-none d-lg-inline mx-lg-2 lh-1">{{
+            'Calendar/CalendarView/Week' | gmessage
+          }}</span>
+        </button>
+        <button
+          mat-flat-button
+          class="button"
+          (click)="setView(CalendarView.Day)"
+          [class.active]="view() === CalendarView.Day">
+          <mat-icon>calendar_view_day</mat-icon>
+          <span class="d-none d-lg-inline mx-lg-2 lh-1">{{
+            'Calendar/CalendarView/Day' | gmessage
+          }}</span>
+        </button>
+      </div>
+    </div>
+    <div
+      class="col-md-4 col-sm-6 col-8 d-inline-flex align-items-center justify-content-center fw-semibold">
+      {{ viewDate() | calendarDate: view() + 'ViewTitle' : locale() : weekStartsOn }}
+    </div>
+    <div class="col-md-4 col-sm-3 col-2 text-end">
+      <div class="btn-group">
+        <button
+          mat-flat-button
+          class="button d-none d-sm-inline-flex"
+          mwlCalendarPreviousView
+          [view]="view()"
+          [viewDate]="viewDate()"
+          (viewDateChange)="viewDateChange($event)">
+          <mat-icon>arrow_back_ios_new</mat-icon>
+          <span class="d-none d-lg-inline mx-lg-2 lh-1">{{ 'Calendar/Prev' | gmessage }}</span>
+        </button>
+        <button
+          mat-flat-button
+          class="button"
+          mwlCalendarToday
+          [viewDate]="viewDate()"
+          (viewDateChange)="viewDateChange($event)">
+          <mat-icon>today</mat-icon>
+          <span class="d-none d-md-inline mx-lg-2 lh-1">{{ 'Calendar/Today' | gmessage }}</span>
+        </button>
+        <button
+          mat-flat-button
+          class="button d-none d-sm-inline-flex"
+          mwlCalendarNextView
+          [view]="view()"
+          [viewDate]="viewDate()"
+          (viewDateChange)="viewDateChange($event)">
+          <span class="d-none d-lg-inline mx-lg-2 lh-1">{{ 'Calendar/Next' | gmessage }}</span>
+          <mat-icon>arrow_forward_ios</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #monthViewCellTemplate let-day="day" let-locale="locale">
+    <div class="cal-day-number mx-0 my-2 p-0 text-center">
+      {{ day.date | calendarDate: 'monthViewDayNumber' : locale }}
+    </div>
+    @if (day.events?.length > 0) {
+      @for (event of day.events; track event) {
+        <div class="cal-week-view border-0 bg-transparent">
+          <div class="cal-event cell-month-day text-nowrap">
+            <div class="cal-event-title">
+              {{ event.title }}
+            </div>
+          </div>
+        </div>
+      }
+    }
+  </ng-template>
+
+  @switch (view()) {
+    @case (CalendarView.Month) {
+      <div class="calendar-container">
+        <mwl-calendar-month-view
+          [viewDate]="viewDate()"
+          [events]="events()"
+          [locale]="locale()"
+          [weekStartsOn]="weekStartsOn"
+          [weekendDays]="weekendDays"
+          [cellTemplate]="monthViewCellTemplate">
+        </mwl-calendar-month-view>
+      </div>
+    }
+    @case (CalendarView.Week) {
+      <div class="calendar-container">
+        <mwl-calendar-week-view
+          [viewDate]="viewDate()"
+          [events]="events()"
+          [locale]="locale()"
+          [weekStartsOn]="weekStartsOn"
+          [weekendDays]="weekendDays">
+        </mwl-calendar-week-view>
+      </div>
+    }
+    @case (CalendarView.Day) {
+      <div class="calendar-container">
+        <mwl-calendar-day-view [viewDate]="viewDate()" [events]="events()" [locale]="locale()">
+        </mwl-calendar-day-view>
+      </div>
+    }
+  }
+</div>

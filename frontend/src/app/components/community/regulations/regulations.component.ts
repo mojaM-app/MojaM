@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { finalize } from 'rxjs';
-import { RegulationsService } from '../../../../services/common/community/regulations.service';
+import { RegulationsService } from 'src/services/community/regulations.service';
 
 @Component({
   selector: 'app-community-regulations',

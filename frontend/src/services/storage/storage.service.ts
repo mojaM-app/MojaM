@@ -1,7 +1,7 @@
 import { NumbersUtils } from '../../utils/numbers.utils';
 
 export abstract class StorageService {
-  public saveObject(storageKey: string, object: any): void {
+  public saveObject(storageKey: string, object: unknown): void {
     if (object) {
       this.saveString(storageKey, JSON.stringify(object));
     } else {
@@ -9,7 +9,7 @@ export abstract class StorageService {
     }
   }
 
-  public loadObject(storageKey: string): any {
+  public loadObject(storageKey: string): unknown {
     const data = this.loadString(storageKey);
     if (data) {
       return JSON.parse(data);
