@@ -34,6 +34,8 @@ export class BaseService {
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/request-reset-password`,
       checkResetPasswordToken: (userId: string, token: string): string =>
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/check-reset-password-token/${userId}/${token}`,
+      resetPasswordPath: (): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.auth.path}/reset-password`,
       refreshToken: (): string =>
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/refresh-token`,
     },
