@@ -4,15 +4,13 @@ import {
   ChangeDetectorRef,
   Component,
   effect,
-  inject,
   Inject,
   Input,
   OnInit,
-  viewChild,
+  viewChild
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatSidenav } from '@angular/material/sidenav';
@@ -22,8 +20,8 @@ import { ITokenChangedEvent } from 'src/interfaces/auth/auth.events';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthTokenService } from 'src/services/auth/auth-token.service';
 import { AuthService } from 'src/services/auth/auth.service';
+import { DialogService } from 'src/services/dialog/dialog.service';
 import { ThemeService } from '../../../services/theme/theme.service';
-import { LoginDialogComponent } from '../static/login/login-dialog/login-dialog.component';
 
 @Component({
   selector: 'app-header',
@@ -41,14 +39,14 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   public initials: string | undefined = undefined;
 
   private readonly _menuTrigger = viewChild.required(MatMenuTrigger);
-  private readonly _dialog = inject(MatDialog);
 
   public constructor(
     @Inject(IS_MOBILE) public isMobile: boolean,
     private _changeDetectorRef: ChangeDetectorRef,
     private _themeService: ThemeService,
     private _authTokenService: AuthTokenService,
-    private _authService: AuthService
+    private _authService: AuthService,
+    private _dialogService : DialogService
   ) {
     const tokenIsSet = toSignal<ITokenChangedEvent>(this._authTokenService.tokenChanged);
 
@@ -83,12 +81,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   }
 
   public showLoginDialog(): void {
-    const dialogRef = this._dialog.open(LoginDialogComponent, {
-      restoreFocus: false,
-      width: '90%',
-      maxWidth: '35rem',
-      position: (this.isMobile ? { top: '10%', } : {}),
-    });
+    const dialogRef = this._dialogService.openLoginComponent();
 
     dialogRef.afterClosed().subscribe(() => this._menuTrigger().focus());
   }
