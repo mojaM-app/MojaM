@@ -1,7 +1,7 @@
 import { relatedDataNames } from '@db';
 import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
-import { CryptoService } from '@modules/auth';
+import { CryptoService, PasswordService } from '@modules/auth';
 import { BaseRepository } from '@modules/common';
 import {
   ActivateUserReqDto,
@@ -10,6 +10,7 @@ import {
   DeactivateUserReqDto,
   DeleteUserReqDto,
   UpdateUserDto,
+  UpdateUserPasswordDto,
   UpdateUserReqDto,
 } from '@modules/users';
 import { getDateTimeNow, isGuid, isNullOrEmptyString, isNullOrUndefined, isPositiveNumber } from '@utils';
@@ -20,10 +21,12 @@ import { User } from '../entities/user.entity';
 @Service()
 export class UserRepository extends BaseRepository {
   private readonly _cryptoService: CryptoService;
+  private readonly _passwordService: PasswordService;
 
   public constructor() {
     super();
     this._cryptoService = Container.get(CryptoService);
+    this._passwordService = Container.get(PasswordService);
   }
 
   public async getIdByUuid(userGuid: string | null | undefined): Promise<number | undefined> {
@@ -99,8 +102,12 @@ export class UserRepository extends BaseRepository {
 
   public async create(reqDto: CreateUserReqDto): Promise<User> {
     const userData: CreateUserDto = reqDto.userData;
+    if ((userData.password?.length ?? 0) > 0 && !this._passwordService.isPasswordValid(userData.password!)) {
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.Invalid_Password);
+    }
+
     const salt = this._cryptoService.generateSalt();
-    const hashedPassword = (userData.password?.length ?? 0) > 0 ? this._cryptoService.hashPassword(salt, userData.password!) : null;
+    const hashedPassword = (userData.password?.length ?? 0) > 0 ? this._passwordService.hashPassword(salt, userData.password!) : null;
     const newUser = this._dbContext.users.create({
       ...userData,
       password: hashedPassword,
@@ -113,6 +120,7 @@ export class UserRepository extends BaseRepository {
       lastLoginAt: undefined,
       failedLoginAttempts: 0,
     });
+
     return await this._dbContext.users.save(newUser);
   }
 
@@ -205,6 +213,24 @@ export class UserRepository extends BaseRepository {
         lastLoginAt: getDateTimeNow(),
         failedLoginAttempts: 0,
       } satisfies UpdateUserDto,
+      currentUserId: undefined,
+    } satisfies UpdateUserReqDto;
+
+    await this.update(reqDto);
+  }
+
+  public async setPassword(userId: number, password: string): Promise<void> {
+    const salt = this._cryptoService.generateSalt();
+    const hashedPassword = this._passwordService.hashPassword(salt, password);
+
+    const reqDto = {
+      userId,
+      userData: {
+        password: hashedPassword,
+        salt,
+        emailConfirmed: true,
+        failedLoginAttempts: 0,
+      } satisfies UpdateUserPasswordDto,
       currentUserId: undefined,
     } satisfies UpdateUserReqDto;
 

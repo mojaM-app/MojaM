@@ -84,7 +84,9 @@
     "ForgotPassword": "Nie pamiętasz hasła?",
     "ResetPasswordMessage": "Na podany adres e-mail zostanie wysłana wiadomość z instrukcją do resetowania hasła.",
     "BtnResetPassword": "Resetuj hasło",
-    "BtnResetPasswordHint": "Kliknij w powyższy przycisk, aby zresetować hasło do swojego konta. Następnie sprawdź pocztę. Jeśli nie otrzymano wiadomości, sprawdź folder ze spamem."
+    "BtnResetPasswordHint": "Kliknij w powyższy przycisk, aby zresetować hasło do swojego konta. Następnie sprawdź pocztę. Jeśli nie otrzymano wiadomości, sprawdź folder ze spamem.",
+    "ResetPasswordSuccess": "Hasło zostało zresetowane.",
+    "ResetPasswordFailed": "Wystąpił błąd podczas resetowania hasła."
   },
   "ResetPassword": {
     "ChangePasswordTitle": "Zmiana hasła",

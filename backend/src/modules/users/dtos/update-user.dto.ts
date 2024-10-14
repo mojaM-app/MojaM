@@ -10,11 +10,18 @@ export class UpdateUserDto {
   public lastLoginAt?: Date;
 }
 
+export class UpdateUserPasswordDto {
+  public password: string;
+  public salt: string;
+  public emailConfirmed: boolean;
+  public failedLoginAttempts: number;
+}
+
 export class UpdateUserReqDto extends BaseReqDto {
   public readonly userId: number;
-  public readonly userData: UpdateUserDto;
+  public readonly userData: UpdateUserDto | UpdateUserPasswordDto;
 
-  public constructor(userId: number, userData: UpdateUserDto, currentUserId: number | undefined) {
+  public constructor(userId: number, userData: UpdateUserDto | UpdateUserPasswordDto, currentUserId: number | undefined) {
     super(currentUserId);
     this.userId = userId;
     this.userData = userData;

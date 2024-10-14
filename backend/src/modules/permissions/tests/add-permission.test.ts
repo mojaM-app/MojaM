@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
-import { isNumber } from '@/utils';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { LoginDto } from '@modules/auth';
 import { AddPermissionsResponseDto, PermissionAddedEvent, PermissionsRoute, SystemPermission } from '@modules/permissions';
 import { CreateUserResponseDto, DeleteUserResponseDto, IUserDto, UserRoute } from '@modules/users';
 import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
+import { isNumber } from '@utils';
 import { registerTestEventHandlers, testEventHandlers } from '@utils/tests-events.utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';

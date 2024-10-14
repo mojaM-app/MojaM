@@ -8,7 +8,7 @@ export { CreateUserDto, CreateUserReqDto, CreateUserResponseDto } from './dtos/c
 export { DeactivateUserReqDto, DeactivateUserResponseDto } from './dtos/deactivate-user.dto';
 export { DeleteUserReqDto, DeleteUserResponseDto } from './dtos/delete-user.dto';
 export { GetUserProfileReqDto, GetUserProfileResponseDto, type IUserDto, type IUserProfileDto } from './dtos/get-user-profile.dto';
-export { UpdateUserDto, UpdateUserReqDto, UpdateUserResponseDto } from './dtos/update-user.dto';
+export { UpdateUserDto, UpdateUserPasswordDto, UpdateUserReqDto, UpdateUserResponseDto } from './dtos/update-user.dto';
 
 export { GetUserListReqDto, GetUserListResponseDto, type IUserGridItemDto, type UsersGridPageDto } from './dtos/get-user-list.dto';
 

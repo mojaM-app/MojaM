@@ -83,7 +83,7 @@
       @if (showResetPasswordButton()) {
         <div class="row mb-2">
           <div class="offset-3 col-9 offset-sm-6 col-sm-6">
-            <button mat-button class="w-100" type="submit" (click)="goToStepForgotPassword()">
+            <button mat-button class="w-100" type="button" (click)="goToStepForgotPassword()">
               {{ 'Login/ForgotPassword' | gmessage }}
             </button>
           </div>

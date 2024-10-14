@@ -10,6 +10,9 @@ import {
   RefreshTokenDto,
   RefreshTokenResponseDto,
   RequestResetPasswordResponseDto,
+  ResetPasswordDto,
+  ResetPasswordResponseDto,
+  ResetPasswordResultDto,
   UserInfoBeforeLogInResultDto,
   UserTryingToLogInDto,
 } from '@modules/auth';
@@ -28,9 +31,9 @@ export class AuthController extends BaseController {
 
   public getUserInfoBeforeLogIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const user: UserTryingToLogInDto = req.body;
-      const info: UserInfoBeforeLogInResultDto = await this._authService.getUserInfoBeforeLogIn(user);
-      res.status(200).json(new GetUserInfoBeforeLogInResponseDto(info));
+      const model: UserTryingToLogInDto = req.body;
+      const result: UserInfoBeforeLogInResultDto = await this._authService.getUserInfoBeforeLogIn(model);
+      res.status(200).json(new GetUserInfoBeforeLogInResponseDto(result));
     } catch (error) {
       next(error);
     }
@@ -38,8 +41,8 @@ export class AuthController extends BaseController {
 
   public requestResetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const data: UserTryingToLogInDto = req.body;
-      const result = await this._authService.requestResetPassword(data);
+      const model: UserTryingToLogInDto = req.body;
+      const result = await this._authService.requestResetPassword(model);
       res.status(200).json(new RequestResetPasswordResponseDto(result));
     } catch (error) {
       next(error);
@@ -58,14 +61,23 @@ export class AuthController extends BaseController {
     }
   }
 
+  public resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const model: ResetPasswordDto = req.body;
+      const result: ResetPasswordResultDto = await this._authService.resetPassword(model);
+      res.status(200).json(new ResetPasswordResponseDto(result));
+    } catch (error) {
+      next(error);
+    }
+  }
+
   public logIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const loginData: LoginDto = req.body;
-      const loginResult: ILoginResult = await this._authService.login(loginData);
-
+      const model: LoginDto = req.body;
+      const result: ILoginResult = await this._authService.login(model);
       res
         .status(200)
-        .json(new LoginResponseDto({ ...loginResult.user, accessToken: loginResult.accessToken, refreshToken: loginResult.refreshToken }));
+        .json(new LoginResponseDto({ ...result.user, accessToken: result.accessToken, refreshToken: result.refreshToken }));
     } catch (error) {
       next(error);
     }
@@ -73,9 +85,9 @@ export class AuthController extends BaseController {
 
   public refreshAccessToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const refreshToken: RefreshTokenDto = req.body;
-      const accessToken: string | null = await this._authService.refreshAccessToken(refreshToken);
-      res.status(200).json(new RefreshTokenResponseDto(accessToken));
+      const model: RefreshTokenDto = req.body;
+      const result: string | null = await this._authService.refreshAccessToken(model);
+      res.status(200).json(new RefreshTokenResponseDto(result));
     } catch (error) {
       next(error);
     }

@@ -3,7 +3,7 @@
     <mat-sidenav
       #sidenav
       [mode]="isMobile ? 'over' : 'side'"
-      [opened]="!isMobile"
+      [opened]="!isMobile && sideNavShouldBeOpened()"
       class="overflow-hidden border-0">
       <mat-toolbar>
         <mat-toolbar-row>

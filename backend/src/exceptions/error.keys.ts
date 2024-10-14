@@ -12,6 +12,7 @@ export const errorKeys = {
     User_Not_Authorized: 'User_Not_Authorized',
     User_Is_Not_Active: 'User_Is_Not_Active',
     User_Is_Locked_Out: 'User_Is_Locked_Out',
+    Invalid_Reset_Password_Token: 'Invalid_Reset_Password_Token',
   },
   users: {
     Invalid_Phone: 'Invalid_Phone',
@@ -23,5 +24,6 @@ export const errorKeys = {
     Password_To_Long: 'Password_To_Long',
     User_Already_Exists: 'User_Already_Exists',
     User_Does_Not_Exist: 'User_Does_Not_Exist',
+    Invalid_User_Id: 'Invalid_User_Id',
   },
 };

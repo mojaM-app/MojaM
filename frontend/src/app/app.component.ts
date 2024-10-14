@@ -48,6 +48,7 @@ export class AppComponent extends WithUnsubscribe() implements OnInit {
   @ViewChild('sidenav') public sidenav: MatSidenav | undefined;
 
   public readonly footerShouldBeVisible = signal<boolean>(true);
+  public readonly sideNavShouldBeOpened = signal<boolean>(true);
   public readonly showSpinner = signal<boolean>(false);
 
   public constructor(
@@ -64,7 +65,10 @@ export class AppComponent extends WithUnsubscribe() implements OnInit {
           filter(e => e instanceof NavigationEnd),
           distinctUntilChanged()
         )
-        .subscribe(event => this.setFooterShouldBeVisible(event as NavigationEnd))
+        .subscribe(event => {
+          this.setSideNavShouldBeOpened(event as NavigationEnd);
+          this.setFooterShouldBeVisible(event as NavigationEnd);
+        })
     );
   }
 
@@ -90,6 +94,17 @@ export class AppComponent extends WithUnsubscribe() implements OnInit {
 
   public onResize(mainContainerSize: ResizeObserverEntry): void {
     this._browserService.emitEventOnWindowResize(mainContainerSize);
+  }
+
+  private setSideNavShouldBeOpened(location: NavigationEnd): void {
+    const closeSideNavOnPaths = ['/reset-password/'];
+
+    if (closeSideNavOnPaths.some(path => location?.url?.startsWith(path) === true)) {
+      this.sideNavShouldBeOpened.set(false);
+      return;
+    }
+
+    this.sideNavShouldBeOpened.set(true);
   }
 
   private setFooterShouldBeVisible(location: NavigationEnd): void {

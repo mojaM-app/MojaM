@@ -5,13 +5,13 @@ import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 export class UserTryingToLogInDto {
   @IsNotEmpty({
-    message: errorKeys.login.Invalid_Login_Or_Password,
+    message: errorKeys.users.Invalid_Email,
   })
   @IsString({
-    message: errorKeys.login.Invalid_Login_Or_Password,
+    message: errorKeys.users.Invalid_Email,
   })
   @MaxLength(VALIDATOR_SETTINGS.EMAIL_MAX_LENGTH, {
-    message: errorKeys.login.Invalid_Login_Or_Password,
+    message: errorKeys.users.Invalid_Email,
   })
   public email: string | null | undefined;
 

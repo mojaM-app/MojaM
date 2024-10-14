@@ -1,8 +1,9 @@
 import { events } from '@events';
 import { IResponse } from '@interfaces';
-import { IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class RefreshTokenDto {
+  @IsNotEmpty()
   @IsString()
   public accessToken: string | null | undefined;
 

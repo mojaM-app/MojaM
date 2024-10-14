@@ -36,7 +36,7 @@ export class SnackBarService {
   public showError(message: string): void {
     this._emitToast.next({
       message: message,
-      action: this._translationService.get('Shared/BtnOk'),
+      action: "OK",
       timeStamp: new Date().getTime(),
       config: {
         panelClass: ['error'],
@@ -47,7 +47,7 @@ export class SnackBarService {
   public showSuccess(message: string): void {
     this._emitToast.next({
       message: message,
-      action: this._translationService.get('Shared/BtnOk'),
+      action: "OK",
       timeStamp: new Date().getTime(),
       config: {
         panelClass: ['success'],
@@ -59,6 +59,12 @@ export class SnackBarService {
     message = this._translationService.get(message);
 
     return this.showSuccess(message);
+  }
+
+  public translateAndShowError(message: string) : void{
+    message = this._translationService.get(message);
+
+    return this.showError(message);
   }
 
   private waitForSnackbarDismiss(message: IToast): Observable<IToast> {

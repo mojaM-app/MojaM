@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, tap } from 'rxjs';
-import { CheckResetPasswordTokenResult, ILoginModel, ILoginResponse, UserInfoBeforeLogInResult } from 'src/interfaces/auth/auth.models';
+import {
+  CheckResetPasswordTokenResult,
+  ILoginModel,
+  ILoginResponse,
+  ResetPasswordResultDto,
+  UserInfoBeforeLogInResult,
+} from 'src/interfaces/auth/auth.models';
 import { BaseService } from '../common/base.service';
 import { HttpClientService } from '../common/httpClient.service';
 import { LocalStorageService } from '../storage/localstorage.service';
@@ -27,7 +33,10 @@ export class AuthService extends BaseService {
     this._isLoggedIn$.next(this._authTokenService.isTokenValid());
   }
 
-  public getUserInfoBeforeLogIn(email: string, phone?: string): Observable<UserInfoBeforeLogInResult> {
+  public getUserInfoBeforeLogIn(
+    email: string,
+    phone?: string
+  ): Observable<UserInfoBeforeLogInResult> {
     return this._httpClient
       .request()
       .withUrl(this.API_ROUTES.auth.getUserInfoBeforeLogIn())
@@ -74,11 +83,26 @@ export class AuthService extends BaseService {
     this._isLoggedIn$.next(this._authTokenService.isTokenValid());
   }
 
-  public checkResetPasswordToken(userId: string, token: string): Observable<CheckResetPasswordTokenResult> {
+  public checkResetPasswordToken(
+    userId: string,
+    token: string
+  ): Observable<CheckResetPasswordTokenResult> {
     return this._httpClient
       .request()
       .withUrl(this.API_ROUTES.auth.checkResetPasswordToken(userId, token))
       .post<CheckResetPasswordTokenResult>();
+  }
+
+  public resetPassword(
+    userId: string,
+    token: string,
+    password: string
+  ): Observable<ResetPasswordResultDto> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.auth.resetPasswordPath())
+      .withBody({ userId, token, password })
+      .post<ResetPasswordResultDto>();
   }
 
   public refreshAccessToken(): Observable<string | null> {

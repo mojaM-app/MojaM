@@ -10,6 +10,10 @@ export interface CheckResetPasswordTokenResult {
   userEmail?: string;
 }
 
+export interface ResetPasswordResultDto {
+  isPasswordSet: boolean;
+}
+
 export interface ILoginModel {
   email: string;
   phone?: string;

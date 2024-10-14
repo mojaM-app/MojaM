@@ -10,10 +10,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthService } from 'src/services/auth/auth.service';
+import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { ControlValidators } from 'src/validators/control.validators';
 import { PasswordValidator } from 'src/validators/password.validator';
 import { IResetPasswordForm, ResetPasswordFormControlNames } from './reset-password.form';
@@ -45,7 +46,9 @@ export class ResetPasswordComponent extends WithForm<IResetPasswordForm>() imple
   public constructor(
     formBuilder: FormBuilder,
     private _route: ActivatedRoute,
-    private _authService: AuthService
+    private _router: Router,
+    private _authService: AuthService,
+    private _snackBarService: SnackBarService
   ) {
     const formGroup = formBuilder.group<IResetPasswordForm>(
       {
@@ -84,7 +87,25 @@ export class ResetPasswordComponent extends WithForm<IResetPasswordForm>() imple
   }
 
   public changePassword(): void {
-    // Reset password logic
+    if (this.isRedyToSubmit() !== true) {
+      return;
+    }
+
+    const params = this._route.snapshot.params;
+    const userId = params['userId'];
+    const token = params['token'];
+
+    this._authService
+      .resetPassword(userId, token, this.formControls.password.value)
+      .subscribe(response => {
+        if (response.isPasswordSet) {
+          this._snackBarService.translateAndShowSuccess('Login/ResetPasswordSuccess');
+        } else {
+          this._snackBarService.translateAndShowError('Login/ResetPasswordFailed');
+        }
+
+        this._router.navigateByUrl('/');
+      });
   }
 
   public togglePasswordVisibility(event: MouseEvent): void {
