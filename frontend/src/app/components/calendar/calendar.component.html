@@ -99,7 +99,11 @@
       @for (event of day.events; track event) {
         <div class="cal-week-view border-0 bg-transparent">
           <div class="cal-event cell-month-day text-nowrap">
-            <div class="cal-event-title">
+            <div
+              class="cal-event-title"
+              (click)="showMonthEvent(event)"
+              (keyup.enter)="showMonthEvent(event)"
+              tabindex="0">
               {{ event.title }}
             </div>
           </div>
@@ -128,13 +132,18 @@
           [events]="events()"
           [locale]="locale()"
           [weekStartsOn]="weekStartsOn"
-          [weekendDays]="weekendDays">
+          [weekendDays]="weekendDays"
+          (eventClicked)="showWeekDayEvent($event)">
         </mwl-calendar-week-view>
       </div>
     }
     @case (CalendarView.Day) {
       <div class="calendar-container">
-        <mwl-calendar-day-view [viewDate]="viewDate()" [events]="events()" [locale]="locale()">
+        <mwl-calendar-day-view
+          [viewDate]="viewDate()"
+          [events]="events()"
+          [locale]="locale()"
+          (eventClicked)="showWeekDayEvent($event)">
         </mwl-calendar-day-view>
       </div>
     }

@@ -1,0 +1,7 @@
+<div class="dialog-header">
+  <div mat-dialog-title>{{ model.title }}</div>
+</div>
+<mat-dialog-content [innerHTML]="model.content"></mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>{{ 'Shared/BtnOk' | gmessage }}</button>
+</mat-dialog-actions>

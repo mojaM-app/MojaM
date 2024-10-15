@@ -9,7 +9,7 @@ import {
 import {
   CalendarDateFormatter,
   CalendarDayViewComponent,
-  CalendarEvent,
+  CalendarEventTitleFormatter,
   CalendarMonthViewComponent,
   CalendarView,
   CalendarWeekViewComponent,
@@ -19,9 +19,13 @@ import {
 import { ViewPeriod } from 'calendar-utils';
 import { debounceTime } from 'rxjs';
 import { IS_MOBILE } from 'src/app/app.config';
+import { CalendarEvent } from 'src/interfaces/calendar/calendar-event';
 import { CalendarService } from 'src/services/calendar/calendar.service';
+import { DialogService } from 'src/services/dialog/dialog.service';
 import { CultureService } from 'src/services/translate/culture.service';
-import { CustomDateFormatter } from './date-formatters/custom.date-formatter';
+import { CustomDateFormatter } from './date-formatters/custom.date.formatter';
+import { CustomEventTitleFormatter } from './event-formatters/custom.event-title.formatter';
+import { EventPreviewComponent } from './event-preview/event-preview.component';
 
 //https://mattlewis92.github.io/angular-calendar/#/kitchen-sink
 @Component({
@@ -33,6 +37,10 @@ import { CustomDateFormatter } from './date-formatters/custom.date-formatter';
     {
       provide: CalendarDateFormatter,
       useClass: CustomDateFormatter,
+    },
+    {
+      provide: CalendarEventTitleFormatter,
+      useClass: CustomEventTitleFormatter,
     },
   ],
 })
@@ -54,7 +62,8 @@ export class CalendarComponent {
     @Inject(IS_MOBILE) public isMobile: boolean,
     cultureService: CultureService,
     private _dateAdapter: DateAdapter,
-    private _calendarService: CalendarService
+    private _calendarService: CalendarService,
+    private _dialogService: DialogService
   ) {
     this.locale.set(cultureService.currentCulture);
 
@@ -83,6 +92,26 @@ export class CalendarComponent {
 
   public setPrevView(): void {
     this.setNewViewDate(true);
+  }
+
+  public showMonthEvent(event: CalendarEvent): void {
+    this._dialogService.open(EventPreviewComponent, {
+      data: {
+        event: event,
+      },
+    });
+  }
+
+  public showWeekDayEvent({
+    event,
+    sourceEvent,
+  }: {
+    event: CalendarEvent;
+    sourceEvent: MouseEvent | KeyboardEvent;
+  }): void {
+    sourceEvent.preventDefault();
+
+    this.showMonthEvent(event);
   }
 
   private setNewViewDate(moveBack = false): void {

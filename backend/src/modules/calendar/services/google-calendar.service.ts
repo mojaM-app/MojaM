@@ -54,6 +54,7 @@ export class GoogleCalendarService {
         end: this.getEndDate(event.end),
         title: event.summary,
         allDay: event.start?.date !== undefined,
+        location: event.location,
       } satisfies ICalendarEventDto;
     });
   }

@@ -54,6 +54,8 @@ body {
   }
   //padding of dialog header title
   --mat-dialog-headline-padding: 0 0 0.25rem 24px;
+  //dialog header font size
+  --mdc-dialog-subhead-size: 1.25rem;
 
   //override bootstrap colors
   --bs-body-bg: #{--mat-app-background-color};
@@ -298,6 +300,10 @@ body {
   justify-content: space-between;
   align-items: center;
   padding-right: 24px;
+
+  .mat-mdc-dialog-title {
+    max-width: 100%;
+  }
 }
 
 .mat-icon {
@@ -309,18 +315,22 @@ body {
   .cal-month-view .cal-day-cell {
     width: 10px;
     padding: 0 0.125rem;
-  }
 
-  .cal-month-view .cal-day-cell.cal-out-month .cal-day-number {
-    opacity: 0.75;
+    &.cal-out-month .cal-day-number {
+      opacity: 0.5;
+    }
+
+    &.cal-today .cal-day-number {
+      font-size: 1rem;
+    }
+
+    &.cal-in-month.cal-has-events {
+      cursor: default;
+    }
   }
 
   .cal-month-view .cal-day-number {
     opacity: 1;
-    font-size: 1rem;
-  }
-
-  .cal-month-view .cal-day-cell.cal-today .cal-day-number {
     font-size: 1rem;
   }
 }

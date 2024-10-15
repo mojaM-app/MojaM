@@ -5,7 +5,8 @@ export interface ICalendarEventDto {
   start: Date | undefined;
   end: Date | undefined;
   title: string | null | undefined;
-  allDay: boolean | null | undefined;
+  location: string | null | undefined;
+  allDay: boolean;
 }
 
 export class GetCalendarEventsResponseDto implements IResponse<ICalendarEventDto[]> {
