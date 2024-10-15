@@ -7,7 +7,8 @@ import { BehaviorSubject, MonoTypeOperatorFunction, Observable, tap } from 'rxjs
 export class SpinnerService {
   private readonly _isBusy = new BehaviorSubject<boolean>(false);
   private _waitCounter = 0;
-  private _timeOut: NodeJS.Timeout | null = null;
+  private _showSpinnerTimeout: NodeJS.Timeout | null = null;
+  private _hideSpinnerTimeout: NodeJS.Timeout | null = null;
 
   public onStateChanged$(): Observable<boolean> {
     return this._isBusy.asObservable();
@@ -35,19 +36,28 @@ export class SpinnerService {
 
   private decrementWait(): void {
     if (--this._waitCounter === 0) {
-      if (this._timeOut) {
-        window.clearTimeout(this._timeOut);
+      if (this._hideSpinnerTimeout) {
+        window.clearTimeout(this._hideSpinnerTimeout);
       }
-      this._timeOut = setTimeout(() => this.hideSpinner(), 100);
+      this._hideSpinnerTimeout = setTimeout(() => this.hideSpinner(), 100);
+
+      if (this._showSpinnerTimeout) {
+        window.clearTimeout(this._showSpinnerTimeout);
+      }
+      this._showSpinnerTimeout = null;
     }
   }
 
   private incrementWait(): void {
     ++this._waitCounter;
-    if (this._timeOut) {
-      window.clearTimeout(this._timeOut);
+    if (this._hideSpinnerTimeout) {
+      window.clearTimeout(this._hideSpinnerTimeout);
     }
-    this._timeOut = null;
-    this.showSpinner();
+    this._hideSpinnerTimeout = null;
+
+    if (this._showSpinnerTimeout) {
+      window.clearTimeout(this._showSpinnerTimeout);
+    }
+    this._showSpinnerTimeout = setTimeout(() => this.showSpinner(), 200);
   }
 }
