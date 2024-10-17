@@ -1,0 +1,16 @@
+<div class="container">
+@if (user()) {
+
+  <div class="row">
+    <div class="col">joiningDate</div>
+    <div class="col">
+      @if (user()!.joiningDate !== undefined) {
+        {{ user()!.joiningDate! | gdate }}
+      }
+      @else {
+        {{ 'Management/UserDetails/NotAvailable' | gmessage }}
+      }
+    </div>
+  </div>
+}
+</div>

@@ -1,11 +1,19 @@
-import { GridData } from "../common/grid.data";
+import { GridData } from '../common/grid.data';
 
-export interface IUserGridItemDto {
+export interface IUserGridItemColumns {
   id: string;
   email: string;
   phone: string;
   firstName?: string;
   lastName?: string;
+}
+
+export interface IUserGridItemDto extends IUserGridItemColumns {
+  joiningDate?: Date;
+  lastLoginAt?: Date;
+  isActive: boolean;
+  isLockedOut: boolean;
+  rolesCount: number;
 }
 
 export type UsersGridData = GridData<IUserGridItemDto>;

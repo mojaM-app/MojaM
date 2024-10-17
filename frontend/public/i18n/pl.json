@@ -112,7 +112,7 @@
   "Management": {
     "Title": "Zarządzanie",
     "UserList": {
-      "Title": "Lista użytkowników",
+      "Title": "Użytkownicy",
       "PaginationAriaLabel": "Wybierz stronę",
       "GridColumns": {
         "FirstName": "Imię",

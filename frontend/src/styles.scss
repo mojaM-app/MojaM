@@ -110,6 +110,14 @@ body {
     }
   }
 
+  .mat-mdc-table {
+    .mat-mdc-header-row {
+      background-color: mat.get-theme-color($light-theme, secondary-container);
+      color: mat.get-theme-color($light-theme, on-secondary-container);
+    }
+  }
+
+
   &.theme-dark {
     @include mat.all-component-colors($dark-theme);
 
@@ -146,6 +154,13 @@ body {
             $dark-theme,
             on-secondary-container
           )};
+      }
+    }
+
+    .mat-mdc-table {
+      .mat-mdc-header-row {
+        background-color: mat.get-theme-color($dark-theme, secondary-container);
+        color: mat.get-theme-color($dark-theme, on-secondary-container);
       }
     }
 

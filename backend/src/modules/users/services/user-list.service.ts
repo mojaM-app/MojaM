@@ -1,6 +1,6 @@
 import { events } from '@events';
 import { IGridPageResponseDto } from '@interfaces';
-import { BaseService, userToIUserGridItemDto } from '@modules/common';
+import { BaseService, vUserToIUserGridItemDto } from '@modules/common';
 import {
   GetUserListReqDto,
   UserListRepository,
@@ -25,7 +25,7 @@ export class UserListService extends BaseService {
     this._eventDispatcher.dispatch(events.users.userListRetrieved, new UserListRetrievedEvent(reqDto.currentUserId));
 
     return {
-      items: usersWithTotal.items.map(user => userToIUserGridItemDto(user)),
+      items: usersWithTotal.items.map(user => vUserToIUserGridItemDto(user)),
       totalCount: usersWithTotal.totalCount
     } satisfies UsersGridPageDto;
   }
