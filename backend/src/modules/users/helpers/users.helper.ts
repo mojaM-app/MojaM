@@ -20,7 +20,7 @@ export function userToIUserProfile(user: User): IUserProfileDto {
   } satisfies IUserProfileDto;
 }
 
-export function userToIUserGridItemDto(user: vUser): IUserGridItemDto {
+export function vUserToIUserGridItemDto(user: vUser): IUserGridItemDto {
   return {
     id: user.id,
     email: user.email,
