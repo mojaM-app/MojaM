@@ -10,7 +10,7 @@ interface ICachedFormatter {
 }
 
 @Pipe({
-  name: 'dateAgo',
+  name: 'gdateAgo',
   pure: true,
 })
 export class DateAgoPipe implements PipeTransform {
