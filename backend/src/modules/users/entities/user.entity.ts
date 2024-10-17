@@ -97,18 +97,11 @@ export class User {
     lastName?: string;
 
   @Column({
-    name: 'BirthDay',
+    name: 'JoiningDate',
     type: 'date',
     nullable: true,
   })
-    birthDay?: Date;
-
-  @Column({
-    name: 'JoiningYear',
-    type: 'date',
-    nullable: true,
-  })
-    joiningYear?: Date;
+    joiningDate?: Date;
 
   @Column({
     name: 'IsActive',

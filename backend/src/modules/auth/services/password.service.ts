@@ -1,17 +1,11 @@
-import { isNullOrEmptyString, VALIDATOR_SETTINGS } from '@utils';
 import { isStrongPassword, maxLength } from 'class-validator';
 import * as crypto from 'crypto';
-import Container, { Service } from 'typedi';
-import { CryptoService } from './crypto.service';
+import { Service } from 'typedi';
+import { VALIDATOR_SETTINGS } from './../../../utils/constants';
+import { isNullOrEmptyString } from './../../../utils/strings.utils';
 
 @Service()
 export class PasswordService {
-  private readonly _cryptoService: CryptoService;
-
-  public constructor() {
-    this._cryptoService = Container.get(CryptoService);
-  }
-
   public hashPassword(salt: string, password: string): string {
     if (isNullOrEmptyString(salt) || isNullOrEmptyString(password)) {
       throw new Error('Salt and password are required to hash a password');
