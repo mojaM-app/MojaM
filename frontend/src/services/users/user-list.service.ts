@@ -4,25 +4,35 @@ import { Observable } from 'rxjs';
 import { UsersGridData } from 'src/interfaces/users/users.interfaces';
 import { BaseService } from '../common/base.service';
 import { HttpClientService } from '../common/httpClient.service';
+import { SpinnerService } from '../spinner/spinner.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserListService extends BaseService {
-  public constructor(private _httpClient: HttpClientService) {
+  public constructor(
+    private _httpClient: HttpClientService,
+    private _spinnerService: SpinnerService
+  ) {
     super();
   }
 
-  public get(sortColumn : string, sortDirection : SortDirection, pageIndex : number, pageSize : number): Observable<UsersGridData | null> {
+  public get(
+    sortColumn: string,
+    sortDirection: SortDirection,
+    pageIndex: number,
+    pageSize: number
+  ): Observable<UsersGridData | null> {
     return this._httpClient
       .request()
       .withParams({
         column: sortColumn,
         direction: sortDirection,
         pageIndex,
-        pageSize
+        pageSize,
       })
       .withUrl(this.API_ROUTES.userList.get())
-      .get<UsersGridData>();
+      .get<UsersGridData>()
+      .pipe(this._spinnerService.waitForSubscription());
   }
 }
