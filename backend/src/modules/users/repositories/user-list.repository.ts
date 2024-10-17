@@ -2,7 +2,7 @@ import { IGridPageResponseDto, IPageData, ISortData } from '@interfaces';
 import { BaseRepository } from '@modules/common';
 import { Service } from 'typedi';
 import { FindOptionsWhere } from 'typeorm';
-import { User } from '../entities/user.entity';
+import { vUser } from '../entities/vUser.entity';
 
 @Service()
 export class UserListRepository extends BaseRepository {
@@ -10,12 +10,12 @@ export class UserListRepository extends BaseRepository {
     super();
   }
 
-  public async get(paginator: IPageData, sort: ISortData): Promise<IGridPageResponseDto<User>> {
-    const where: FindOptionsWhere<User> = {
+  public async get(paginator: IPageData, sort: ISortData): Promise<IGridPageResponseDto<vUser>> {
+    const where: FindOptionsWhere<vUser> = {
       isDeleted: false,
     };
 
-    const result = await this._dbContext.users.findAndCount({
+    const result = await this._dbContext.vUsers.findAndCount({
       where,
       take: paginator.pageSize,
       skip: paginator.pageSize * paginator.pageIndex,

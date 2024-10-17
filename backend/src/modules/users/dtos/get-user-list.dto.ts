@@ -8,6 +8,11 @@ export interface IUserGridItemDto {
   lastName?: string;
   email: string;
   phone: string;
+  joiningDate?: Date;
+  lastLoginAt?: Date;
+  isActive: boolean;
+  isLockedOut: boolean;
+  rolesCount: number;
 }
 
 export type UsersGridPageDto = IGridPageResponseDto<IUserGridItemDto>;

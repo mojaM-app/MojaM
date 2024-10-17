@@ -8,7 +8,7 @@ import {
   UsersGridPageDto
 } from '@modules/users';
 import { Container, Service } from 'typedi';
-import { User } from '../entities/user.entity';
+import { vUser } from '../entities/vUser.entity';
 
 @Service()
 export class UserListService extends BaseService {
@@ -20,7 +20,7 @@ export class UserListService extends BaseService {
   }
 
   public async get(reqDto: GetUserListReqDto): Promise<UsersGridPageDto> {
-    const usersWithTotal: IGridPageResponseDto<User> = await this._userListRepository.get(reqDto.page, reqDto.sort);
+    const usersWithTotal: IGridPageResponseDto<vUser> = await this._userListRepository.get(reqDto.page, reqDto.sort);
 
     this._eventDispatcher.dispatch(events.users.userListRetrieved, new UserListRetrievedEvent(reqDto.currentUserId));
 

@@ -1,5 +1,6 @@
 import { IUserDto, IUserGridItemDto, IUserProfileDto } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
+import { vUser } from '@modules/users/entities/vUser.entity';
 
 export function userToIUser(user: User): IUserDto {
   return {
@@ -19,12 +20,17 @@ export function userToIUserProfile(user: User): IUserProfileDto {
   } satisfies IUserProfileDto;
 }
 
-export function userToIUserGridItemDto(user: User): IUserGridItemDto {
+export function userToIUserGridItemDto(user: vUser): IUserGridItemDto {
   return {
-    id: user.uuid,
+    id: user.id,
     email: user.email,
     phone: user.phone,
     firstName: user.firstName,
     lastName: user.lastName,
+    joiningDate: user.joiningDate,
+    lastLoginAt: user.lastLoginAt,
+    isActive: user.isActive,
+    isLockedOut: user.isLockedOut,
+    rolesCount: user.rolesCount,
   } satisfies IUserGridItemDto;
 }
