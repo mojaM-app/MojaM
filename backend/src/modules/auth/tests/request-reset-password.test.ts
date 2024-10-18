@@ -432,7 +432,7 @@ describe('POST /auth/request-reset-password', () => {
           .send({ email } satisfies UserTryingToLogInDto);
         expect(response.statusCode).toBe(400);
         const errors = (response.body.data.message as string)?.split(',');
-        expect(errors.filter(x => !x.includes('Login')).length).toBe(0);
+        expect(errors.filter(x => !x.includes('Invalid_Email')).length).toBe(0);
 
         expect(mockSendMail).toHaveBeenCalledTimes(0);
       }
