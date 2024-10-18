@@ -20,6 +20,7 @@ import {
   UserInfoBeforeLogInResultDto,
   UserLockedOutEvent,
   UserLoggedInEvent,
+  UserPasswordChangedEvent,
   UserRefreshedTokenEvent,
   UserTryingToLogInDto,
 } from '@modules/auth';
@@ -113,8 +114,8 @@ export class AuthService extends BaseService {
     const token = this._cryptoService.generateResetPasswordToken();
 
     const resetPasswordToken = await this._resetPasswordTokensRepository.createToken(user.id, token);
-
-    const link = `${CLIENT_APP_URL}/${AuthRoute.resetPassword}/${user.uuid}/${resetPasswordToken.token}`;
+    const url = CLIENT_APP_URL!.endsWith('/') ? CLIENT_APP_URL!.slice(0, -1) : CLIENT_APP_URL;
+    const link = `${url}/${AuthRoute.resetPassword}/${user.uuid}/${resetPasswordToken.token}`;
 
     return await this._emailService.sendEmailResetPassword(userToIUserProfile(user), link);
   }
@@ -172,6 +173,8 @@ export class AuthService extends BaseService {
     await this._userRepository.setPassword(user!.id, data.password!);
 
     await this._resetPasswordTokensRepository.deleteTokens(user!.id);
+
+    this._eventDispatcher.dispatch(events.users.userPasswordChanged, new UserPasswordChangedEvent(userToIUser(user!)));
 
     return {
       isPasswordSet: true,

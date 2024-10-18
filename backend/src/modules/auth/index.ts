@@ -5,6 +5,7 @@ export { InactiveUserTriesToLogInEvent } from './events/inactive-user-tries-to-l
 export { LockedUserTriesToLogInEvent } from './events/locked-user-tries-to-log-in-event';
 export { UserLockedOutEvent } from './events/user-locked-out-event';
 export { UserLoggedInEvent } from './events/user-logged-in-event';
+export { UserPasswordChangedEvent } from './events/user-password-changed-event';
 export { UserRefreshedTokenEvent } from './events/user-refreshed-token-event';
 
 export { CheckResetPasswordTokenReqDto, CheckResetPasswordTokenResponseDto, type CheckResetPasswordTokenResultDto } from './dtos/check-reset-password-token.dto';

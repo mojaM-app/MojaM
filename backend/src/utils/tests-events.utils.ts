@@ -4,6 +4,7 @@ import {
   LockedUserTriesToLogInEvent,
   UserLockedOutEvent,
   UserLoggedInEvent,
+  UserPasswordChangedEvent,
   UserRefreshedTokenEvent,
 } from '@modules/auth';
 import { PermissionAddedEvent, PermissionDeletedEvent } from '@modules/permissions';
@@ -15,6 +16,7 @@ const testEventHandlers: {
   onUserRefreshedToken: (data: any) => void;
   inactiveUserTriesToLogIn: (data: any) => void;
   lockedUserTriesToLogIn: (data: any) => void;
+  onUserPasswordChanged: (data: any) => void;
   onFailedLoginAttempt: (data: any) => void;
   onUserLockedOut: (data: any) => void;
   onUserCreated: (data: any) => void;
@@ -40,6 +42,7 @@ const testEventHandlers: {
   onUserDeactivated: jest.fn((data: UserDeactivatedEvent) => {}),
   onPermissionAdded: jest.fn((data: PermissionAddedEvent) => {}),
   onPermissionDeleted: jest.fn((data: PermissionDeletedEvent) => {}),
+  onUserPasswordChanged: jest.fn((data: UserPasswordChangedEvent) => {}),
 };
 
 const registerTestEventHandlers = (eventDispatcher: EventDispatcher): void => {

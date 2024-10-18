@@ -1,3 +1,4 @@
+import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { IResponse } from '@interfaces';
 import { VALIDATOR_SETTINGS } from '@utils';
@@ -31,8 +32,10 @@ export interface ResetPasswordResultDto {
 
 export class ResetPasswordResponseDto implements IResponse<ResetPasswordResultDto> {
   public readonly data: ResetPasswordResultDto;
+  public readonly message: string;
 
   public constructor(userInfo: ResetPasswordResultDto) {
     this.data = userInfo;
+    this.message = events.users.userPasswordChanged;
   }
 }
