@@ -12,8 +12,7 @@ Połączenie do bazy realizowane jest za pomocą [TypeORM](https://typeorm.io/).
 1. W konsoli wejdź do folderu ``backend``
 2. Będąc w folderze ``backend`` uruchom komendę ``npm run init``.
 3. Otwórz plik ``backend\.env.development.local`` i ustaw zmienne środowiskowe (domyślna konfiguracja poniżej).
-4. Otwórz plik ``backend\src\dataBase\data-source.ts`` i ustaw parametry połączenia do bazy danych.
-5. Utwórz bazę danych i niezbędne tabele, w tym celu będąc w folderze ``backend`` uruchom komendę ``npm run migration:run``. Komenda ta uruchamia migracje SQL.
+4. Utwórz bazę danych i niezbędne tabele, w tym celu będąc w folderze ``backend`` uruchom komendę ``npm run migration:run``. Komenda ta uruchamia migracje SQL.
 6. Uruchom aplikację komendą ``npm run dev``
 
 ### Domyślne zmienne środowiskowe
@@ -22,12 +21,43 @@ Połączenie do bazy realizowane jest za pomocą [TypeORM](https://typeorm.io/).
 PORT = 5100
 BASE_PATH = /api
 
+# DATABASE
+DATABASE_HOST = localhost
+DATABASE_PORT = 3306
+DATABASE_USERNAME = admin
+DATABASE_PASSWORD = admin
+DATABASE_NAME = dev
+DATABASE_MIGRATIONS_PATH =
+
 # TOKEN
 ACCESS_TOKEN_SECRET = secretKey
 REFRESH_TOKEN_SECRET = differentSecretKey
 SECRET_AUDIENCE = audience
 SECRET_ISSUER = issuer
 REFRESH_TOKEN_EXPIRE_IN = 1d
+
+# CLIENT APP
+CLIENT_APP_URL =
+
+# SMTP service configuration
+SMTP_SERVICE_HOST =
+SMTP_SERVICE_PORT =
+SMTP_USER_NAME =
+SMTP_USER_PASSWORD =
+
+#NOTIFICATIONS
+NOTIFICATIONS_EMAIL =
+REQ_RESET_PASSWORD_TITLE = Prośba o zresetowanie hasła
+RESET_PASSWORD_TOKEN_EXPIRE_IN = 60 #time in minutes
+
+#GOOGLE API KEY
+#according to https://www.youtube.com/watch?v=zrLf4KMs71E
+GOOGLE_API_CLIENT_ID =
+GOOGLE_API_CLIENT_SECRET =
+GOOGLE_API_REFRESH_TOKEN =
+
+#GOOGLE CALENDAR API
+GOOGLE_CALENDAR_ID = primary
 
 # LOG
 LOG_FORMAT = dev
@@ -39,21 +69,21 @@ CREDENTIALS = true
 ```
 ### Domyślna konfiguracja bazy danych
 ```ts
-export const AppDataSource = new DbContext({
+{
   type: 'mysql',
-  host: '127.0.0.1',
-  port: 3306,
-  username: 'root',
-  password: 'admin',
-  database: 'dev',
+  host: DATABASE_HOST,
+  port: toNumber(DATABASE_PORT)!,
+  username: DATABASE_USERNAME,
+  password: DATABASE_PASSWORD,
+  database: DATABASE_NAME,
   synchronize: false,
   logging: true,
   entities: [/*tutaj wylistowane wszystkie encje bazodanowe*/],
   subscribers: [],
   namingStrategy: new TitleCaseNamingStrategy(),
   migrationsTableName: '_migrations_history',
-  migrations: ['src/dataBase/migrations/*{.ts,.js}'],
-});
+  migrations: [DATABASE_MIGRATIONS_PATH!],
+}
 ```
 
 ## Testy

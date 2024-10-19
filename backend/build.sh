@@ -23,14 +23,10 @@ echo ">>>>>>>>>> Deleting logs folder"
 rm -rf "$WORKING_DIR"/logs
 
 echo ">>>>>>>>>> Deleting all tests"
-find "$WORKING_DIR" -name tests -exec rm -R "{}" \;
-find "$WORKING_DIR" -type f -name '*.spec.*' -delete
-# rm -rf "$WORKING_DIR"/utils/tests.utils.js
-# rm -rf "$WORKING_DIR"/utils/tests.utils.js.map
 rm -rf "$WORKING_DIR"/utils/tests-events.utils.js
 rm -rf "$WORKING_DIR"/utils/tests-events.utils.js.map
-rm -rf "$WORKING_DIR"/dataBase/data-source.js
-rm -rf "$WORKING_DIR"/dataBase/data-source.js.map
+find "$WORKING_DIR" -name tests -exec rm -R "{}" \;
+find "$WORKING_DIR" -type f -name '*.spec.*' -delete
 
 echo ">>>>>>>>>> Finished"
 echo ">>>>>>>>>> Copy files from "$WORKING_DIR" to the server"

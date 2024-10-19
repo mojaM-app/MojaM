@@ -1,5 +1,14 @@
 import { config } from 'dotenv';
-config({ path: `.env.${process.env.NODE_ENV ?? 'development'}.local` });
+
+function getEnvName(NODE_ENV: string | undefined): string {
+  if (NODE_ENV === 'production') {
+    return 'production';
+  }
+
+  return 'development';
+}
+
+config({ path: `.env.${getEnvName(process.env.NODE_ENV)}.local` });
 
 export const CREDENTIALS = process.env.CREDENTIALS === 'true';
 export const {
