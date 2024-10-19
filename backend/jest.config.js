@@ -9,6 +9,7 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
+  testRegex: '.*\\.(test|spec)\\.ts$',
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/src' }),
   bail: 1,
   maxConcurrency: 1,
