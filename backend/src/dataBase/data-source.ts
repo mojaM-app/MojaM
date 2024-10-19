@@ -22,5 +22,6 @@ export const AppDataSource = new DbContext({
   subscribers: [],
   namingStrategy: new TitleCaseNamingStrategy(),
   migrationsTableName: '_migrations_history',
+  migrationsTransactionMode: 'all',
   migrations: [DATABASE_MIGRATIONS_PATH!],
 });
