@@ -5,7 +5,7 @@ import { PasswordService } from './../../modules/auth/services/password.service'
 import { SystemPermission } from './../../modules/permissions/enums/system-permission.enum';
 import { generateRandomNumber, getAdminLoginData } from './../../utils/tests.utils';
 
-export class Seed1724169199901 implements MigrationInterface {
+export class Seed1729350380773 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query('INSERT INTO `system_permissions` (`Id`, `Name`, `Description`) VALUES (10, \'UsersAdministration\', \'Users administration permission group\')');
     await queryRunner.query('INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' + SystemPermission.PreviewUserList + ', \'PreviewUserList\', \'Permission that allows preview User list\', 10)');
