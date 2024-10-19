@@ -1,7 +1,7 @@
 {
   "recommendations": [
     "streetsidesoftware.code-spell-checker",
-    "orta.vscode-jest",
+    "firsttris.vscode-jest-runner",
     "editorconfig.editorconfig",
     "mikestead.dotenv",
     "streetsidesoftware.code-spell-checker",
