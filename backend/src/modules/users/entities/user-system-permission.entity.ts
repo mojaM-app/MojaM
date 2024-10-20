@@ -56,5 +56,5 @@ export class UserSystemPermission {
     default: () => 'CURRENT_TIMESTAMP',
     type: 'timestamp',
   })
-    assignedAt: Date;
+  public assignedAt: Date;
 }
