@@ -2,11 +2,14 @@ DROP TABLE IF EXISTS
 user_reset_password_tokens,
 user_to_systempermissions, 
 system_permissions, 
-users;
+users,
+announcements,
+announcement_items;
 
 DROP VIEW IF EXISTS
 vuser;
 
-DROP TABLE IF EXISTS _prisma_migrations;
-DROP TABLE IF EXISTS typeorm_metadata;
-DROP TABLE IF EXISTS _migrations_history;
+DROP TABLE IF EXISTS _prisma_migrations,
+typeorm_metadata,
+_typeorm_metadata,
+_migrations_history;

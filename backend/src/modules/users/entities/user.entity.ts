@@ -1,4 +1,16 @@
-import { Column, CreateDateColumn, Entity, Generated, OneToMany, OneToOne, PrimaryGeneratedColumn, Relation, Unique, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Generated,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  Relation,
+  Unique,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Announcement } from './../../../modules/announcements/entities/announcement.entity';
 import { UserResetPasswordToken } from './../../auth/entities/user-reset-password-tokens.entity';
 import { UserSystemPermission } from './user-system-permission.entity';
 
@@ -12,7 +24,7 @@ export class User {
     type: 'int',
     primaryKeyConstraintName: 'PK_User_Id',
   })
-    id: number;
+  public id: number;
 
   @Column({
     name: 'Uuid',
@@ -22,7 +34,7 @@ export class User {
   })
   @Unique('UQ_User_Uuid', ['uuid'])
   @Generated('uuid')
-    uuid: string;
+  public uuid: string;
 
   @Column({
     name: 'Email',
@@ -30,7 +42,7 @@ export class User {
     length: 320,
     nullable: false,
   })
-    email: string;
+  public email: string;
 
   @Column({
     name: 'EmailConfirmed',
@@ -38,7 +50,7 @@ export class User {
     nullable: false,
     default: false,
   })
-    emailConfirmed: boolean;
+  public emailConfirmed: boolean;
 
   @Column({
     name: 'Phone',
@@ -46,7 +58,7 @@ export class User {
     length: 30,
     nullable: false,
   })
-    phone: string;
+  public phone: string;
 
   @Column({
     name: 'PhoneConfirmed',
@@ -54,7 +66,7 @@ export class User {
     nullable: false,
     default: false,
   })
-    phoneConfirmed: boolean;
+  public phoneConfirmed: boolean;
 
   @Column({
     name: 'Password',
@@ -62,7 +74,7 @@ export class User {
     length: 1024,
     nullable: true,
   })
-    password: string | null;
+  public password: string | null;
 
   @Column({
     name: 'Salt',
@@ -70,7 +82,7 @@ export class User {
     length: 64,
     nullable: false,
   })
-    salt: string;
+  public salt: string;
 
   @Column({
     name: 'RefreshTokenKey',
@@ -78,7 +90,7 @@ export class User {
     length: 128,
     nullable: false,
   })
-    refreshTokenKey: string;
+  public refreshTokenKey: string;
 
   @Column({
     name: 'FirstName',
@@ -86,7 +98,7 @@ export class User {
     length: 255,
     nullable: true,
   })
-    firstName?: string;
+  public firstName?: string;
 
   @Column({
     name: 'LastName',
@@ -94,14 +106,14 @@ export class User {
     length: 255,
     nullable: true,
   })
-    lastName?: string;
+  public lastName?: string;
 
   @Column({
     name: 'JoiningDate',
     type: 'date',
     nullable: true,
   })
-    joiningDate?: Date;
+  public joiningDate?: Date;
 
   @Column({
     name: 'IsActive',
@@ -109,7 +121,7 @@ export class User {
     nullable: false,
     default: false,
   })
-    isActive: boolean;
+  public isActive: boolean;
 
   @CreateDateColumn({
     name: 'CreatedAt',
@@ -118,7 +130,7 @@ export class User {
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })
-    createdAt: Date;
+  public createdAt: Date;
 
   @UpdateDateColumn({
     name: 'UpdatedAt',
@@ -128,14 +140,14 @@ export class User {
     default: () => 'CURRENT_TIMESTAMP',
     onUpdate: 'CURRENT_TIMESTAMP',
   })
-    updatedAt?: Date;
+  public updatedAt?: Date;
 
   @Column({
     name: 'LastLoginAt',
     type: 'timestamp',
     nullable: true,
   })
-    lastLoginAt?: Date;
+  public lastLoginAt?: Date;
 
   @Column({
     name: 'FailedLoginAttempts',
@@ -143,7 +155,7 @@ export class User {
     nullable: false,
     default: 0,
   })
-    failedLoginAttempts: number;
+  public failedLoginAttempts: number;
 
   @Column({
     name: 'IsLockedOut',
@@ -151,7 +163,7 @@ export class User {
     nullable: false,
     default: false,
   })
-    isLockedOut: boolean;
+  public isLockedOut: boolean;
 
   @Column({
     name: 'IsDeleted',
@@ -159,14 +171,20 @@ export class User {
     nullable: false,
     default: false,
   })
-    isDeleted: boolean;
+  public isDeleted: boolean;
 
   @OneToMany(() => UserSystemPermission, (permissions: UserSystemPermission) => permissions.user)
-    systemPermissions: Relation<UserSystemPermission[]>;
+  public systemPermissions: Relation<UserSystemPermission[]>;
 
-  @OneToMany(() => UserSystemPermission, (assignedPermissions: UserSystemPermission) => assignedPermissions.assignedBy)
-    assignedSystemPermissions: Relation<UserSystemPermission[]>;
+  @OneToMany(() => UserSystemPermission, (permissions: UserSystemPermission) => permissions.assignedBy)
+  public assignedSystemPermissions: Relation<UserSystemPermission[]>;
 
   @OneToOne(() => UserResetPasswordToken, (token: UserResetPasswordToken) => token.user)
-    resetPasswordToken: Relation<UserResetPasswordToken>;
+  public resetPasswordToken: Relation<UserResetPasswordToken>;
+
+  @OneToMany(() => Announcement, (announcements: Announcement) => announcements.createdBy)
+  public createdAnnouncements: Relation<UserSystemPermission[]>;
+
+  @OneToMany(() => Announcement, (announcements: Announcement) => announcements.publishedBy)
+  public publishedAnnouncements: Relation<UserSystemPermission[]>;
 }

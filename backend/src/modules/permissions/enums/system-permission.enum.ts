@@ -10,6 +10,8 @@ enum SystemPermission {
 
   AddPermission = 200,
   DeletePermission = 201,
+
+  AddAnnouncements = 300,
 }
 
 export { SystemPermission };
