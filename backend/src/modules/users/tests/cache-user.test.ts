@@ -76,7 +76,8 @@ describe('Cache user data tests', () => {
     });
 
     userRouter = new UserRoute();
-    app = new App([userRouter]);
+    app = new App();
+    await app.initialize([userRouter]);
     const { email: login, password } = getAdminLoginData();
     const adminLoginResult = await loginAs(app, { email: login, password } satisfies LoginDto);
     adminAccessToken = adminLoginResult?.accessToken;

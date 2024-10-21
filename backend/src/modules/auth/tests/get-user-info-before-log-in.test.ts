@@ -14,10 +14,11 @@ describe('POST /auth/get-user-who-logs-in', () => {
   const userRouter = new UserRoute();
   const authRoute = new AuthRoute();
   const permissionsRoute = new PermissionsRoute();
-  const app = new App([userRouter, permissionsRoute]);
+  const app = new App();
 
   let adminAccessToken: string | undefined;
   beforeAll(async () => {
+    await app.initialize([userRouter, permissionsRoute]);
     const { email, password } = getAdminLoginData();
 
     adminAccessToken = (await loginAs(app, { email, password } satisfies LoginDto))?.accessToken;

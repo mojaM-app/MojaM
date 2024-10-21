@@ -20,11 +20,12 @@ describe('POST /login', () => {
   const userRouter = new UserRoute();
   const authRoute = new AuthRoute();
   const permissionsRoute = new PermissionsRoute();
-  const app = new App([userRouter, permissionsRoute]);
+  const app = new App();
 
   let adminAccessToken: string | undefined;
   beforeAll(async () => {
     const { email, password } = getAdminLoginData();
+    await app.initialize([userRouter, permissionsRoute]);
 
     adminAccessToken = (await loginAs(app, { email, password } satisfies LoginDto))?.accessToken;
 

@@ -22,10 +22,12 @@ import request from 'supertest';
 describe('DELETE /permissions', () => {
   const userRouter = new UserRoute();
   const permissionsRoute = new PermissionsRoute();
-  const app = new App([userRouter, permissionsRoute]);
+  const app = new App();
   let adminAccessToken: string | undefined;
   let userLoggedIn: IUserDto;
+
   beforeAll(async () => {
+    await app.initialize([userRouter, permissionsRoute]);
     const { email: login, password } = getAdminLoginData();
 
     const loginResult = await loginAs(app, { email: login, password } satisfies LoginDto);

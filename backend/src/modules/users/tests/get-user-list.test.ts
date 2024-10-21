@@ -16,10 +16,11 @@ describe('GET/user-list', () => {
   const userRouter = new UserRoute();
   const userListRouter = new UserListRoute();
   const permissionsRoute = new PermissionsRoute();
-  const app = new App([userRouter, userListRouter, permissionsRoute]);
+  const app = new App();
   let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
+    await app.initialize([userRouter, userListRouter, permissionsRoute]);
     const { email: login, password } = getAdminLoginData();
 
     adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
