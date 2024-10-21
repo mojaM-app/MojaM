@@ -11,7 +11,7 @@ export class UserResetPasswordToken {
   @JoinColumn({
     name: 'UserId',
     referencedColumnName: 'id',
-    foreignKeyConstraintName: 'FK_UserResetPasswordToken_To_User_UserId',
+    foreignKeyConstraintName: 'FK_UserResetPasswordToken_UserId_To_User',
   })
   @PrimaryColumn({
     name: 'UserId',
@@ -26,7 +26,7 @@ export class UserResetPasswordToken {
     length: 64,
     nullable: false,
   })
-    token: string;
+  public token: string;
 
   @CreateDateColumn({
     name: 'CreatedAt',
@@ -35,5 +35,5 @@ export class UserResetPasswordToken {
     default: () => 'CURRENT_TIMESTAMP',
     type: 'timestamp',
   })
-    createdAt: Date;
+  public createdAt: Date;
 }

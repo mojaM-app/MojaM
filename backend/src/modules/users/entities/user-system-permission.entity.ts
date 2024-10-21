@@ -7,12 +7,11 @@ import { User } from './user.entity';
   name: 'user_to_systempermissions',
 })
 export class UserSystemPermission {
-  @ManyToOne(() => User, (user: User) => user.systemPermissions,
-    { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
+  @ManyToOne(() => User, (user: User) => user.systemPermissions, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
   @JoinColumn({
     name: 'UserId',
     referencedColumnName: 'id',
-    foreignKeyConstraintName: 'FK_UserSystemPermission_To_User_UserId',
+    foreignKeyConstraintName: 'FK_UserSystemPermission_UserId_To_User',
   })
   @PrimaryColumn({
     name: 'UserId',
@@ -21,8 +20,7 @@ export class UserSystemPermission {
   })
   public user: Relation<User>;
 
-  @ManyToOne(() => SystemPermission, (systemPermission: SystemPermission) => systemPermission.users,
-    { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
+  @ManyToOne(() => SystemPermission, (systemPermission: SystemPermission) => systemPermission.users, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
   @JoinColumn({
     name: 'PermissionId',
     referencedColumnName: 'id',
@@ -35,12 +33,11 @@ export class UserSystemPermission {
   })
   public systemPermission: Relation<SystemPermission>;
 
-  @ManyToOne(() => User, (user: User) => user.assignedSystemPermissions,
-    { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
+  @ManyToOne(() => User, (user: User) => user.assignedSystemPermissions, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
   @JoinColumn({
     name: 'AssignedById',
     referencedColumnName: 'id',
-    foreignKeyConstraintName: 'FK_UserSystemPermission_To_User_AssignedById',
+    foreignKeyConstraintName: 'FK_UserSystemPermission_AssignedById_To_User',
   })
   @Column({
     name: 'AssignedById',
