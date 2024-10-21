@@ -30,6 +30,8 @@
       "@middlewares": ["middlewares"],
       "@utils": ["utils"],
       "@utils/*": ["utils/*"],
+      "@helpers": ["helpers"],
+      "@helpers/*": ["helpers/*"],
       "@modules/*": ["modules/*"],
       "@db": ["dataBase"]
     }
