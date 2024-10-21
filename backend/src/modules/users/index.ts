@@ -23,6 +23,8 @@ export { UserListRepository } from './repositories/user-list.repository';
 export { UserRepository } from './repositories/user.repository';
 export { UsersService } from './services/user.service';
 
+export { vUserToIUserGridItemDto } from './helpers/users.helper';
+
 export { UserListRoute } from './routes/user-list.routes';
 
 export { UserRoute } from './routes/user.routes';

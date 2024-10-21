@@ -1,11 +1,12 @@
 import { events } from '@events';
 import { IGridPageResponseDto } from '@interfaces';
-import { BaseService, vUserToIUserGridItemDto } from '@modules/common';
+import { BaseService } from '@modules/common';
 import {
   GetUserListReqDto,
   UserListRepository,
   UserListRetrievedEvent,
-  UsersGridPageDto
+  UsersGridPageDto,
+  vUserToIUserGridItemDto
 } from '@modules/users';
 import { Container, Service } from 'typedi';
 import { vUser } from '../entities/vUser.entity';
