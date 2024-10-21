@@ -1,10 +1,10 @@
 import { App } from '@/app';
 import { DbConnection } from '@db';
+import { loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { SystemPermission } from '@modules/permissions';
 import { UserRoute } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
-import { loginAs } from '@modules/users/tests/user-tests.helpers';
 import { getAdminLoginData } from '@utils/tests.utils';
 import request from 'supertest';
 

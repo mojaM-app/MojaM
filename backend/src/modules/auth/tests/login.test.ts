@@ -2,14 +2,14 @@
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
+import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
+import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { RequestWithIdentity } from '@interfaces';
 import { AuthRoute, LoginDto, LoginResponseDto, setIdentity, UserLoggedInEvent } from '@modules/auth';
 import { userToIUser } from '@modules/common';
 import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
-import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
-import { registerTestEventHandlers, testEventHandlers } from '@utils/tests-events.utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import { NextFunction } from 'express';

@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
+import { registerTestEventHandlers } from '@helpers/event-handler-test.helpers';
+import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { AuthRoute, GetUserInfoBeforeLogInResponseDto, LoginDto, UserInfoBeforeLogInResultDto, UserTryingToLogInDto } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
-import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
-import { registerTestEventHandlers } from '@utils/tests-events.utils';
 import { generateRandomEmail, getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import request from 'supertest';

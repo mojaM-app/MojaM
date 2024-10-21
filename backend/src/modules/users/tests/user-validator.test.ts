@@ -1,5 +1,5 @@
+import { generateValidUser } from '@helpers/user-tests.helpers';
 import { CreateUserDto } from '@modules/users';
-import { generateValidUser } from '@modules/users/tests/user-tests.helpers';
 import { plainToInstance } from 'class-transformer';
 import { ValidationError, validateSync } from 'class-validator';
 

@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
+import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
+import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { AuthRoute, LoginDto, RequestResetPasswordResponseDto, ResetPasswordDto, ResetPasswordResponseDto, UserPasswordChangedEvent, UserTryingToLogInDto } from '@modules/auth';
 import { EmailService } from '@modules/notifications';
 import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, IUserDto, IUserProfileDto, UserRoute } from '@modules/users';
-import { generateValidUser, loginAs } from '@modules/users/tests/user-tests.helpers';
-import { registerTestEventHandlers, testEventHandlers } from '@utils/tests-events.utils';
 import { generateRandomEmail, getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import nodemailer from 'nodemailer';
