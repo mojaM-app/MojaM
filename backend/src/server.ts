@@ -7,16 +7,17 @@ import { PermissionsRoute } from '@modules/permissions';
 import { UserListRoute, UserRoute } from '@modules/users';
 import { ValidateEnv } from '@utils/validateEnv';
 
-ValidateEnv();
-
-const app = new App([
-  new AnnouncementsRout(),
-  new CalendarRoutes(),
-  new CommunityRoute(),
-  new NewsRoutes(),
-  new PermissionsRoute(),
-  new UserRoute(),
-  new UserListRoute(),
-]);
-
-app.listen();
+await (async () => {
+  ValidateEnv();
+  const app = new App();
+  await app.initialize([
+    new AnnouncementsRout(),
+    new CalendarRoutes(),
+    new CommunityRoute(),
+    new NewsRoutes(),
+    new PermissionsRoute(),
+    new UserRoute(),
+    new UserListRoute(),
+  ])
+  app.listen();
+})();

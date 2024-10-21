@@ -21,12 +21,14 @@ export class App {
 
   private _connection: DbConnection | undefined = undefined;
 
-  constructor(routes: Routes[]) {
+  constructor() {
     this.app = express();
     this.env = NODE_ENV ?? 'development';
     this.port = PORT ?? 5100;
+  }
 
-    this.initializeDatabase();
+  public async initialize(routes: Routes[]): Promise<void> {
+    await this.initializeDatabase();
     this.initializeMiddlewares();
     this.initializeRoutes(routes);
     this.initializeErrorHandling();
@@ -89,12 +91,12 @@ export class App {
     this.app.use(path, route.router);
   }
 
-  private initializeDatabase(): void {
+  private async initializeDatabase(): Promise<void> {
     // establish database connection
     logger.info('=== establish database connection ===');
 
     this._connection = DbConnection.getConnection();
-    this._connection
+    await this._connection
       .connect()
       .then(() => {
         logger.info('Data Source has been initialized!');
