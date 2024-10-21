@@ -30,8 +30,8 @@ export class UserController extends BaseController {
   public getProfile = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const reqDto = new GetUserProfileReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
-      const user: IUserProfileDto | null = await this._userService.get(reqDto);
-      res.status(200).json(new GetUserProfileResponseDto(user));
+      const result: IUserProfileDto | null = await this._userService.get(reqDto);
+      res.status(200).json(new GetUserProfileResponseDto(result));
     } catch (error) {
       next(error);
     }
@@ -39,10 +39,10 @@ export class UserController extends BaseController {
 
   public create = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userData: CreateUserDto = req.body;
-      const reqDto = new CreateUserReqDto(userData, this.getCurrentUserId(req));
-      const user = await this._userService.create(reqDto);
-      res.status(201).json(new CreateUserResponseDto(user));
+      const bodyData: CreateUserDto = req.body;
+      const reqDto = new CreateUserReqDto(bodyData, this.getCurrentUserId(req));
+      const result = await this._userService.create(reqDto);
+      res.status(201).json(new CreateUserResponseDto(result));
     } catch (error) {
       next(error);
     }
@@ -51,8 +51,8 @@ export class UserController extends BaseController {
   public delete = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const reqDto = new DeleteUserReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
-      const data = await this._userService.delete(reqDto);
-      res.status(200).json(new DeleteUserResponseDto(data));
+      const result = await this._userService.delete(reqDto);
+      res.status(200).json(new DeleteUserResponseDto(result));
     } catch (error) {
       next(error);
     }
@@ -61,8 +61,8 @@ export class UserController extends BaseController {
   public activate = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const reqDto = new ActivateUserReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
-      const data = await this._userService.activate(reqDto);
-      res.status(200).json(new ActivateUserResponseDto(data));
+      const result = await this._userService.activate(reqDto);
+      res.status(200).json(new ActivateUserResponseDto(result));
     } catch (error) {
       next(error);
     }
@@ -71,8 +71,8 @@ export class UserController extends BaseController {
   public deactivate = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const reqDto = new DeactivateUserReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
-      const data = await this._userService.deactivate(reqDto);
-      res.status(200).json(new DeactivateUserResponseDto(data));
+      const result = await this._userService.deactivate(reqDto);
+      res.status(200).json(new DeactivateUserResponseDto(result));
     } catch (error) {
       next(error);
     }

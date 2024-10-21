@@ -13,8 +13,8 @@ export class MissionController extends BaseController {
 
   public get = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const data: string = await this._communityService.getMission();
-      res.status(200).json(new GetMissionResponseDto(data));
+      const result: string = await this._communityService.getMission();
+      res.status(200).json(new GetMissionResponseDto(result));
     } catch (error) {
       next(error);
     }

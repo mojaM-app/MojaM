@@ -13,8 +13,8 @@ export class StructureController extends BaseController {
 
   public get = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const data: string = await this._communityService.getStructure();
-      res.status(200).json(new GetStructureResponseDto(data));
+      const result: string = await this._communityService.getStructure();
+      res.status(200).json(new GetStructureResponseDto(result));
     } catch (error) {
       next(error);
     }

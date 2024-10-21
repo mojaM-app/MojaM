@@ -13,8 +13,8 @@ export class DiaconieController extends BaseController {
 
   public get = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const data: string = await this._communityService.getDiaconie();
-      res.status(200).json(new GetDiaconieResponseDto(data));
+      const result: string = await this._communityService.getDiaconie();
+      res.status(200).json(new GetDiaconieResponseDto(result));
     } catch (error) {
       next(error);
     }

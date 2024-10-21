@@ -13,8 +13,8 @@ export class MeetingsController extends BaseController {
 
   public get = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const data: string = await this._communityService.getMeetings();
-      res.status(200).json(new GetMeetingsResponseDto(data));
+      const result: string = await this._communityService.getMeetings();
+      res.status(200).json(new GetMeetingsResponseDto(result));
     } catch (error) {
       next(error);
     }

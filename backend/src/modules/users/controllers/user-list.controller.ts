@@ -17,8 +17,8 @@ export class UserListController extends BaseController {
   public get = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const reqDto = new GetUserListReqDto(this.getPageData(req), this.getSortData(req), this.getCurrentUserId(req));
-      const users: UsersGridPageDto = await this._userListService.get(reqDto);
-      res.status(200).json(new GetUserListResponseDto(users));
+      const result: UsersGridPageDto = await this._userListService.get(reqDto);
+      res.status(200).json(new GetUserListResponseDto(result));
     } catch (error) {
       next(error);
     }

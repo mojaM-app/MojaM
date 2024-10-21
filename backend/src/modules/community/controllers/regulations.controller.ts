@@ -13,8 +13,8 @@ export class RegulationsController extends BaseController {
 
   public get = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const data: string = await this._communityService.getRegulations();
-      res.status(200).json(new GetRegulationsResponseDto(data));
+      const result: string = await this._communityService.getRegulations();
+      res.status(200).json(new GetRegulationsResponseDto(result));
     } catch (error) {
       next(error);
     }

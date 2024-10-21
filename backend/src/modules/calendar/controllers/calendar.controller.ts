@@ -16,8 +16,8 @@ export class CalendarController extends BaseController {
     try {
       const startDate = new Date(req?.query?.start?.toString() ?? new Date().toISOString());
       const endDate = new Date(req?.query?.end?.toString() ?? new Date().toISOString());
-      const data = await this._calendarService.getEvents(startDate, endDate);
-      res.status(200).json(new GetCalendarEventsResponseDto(data));
+      const result = await this._calendarService.getEvents(startDate, endDate);
+      res.status(200).json(new GetCalendarEventsResponseDto(result));
     } catch (error) {
       next(error);
     }
