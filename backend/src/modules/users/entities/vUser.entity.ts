@@ -36,35 +36,35 @@ const UserListViewColumns: { [K in keyof IUserGridItemDto]: string } = {
 export class vUser implements IUserGridItemDto {
   @ViewColumn()
   @PrimaryColumn()
-    id: string;
+  public id: string;
 
   @ViewColumn()
-    firstName?: string;
+  public firstName?: string;
 
   @ViewColumn()
-    lastName?: string;
+  public lastName?: string;
 
   @ViewColumn()
-    email: string;
+  public email: string;
 
   @ViewColumn()
-    phone: string;
+  public phone: string;
 
   @ViewColumn()
-    joiningDate?: Date;
+  public joiningDate?: Date;
 
   @ViewColumn()
-    lastLoginAt?: Date;
+  public lastLoginAt?: Date;
 
   @ViewColumn()
-    isActive: boolean;
+  public isActive: boolean;
 
   @ViewColumn()
-    isLockedOut: boolean;
+  public isLockedOut: boolean;
 
   @ViewColumn()
-    isDeleted: boolean;
+  public isDeleted: boolean;
 
   @ViewColumn()
-    rolesCount: number;
+  public rolesCount: number;
 }

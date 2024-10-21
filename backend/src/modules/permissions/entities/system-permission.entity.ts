@@ -9,22 +9,25 @@ export class SystemPermission {
   @PrimaryColumn({
     name: 'Id',
     type: 'int',
+    primaryKeyConstraintName: 'PK_SystemPermission_Id',
   })
-    id: number;
+  public id: number;
 
-  @ManyToOne(() => SystemPermission, (systemPermission: SystemPermission) => systemPermission.children,
-    { onDelete: 'RESTRICT', onUpdate: 'RESTRICT', })
+  @ManyToOne(() => SystemPermission, (systemPermission: SystemPermission) => systemPermission.children, {
+    onDelete: 'RESTRICT',
+    onUpdate: 'RESTRICT',
+  })
   @JoinColumn({
     name: 'ParentId',
     referencedColumnName: 'id',
-    foreignKeyConstraintName: 'FK_SystemPermission_ParentId',
+    foreignKeyConstraintName: 'FK_SystemPermission_ParentId_To_SystemPermission',
   })
   @Column({
     name: 'ParentId',
     type: 'int',
     nullable: true,
   })
-    parent: Relation<SystemPermission>;
+  public parent: Relation<SystemPermission>;
 
   @Column({
     name: 'Name',
@@ -32,7 +35,7 @@ export class SystemPermission {
     length: 50,
     nullable: false,
   })
-    name: string;
+  public name: string;
 
   @Column({
     name: 'Description',
@@ -40,11 +43,11 @@ export class SystemPermission {
     length: 255,
     nullable: false,
   })
-    description: string;
+  public description: string;
 
   @OneToMany(() => SystemPermission, (systemPermission: SystemPermission) => systemPermission.parent)
-    children: Relation<SystemPermission[]>;
+  public children: Relation<SystemPermission[]>;
 
   @OneToMany(() => UserSystemPermission, (userSystemPermission: UserSystemPermission) => userSystemPermission.user)
-    users: Relation<UserSystemPermission[]>;
+  public users: Relation<UserSystemPermission[]>;
 }
