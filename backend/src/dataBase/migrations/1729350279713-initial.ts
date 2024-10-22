@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class Initial1729350279713 implements MigrationInterface {
-  name = 'Initial1729350279713'
-
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query('CREATE TABLE `system_permissions` (`Id` int NOT NULL, `ParentId` int NULL, `Name` varchar(50) NOT NULL, `Description` varchar(255) NOT NULL, PRIMARY KEY (`Id`)) ENGINE=InnoDB');
     await queryRunner.query('CREATE TABLE `user_to_systempermissions` (`UserId` int NOT NULL, `PermissionId` int NOT NULL, `AssignedById` int NOT NULL, `AssignedAt` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`UserId`, `PermissionId`)) ENGINE=InnoDB');

@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateTableAnnouncements1729445035356 implements MigrationInterface {
-  name = 'CreateTableAnnouncements1729445035356'
-
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query('CREATE TABLE `announcements` (`Id` int NOT NULL, `Uuid` varchar(36) NOT NULL, `Title` varchar(255) NULL, `State` int NOT NULL, `ValidFromDate` date NULL, `CreatedAt` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP, `CreatedById` int NOT NULL, `UpdatedAt` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `PublishedAt` timestamp(0) NULL, `PublishedById` int NULL, UNIQUE INDEX `UQ_Announcement_Uuid` (`Uuid`), PRIMARY KEY (`Id`)) ENGINE=InnoDB');
     await queryRunner.query('CREATE TABLE `announcement_items` (`Id` varchar(36) NOT NULL, `Content` text NULL, `AnnouncementId` int NOT NULL, FULLTEXT INDEX `IXD_AnnouncementItem_Content_Fulltext` (`Content`), PRIMARY KEY (`Id`)) ENGINE=InnoDB');
