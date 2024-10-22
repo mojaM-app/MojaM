@@ -26,7 +26,7 @@ export class Seed1729350380773 implements MigrationInterface {
     let salt = '22fae28a2abbb54a638cb5b7f1acb2e9';
     let password = passwordService.hashPassword(salt, adminLoginData.password);
     let refreshTokenKey = 'aedc7970d693ea6e4d71e39bffa7dc4034bae8e858b1ad2bb65a5ffd8356db41';
-    await queryRunner.query('INSERT INTO `users` (`Uuid`,`Email`,`Phone`,`Password`,`Salt`,`RefreshTokenKey`,`FirstName`,`LastName`,`IsActive`) VALUES (\'' + adminLoginData.uuid + '\', \'' + adminLoginData.email + '\', \'' + adminLoginData.phone + '\', \'' + password + '\', \'' + salt + '\', \'' + refreshTokenKey + '\', \'has full access\', \'only for tests\', 1)');
+    await queryRunner.query('INSERT INTO `users` (`Uuid`,`Email`,`Phone`,`Password`,`Salt`,`RefreshTokenKey`,`FirstName`,`LastName`,`IsActive`) VALUES (\'' + adminLoginData.uuid + '\', \'' + adminLoginData.email + '\', \'' + adminLoginData.phone + '\', \'' + password + '\', \'' + salt + '\', \'' + refreshTokenKey + '\', \'Admin\', \'Admin\', 1)');
     await queryRunner.query('INSERT INTO `user_to_systempermissions` (`UserId`,`AssignedById`,`PermissionId`) SELECT (SELECT `Id` FROM `users` WHERE `Uuid` = \'' + adminLoginData.uuid + '\'), (SELECT `Id` FROM `users` WHERE `Uuid` = \'' + adminLoginData.uuid + '\'), `Id` FROM `system_permissions` WHERE `ParentId` IS NOT NULL');
 
     const uuid = Guid.create().toString();
