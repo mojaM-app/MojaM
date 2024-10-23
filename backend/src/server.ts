@@ -7,8 +7,9 @@ import { PermissionsRoute } from '@modules/permissions';
 import { UserListRoute, UserRoute } from '@modules/users';
 import { ValidateEnv } from '@utils/validateEnv';
 
-await (async () => {
-  ValidateEnv();
+ValidateEnv();
+
+const initializeApp = async (): Promise<App> => {
   const app = new App();
   await app.initialize([
     new AnnouncementsRout(),
@@ -18,6 +19,13 @@ await (async () => {
     new PermissionsRoute(),
     new UserRoute(),
     new UserListRoute(),
-  ])
-  app.listen();
+  ]);
+
+  return app;
+};
+
+void (async (): Promise<void> => {
+  await initializeApp().then((app: App) => {
+    app.listen();
+  });
 })();
