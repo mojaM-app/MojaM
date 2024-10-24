@@ -23,6 +23,14 @@ const getDateTimeNow = (): Date => {
     now.getSeconds());
 }
 
+const getDateNow = (): Date => {
+  const now = new Date();
+  return new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate());
+}
+
 const getUtcNow = (): Date => {
   const now = new Date();
   return new Date(Date.UTC(
@@ -34,4 +42,4 @@ const getUtcNow = (): Date => {
     now.getSeconds()));
 }
 
-export { getDateTimeNow, getUtcNow, isDate, toUtcDate };
+export { getDateNow, getDateTimeNow, getUtcNow, isDate, toUtcDate };
