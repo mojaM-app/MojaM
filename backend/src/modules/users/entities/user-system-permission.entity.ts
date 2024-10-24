@@ -1,12 +1,13 @@
 /* eslint-disable no-use-before-define */
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, Relation } from 'typeorm';
+import { IAddUserSystemPermission } from '../interfaces/add-user-system-permission.interfaces';
 import { SystemPermission } from './../../../modules/permissions/entities/system-permission.entity';
 import { User } from './user.entity';
 
 @Entity({
   name: 'user_to_systempermissions',
 })
-export class UserSystemPermission {
+export class UserSystemPermission implements IAddUserSystemPermission {
   @ManyToOne(() => User, (user: User) => user.systemPermissions, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
   @JoinColumn({
     name: 'UserId',
