@@ -15,3 +15,5 @@ export { PermissionsRepository } from './repositories/permissions.repository';
 export { PermissionsRoute } from './routes/permissions.routes';
 
 export { PermissionsService } from './services/permissions.service';
+
+export type { IPermissionId } from './interfaces/IPermissionId';

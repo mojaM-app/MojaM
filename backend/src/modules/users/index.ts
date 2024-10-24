@@ -28,3 +28,5 @@ export { vUserToIUserGridItemDto } from './helpers/users.helper';
 export { UserListRoute } from './routes/user-list.routes';
 
 export { UserRoute } from './routes/user.routes';
+
+export type { IUserId } from './interfaces/IUser.Id';
