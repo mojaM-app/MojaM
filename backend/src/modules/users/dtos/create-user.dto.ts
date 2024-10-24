@@ -6,6 +6,7 @@ import { isNullOrEmptyString, VALIDATOR_SETTINGS } from '@utils';
 import {
   IsEmail,
   IsNotEmpty,
+  IsOptional,
   IsPhoneNumber,
   IsString,
   isStrongPassword,
@@ -71,6 +72,7 @@ export class CreateUserDto {
   })
   public phone: string;
 
+  @IsOptional()
   @IsPasswordEmptyOrValid({
     message: errorKeys.users.Invalid_Password,
   })
