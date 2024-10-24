@@ -5,5 +5,5 @@ export interface IResponse<TResponseResult> {
 
 export interface IResponseError {
   message: string;
-  args?: Array<string | number>;
+  args?: Array<string | number | Date>;
 }
