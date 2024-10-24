@@ -17,6 +17,7 @@ import { getDateTimeNow, isGuid, isNullOrEmptyString, isNullOrUndefined, isPosit
 import StatusCode from 'status-code-enum';
 import Container, { Service } from 'typedi';
 import { User } from '../entities/user.entity';
+import { ICreateUser } from '../interfaces/create-user.interfaces';
 
 @Service()
 export class UserRepository extends BaseRepository {
@@ -119,7 +120,7 @@ export class UserRepository extends BaseRepository {
       phoneConfirmed: false,
       lastLoginAt: undefined,
       failedLoginAttempts: 0,
-    });
+    } satisfies ICreateUser);
 
     return await this._dbContext.users.save(newUser);
   }
