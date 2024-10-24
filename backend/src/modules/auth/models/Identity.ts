@@ -26,7 +26,7 @@ export class Identity {
   }
 
   public hasPermissionToAddAnnouncements(): boolean {
-    return this.hasPermission(SystemPermission.AddUser);
+    return this.hasPermission(SystemPermission.AddAnnouncements);
   }
 
   public hasPermissionToPreviewUserList(): boolean {
