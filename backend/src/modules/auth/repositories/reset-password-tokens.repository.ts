@@ -1,9 +1,10 @@
 import { RESET_PASSWORD_TOKEN_EXPIRE_IN } from '@config';
 import { CryptoService } from '@modules/auth';
 import { BaseRepository } from '@modules/common';
-import { isNullOrUndefined, toNumber } from '@utils';
+import { getDateTimeNow, isNullOrUndefined, toNumber } from '@utils';
 import Container, { Service } from 'typedi';
 import { UserResetPasswordToken } from '../entities/user-reset-password-tokens.entity';
+import { ICreateResetPasswordToken } from '../interfaces/create-reset-password-token.interfaces';
 
 @Service()
 export class ResetPasswordTokensRepository extends BaseRepository {
@@ -26,14 +27,14 @@ export class ResetPasswordTokensRepository extends BaseRepository {
     }
 
     const expirationPeriod = toNumber(RESET_PASSWORD_TOKEN_EXPIRE_IN)! * 60 * 1000;
-    return new Date().getTime() > (token!.createdAt.getTime() + expirationPeriod);
+    return getDateTimeNow().getTime() > (token!.createdAt.getTime() + expirationPeriod);
   }
 
   public async createToken(userId: number, token: string): Promise<UserResetPasswordToken> {
     return await this._dbContext.userResetPasswordTokens.save({
       user: { id: userId },
       token,
-    });
+    } satisfies ICreateResetPasswordToken);
   }
 
   public async deleteTokens(userId: number): Promise<boolean> {

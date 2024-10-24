@@ -1,11 +1,12 @@
 /* eslint-disable no-use-before-define */
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryColumn, Relation } from 'typeorm';
+import { ICreateResetPasswordToken } from '../interfaces/create-reset-password-token.interfaces';
 import { User } from './../../users/entities/user.entity';
 
 @Entity({
   name: 'user_reset_password_tokens',
 })
-export class UserResetPasswordToken {
+export class UserResetPasswordToken implements ICreateResetPasswordToken {
   @OneToOne(() => User, (user: User) => user.resetPasswordToken,
     { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
   @JoinColumn({
