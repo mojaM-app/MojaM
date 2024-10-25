@@ -1,10 +1,9 @@
 import { IPageData, ISortData, RequestWithIdentity } from '@interfaces';
 import { BaseController } from '@modules/common';
-import { GetUserListReqDto, GetUserListResponseDto, UsersGridPageDto } from '@modules/users';
+import { GetUserListReqDto, GetUserListResponseDto, UserListService, UsersGridPageDto } from '@modules/users';
 import { toNumber } from '@utils';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
-import { UserListService } from '../services/user-list.service';
 
 export class UserListController extends BaseController {
   private readonly _userListService: UserListService;

@@ -2,7 +2,6 @@ import { relatedDataNames } from '@db';
 import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import { CryptoService, PasswordService } from '@modules/auth';
-import { BaseRepository } from '@modules/common';
 import {
   ActivateUserReqDto,
   CreateUserDto,
@@ -13,14 +12,15 @@ import {
   UpdateUserPasswordDto,
   UpdateUserReqDto,
 } from '@modules/users';
-import { getDateTimeNow, isGuid, isNullOrEmptyString, isNullOrUndefined, isPositiveNumber } from '@utils';
+import { getDateTimeNow, isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import StatusCode from 'status-code-enum';
 import Container, { Service } from 'typedi';
 import { User } from '../entities/user.entity';
 import { ICreateUser } from '../interfaces/create-user.interfaces';
+import { BaseUserRepository } from './base.user.repository';
 
 @Service()
-export class UserRepository extends BaseRepository {
+export class UserRepository extends BaseUserRepository {
   private readonly _cryptoService: CryptoService;
   private readonly _passwordService: PasswordService;
 
@@ -28,50 +28,6 @@ export class UserRepository extends BaseRepository {
     super();
     this._cryptoService = Container.get(CryptoService);
     this._passwordService = Container.get(PasswordService);
-  }
-
-  public async getIdByUuid(userGuid: string | null | undefined): Promise<number | undefined> {
-    if (!isGuid(userGuid)) {
-      return undefined;
-    }
-
-    const cachedUserId = await this._cacheService.getUserIdFromCacheAsync(userGuid);
-    if (isPositiveNumber(cachedUserId)) {
-      return cachedUserId;
-    }
-
-    const count: number = await this._dbContext.users.count({ where: { uuid: userGuid! } });
-
-    if (count > 1) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.general.More_Then_One_Record_With_Same_Id, [userGuid!]);
-    } else if (count === 0) {
-      return undefined;
-    }
-
-    const user: User | null = await this._dbContext.users.findOneBy({ uuid: userGuid! });
-
-    await this._cacheService.saveUserIdInCacheAsync(user);
-
-    return user!.id;
-  }
-
-  public async getById(userId: number | null | undefined): Promise<User | null> {
-    if (!isPositiveNumber(userId)) {
-      return null;
-    }
-
-    const count: number = await this._dbContext.users.count({ where: { id: userId! } });
-
-    if (count === 0) {
-      return null;
-    }
-
-    return await this._dbContext.users.findOneBy({ id: userId! });
-  }
-
-  public async getByUuid(userGuid: string | null | undefined): Promise<User | null> {
-    const userId = await this.getIdByUuid(userGuid);
-    return await this.getById(userId);
   }
 
   public async findManyByLogin(email: string | null | undefined, phone?: string | null | undefined): Promise<User[]> {

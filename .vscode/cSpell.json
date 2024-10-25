@@ -17,6 +17,7 @@
     "gtime",
     "hsts",
     "ngneat",
+    "nvarchar",
     "systempermissions",
     "typedi",
     "typeorm"

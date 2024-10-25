@@ -1,7 +1,7 @@
 import { events } from '@events';
 import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
-import { IUserDto } from './get-user-profile.dto';
+import { IUserDto } from '../interfaces/get-user.interfaces';
 
 export class UpdateUserDto {
   public isActive?: boolean;

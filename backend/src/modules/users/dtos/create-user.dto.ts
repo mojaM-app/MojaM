@@ -16,7 +16,7 @@ import {
   ValidationArguments,
   ValidationOptions,
 } from 'class-validator';
-import { IUserDto } from './get-user-profile.dto';
+import { IUserDto } from '../interfaces/get-user.interfaces';
 
 export function IsPasswordEmptyOrValid(validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string) {

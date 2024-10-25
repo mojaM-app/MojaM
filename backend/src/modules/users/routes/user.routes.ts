@@ -11,39 +11,28 @@ export class UserRoute implements Routes {
   public deactivatePath = 'deactivate';
   public activatePath = 'activate';
   public router = express.Router();
-  private readonly _userController: UserController;
+  private readonly _controller: UserController;
 
   public constructor() {
-    this._userController = new UserController();
+    this._controller = new UserController();
     this.initializeRoutes();
   }
 
   private initializeRoutes(): void {
-    this.router.get(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity, this.checkPreviewProfilePermission], this._userController.getProfile);
-    this.router.post(`${this.path}`, [validateData(CreateUserDto), setIdentity, this.checkCreatePermission], this._userController.create);
+    this.router.post(`${this.path}`, [validateData(CreateUserDto), setIdentity, this.checkCreatePermission], this._controller.create);
     this.router.post(
       `${this.path}/:id(${REGEX_GUID_PATTERN})/${this.deactivatePath}`,
       [setIdentity, this.checkDeactivatePermission],
-      this._userController.deactivate,
+      this._controller.deactivate,
     );
     this.router.post(
       `${this.path}/:id(${REGEX_GUID_PATTERN})/${this.activatePath}`,
       [setIdentity, this.checkActivatePermission],
-      this._userController.activate,
+      this._controller.activate,
     );
     // this.router.put(`${this.path}/:id(${REGEX_INT_PATTERN)`, ValidationMiddleware(UpdateUserDto, true),verifyToken, this._userController.update);
-    this.router.delete(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity, this.checkDeletePermission], this._userController.delete);
+    this.router.delete(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity, this.checkDeletePermission], this._controller.delete);
   }
-
-  private readonly checkPreviewProfilePermission = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity?.isAuthenticated()) {
-      next(new UnauthorizedException());
-    } else if (!req.identity.hasPermissionToPreviewUserProfile()) {
-      next(new ForbiddenException());
-    } else {
-      next();
-    }
-  };
 
   private readonly checkCreatePermission = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     if (!req.identity?.isAuthenticated()) {

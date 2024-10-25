@@ -10,10 +10,7 @@ import {
   DeactivateUserResponseDto,
   DeleteUserReqDto,
   DeleteUserResponseDto,
-  GetUserProfileReqDto,
-  GetUserProfileResponseDto,
-  IUserProfileDto,
-  UsersService
+  UsersService,
 } from '@modules/users';
 import { isGuid } from '@utils';
 import { NextFunction, Request, Response } from 'express';
@@ -26,16 +23,6 @@ export class UserController extends BaseController {
     super();
     this._userService = Container.get(UsersService);
   }
-
-  public getProfile = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const reqDto = new GetUserProfileReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
-      const result: IUserProfileDto | null = await this._userService.get(reqDto);
-      res.status(200).json(new GetUserProfileResponseDto(result));
-    } catch (error) {
-      next(error);
-    }
-  };
 
   public create = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {

@@ -7,7 +7,7 @@ import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-han
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
-import { CreateUserResponseDto, DeleteUserResponseDto, GetUserProfileResponseDto, UserRetrievedEvent, UserRoute } from '@modules/users';
+import { CreateUserResponseDto, DeleteUserResponseDto, GetUserProfileResponseDto, UserProfileRetrievedEvent, UserRoute } from '@modules/users';
 import { isGuid, isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
@@ -55,7 +55,7 @@ describe('GET/user/:id', () => {
       const body = getUserProfileResponse.body;
       expect(typeof body).toBe('object');
       const { data: userProfile, message: getUserProfileMessage }: GetUserProfileResponseDto = body;
-      expect(getUserProfileMessage).toBe(events.users.userRetrieved);
+      expect(getUserProfileMessage).toBe(events.users.userProfileRetrieved);
       expect(userProfile).toBeDefined();
       expect(userProfile!.id).toBeDefined();
       expect(isGuid(userProfile!.id)).toBe(true);
@@ -83,7 +83,7 @@ describe('GET/user/:id', () => {
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserRetrieved).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserRetrieved).toHaveBeenCalledWith(new UserRetrievedEvent(userProfile!, 1));
+      expect(testEventHandlers.onUserRetrieved).toHaveBeenCalledWith(new UserProfileRetrievedEvent(userProfile!, 1));
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
   });

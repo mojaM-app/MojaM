@@ -1,13 +1,7 @@
 import { events } from '@events';
 import { IGridPageResponseDto } from '@interfaces';
 import { BaseService } from '@modules/common';
-import {
-  GetUserListReqDto,
-  UserListRepository,
-  UserListRetrievedEvent,
-  UsersGridPageDto,
-  vUserToIUserGridItemDto
-} from '@modules/users';
+import { GetUserListReqDto, UserListRepository, UserListRetrievedEvent, UsersGridPageDto, vUserToIUserGridItemDto } from '@modules/users';
 import { Container, Service } from 'typedi';
 import { vUser } from '../entities/vUser.entity';
 
@@ -27,7 +21,7 @@ export class UserListService extends BaseService {
 
     return {
       items: usersWithTotal.items.map(user => vUserToIUserGridItemDto(user)),
-      totalCount: usersWithTotal.totalCount
+      totalCount: usersWithTotal.totalCount,
     } satisfies UsersGridPageDto;
   }
 }
