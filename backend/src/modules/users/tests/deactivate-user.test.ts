@@ -14,13 +14,13 @@ import { Guid } from 'guid-typescript';
 import request from 'supertest';
 
 describe('POST /user/:id/deactivate', () => {
-  const userRouter = new UserRoute();
+  const userRoute = new UserRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App();
   let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
-    await app.initialize([userRouter, permissionsRoute]);
+    await app.initialize([userRoute, permissionsRoute]);
     const { email: login, password } = getAdminLoginData();
 
     adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
@@ -36,14 +36,14 @@ describe('POST /user/:id/deactivate', () => {
 
     test('when data are valid and user has permission', async () => {
       const user = generateValidUser();
-      const createUserResponse = await request(app.getServer()).post(userRouter.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
       const deactivateUserResponse = await request(app.getServer())
-        .post(userRouter.path + '/' + newUserDto.id + '/' + userRouter.deactivatePath)
+        .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.deactivatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deactivateUserResponse.statusCode).toBe(200);
@@ -55,7 +55,7 @@ describe('POST /user/:id/deactivate', () => {
       expect(result).toBe(true);
 
       const deleteUserResponse = await request(app.getServer())
-        .delete(userRouter.path + '/' + newUserDto.id)
+        .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
@@ -76,14 +76,14 @@ describe('POST /user/:id/deactivate', () => {
 
     test('when data are valid, user has permission and deactivatedUser is not active', async () => {
       const user = generateValidUser();
-      const createUserResponse = await request(app.getServer()).post(userRouter.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
       const deactivateUserResponse1 = await request(app.getServer())
-        .post(userRouter.path + '/' + newUserDto.id + '/' + userRouter.deactivatePath)
+        .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.deactivatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deactivateUserResponse1.statusCode).toBe(200);
@@ -95,7 +95,7 @@ describe('POST /user/:id/deactivate', () => {
       expect(result1).toBe(true);
 
       const deactivateUserResponse2 = await request(app.getServer())
-        .post(userRouter.path + '/' + newUserDto.id + '/' + userRouter.deactivatePath)
+        .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.deactivatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deactivateUserResponse2.statusCode).toBe(200);
@@ -107,7 +107,7 @@ describe('POST /user/:id/deactivate', () => {
       expect(result2).toBe(true);
 
       const deleteUserResponse = await request(app.getServer())
-        .delete(userRouter.path + '/' + newUserDto.id)
+        .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
@@ -128,14 +128,14 @@ describe('POST /user/:id/deactivate', () => {
 
     test('when data are valid, user has permission and deactivatedUser is active', async () => {
       const user = generateValidUser();
-      const createUserResponse = await request(app.getServer()).post(userRouter.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
       const activateUserResponse = await request(app.getServer())
-        .post(userRouter.path + '/' + newUserDto.id + '/' + userRouter.activatePath)
+        .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
@@ -147,7 +147,7 @@ describe('POST /user/:id/deactivate', () => {
       expect(result1).toBe(true);
 
       const deactivateUserResponse = await request(app.getServer())
-        .post(userRouter.path + '/' + newUserDto.id + '/' + userRouter.deactivatePath)
+        .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.deactivatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deactivateUserResponse.statusCode).toBe(200);
@@ -159,7 +159,7 @@ describe('POST /user/:id/deactivate', () => {
       expect(result2).toBe(true);
 
       const deleteUserResponse = await request(app.getServer())
-        .delete(userRouter.path + '/' + newUserDto.id)
+        .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
@@ -194,7 +194,7 @@ describe('POST /user/:id/deactivate', () => {
     test('when token is not set', async () => {
       const userId: string = Guid.EMPTY;
       const deactivateUserResponse = await request(app.getServer())
-        .post(userRouter.path + '/' + userId + '/' + userRouter.deactivatePath)
+        .post(userRoute.path + '/' + userId + '/' + userRoute.deactivatePath)
         .send();
       expect(deactivateUserResponse.statusCode).toBe(401);
       const body = deactivateUserResponse.body;
@@ -210,7 +210,7 @@ describe('POST /user/:id/deactivate', () => {
     test('when user has no permission', async () => {
       const requestData = generateValidUser();
       const createUserResponse = await request(app.getServer())
-        .post(userRouter.path)
+        .post(userRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -222,14 +222,14 @@ describe('POST /user/:id/deactivate', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const activateNewUserResponse = await request(app.getServer())
-        .post(userRouter.path + '/' + user.id + '/' + userRouter.activatePath)
+        .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
       const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
       const deactivateUserResponse = await request(app.getServer())
-        .post(userRouter.path + '/' + user.id + '/' + userRouter.deactivatePath)
+        .post(userRoute.path + '/' + user.id + '/' + userRoute.deactivatePath)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(deactivateUserResponse.statusCode).toBe(403);
@@ -239,7 +239,7 @@ describe('POST /user/:id/deactivate', () => {
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
       const deleteUserResponse = await request(app.getServer())
-        .delete(userRouter.path + '/' + user.id)
+        .delete(userRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
@@ -272,7 +272,7 @@ describe('POST /user/:id/deactivate', () => {
     test('when user have all permissions expect DeactivateUser', async () => {
       const requestData = generateValidUser();
       const createUserResponse = await request(app.getServer())
-        .post(userRouter.path)
+        .post(userRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -284,7 +284,7 @@ describe('POST /user/:id/deactivate', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const activateNewUserResponse = await request(app.getServer())
-        .post(userRouter.path + '/' + user.id + '/' + userRouter.activatePath)
+        .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
@@ -304,7 +304,7 @@ describe('POST /user/:id/deactivate', () => {
       const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
 
       const deactivateUserResponse = await request(app.getServer())
-        .post(userRouter.path + '/' + user.id + '/' + userRouter.deactivatePath)
+        .post(userRoute.path + '/' + user.id + '/' + userRoute.deactivatePath)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(deactivateUserResponse.statusCode).toBe(403);
@@ -314,7 +314,7 @@ describe('POST /user/:id/deactivate', () => {
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
       const deleteUserResponse = await request(app.getServer())
-        .delete(userRouter.path + '/' + user.id)
+        .delete(userRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
@@ -355,7 +355,7 @@ describe('POST /user/:id/deactivate', () => {
     test('when user not exist', async () => {
       const userId: string = Guid.EMPTY;
       const deactivateResponse = await request(app.getServer())
-        .post(userRouter.path + '/' + userId + '/' + userRouter.deactivatePath)
+        .post(userRoute.path + '/' + userId + '/' + userRoute.deactivatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deactivateResponse.statusCode).toBe(400);
@@ -382,7 +382,7 @@ describe('POST /user/:id/deactivate', () => {
 
     test('when user Id is not GUID', async () => {
       const deactivateResponse = await request(app.getServer())
-        .post(userRouter.path + '/invalid-guid/' + userRouter.deactivatePath)
+        .post(userRoute.path + '/invalid-guid/' + userRoute.deactivatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deactivateResponse.statusCode).toBe(404);
@@ -407,7 +407,7 @@ describe('POST /user/:id/deactivate', () => {
     test('when token is invalid', async () => {
       const userId: string = Guid.EMPTY;
       const deactivateResponse = await request(app.getServer())
-        .post(userRouter.path + '/' + userId + '/' + userRouter.deactivatePath)
+        .post(userRoute.path + '/' + userId + '/' + userRoute.deactivatePath)
         .send()
         .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
       expect(deactivateResponse.statusCode).toBe(401);

@@ -9,7 +9,7 @@ import { getAdminLoginData } from '@utils/tests.utils';
 import request from 'supertest';
 
 describe('Cache user data tests', () => {
-  let userRouter: UserRoute;
+  let userRoute: UserRoute;
   let app: App;
   let findOneByFn: any;
   let adminAccessToken: string | undefined;
@@ -75,9 +75,9 @@ describe('Cache user data tests', () => {
       return dbMock;
     });
 
-    userRouter = new UserRoute();
+    userRoute = new UserRoute();
     app = new App();
-    await app.initialize([userRouter]);
+    await app.initialize([userRoute]);
     const { email: login, password } = getAdminLoginData();
     const adminLoginResult = await loginAs(app, { email: login, password } satisfies LoginDto);
     adminAccessToken = adminLoginResult?.accessToken;
@@ -85,10 +85,10 @@ describe('Cache user data tests', () => {
   });
 
   it('Should store userId', async () => {
-    let response = await request(app.getServer()).get(`${userRouter.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);
+    let response = await request(app.getServer()).get(`${userRoute.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);
     expect(response.statusCode).toBe(200);
 
-    response = await request(app.getServer()).get(`${userRouter.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);
+    response = await request(app.getServer()).get(`${userRoute.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);
     expect(response.statusCode).toBe(200);
 
     expect(findOneByFn).toHaveBeenCalledTimes(5);

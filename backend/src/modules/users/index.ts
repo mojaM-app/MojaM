@@ -9,7 +9,7 @@ export { CreateUserDto, CreateUserReqDto, CreateUserResponseDto } from './dtos/c
 export { DeactivateUserReqDto, DeactivateUserResponseDto } from './dtos/deactivate-user.dto';
 export { DeleteUserReqDto, DeleteUserResponseDto } from './dtos/delete-user.dto';
 export { GetUserProfileReqDto, GetUserProfileResponseDto } from './dtos/get-user-profile.dto';
-export { UpdateUserDto, UpdateUserPasswordDto, UpdateUserReqDto, UpdateUserResponseDto } from './dtos/update-user.dto';
+export { UpdateUserReqDto, UpdateUserResponseDto } from './dtos/update-user.dto';
 export { type IUserProfileDto } from './interfaces/get-user-profile.interfaces';
 export { type IUserDto } from './interfaces/get-user.interfaces';
 

@@ -8,8 +8,6 @@ import {
   CreateUserReqDto,
   DeactivateUserReqDto,
   DeleteUserReqDto,
-  UpdateUserDto,
-  UpdateUserPasswordDto,
   UpdateUserReqDto,
 } from '@modules/users';
 import { getDateTimeNow, isNullOrEmptyString, isNullOrUndefined } from '@utils';
@@ -17,6 +15,7 @@ import StatusCode from 'status-code-enum';
 import Container, { Service } from 'typedi';
 import { User } from '../entities/user.entity';
 import { ICreateUser } from '../interfaces/create-user.interfaces';
+import { IUpdateUser, IUpdateUserPassword } from '../interfaces/update-user.interfaces';
 import { BaseUserRepository } from './base.user.repository';
 
 @Service()
@@ -65,7 +64,7 @@ export class UserRepository extends BaseUserRepository {
 
     const salt = this._cryptoService.generateSalt();
     const hashedPassword = (userData.password?.length ?? 0) > 0 ? this._passwordService.hashPassword(salt, userData.password!) : null;
-    const newUser = this._dbContext.users.create({
+    const model = {
       ...userData,
       password: hashedPassword,
       isActive: false,
@@ -76,9 +75,11 @@ export class UserRepository extends BaseUserRepository {
       phoneConfirmed: false,
       lastLoginAt: undefined,
       failedLoginAttempts: 0,
-    } satisfies ICreateUser);
+    } satisfies ICreateUser;
 
-    return await this._dbContext.users.save(newUser);
+    const entity = this._dbContext.users.create(model);
+
+    return await this._dbContext.users.save(entity);
   }
 
   public async checkIfCanBeDeleted(userId: number): Promise<string[]> {
@@ -110,7 +111,7 @@ export class UserRepository extends BaseUserRepository {
       userId,
       {
         isActive: true,
-      } satisfies UpdateUserDto,
+      } satisfies IUpdateUser,
       reqDto.currentUserId,
     );
 
@@ -122,7 +123,7 @@ export class UserRepository extends BaseUserRepository {
       userId,
       {
         isActive: false,
-      } satisfies UpdateUserDto,
+      } satisfies IUpdateUser,
       reqDto.currentUserId,
     ) satisfies UpdateUserReqDto;
 
@@ -154,7 +155,7 @@ export class UserRepository extends BaseUserRepository {
       userId,
       userData: {
         isLockedOut: true,
-      } satisfies UpdateUserDto,
+      } satisfies IUpdateUser,
       currentUserId: undefined,
     } satisfies UpdateUserReqDto;
 
@@ -169,7 +170,7 @@ export class UserRepository extends BaseUserRepository {
       userData: {
         lastLoginAt: getDateTimeNow(),
         failedLoginAttempts: 0,
-      } satisfies UpdateUserDto,
+      } satisfies IUpdateUser,
       currentUserId: undefined,
     } satisfies UpdateUserReqDto;
 
@@ -187,7 +188,7 @@ export class UserRepository extends BaseUserRepository {
         salt,
         emailConfirmed: true,
         failedLoginAttempts: 0,
-      } satisfies UpdateUserPasswordDto,
+      } satisfies IUpdateUserPassword,
       currentUserId: undefined,
     } satisfies UpdateUserReqDto;
 

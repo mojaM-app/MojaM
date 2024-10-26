@@ -7,7 +7,7 @@ import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-han
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
-import { CreateUserResponseDto, DeleteUserResponseDto, GetUserProfileResponseDto, UserProfileRetrievedEvent, UserRoute } from '@modules/users';
+import { CreateUserResponseDto, DeleteUserResponseDto, GetUserProfileResponseDto, UserProfileRetrievedEvent, UserProfileRoute, UserRoute } from '@modules/users';
 import { isGuid, isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
@@ -15,13 +15,14 @@ import { Guid } from 'guid-typescript';
 import request from 'supertest';
 
 describe('GET/user/:id', () => {
-  const userRouter = new UserRoute();
+  const userProfileRoute = new UserProfileRoute();
+  const userRoute = new UserRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App();
   let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
-    await app.initialize([userRouter, permissionsRoute]);
+    await app.initialize([userProfileRoute, userRoute, permissionsRoute]);
     const { email: login, password } = getAdminLoginData();
 
     adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
@@ -38,7 +39,7 @@ describe('GET/user/:id', () => {
     test('when data are valid and user has permission', async () => {
       const newUser = generateValidUser();
       const createUserResponse = await request(app.getServer())
-        .post(userRouter.path)
+        .post(userRoute.path)
         .send(newUser)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -47,7 +48,7 @@ describe('GET/user/:id', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const getUserProfileResponse = await request(app.getServer())
-        .get(userRouter.path + '/' + newUserDto.id)
+        .get(userProfileRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(getUserProfileResponse.statusCode).toBe(200);
@@ -67,7 +68,7 @@ describe('GET/user/:id', () => {
       expect(userProfile!.hasOwnProperty('uuid')).toBe(false);
 
       const deleteResponse = await request(app.getServer())
-        .delete(userRouter.path + '/' + userProfile!.id)
+        .delete(userRoute.path + '/' + userProfile!.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -76,14 +77,14 @@ describe('GET/user/:id', () => {
       Object.entries(testEventHandlers)
         .filter(
           ([, eventHandler]) =>
-            ![testEventHandlers.onUserCreated, testEventHandlers.onUserRetrieved, testEventHandlers.onUserDeleted].includes(eventHandler),
+            ![testEventHandlers.onUserCreated, testEventHandlers.onUserProfileRetrieved, testEventHandlers.onUserDeleted].includes(eventHandler),
         )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserRetrieved).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserRetrieved).toHaveBeenCalledWith(new UserProfileRetrievedEvent(userProfile!, 1));
+      expect(testEventHandlers.onUserProfileRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserProfileRetrieved).toHaveBeenCalledWith(new UserProfileRetrievedEvent(userProfile!, 1));
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
   });
@@ -96,7 +97,7 @@ describe('GET/user/:id', () => {
     test('when token is not set', async () => {
       const userId: string = Guid.EMPTY;
       const getUserProfileResponse = await request(app.getServer())
-        .get(userRouter.path + '/' + userId)
+        .get(userProfileRoute.path + '/' + userId)
         .send();
       expect(getUserProfileResponse.statusCode).toBe(401);
       const body = getUserProfileResponse.body;
@@ -112,7 +113,7 @@ describe('GET/user/:id', () => {
     test('when user has no permission', async () => {
       const requestData = generateValidUser();
       const createUserResponse = await request(app.getServer())
-        .post(userRouter.path)
+        .post(userRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -124,7 +125,7 @@ describe('GET/user/:id', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const activateNewUserResponse = await request(app.getServer())
-        .post(userRouter.path + '/' + newUserDto.id + '/' + userRouter.activatePath)
+        .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
@@ -132,7 +133,7 @@ describe('GET/user/:id', () => {
       const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
 
       const getUserProfileResponse = await request(app.getServer())
-        .get(userRouter.path + '/' + newUserDto.id)
+        .get(userProfileRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(getUserProfileResponse.statusCode).toBe(403);
@@ -142,7 +143,7 @@ describe('GET/user/:id', () => {
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
       const deleteResponse = await request(app.getServer())
-        .delete(userRouter.path + '/' + newUserDto.id)
+        .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -169,14 +170,14 @@ describe('GET/user/:id', () => {
       expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
       expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
-      expect(testEventHandlers.onUserRetrieved).not.toHaveBeenCalled();
+      expect(testEventHandlers.onUserProfileRetrieved).not.toHaveBeenCalled();
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
     });
 
     test('when user have all permissions expect PreviewUserProfile', async () => {
       const requestData = generateValidUser();
       const createUserResponse = await request(app.getServer())
-        .post(userRouter.path)
+        .post(userRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -188,7 +189,7 @@ describe('GET/user/:id', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const activateNewUserResponse = await request(app.getServer())
-        .post(userRouter.path + '/' + newUserDto.id + '/' + userRouter.activatePath)
+        .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
@@ -208,7 +209,7 @@ describe('GET/user/:id', () => {
       const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
 
       const getUserProfileResponse = await request(app.getServer())
-        .get(userRouter.path + '/' + newUserDto.id)
+        .get(userProfileRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(getUserProfileResponse.statusCode).toBe(403);
@@ -218,7 +219,7 @@ describe('GET/user/:id', () => {
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
       const deleteResponse = await request(app.getServer())
-        .delete(userRouter.path + '/' + newUserDto.id)
+        .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -246,7 +247,7 @@ describe('GET/user/:id', () => {
       expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
       expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
-      expect(testEventHandlers.onUserRetrieved).not.toHaveBeenCalled();
+      expect(testEventHandlers.onUserProfileRetrieved).not.toHaveBeenCalled();
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
       expect(testEventHandlers.onPermissionAdded).toHaveBeenCalled();
     });
@@ -260,7 +261,7 @@ describe('GET/user/:id', () => {
     test('GET should respond with a status code of 400 when user not exist', async () => {
       const userId: string = Guid.EMPTY;
       const getUserProfileResponse = await request(app.getServer())
-        .get(userRouter.path + '/' + userId)
+        .get(userProfileRoute.path + '/' + userId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(getUserProfileResponse.statusCode).toBe(400);
@@ -287,7 +288,7 @@ describe('GET/user/:id', () => {
 
     test('GET should respond with a status code of 404 when user Id is not GUID', async () => {
       const getUserProfileResponse = await request(app.getServer())
-        .get(userRouter.path + '/invalid-guid')
+        .get(userProfileRoute.path + '/invalid-guid')
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(getUserProfileResponse.statusCode).toBe(404);
@@ -312,7 +313,7 @@ describe('GET/user/:id', () => {
     test('when token is invalid', async () => {
       const userId: string = Guid.EMPTY;
       const getUserProfileResponse = await request(app.getServer())
-        .get(userRouter.path + '/' + userId)
+        .get(userProfileRoute.path + '/' + userId)
         .send()
         .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
       expect(getUserProfileResponse.statusCode).toBe(401);

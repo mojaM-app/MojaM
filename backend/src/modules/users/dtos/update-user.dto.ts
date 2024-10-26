@@ -2,26 +2,13 @@ import { events } from '@events';
 import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
 import { IUserDto } from '../interfaces/get-user.interfaces';
-
-export class UpdateUserDto {
-  public isActive?: boolean;
-  public failedLoginAttempts?: number;
-  public isLockedOut?: boolean;
-  public lastLoginAt?: Date;
-}
-
-export class UpdateUserPasswordDto {
-  public password: string;
-  public salt: string;
-  public emailConfirmed: boolean;
-  public failedLoginAttempts: number;
-}
+import { TUpdateUser } from '../interfaces/update-user.interfaces';
 
 export class UpdateUserReqDto extends BaseReqDto {
   public readonly userId: number;
-  public readonly userData: UpdateUserDto | UpdateUserPasswordDto;
+  public readonly userData: TUpdateUser;
 
-  public constructor(userId: number, userData: UpdateUserDto | UpdateUserPasswordDto, currentUserId: number | undefined) {
+  public constructor(userId: number, userData: TUpdateUser, currentUserId: number | undefined) {
     super(currentUserId);
     this.userId = userId;
     this.userData = userData;
