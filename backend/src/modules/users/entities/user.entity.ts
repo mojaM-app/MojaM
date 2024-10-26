@@ -10,6 +10,9 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
+import { ICreateUser } from '../interfaces/create-user.interfaces';
+import { IUserId } from '../interfaces/IUser.Id';
+import { AnnouncementItem } from './../../../modules/announcements/entities/announcement-item.entity';
 import { Announcement } from './../../../modules/announcements/entities/announcement.entity';
 import { UserResetPasswordToken } from './../../auth/entities/user-reset-password-tokens.entity';
 import { UserSystemPermission } from './user-system-permission.entity';
@@ -18,7 +21,7 @@ import { UserSystemPermission } from './user-system-permission.entity';
 @Entity({
   name: 'users',
 })
-export class User {
+export class User implements IUserId, ICreateUser {
   @PrimaryGeneratedColumn('increment', {
     name: 'Id',
     type: 'int',
@@ -183,8 +186,14 @@ export class User {
   public resetPasswordToken: Relation<UserResetPasswordToken>;
 
   @OneToMany(() => Announcement, (announcements: Announcement) => announcements.createdBy)
-  public createdAnnouncements: Relation<UserSystemPermission[]>;
+  public createdAnnouncements: Relation<Announcement[]>;
 
   @OneToMany(() => Announcement, (announcements: Announcement) => announcements.publishedBy)
-  public publishedAnnouncements: Relation<UserSystemPermission[]>;
+  public publishedAnnouncements: Relation<Announcement[]>;
+
+  @OneToMany(() => AnnouncementItem, (announcementItem: AnnouncementItem) => announcementItem.createdBy)
+  public createdAnnouncementItems: Relation<AnnouncementItem[]>;
+
+  @OneToMany(() => AnnouncementItem, (announcementItem: AnnouncementItem) => announcementItem.updatedBy)
+  public updatedAnnouncementItems: Relation<AnnouncementItem[]>;
 }

@@ -13,6 +13,7 @@ export const errorKeys = {
     User_Is_Not_Active: 'User_Is_Not_Active',
     User_Is_Locked_Out: 'User_Is_Locked_Out',
     Invalid_Reset_Password_Token: 'Invalid_Reset_Password_Token',
+    Refresh_Token_Expired: 'Refresh_Token_Expired',
   },
   users: {
     Invalid_Phone: 'Invalid_Phone',
@@ -25,5 +26,8 @@ export const errorKeys = {
     User_Already_Exists: 'User_Already_Exists',
     User_Does_Not_Exist: 'User_Does_Not_Exist',
     Invalid_User_Id: 'Invalid_User_Id',
+  },
+  announcement: {
+    Announcement_With_Given_Date_Already_Exists: 'Announcement_With_Given_Date_Already_Exists',
   },
 };

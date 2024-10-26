@@ -1,5 +1,6 @@
 import { AnnouncementStateValue } from '@modules/announcements';
 import { BaseRepository } from '@modules/common';
+import { getDateTimeNow } from '@utils';
 import { Service } from 'typedi';
 import { FindOptionsWhere, MoreThan } from 'typeorm';
 import { Announcement } from '../entities/announcement.entity';
@@ -13,7 +14,7 @@ export class CurrentAnnouncementsRepository extends BaseRepository {
   public async get(): Promise<Announcement | null> {
     const where: FindOptionsWhere<Announcement> = {
       state: AnnouncementStateValue.PUBLISHED,
-      validFromDate: MoreThan(new Date()),
+      validFromDate: MoreThan(getDateTimeNow()),
     };
 
     return await this._dbContext.announcements.findOneBy(where);

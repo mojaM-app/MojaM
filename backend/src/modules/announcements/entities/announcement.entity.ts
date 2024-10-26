@@ -1,13 +1,15 @@
 /* eslint-disable no-use-before-define */
-import { Column, CreateDateColumn, Entity, Generated, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, Relation, Unique, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Generated, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Relation, Unique, UpdateDateColumn } from 'typeorm';
+import { ICreateAnnouncement } from '../interfaces/create-announcement.interfaces';
+import { IAnnouncementId } from '../interfaces/IAnnouncementId';
 import { User } from './../../../modules/users/entities/user.entity';
 import { AnnouncementItem } from './announcement-item.entity';
 
 @Entity({
   name: 'announcements',
 })
-export class Announcement {
-  @PrimaryColumn({
+export class Announcement implements ICreateAnnouncement, IAnnouncementId {
+  @PrimaryGeneratedColumn({
     name: 'Id',
     type: 'int',
     primaryKeyConstraintName: 'PK_Announcement_Id',

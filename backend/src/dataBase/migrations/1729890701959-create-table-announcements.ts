@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateTableAnnouncements1729703438111 implements MigrationInterface {
-  name = 'CreateTableAnnouncements1729703438111'
+export class CreateTableAnnouncements1729890701959 implements MigrationInterface {
+  name = 'CreateTableAnnouncements1729890701959'
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query('CREATE TABLE `announcements` (`Id` int NOT NULL, `Uuid` varchar(36) NOT NULL, `Title` varchar(255) NULL, `State` int NOT NULL, `ValidFromDate` date NULL, `CreatedAt` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP, `CreatedById` int NOT NULL, `UpdatedAt` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `PublishedAt` timestamp(0) NULL, `PublishedById` int NULL, UNIQUE INDEX `UQ_Announcement_Uuid` (`Uuid`), PRIMARY KEY (`Id`)) ENGINE=InnoDB');
+    await queryRunner.query('CREATE TABLE `announcements` (`Id` int NOT NULL AUTO_INCREMENT, `Uuid` varchar(36) NOT NULL, `Title` varchar(255) NULL, `State` int NOT NULL, `ValidFromDate` date NULL, `CreatedAt` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP, `CreatedById` int NOT NULL, `UpdatedAt` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `PublishedAt` timestamp(0) NULL, `PublishedById` int NULL, UNIQUE INDEX `UQ_Announcement_Uuid` (`Uuid`), PRIMARY KEY (`Id`)) ENGINE=InnoDB');
     await queryRunner.query('CREATE TABLE `announcement_items` (`Id` varchar(36) NOT NULL, `Content` text NULL, `CreatedAt` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP, `CreatedById` int NOT NULL, `UpdatedAt` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `UpdatedById` int NULL, `AnnouncementId` int NOT NULL, FULLTEXT INDEX `IXD_AnnouncementItem_Content_Fulltext` (`Content`), PRIMARY KEY (`Id`)) ENGINE=InnoDB');
     await queryRunner.query('ALTER TABLE `announcements` ADD CONSTRAINT `FK_Announcement_CreatedById_To_User` FOREIGN KEY (`CreatedById`) REFERENCES `users`(`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT');
     await queryRunner.query('ALTER TABLE `announcements` ADD CONSTRAINT `FK_Announcement_PublishedById_To_User` FOREIGN KEY (`PublishedById`) REFERENCES `users`(`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT');

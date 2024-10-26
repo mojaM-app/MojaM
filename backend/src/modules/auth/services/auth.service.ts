@@ -39,7 +39,7 @@ import { UserRepository } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
-import { decode, JwtPayload, sign, verify } from 'jsonwebtoken';
+import { decode, JwtPayload, sign, verify, VerifyErrors } from 'jsonwebtoken';
 import StatusCode from 'status-code-enum';
 import { Container, Service } from 'typedi';
 import { ResetPasswordTokensRepository } from '../repositories/reset-password-tokens.repository';
@@ -254,15 +254,24 @@ export class AuthService extends BaseService {
       return null;
     }
 
-    verify(data.refreshToken!, getRefreshTokenSecret(user!.id, user!.refreshTokenKey), {
-      complete: true,
-      algorithms: [ACCESS_TOKEN_ALGORITHM],
-      clockTolerance: 0,
-      ignoreExpiration: false,
-      ignoreNotBefore: false,
-      audience: getTokenAudience(),
-      issuer: getTokenIssuer(),
-    }).payload as JwtPayload;
+    verify(
+      data.refreshToken!,
+      getRefreshTokenSecret(user!.id, user!.refreshTokenKey),
+      {
+        complete: true,
+        algorithms: [ACCESS_TOKEN_ALGORITHM],
+        clockTolerance: 0,
+        ignoreExpiration: false,
+        ignoreNotBefore: false,
+        audience: getTokenAudience(),
+        issuer: getTokenIssuer(),
+      },
+      (err: VerifyErrors | null, decoded): void => {
+        if (!isNullOrUndefined(err)) {
+          throw new TranslatableHttpException(StatusCode.ClientErrorLoginTimeOut, errorKeys.login.Refresh_Token_Expired);
+        }
+      },
+    );
 
     const userPermissions = await this._permissionRepository.getUserPermissions(user!.id);
     const accessToken = this.createAccessToken(user!, userPermissions);

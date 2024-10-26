@@ -7,6 +7,7 @@ export const events = {
   },
   announcements: {
     retrieved: 'onAnnouncementsRetrieved',
+    created: 'onAnnouncementsCreated',
   },
   community: {
     diaconie: {
@@ -33,7 +34,7 @@ export const events = {
     failedLoginAttempt: 'onFailedLoginAttempt',
     userLockedOut: 'onUserLockedOut',
     userListRetrieved: 'onUserListRetrieved',
-    userRetrieved: 'onUserRetrieved',
+    userProfileRetrieved: 'onUserProfileRetrieved',
     userCreated: 'onUserCreated',
     userUpdated: 'onUserUpdated',
     userDeleted: 'onUserDeleted',
