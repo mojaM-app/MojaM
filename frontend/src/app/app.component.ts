@@ -5,6 +5,7 @@ import {
   OnInit,
   signal,
   ViewChild,
+  WritableSignal,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,6 +15,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { NgxResizeObserverModule } from 'ngx-resize-observer';
 import { distinctUntilChanged, filter } from 'rxjs';
+import { IRouteData } from 'src/interfaces/common/route.data';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { BrowserWindowSize } from 'src/services/browser/browser-window-size';
@@ -47,8 +49,8 @@ import { SideMenuComponent } from './components/side-menu/side-menu.component';
 export class AppComponent extends WithUnsubscribe() implements OnInit {
   @ViewChild('sidenav') public sidenav: MatSidenav | undefined;
 
-  public readonly footerShouldBeVisible = signal<boolean>(true);
-  public readonly sideNavShouldBeOpened = signal<boolean>(true);
+  public readonly footerShouldBeVisible: WritableSignal<boolean>;
+  public readonly sideNavShouldBeOpened: WritableSignal<boolean>;
   public readonly showSpinner = signal<boolean>(false);
 
   public constructor(
@@ -59,6 +61,9 @@ export class AppComponent extends WithUnsubscribe() implements OnInit {
   ) {
     super();
 
+    this.sideNavShouldBeOpened = signal(!(isMobile ?? false));
+    this.footerShouldBeVisible = signal(isMobile ?? true);
+
     this.addSubscription(
       router.events
         .pipe(
@@ -66,8 +71,17 @@ export class AppComponent extends WithUnsubscribe() implements OnInit {
           distinctUntilChanged()
         )
         .subscribe(event => {
-          this.setSideNavShouldBeOpened(event as NavigationEnd);
-          this.setFooterShouldBeVisible(event as NavigationEnd);
+          if (event instanceof NavigationEnd) {
+            const routeData = router.routerState.root.firstChild?.snapshot.data as IRouteData;
+
+            this.sideNavShouldBeOpened.set(
+              isMobile === true ? false : !(routeData?.closeSideNav ?? false)
+            );
+
+            this.footerShouldBeVisible.set(
+              isMobile === true ? true : !(routeData?.hideFooter ?? true)
+            );
+          }
         })
     );
   }
@@ -94,27 +108,5 @@ export class AppComponent extends WithUnsubscribe() implements OnInit {
 
   public onResize(mainContainerSize: ResizeObserverEntry): void {
     this._browserService.emitEventOnWindowResize(mainContainerSize);
-  }
-
-  private setSideNavShouldBeOpened(location: NavigationEnd): void {
-    const closeSideNavOnPaths = ['/reset-password/'];
-
-    if (closeSideNavOnPaths.some(path => location?.url?.startsWith(path) === true)) {
-      this.sideNavShouldBeOpened.set(false);
-      return;
-    }
-
-    this.sideNavShouldBeOpened.set(true);
-  }
-
-  private setFooterShouldBeVisible(location: NavigationEnd): void {
-    const hideFooterOnPaths = ['/reset-password/'];
-
-    if (hideFooterOnPaths.some(path => location?.url?.startsWith(path) === true)) {
-      this.footerShouldBeVisible.set(false);
-      return;
-    }
-
-    this.footerShouldBeVisible.set(true);
   }
 }

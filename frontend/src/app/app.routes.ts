@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { IRouteData } from 'src/interfaces/common/route.data';
 import { AnnouncementsMenu } from './components/announcements/announcements.menu';
 import { BulletinMenu } from './components/bulletin/bulletin.menu';
 import { CalendarMenu } from './components/calendar/calendar.menu';
@@ -16,13 +17,11 @@ export const routes: Routes = [
   },
   {
     path: CalendarMenu.Route,
-    loadChildren: () =>
-      import('./components/calendar/calendar.module').then(m => m.CalendarModule),
+    loadChildren: () => import('./components/calendar/calendar.module').then(m => m.CalendarModule),
   },
   {
     path: NewsMenu.Route,
-    loadChildren: () =>
-      import('./components/news/news.module').then(m => m.NewsModule),
+    loadChildren: () => import('./components/news/news.module').then(m => m.NewsModule),
   },
   {
     path: BulletinMenu.Path,
@@ -49,6 +48,7 @@ export const routes: Routes = [
       import('./components/static/reset-password/reset-password.component').then(
         m => m.ResetPasswordComponent
       ),
+    data: { closeSideNav: true, hideFooter: true } satisfies IRouteData,
   },
   {
     path: 'not-found',
