@@ -56,7 +56,7 @@
     "Title": "Ogłoszenia",
     "AnnouncementsOfTheDay": "Ogłoszenia z dnia"
   },
-  "News":{
+  "News": {
     "Title": "Aktualności"
   },
   "Bulletin": {
@@ -145,7 +145,8 @@
     "Unauthorized": "Nie masz uprawnień do wykonania tej operacji.",
     "Bad_Request": "Wystąpił błąd podczas przetwarzania żądania. Spróbuj ponownie później.",
     "Wrong_Authentication_Token": "Nieprawidłowy token autoryzacyjny. Zaloguj się ponownie.",
-    "Invalid_Login_Or_Password": "Wprowadzono nieprawidłowe dane logowania."
+    "Invalid_Login_Or_Password": "Wprowadzono nieprawidłowe dane logowania.",
+    "Session_Expired": "Twoja sesja wygasła. Zaloguj się ponownie."
   },
   "Paginator": {
     "ItemsPerPageLabel": "Ilość elementów na stronie",
