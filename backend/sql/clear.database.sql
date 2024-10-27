@@ -7,7 +7,7 @@ announcements,
 announcement_items;
 
 DROP VIEW IF EXISTS
-vuser;
+vusers;
 
 DROP TABLE IF EXISTS _prisma_migrations,
 typeorm_metadata,

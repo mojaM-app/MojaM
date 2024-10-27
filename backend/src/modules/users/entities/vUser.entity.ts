@@ -31,7 +31,7 @@ const UserListViewColumns: { [K in keyof IUserGridItemDto]: string } = {
       .addSelect('user.IsDeleted', 'IsDeleted')
       .addSelect('(select count(0) from user_to_systempermissions as perm where user.Id = perm.UserId)', UserListViewColumns.rolesCount)
       .from(User, 'user'),
-  name: 'vUser',
+  name: 'vUsers',
 })
 export class vUser implements IUserGridItemDto {
   @ViewColumn()
