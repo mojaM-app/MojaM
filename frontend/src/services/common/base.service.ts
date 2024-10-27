@@ -21,7 +21,7 @@ export class BaseService {
     },
     announcements: {
       path: 'announcements',
-      get: (): string => `${environment.backendUrl}/${this.API_ROUTES.announcements.path}`,
+      getCurrent: (): string => `${environment.backendUrl}/${this.API_ROUTES.announcements.path}/current`,
     },
     calendar: {
       path: 'calendar',
@@ -33,11 +33,11 @@ export class BaseService {
       logout: (): string => `${environment.backendUrl}/logout`,
       getUserInfoBeforeLogIn: (): string =>
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/get-user-info-before-log-in`,
-      requestResetPasswordPath: (): string =>
+      requestResetPassword: (): string =>
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/request-reset-password`,
       checkResetPasswordToken: (userId: string, token: string): string =>
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/check-reset-password-token/${userId}/${token}`,
-      resetPasswordPath: (): string =>
+      resetPassword: (): string =>
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/reset-password`,
       refreshToken: (): string =>
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/refresh-token`,

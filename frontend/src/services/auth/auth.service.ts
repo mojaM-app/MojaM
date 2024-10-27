@@ -47,7 +47,7 @@ export class AuthService extends BaseService {
   public sendEmailResetPassword(email: string, phone?: string): Observable<boolean> {
     return this._httpClient
       .request()
-      .withUrl(this.API_ROUTES.auth.requestResetPasswordPath())
+      .withUrl(this.API_ROUTES.auth.requestResetPassword())
       .withBody({ email, phone })
       .post<boolean>();
   }
@@ -100,7 +100,7 @@ export class AuthService extends BaseService {
   ): Observable<ResetPasswordResultDto> {
     return this._httpClient
       .request()
-      .withUrl(this.API_ROUTES.auth.resetPasswordPath())
+      .withUrl(this.API_ROUTES.auth.resetPassword())
       .withBody({ userId, token, password })
       .post<ResetPasswordResultDto>();
   }

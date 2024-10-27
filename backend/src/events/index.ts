@@ -6,8 +6,10 @@ export const events = {
     retrieved: 'onCalendarRetrieved',
   },
   announcements: {
-    retrieved: 'onAnnouncementsRetrieved',
-    created: 'onAnnouncementsCreated',
+    announcementsCreated: 'onAnnouncementsCreated',
+    currentAnnouncementsRetrieved: 'onCurrentAnnouncementsRetrieved',
+    announcementsRetrieved: 'onAnnouncementsRetrieved',
+    announcementListRetrieved: 'onAnnouncementListRetrieved',
   },
   community: {
     diaconie: {

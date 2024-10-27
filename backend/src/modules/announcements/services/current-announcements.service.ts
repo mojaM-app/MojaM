@@ -1,5 +1,5 @@
 import { events } from '@events';
-import { AnnouncementsRetrievedEvent, announcementToICurrentAnnouncements, CurrentAnnouncementsRepository, ICurrentAnnouncementsDto } from '@modules/announcements';
+import { announcementToICurrentAnnouncements, CurrentAnnouncementsRepository, CurrentAnnouncementsRetrievedEvent, ICurrentAnnouncementsDto } from '@modules/announcements';
 import { BaseService } from '@modules/common';
 import { isNullOrUndefined } from '@utils';
 import Container, { Service } from 'typedi';
@@ -22,7 +22,7 @@ export class CurrentAnnouncementsService extends BaseService {
 
     const result = announcementToICurrentAnnouncements(announcement!);
 
-    this._eventDispatcher.dispatch(events.announcements.retrieved, new AnnouncementsRetrievedEvent(result, currentUserId));
+    this._eventDispatcher.dispatch(events.announcements.currentAnnouncementsRetrieved, new CurrentAnnouncementsRetrievedEvent(result, currentUserId));
 
     return result;
   }

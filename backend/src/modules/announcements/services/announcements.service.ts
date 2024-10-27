@@ -1,6 +1,7 @@
+import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
-import { AnnouncementsRepository, CreateAnnouncementsReqDto } from '@modules/announcements';
+import { AnnouncementsCreatedEvent, AnnouncementsRepository, announcementToIAnnouncements, CreateAnnouncementsReqDto } from '@modules/announcements';
 import { BaseService } from '@modules/common';
 import { isDate, isNullOrUndefined } from '@utils';
 import StatusCode from 'status-code-enum';
@@ -29,7 +30,9 @@ export class AnnouncementsService extends BaseService {
       }
     }
 
-    await this._announcementsRepository.create(reqDto);
+    const announcement = await this._announcementsRepository.create(reqDto);
+
+    this._eventDispatcher.dispatch(events.announcements.announcementsCreated, new AnnouncementsCreatedEvent(announcementToIAnnouncements(announcement), reqDto.currentUserId));
 
     return true;
   }

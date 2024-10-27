@@ -1,4 +1,4 @@
-import { AnnouncementsCreatedEvent, AnnouncementsRetrievedEvent } from '@modules/announcements';
+import { AnnouncementsCreatedEvent, AnnouncementsRetrievedEvent, CurrentAnnouncementsRetrievedEvent } from '@modules/announcements';
 import {
   FailedLoginAttemptEvent,
   InactiveUserTriesToLogInEvent,
@@ -30,6 +30,7 @@ const testEventHandlers: {
   onPermissionDeleted: (data: any) => void;
   onAnnouncementsRetrieved: (data: any) => void;
   onAnnouncementsCreated: (data: any) => void;
+  onCurrentAnnouncementsRetrieved: (data: any) => void;
 } = {
   onUserLoggedIn: jest.fn((data: UserLoggedInEvent) => {}),
   onUserRefreshedToken: jest.fn((data: UserRefreshedTokenEvent) => {}),
@@ -46,8 +47,9 @@ const testEventHandlers: {
   onPermissionAdded: jest.fn((data: PermissionAddedEvent) => {}),
   onPermissionDeleted: jest.fn((data: PermissionDeletedEvent) => {}),
   onUserPasswordChanged: jest.fn((data: UserPasswordChangedEvent) => {}),
-  onAnnouncementsRetrieved: jest.fn((data: AnnouncementsRetrievedEvent) => {}),
   onAnnouncementsCreated: jest.fn((data: AnnouncementsCreatedEvent) => {}),
+  onAnnouncementsRetrieved: jest.fn((data: AnnouncementsRetrievedEvent) => {}),
+  onCurrentAnnouncementsRetrieved: jest.fn((data: CurrentAnnouncementsRetrievedEvent) => {}),
 };
 
 const registerTestEventHandlers = (eventDispatcher: EventDispatcher): void => {

@@ -8,12 +8,11 @@ export { ActivateUserReqDto, ActivateUserResponseDto } from './dtos/activate-use
 export { CreateUserDto, CreateUserReqDto, CreateUserResponseDto } from './dtos/create-user.dto';
 export { DeactivateUserReqDto, DeactivateUserResponseDto } from './dtos/deactivate-user.dto';
 export { DeleteUserReqDto, DeleteUserResponseDto } from './dtos/delete-user.dto';
+export { GetUserListReqDto, GetUserListResponseDto, type IUserGridItemDto, type UsersGridPageDto } from './dtos/get-user-list.dto';
 export { GetUserProfileReqDto, GetUserProfileResponseDto } from './dtos/get-user-profile.dto';
 export { UpdateUserReqDto, UpdateUserResponseDto } from './dtos/update-user.dto';
 export { type IUserProfileDto } from './interfaces/get-user-profile.interfaces';
 export { type IUserDto } from './interfaces/get-user.interfaces';
-
-export { GetUserListReqDto, GetUserListResponseDto, type IUserGridItemDto, type UsersGridPageDto } from './dtos/get-user-list.dto';
 
 export { UserActivatedEvent } from './events/user-activated-event';
 export { UserCreatedEvent } from './events/user-created-event';
