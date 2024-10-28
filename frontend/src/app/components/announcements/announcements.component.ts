@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { finalize } from 'rxjs';
 import { IS_MOBILE } from 'src/app/app.config';
-import { IAnnouncements } from 'src/interfaces/announcements/announcements';
+import { ICurrentAnnouncements } from 'src/interfaces/announcements/announcements';
 import { AnnouncementsService } from 'src/services/announcements/announcements.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
 
@@ -12,6 +12,7 @@ import { SpinnerService } from 'src/services/spinner/spinner.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AnnouncementsComponent implements OnInit {
+
   public announcements: string[] | null = null;
   public announcementsDate: Date | null = null;
 
@@ -32,9 +33,9 @@ export class AnnouncementsComponent implements OnInit {
           this._changeDetectorRef.detectChanges();
         })
       )
-      .subscribe((result: IAnnouncements) => {
-        this.announcements = result?.announcements ?? [];
-        this.announcementsDate = result?.date;
+      .subscribe((result: ICurrentAnnouncements | null) => {
+        //this.announcements = result?.announcements ?? [];
+        //this.announcementsDate = result?.date;
       });
   }
 }

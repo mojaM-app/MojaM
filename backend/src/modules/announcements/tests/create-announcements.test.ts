@@ -5,7 +5,7 @@ import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
-import { AnnouncementsRout } from '@modules/announcements';
+import { AnnouncementsRout, CreateAnnouncementsResponseDto } from '@modules/announcements';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
@@ -32,46 +32,46 @@ describe('POST /announcements', () => {
     registerTestEventHandlers(eventDispatcher);
   });
 
-  // describe('POST should respond with a status code of 201', () => {
-  //   beforeEach(async () => {
-  //     jest.resetAllMocks();
-  //   });
+  describe('POST should respond with a status code of 201', () => {
+    beforeEach(async () => {
+      jest.resetAllMocks();
+    });
 
-  //   test('when data are valid and user has permission', async () => {
-  //     const requestData = generateValidAnnouncements();
-  //     const createAnnouncementsResponse = await request(app.getServer())
-  //       .post(announcementRoute.path)
-  //       .send(requestData)
-  //       .set('Authorization', `Bearer ${adminAccessToken}`);
-  //     expect(createAnnouncementsResponse.statusCode).toBe(201);
-  //     expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-  //     const body = createAnnouncementsResponse.body;
-  //     expect(typeof body).toBe('object');
-  //     const { data: announcements, message: createMessage }: CreateAnnouncementsResponseDto = body;
-  //     // expect(announcements?.id).toBeDefined();
-  //     // expect(isGuid(announcements.id)).toBe(true);
-  //     // expect(announcements?.email).toBeDefined();
-  //     // expect(announcements?.phone).toBeDefined();
-  //     // expect(announcements.hasOwnProperty('uuid')).toBe(false);
-  //     // expect(createMessage).toBe(events.users.userCreated);
+    test('when data are valid and user has permission', async () => {
+      const requestData = generateValidAnnouncements();
+      const createAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createAnnouncementsResponse.statusCode).toBe(201);
+      expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = createAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: announcements, message: createMessage }: CreateAnnouncementsResponseDto = body;
+      expect(announcements?.id).toBeDefined();
+      // expect(isGuid(announcements.id)).toBe(true);
+      // expect(announcements?.email).toBeDefined();
+      // expect(announcements?.phone).toBeDefined();
+      // expect(announcements.hasOwnProperty('uuid')).toBe(false);
+      // expect(createMessage).toBe(events.users.userCreated);
 
-  //     // const deleteResponse = await request(app.getServer())
-  //     //   .delete(announcementRoute.path + '/' + announcements.id)
-  //     //   .send()
-  //     //   .set('Authorization', `Bearer ${adminAccessToken}`);
-  //     // expect(deleteResponse.statusCode).toBe(200);
+      // const deleteResponse = await request(app.getServer())
+      //   .delete(announcementRoute.path + '/' + announcements.id)
+      //   .send()
+      //   .set('Authorization', `Bearer ${adminAccessToken}`);
+      // expect(deleteResponse.statusCode).toBe(200);
 
-  //     // checking events running via eventDispatcher
-  //     Object.entries(testEventHandlers)
-  //       .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler))
-  //       .forEach(([, eventHandler]) => {
-  //         expect(eventHandler).not.toHaveBeenCalled();
-  //       });
-  //     expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
-  //     // expect(testEventHandlers.onUserCreated).toHaveBeenCalledWith(new AnnouncementsCreatedEvent(announcements, 1));
-  //     expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
-  //   });
-  // });
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
+      // expect(testEventHandlers.onUserCreated).toHaveBeenCalledWith(new AnnouncementsCreatedEvent(announcements, 1));
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
+    });
+  });
 
   // describe('POST should respond with a status code of 400', () => {
   //   beforeEach(async () => {

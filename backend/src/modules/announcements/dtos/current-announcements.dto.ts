@@ -11,6 +11,6 @@ export class GetCurrentAnnouncementsResponseDto implements IResponse<ICurrentAnn
 
   public constructor(data: ICurrentAnnouncementsDto | null) {
     this.data = data;
-    this.message = events.announcements.retrieved;
+    this.message = events.announcements.announcementsRetrieved;
   }
 }

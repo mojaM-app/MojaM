@@ -15,8 +15,8 @@ export class AnnouncementsController extends BaseController {
   public create = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const model: CreateAnnouncementsDto = req.body;
-      const result: boolean = await this._announcementsService.create(new CreateAnnouncementsReqDto(model, this.getCurrentUserId(req)));
-      res.status(200).json(new CreateAnnouncementsResponseDto(result));
+      const result = await this._announcementsService.create(new CreateAnnouncementsReqDto(model, this.getCurrentUserId(req)));
+      res.status(201).json(new CreateAnnouncementsResponseDto(result));
     } catch (error) {
       next(error);
     }

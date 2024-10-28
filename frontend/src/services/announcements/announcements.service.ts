@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
-import { IAnnouncements } from 'src/interfaces/announcements/announcements';
+import { ICurrentAnnouncements } from 'src/interfaces/announcements/announcements';
 import { BaseService } from '../common/base.service';
 import { HttpClientService } from '../common/httpClient.service';
 
@@ -13,15 +13,20 @@ export class AnnouncementsService extends BaseService {
     super();
   }
 
-  public get(): Observable<IAnnouncements> {
+  public get(): Observable<ICurrentAnnouncements | null> {
     return this._httpClient
       .request()
-      .withUrl(this.API_ROUTES.announcements.get())
-      .get<IAnnouncements>()
+      .withUrl(this.API_ROUTES.announcements.getCurrent())
+      .get<ICurrentAnnouncements | null>()
       .pipe(
-        map((resp: IAnnouncements) => {
-          resp.date = new Date(resp.date);
-          return resp;
+        map((resp: ICurrentAnnouncements | null) => {
+          if (resp) {
+            resp.validFromDate =
+              resp.validFromDate !== undefined && resp.validFromDate !== null
+                ? new Date(resp.validFromDate)
+                : undefined;
+          }
+          return resp ?? null;
         })
       );
   }

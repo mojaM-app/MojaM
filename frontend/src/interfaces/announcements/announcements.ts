@@ -1,4 +1,6 @@
-export interface IAnnouncements {
-  date: Date;
-  announcements: string[];
+export interface ICurrentAnnouncements {
+  id: string;
+  title?: string;
+  validFromDate?: Date;
+  publishedAt?: Date;
 }

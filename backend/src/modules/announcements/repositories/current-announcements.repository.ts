@@ -1,8 +1,9 @@
+import { toUtcDate } from '@/utils/date.utils';
 import { AnnouncementStateValue } from '@modules/announcements';
 import { BaseRepository } from '@modules/common';
-import { getDateTimeNow } from '@utils';
+import { getDateNow } from '@utils';
 import { Service } from 'typedi';
-import { FindOptionsWhere, MoreThan } from 'typeorm';
+import { FindOneOptions, FindOptionsOrder, FindOptionsRelations, FindOptionsWhere, MoreThanOrEqual } from 'typeorm';
 import { Announcement } from '../entities/announcement.entity';
 
 @Service()
@@ -12,11 +13,24 @@ export class CurrentAnnouncementsRepository extends BaseRepository {
   }
 
   public async get(): Promise<Announcement | null> {
-    const where: FindOptionsWhere<Announcement> = {
-      state: AnnouncementStateValue.PUBLISHED,
-      validFromDate: MoreThan(getDateTimeNow()),
+    const options: FindOneOptions<Announcement> = {
+      where: {
+        state: AnnouncementStateValue.PUBLISHED,
+        validFromDate: MoreThanOrEqual(toUtcDate(getDateNow())!),
+      } satisfies FindOptionsWhere<Announcement>,
+      order: {
+        validFromDate: 'DESC',
+      } satisfies FindOptionsOrder<Announcement>,
+      relations: {
+        createdBy: true,
+        publishedBy: true,
+        items: {
+          createdBy: true,
+          updatedBy: true,
+        }
+      } satisfies FindOptionsRelations<Announcement>,
     };
 
-    return await this._dbContext.announcements.findOneBy(where);
+    return await this._dbContext.announcements.findOne(options);
   }
 }

@@ -3,6 +3,7 @@ import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
 import { Type } from 'class-transformer';
 import { IsDate, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IAnnouncementsDto } from './get-announcements.dto';
 
 export class CreateAnnouncementItemDto {
   @IsString()
@@ -33,12 +34,12 @@ export class CreateAnnouncementsReqDto extends BaseReqDto {
   }
 }
 
-export class CreateAnnouncementsResponseDto implements IResponse<boolean> {
-  public readonly data: boolean;
+export class CreateAnnouncementsResponseDto implements IResponse<IAnnouncementsDto | null> {
+  public readonly data: IAnnouncementsDto | null;
   public readonly message?: string | undefined;
 
-  public constructor(data: boolean) {
+  public constructor(data: IAnnouncementsDto | null) {
     this.data = data;
-    this.message = events.announcements.retrieved;
+    this.message = events.announcements.announcementsCreated;
   }
 }

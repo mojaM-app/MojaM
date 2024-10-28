@@ -1,5 +1,7 @@
+import { isNullOrUndefined } from '@/utils';
 import { BaseRepository } from '@modules/common';
 import { IUserId } from '@modules/users';
+import { isDate, toUtcDate } from '@utils/date.utils';
 import { Service } from 'typedi';
 import { CreateAnnouncementsReqDto } from '../dtos/create-announcements.dto';
 import { AnnouncementItem } from '../entities/announcement-item.entity';
@@ -13,14 +15,14 @@ export class AnnouncementsRepository extends BaseRepository {
     super();
   }
 
-  public async create(reqDto: CreateAnnouncementsReqDto): Promise<Announcement | null> {
+  public async create(reqDto: CreateAnnouncementsReqDto): Promise<Announcement> {
     return await this._dbContext.transaction(async transactionalEntityManager => {
       const announcementsRepository = transactionalEntityManager.getRepository(Announcement);
 
       const announcement = await announcementsRepository.save({
         createdBy: { id: reqDto.currentUserId! } satisfies IUserId,
         state: AnnouncementStateValue.DRAFT,
-        validFromDate: reqDto.announcements.validFromDate,
+        validFromDate: isNullOrUndefined(reqDto.announcements.validFromDate) ? undefined : toUtcDate(reqDto.announcements.validFromDate)!,
         title: reqDto.announcements.title,
       } satisfies ICreateAnnouncement);
 
@@ -47,8 +49,12 @@ export class AnnouncementsRepository extends BaseRepository {
   }
 
   public async checkIfExistWithDate(validFromDate: Date | undefined): Promise<boolean> {
+    if (!isDate(validFromDate)) {
+      return false;
+    }
+
     return await this._dbContext.announcements.existsBy({
-      validFromDate,
+      validFromDate: toUtcDate(validFromDate)!,
     });
   }
 }
