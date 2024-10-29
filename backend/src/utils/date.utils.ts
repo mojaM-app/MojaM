@@ -12,14 +12,6 @@ const toUtcDate = (date: any): Date | null => {
   return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0));
 };
 
-const toDate = (date: any): Date | null => {
-  if (!isDate(date)) {
-    return null;
-  }
-
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
-};
-
 const getDateTimeNow = (): Date => {
   const now = new Date();
   return new Date(
@@ -50,4 +42,4 @@ const getUtcNow = (): Date => {
     now.getSeconds()));
 }
 
-export { getDateNow, getDateTimeNow, getUtcNow, isDate, toDate, toUtcDate };
+export { getDateNow, getDateTimeNow, getUtcNow, isDate, toUtcDate };
