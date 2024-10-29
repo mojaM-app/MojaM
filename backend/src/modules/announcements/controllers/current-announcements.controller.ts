@@ -1,4 +1,4 @@
-import { RequestWithIdentity } from '@interfaces';
+import { IRequestWithIdentity } from '@interfaces';
 import { CurrentAnnouncementsService, GetCurrentAnnouncementsResponseDto, ICurrentAnnouncementsDto } from '@modules/announcements';
 import { BaseController } from '@modules/common';
 import { NextFunction, Response } from 'express';
@@ -12,7 +12,7 @@ export class CurrentAnnouncementsController extends BaseController {
     this._service = Container.get(CurrentAnnouncementsService);
   }
 
-  public get = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  public get = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const data: ICurrentAnnouncementsDto | null = await this._service.get(this.getCurrentUserId(req));
       res.status(200).json(new GetCurrentAnnouncementsResponseDto(data));

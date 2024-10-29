@@ -1,37 +1,37 @@
-import { User } from '@modules/users/entities/user.entity';
+import { IHasGuidId } from '@interfaces';
 import { isGuid } from '@utils';
 import { CacheContainer } from 'node-ts-cache';
 import { MemoryStorage } from 'node-ts-cache-storage-memory';
-import { Service } from 'typedi';
 
-@Service()
-export class CacheService {
+export abstract class CacheService<TEntity extends IHasGuidId> {
   private readonly cache: CacheContainer;
 
   public constructor() {
     this.cache = new CacheContainer(new MemoryStorage());
   }
 
-  public async getUserIdFromCacheAsync(userGuid: string | null | undefined): Promise<number | undefined> {
-    if (!isGuid(userGuid)) {
+  public async getIdFromCacheAsync(guidId: string | null | undefined): Promise<number | undefined> {
+    if (!isGuid(guidId)) {
       return undefined;
     }
 
-    const cacheKey = this.getUserIdCacheKey(userGuid!);
+    const cacheKey = this.getIdCacheKey(guidId!);
     return await this.getDataFromCache<number | undefined>(cacheKey);
   }
 
-  public async saveUserIdInCacheAsync(user: User | null | undefined): Promise<void> {
-    if (!isGuid(user?.uuid)) {
+  public async saveIdInCacheAsync(entity: TEntity | null | undefined): Promise<void> {
+    if (!isGuid(entity?.uuid)) {
       return;
     }
 
-    const cacheKey = this.getUserIdCacheKey(user!.uuid);
-    await this.saveDataInCache(cacheKey, user!.id, { isCachedForever: true });
+    const cacheKey = this.getIdCacheKey(entity!.uuid);
+    await this.saveDataInCache(cacheKey, entity!.id, { isCachedForever: true });
   }
 
-  private getUserIdCacheKey(uuid: string): string {
-    return `user_id_${uuid}`;
+  protected abstract getEntityType(): string;
+
+  private getIdCacheKey(guidId: string): string {
+    return `${this.getEntityType().toLowerCase()}_id_${guidId}`;
   }
 
   private async getDataFromCache<T>(keyName: string): Promise<T | undefined> {

@@ -1,8 +1,14 @@
 import { events } from '@events';
 import { IResponse } from '@interfaces';
-import { IAnnouncementsDto } from '@modules/announcements';
 
-export interface ICurrentAnnouncementsDto extends IAnnouncementsDto {
+export interface ICurrentAnnouncementsDto {
+  id: string;
+  title?: string;
+  validFromDate?: Date;
+  updatedAt: Date;
+  createdBy: string;
+  publishedAt?: Date;
+  publishedBy?: string;
 }
 
 export class GetCurrentAnnouncementsResponseDto implements IResponse<ICurrentAnnouncementsDto | null> {

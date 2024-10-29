@@ -1,6 +1,6 @@
 import { Identity } from '@modules/auth';
 import { Request } from 'express';
 
-export interface RequestWithIdentity extends Request {
+export interface IRequestWithIdentity extends Request {
   identity: Identity;
 }

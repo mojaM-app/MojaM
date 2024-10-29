@@ -1,14 +1,28 @@
 /* eslint-disable no-use-before-define */
-import { Column, CreateDateColumn, Entity, Generated, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Relation, Unique, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  DatabaseType,
+  Entity,
+  Generated,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Relation,
+  Unique,
+  UpdateDateColumn,
+} from 'typeorm';
 import { ICreateAnnouncement } from '../interfaces/create-announcement.interfaces';
 import { IAnnouncementId } from '../interfaces/IAnnouncementId';
+import { IHasGuidId } from './../../../interfaces/IHasGuidId';
 import { User } from './../../../modules/users/entities/user.entity';
 import { AnnouncementItem } from './announcement-item.entity';
 
 @Entity({
   name: 'announcements',
 })
-export class Announcement implements ICreateAnnouncement, IAnnouncementId {
+export class Announcement implements IHasGuidId, IAnnouncementId, ICreateAnnouncement {
   @PrimaryGeneratedColumn({
     name: 'Id',
     type: 'int',
@@ -45,6 +59,14 @@ export class Announcement implements ICreateAnnouncement, IAnnouncementId {
     name: 'ValidFromDate',
     type: 'date',
     nullable: true,
+    transformer: {
+      from(value: DatabaseType) {
+        return value !== null ? new Date(value + 'T00:00:00') : null;
+      },
+      to(value) {
+        return value;
+      },
+    },
   })
   public validFromDate?: Date;
 

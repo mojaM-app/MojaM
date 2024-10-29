@@ -1,11 +1,11 @@
 import { ForbiddenException, UnauthorizedException } from '@exceptions';
-import { RequestWithIdentity, Routes } from '@interfaces';
+import { IRequestWithIdentity, IRoutes } from '@interfaces';
 import { setIdentity } from '@modules/auth';
 import { PermissionsController } from '@modules/permissions';
 import { REGEX_GUID_PATTERN, REGEX_INT_PATTERN } from '@utils';
 import express, { NextFunction, Response } from 'express';
 
-export class PermissionsRoute implements Routes {
+export class PermissionsRoute implements IRoutes {
   public path = '/permissions';
   public router = express.Router();
   private readonly _permissionsController: PermissionsController;
@@ -28,7 +28,7 @@ export class PermissionsRoute implements Routes {
     );
   }
 
-  private readonly checkAddPermission = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  private readonly checkAddPermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     if (!(req.identity?.isAuthenticated())) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToAddPermission()) {
@@ -38,7 +38,7 @@ export class PermissionsRoute implements Routes {
     }
   };
 
-  private readonly checkDeletePermission = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  private readonly checkDeletePermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     if (!(req.identity?.isAuthenticated())) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToDeletePermission()) {

@@ -1,4 +1,4 @@
-import { RequestWithIdentity } from '@interfaces';
+import { IRequestWithIdentity } from '@interfaces';
 import { BaseController } from '@modules/common';
 import { GetUserProfileReqDto, GetUserProfileResponseDto, IUserProfileDto, UsersProfileService } from '@modules/users';
 import { isGuid } from '@utils';
@@ -13,7 +13,7 @@ export class UserProfileController extends BaseController {
     this._userProfileService = Container.get(UsersProfileService);
   }
 
-  public get = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  public get = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const reqDto = new GetUserProfileReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
       const result: IUserProfileDto | null = await this._userProfileService.get(reqDto);

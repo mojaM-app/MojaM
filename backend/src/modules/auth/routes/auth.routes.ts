@@ -1,10 +1,10 @@
-import { Routes } from '@interfaces';
+import { IRoutes } from '@interfaces';
 import { validateData } from '@middlewares';
 import { AuthController, LoginDto, RefreshTokenDto, ResetPasswordDto, UserTryingToLogInDto } from '@modules/auth';
 import { REGEX_GUID_PATTERN } from '@utils';
 import express from 'express';
 
-export class AuthRoute implements Routes {
+export class AuthRoute implements IRoutes {
   public static resetPassword: string = 'reset-password';
   public path = '/auth';
   public loginPath = '/login';

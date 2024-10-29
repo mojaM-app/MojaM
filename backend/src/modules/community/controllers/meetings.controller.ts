@@ -1,4 +1,4 @@
-import { RequestWithIdentity } from '@interfaces';
+import { IRequestWithIdentity } from '@interfaces';
 import { BaseController } from '@modules/common';
 import { CommunityService, GetMeetingsResponseDto } from '@modules/community';
 import { NextFunction, Response } from 'express';
@@ -11,7 +11,7 @@ export class MeetingsController extends BaseController {
     this._communityService = Container.get(CommunityService);
   }
 
-  public get = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  public get = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const result: string = await this._communityService.getMeetings();
       res.status(200).json(new GetMeetingsResponseDto(result));

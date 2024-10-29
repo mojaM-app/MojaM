@@ -1,5 +1,5 @@
 import { events } from '@events';
-import { RequestWithIdentity } from '@interfaces';
+import { IRequestWithIdentity } from '@interfaces';
 import { BaseController } from '@modules/common';
 import {
   AddPermissionReqDto,
@@ -19,7 +19,7 @@ export class PermissionsController extends BaseController {
     this._permissionService = Container.get(PermissionsService);
   }
 
-  public add = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  public add = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { userGuid, permissionId, currentUserId } = this.getRequestParams(req);
       const reqDto = new AddPermissionReqDto(userGuid, permissionId, currentUserId);
@@ -34,7 +34,7 @@ export class PermissionsController extends BaseController {
     }
   };
 
-  public delete = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  public delete = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { userGuid, permissionId, currentUserId } = this.getRequestParams(req);
       const reqDto = new DeletePermissionsReqDto(userGuid, permissionId, currentUserId);
@@ -49,7 +49,7 @@ export class PermissionsController extends BaseController {
     }
   };
 
-  private getRequestParams(req: RequestWithIdentity): {
+  private getRequestParams(req: IRequestWithIdentity): {
     userGuid: string | undefined;
     permissionId: number | undefined;
     currentUserId: number | undefined;

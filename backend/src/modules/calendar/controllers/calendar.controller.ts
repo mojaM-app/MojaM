@@ -1,4 +1,4 @@
-import { RequestWithIdentity } from '@interfaces';
+import { IRequestWithIdentity } from '@interfaces';
 import { CalendarService, GetCalendarEventsResponseDto } from '@modules/calendar';
 import { BaseController } from '@modules/common';
 import { NextFunction, Response } from 'express';
@@ -12,7 +12,7 @@ export class CalendarController extends BaseController {
     this._calendarService = Container.get(CalendarService);
   }
 
-  public getEvents = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  public getEvents = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const startDate = new Date(req?.query?.start?.toString() ?? new Date().toISOString());
       const endDate = new Date(req?.query?.end?.toString() ?? new Date().toISOString());

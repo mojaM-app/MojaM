@@ -1,9 +1,9 @@
-import { Routes } from '@interfaces';
+import { IRoutes } from '@interfaces';
 import { setIdentity } from '@modules/auth';
 import { CalendarController } from '@modules/calendar';
 import express from 'express';
 
-export class CalendarRoutes implements Routes {
+export class CalendarRoutes implements IRoutes {
   public path = '/calendar';
   public router = express.Router();
 

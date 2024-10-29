@@ -1,12 +1,12 @@
 import { ForbiddenException, UnauthorizedException } from '@exceptions';
-import { RequestWithIdentity, Routes } from '@interfaces';
+import { IRequestWithIdentity, IRoutes } from '@interfaces';
 import { validateData } from '@middlewares';
 import { setIdentity } from '@modules/auth';
 import { CreateUserDto, UserController } from '@modules/users';
 import { REGEX_GUID_PATTERN } from '@utils';
 import express, { NextFunction, Response } from 'express';
 
-export class UserRoute implements Routes {
+export class UserRoute implements IRoutes {
   public path = '/user';
   public deactivatePath = 'deactivate';
   public activatePath = 'activate';
@@ -34,7 +34,7 @@ export class UserRoute implements Routes {
     this.router.delete(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity, this.checkDeletePermission], this._controller.delete);
   }
 
-  private readonly checkCreatePermission = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  private readonly checkCreatePermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     if (!req.identity?.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToAddUser()) {
@@ -44,7 +44,7 @@ export class UserRoute implements Routes {
     }
   };
 
-  private readonly checkDeactivatePermission = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  private readonly checkDeactivatePermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     if (!req.identity?.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToDeactivateUser()) {
@@ -54,7 +54,7 @@ export class UserRoute implements Routes {
     }
   };
 
-  private readonly checkActivatePermission = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  private readonly checkActivatePermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     if (!req.identity?.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToActivateUser()) {
@@ -64,7 +64,7 @@ export class UserRoute implements Routes {
     }
   };
 
-  private readonly checkDeletePermission = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  private readonly checkDeletePermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     if (!req.identity?.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToDeleteUser()) {

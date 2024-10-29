@@ -4,7 +4,7 @@ import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
-import { RequestWithIdentity } from '@interfaces';
+import { IRequestWithIdentity } from '@interfaces';
 import { AuthRoute, LoginDto, LoginResponseDto, setIdentity, UserLoggedInEvent } from '@modules/auth';
 import { userToIUser } from '@modules/common';
 import { PermissionsRoute } from '@modules/permissions';
@@ -59,8 +59,8 @@ describe('POST /login', () => {
       };
       const next: NextFunction = jest.fn();
       await setIdentity(req as any, {} as any, next);
-      expect((req as unknown as RequestWithIdentity).identity.userUuid).toEqual(userLoggedIn.id);
-      expect((req as unknown as RequestWithIdentity).identity.hasPermissionToEditUserProfile()).toBeTruthy();
+      expect((req as unknown as IRequestWithIdentity).identity.userUuid).toEqual(userLoggedIn.id);
+      expect((req as unknown as IRequestWithIdentity).identity.hasPermissionToEditUserProfile()).toBeTruthy();
       expect(next).toHaveBeenCalled();
 
       const token = decode(userLoggedIn.accessToken, { json: true });
@@ -107,8 +107,8 @@ describe('POST /login', () => {
       };
       const next: NextFunction = jest.fn();
       await setIdentity(req as any, {} as any, next);
-      expect((req as unknown as RequestWithIdentity).identity.userUuid).toEqual(userLoggedIn.id);
-      expect((req as unknown as RequestWithIdentity).identity.hasPermissionToEditUserProfile()).toBeTruthy();
+      expect((req as unknown as IRequestWithIdentity).identity.userUuid).toEqual(userLoggedIn.id);
+      expect((req as unknown as IRequestWithIdentity).identity.hasPermissionToEditUserProfile()).toBeTruthy();
       expect(next).toHaveBeenCalled();
 
       const token = decode(userLoggedIn.accessToken, { json: true });

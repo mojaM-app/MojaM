@@ -1,9 +1,9 @@
-import { Routes } from '@interfaces';
+import { IRoutes } from '@interfaces';
 import { setIdentity } from '@modules/auth';
 import { NewsController } from '@modules/news';
 import express from 'express';
 
-export class NewsRoutes implements Routes {
+export class NewsRoutes implements IRoutes {
   public path = '/news';
   public router = express.Router();
 

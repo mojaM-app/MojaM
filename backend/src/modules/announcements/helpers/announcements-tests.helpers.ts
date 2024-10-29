@@ -5,6 +5,7 @@ import { CreateAnnouncementItemDto, CreateAnnouncementsDto } from '../dtos/creat
 const generateValidAnnouncements = (): CreateAnnouncementsDto => {
   return {
     validFromDate: getDateNow(),
+    title: generateRandomString(40),
     items: [
       {
         content: generateRandomString(400),

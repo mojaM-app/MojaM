@@ -1,6 +1,6 @@
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_EXPIRE_IN, REFRESH_TOKEN_SECRET, SECRET_AUDIENCE, SECRET_ISSUER } from '@config';
 import { UnauthorizedException, errorKeys } from '@exceptions';
-import { RequestWithIdentity } from '@interfaces';
+import { IRequestWithIdentity } from '@interfaces';
 import { Identity } from '@modules/auth';
 import { PermissionsRepository } from '@modules/permissions';
 import { UserRepository } from '@modules/users';
@@ -76,7 +76,7 @@ export const getRefreshTokenExpiration = (): string => {
 
 export const ACCESS_TOKEN_ALGORITHM = 'HS256';
 
-export const setIdentity = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+export const setIdentity = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
   try {
     const authorization: string | null = getAuthorization(req);
     if (isNullOrEmptyString(authorization)) {

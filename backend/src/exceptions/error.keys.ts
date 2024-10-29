@@ -1,7 +1,6 @@
 export const errorKeys = {
   general: {
     Page_Does_Not_Exist: 'Page_Does_Not_Exist',
-    More_Then_One_Record_With_Same_Id: 'More_Then_One_Record_With_Same_Id',
     Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted: 'Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted',
   },
   login: {
@@ -27,7 +26,8 @@ export const errorKeys = {
     User_Does_Not_Exist: 'User_Does_Not_Exist',
     Invalid_User_Id: 'Invalid_User_Id',
   },
-  announcement: {
+  announcements: {
     Announcement_With_Given_Date_Already_Exists: 'Announcement_With_Given_Date_Already_Exists',
+    Announcements_Does_Not_Exist: 'Announcements_Does_Not_Exist',
   },
 };

@@ -25,6 +25,22 @@ export class Identity {
     return (this.userId ?? 0) > 0;
   }
 
+  public hasPermissionToPublishAnnouncements(): boolean {
+    return this.hasPermission(SystemPermission.PublishAnnouncements);
+  }
+
+  public hasPermissionToPreviewAnnouncementsList(): boolean {
+    return this.hasPermission(SystemPermission.PreviewAnnouncementsList);
+  }
+
+  public hasPermissionToDeleteAnnouncements(): boolean {
+    return this.hasPermission(SystemPermission.DeleteAnnouncements);
+  }
+
+  public hasPermissionToEditAnnouncements(): boolean {
+    return this.hasPermission(SystemPermission.EditAnnouncements);
+  }
+
   public hasPermissionToAddAnnouncements(): boolean {
     return this.hasPermission(SystemPermission.AddAnnouncements);
   }

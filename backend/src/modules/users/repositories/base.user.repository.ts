@@ -1,58 +1,48 @@
-import { errorKeys } from '@exceptions';
-import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import { BaseRepository } from '@modules/common';
 import { isGuid, isPositiveNumber } from '@utils';
-import StatusCode from 'status-code-enum';
-import { Service } from 'typedi';
+import Container from 'typedi';
 import { User } from '../entities/user.entity';
+import { UserCacheService } from '../services/user-cache.service';
 
-@Service()
 export abstract class BaseUserRepository extends BaseRepository {
+  private readonly _cacheService: UserCacheService;
+
   public constructor() {
     super();
+    this._cacheService = Container.get(UserCacheService);
   }
 
-  public async getIdByUuid(userGuid: string | null | undefined): Promise<number | undefined> {
-    if (!isGuid(userGuid)) {
+  public async getIdByUuid(uuid: string | null | undefined): Promise<number | undefined> {
+    if (!isGuid(uuid)) {
       return undefined;
     }
 
-    const cachedUserId = await this._cacheService.getUserIdFromCacheAsync(userGuid);
-    if (isPositiveNumber(cachedUserId)) {
-      return cachedUserId;
+    const idFromCache = await this._cacheService.getIdFromCacheAsync(uuid);
+    if (isPositiveNumber(idFromCache)) {
+      return idFromCache;
     }
 
-    const count: number = await this._dbContext.users.count({ where: { uuid: userGuid! } });
+    const user: User | null = await this._dbContext.users.findOneBy({ uuid: uuid! });
 
-    if (count > 1) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.general.More_Then_One_Record_With_Same_Id, [userGuid!]);
-    } else if (count === 0) {
+    if (user === null) {
       return undefined;
     }
 
-    const user: User | null = await this._dbContext.users.findOneBy({ uuid: userGuid! });
+    await this._cacheService.saveIdInCacheAsync(user);
 
-    await this._cacheService.saveUserIdInCacheAsync(user);
-
-    return user!.id;
+    return user.id;
   }
 
-  public async getById(userId: number | null | undefined): Promise<User | null> {
-    if (!isPositiveNumber(userId)) {
+  public async getById(id: number | null | undefined): Promise<User | null> {
+    if (!isPositiveNumber(id)) {
       return null;
     }
 
-    const count: number = await this._dbContext.users.count({ where: { id: userId! } });
-
-    if (count === 0) {
-      return null;
-    }
-
-    return await this._dbContext.users.findOneBy({ id: userId! });
+    return await this._dbContext.users.findOneBy({ id: id! });
   }
 
-  public async getByUuid(userGuid: string | null | undefined): Promise<User | null> {
-    const userId = await this.getIdByUuid(userGuid);
-    return await this.getById(userId);
+  public async getByUuid(uuid: string | null | undefined): Promise<User | null> {
+    const id = await this.getIdByUuid(uuid);
+    return await this.getById(id);
   }
 }

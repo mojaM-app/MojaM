@@ -25,6 +25,7 @@ export { UserListRepository } from './repositories/user-list.repository';
 export { UserProfileRepository } from './repositories/user-profile.repository';
 export { UserRepository } from './repositories/user.repository';
 
+export { UserCacheService } from './services/user-cache.service';
 export { UserListService } from './services/user-list.service';
 export { UsersProfileService } from './services/user-profile.service';
 export { UsersService } from './services/user.service';

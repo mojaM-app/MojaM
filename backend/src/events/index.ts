@@ -10,6 +10,8 @@ export const events = {
     currentAnnouncementsRetrieved: 'onCurrentAnnouncementsRetrieved',
     announcementsRetrieved: 'onAnnouncementsRetrieved',
     announcementListRetrieved: 'onAnnouncementListRetrieved',
+    announcementsDeleted: 'onAnnouncementsDeleted',
+    announcementsPublished: 'onAnnouncementsPublished',
   },
   community: {
     diaconie: {

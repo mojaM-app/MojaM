@@ -12,6 +12,7 @@ import {
 } from 'typeorm';
 import { ICreateUser } from '../interfaces/create-user.interfaces';
 import { IUserId } from '../interfaces/IUser.Id';
+import { IHasGuidId } from './../../../interfaces/IHasGuidId';
 import { AnnouncementItem } from './../../../modules/announcements/entities/announcement-item.entity';
 import { Announcement } from './../../../modules/announcements/entities/announcement.entity';
 import { UserResetPasswordToken } from './../../auth/entities/user-reset-password-tokens.entity';
@@ -21,7 +22,7 @@ import { UserSystemPermission } from './user-system-permission.entity';
 @Entity({
   name: 'users',
 })
-export class User implements IUserId, ICreateUser {
+export class User implements IHasGuidId, IUserId, ICreateUser {
   @PrimaryGeneratedColumn('increment', {
     name: 'Id',
     type: 'int',
@@ -196,4 +197,8 @@ export class User implements IUserId, ICreateUser {
 
   @OneToMany(() => AnnouncementItem, (announcementItem: AnnouncementItem) => announcementItem.updatedBy)
   public updatedAnnouncementItems: Relation<AnnouncementItem[]>;
+
+  public getFullName(): string {
+    return `${this.firstName} ${this.lastName}`;
+  }
 }

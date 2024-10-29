@@ -1,7 +1,7 @@
 import { BASE_PATH, CREDENTIALS, LOG_FORMAT, NODE_ENV, ORIGIN, PORT } from '@config';
 import { DbConnection } from '@db';
 import { errorKeys } from '@exceptions';
-import { Routes } from '@interfaces';
+import { IRoutes } from '@interfaces';
 import { ErrorMiddleware } from '@middlewares';
 import { AuthRoute } from '@modules/auth';
 import { getFullUrl, logger, stream } from '@utils';
@@ -27,7 +27,7 @@ export class App {
     this.port = PORT ?? 5100;
   }
 
-  public async initialize(routes: Routes[]): Promise<void> {
+  public async initialize(routes: IRoutes[]): Promise<void> {
     await this.initializeDatabase();
     this.initializeMiddlewares();
     this.initializeRoutes(routes);
@@ -63,7 +63,7 @@ export class App {
     this.app.use(cookieParser());
   }
 
-  private initializeRoutes(routes: Routes[]): void {
+  private initializeRoutes(routes: IRoutes[]): void {
     // auth rout is added always
     this.addAuthRoute();
 
@@ -86,7 +86,7 @@ export class App {
     this.app.use(ErrorMiddleware);
   }
 
-  private setRout(route: Routes): void {
+  private setRout(route: IRoutes): void {
     const path = BASE_PATH ?? '';
     this.app.use(path, route.router);
   }

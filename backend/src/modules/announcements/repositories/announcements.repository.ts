@@ -1,16 +1,20 @@
-import { isNullOrUndefined } from '@/utils';
-import { BaseRepository } from '@modules/common';
 import { IUserId } from '@modules/users';
-import { isDate, toUtcDate } from '@utils/date.utils';
+import { isNullOrUndefined } from '@utils';
+import { isDate } from '@utils/date.utils';
 import { Service } from 'typedi';
+import { FindOptionsRelations, FindOptionsWhere } from 'typeorm';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { CreateAnnouncementsReqDto } from '../dtos/create-announcements.dto';
+import { DeleteAnnouncementsReqDto } from '../dtos/delete-announcements.dto';
+import { PublishAnnouncementsReqDto } from '../dtos/publish-announcements.dto';
 import { AnnouncementItem } from '../entities/announcement-item.entity';
 import { Announcement } from '../entities/announcement.entity';
 import { AnnouncementStateValue } from '../enums/announcement-state.enum';
 import { ICreateAnnouncement, ICreateAnnouncementItem } from '../interfaces/create-announcement.interfaces';
+import { BaseAnnouncementsRepository } from './base.announcements.repository';
 
 @Service()
-export class AnnouncementsRepository extends BaseRepository {
+export class AnnouncementsRepository extends BaseAnnouncementsRepository {
   public constructor() {
     super();
   }
@@ -22,7 +26,7 @@ export class AnnouncementsRepository extends BaseRepository {
       const announcement = await announcementsRepository.save({
         createdBy: { id: reqDto.currentUserId! } satisfies IUserId,
         state: AnnouncementStateValue.DRAFT,
-        validFromDate: isNullOrUndefined(reqDto.announcements.validFromDate) ? undefined : toUtcDate(reqDto.announcements.validFromDate)!,
+        validFromDate: isNullOrUndefined(reqDto.announcements.validFromDate) ? undefined : reqDto.announcements.validFromDate!,
         title: reqDto.announcements.title,
       } satisfies ICreateAnnouncement);
 
@@ -54,7 +58,66 @@ export class AnnouncementsRepository extends BaseRepository {
     }
 
     return await this._dbContext.announcements.existsBy({
-      validFromDate: toUtcDate(validFromDate)!,
+      validFromDate,
+    } satisfies FindOptionsWhere<Announcement>);
+  }
+
+  public async getByUuid(uuid: string | null | undefined): Promise<Announcement | null> {
+    const id = await this.getIdByUuid(uuid);
+
+    if (isNullOrUndefined(id)) {
+      return null;
+    }
+
+    return await this.get(id!);
+  }
+
+  public async get(announcementsId: number): Promise<Announcement | null> {
+    return await this._dbContext.announcements.findOne({
+      where: { id: announcementsId },
+      relations: {
+        createdBy: true,
+        publishedBy: true,
+        items: {
+          createdBy: true,
+          updatedBy: true,
+        },
+      } satisfies FindOptionsRelations<Announcement>,
     });
+  }
+
+  public async delete(announcements: Announcement, reqDto: DeleteAnnouncementsReqDto): Promise<boolean> {
+    await this._dbContext.announcementItems
+      .createQueryBuilder()
+      .delete()
+      .where('AnnouncementId = :announcementId', { announcementId: announcements.id })
+      .execute();
+
+    await this._dbContext.announcements.delete({ id: announcements.id });
+
+    return true;
+  }
+
+  public async checkIfCanBeDeleted(announcementsId: number): Promise<string[]> {
+    const relatedData: string[] = [];
+
+    return relatedData;
+  }
+
+  public async publish(announcements: Announcement, reqDto: PublishAnnouncementsReqDto): Promise<boolean> {
+    await this._dbContext.announcements.update(
+      {
+        id: announcements.id,
+      } satisfies FindOptionsWhere<Announcement>,
+      {
+        state: AnnouncementStateValue.PUBLISHED,
+        publishedBy: {
+          id: reqDto.currentUserId!,
+        } satisfies IUserId,
+        publishedAt: new Date(),
+      } satisfies QueryDeepPartialEntity<Announcement>,
+    );
+
+    return true;
   }
 }

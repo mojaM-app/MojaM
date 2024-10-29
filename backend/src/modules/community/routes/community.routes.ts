@@ -1,9 +1,9 @@
-import { Routes } from '@interfaces';
+import { IRoutes } from '@interfaces';
 import { setIdentity } from '@modules/auth';
 import { DiaconieController, MeetingsController, MissionController, RegulationsController, StructureController } from '@modules/community';
 import express, { Router } from 'express';
 
-class StructureRout implements Routes {
+class StructureRout implements IRoutes {
   public path = '/structure';
   private readonly _controller: StructureController;
 
@@ -20,7 +20,7 @@ class StructureRout implements Routes {
   }
 }
 
-class RegulationsRout implements Routes {
+class RegulationsRout implements IRoutes {
   public path = '/regulations';
   private readonly _controller: RegulationsController;
 
@@ -37,7 +37,7 @@ class RegulationsRout implements Routes {
   }
 }
 
-class MissionRout implements Routes {
+class MissionRout implements IRoutes {
   public path = '/mission';
   private readonly _controller: MissionController;
 
@@ -54,7 +54,7 @@ class MissionRout implements Routes {
   }
 }
 
-class MeetingsRout implements Routes {
+class MeetingsRout implements IRoutes {
   public path = '/meetings';
   private readonly _controller: MeetingsController;
 
@@ -71,7 +71,7 @@ class MeetingsRout implements Routes {
   }
 }
 
-class DiaconieRout implements Routes {
+class DiaconieRout implements IRoutes {
   public path = '/diaconie';
   private readonly _controller: DiaconieController;
 
@@ -88,7 +88,7 @@ class DiaconieRout implements Routes {
   }
 }
 
-export class CommunityRoute implements Routes {
+export class CommunityRoute implements IRoutes {
   public path = '/community';
   public router = express.Router();
 

@@ -1,4 +1,4 @@
-import { RequestWithIdentity } from '@interfaces';
+import { IRequestWithIdentity } from '@interfaces';
 import { BaseController } from '@modules/common';
 import {
   ActivateUserReqDto,
@@ -24,7 +24,7 @@ export class UserController extends BaseController {
     this._userService = Container.get(UsersService);
   }
 
-  public create = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  public create = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const bodyData: CreateUserDto = req.body;
       const reqDto = new CreateUserReqDto(bodyData, this.getCurrentUserId(req));
@@ -35,7 +35,7 @@ export class UserController extends BaseController {
     }
   };
 
-  public delete = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  public delete = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const reqDto = new DeleteUserReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
       const result = await this._userService.delete(reqDto);
@@ -45,7 +45,7 @@ export class UserController extends BaseController {
     }
   };
 
-  public activate = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  public activate = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const reqDto = new ActivateUserReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
       const result = await this._userService.activate(reqDto);
@@ -55,7 +55,7 @@ export class UserController extends BaseController {
     }
   };
 
-  public deactivate = async (req: RequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  public deactivate = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const reqDto = new DeactivateUserReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
       const result = await this._userService.deactivate(reqDto);
