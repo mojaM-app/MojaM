@@ -1,7 +1,7 @@
 import { AnnouncementStateValue } from '@modules/announcements';
 import { getDateNow } from '@utils';
 import { Service } from 'typedi';
-import { FindOneOptions, FindOptionsOrder, FindOptionsRelations, FindOptionsWhere, MoreThanOrEqual } from 'typeorm';
+import { FindOneOptions, FindOptionsOrder, FindOptionsRelations, FindOptionsWhere, LessThanOrEqual } from 'typeorm';
 import { Announcement } from '../entities/announcement.entity';
 import { BaseAnnouncementsRepository } from './base.announcements.repository';
 
@@ -15,7 +15,7 @@ export class CurrentAnnouncementsRepository extends BaseAnnouncementsRepository 
     const options: FindOneOptions<Announcement> = {
       where: {
         state: AnnouncementStateValue.PUBLISHED,
-        validFromDate: MoreThanOrEqual(getDateNow()),
+        validFromDate: LessThanOrEqual(getDateNow()),
       } satisfies FindOptionsWhere<Announcement>,
       order: {
         validFromDate: 'DESC',

@@ -18,7 +18,7 @@ export class AnnouncementItem implements ICreateAnnouncementItem {
   @Column({
     name: 'Content',
     type: 'text',
-    nullable: true,
+    nullable: false,
   })
   public content: string;
 

@@ -1,4 +1,12 @@
-import { AnnouncementsCreatedEvent, AnnouncementsRetrievedEvent, CurrentAnnouncementsRetrievedEvent } from '@modules/announcements';
+import {
+  AnnouncementsCreatedEvent,
+  AnnouncementsDeletedEvent,
+  AnnouncementsListRetrievedEvent,
+  AnnouncementsPublishedEvent,
+  AnnouncementsRetrievedEvent,
+  AnnouncementsUpdatedEvent,
+  CurrentAnnouncementsRetrievedEvent,
+} from '@modules/announcements';
 import {
   FailedLoginAttemptEvent,
   InactiveUserTriesToLogInEvent,
@@ -9,7 +17,14 @@ import {
   UserRefreshedTokenEvent,
 } from '@modules/auth';
 import { PermissionAddedEvent, PermissionDeletedEvent } from '@modules/permissions';
-import { UserActivatedEvent, UserCreatedEvent, UserDeactivatedEvent, UserDeletedEvent, UserListRetrievedEvent, UserProfileRetrievedEvent } from '@modules/users';
+import {
+  UserActivatedEvent,
+  UserCreatedEvent,
+  UserDeactivatedEvent,
+  UserDeletedEvent,
+  UserListRetrievedEvent,
+  UserProfileRetrievedEvent,
+} from '@modules/users';
 import { EventDispatcher } from 'event-dispatch';
 
 const testEventHandlers: {
@@ -28,9 +43,13 @@ const testEventHandlers: {
   onUserDeactivated: (data: any) => void;
   onPermissionAdded: (data: any) => void;
   onPermissionDeleted: (data: any) => void;
-  onAnnouncementsRetrieved: (data: any) => void;
   onAnnouncementsCreated: (data: any) => void;
   onCurrentAnnouncementsRetrieved: (data: any) => void;
+  onAnnouncementsRetrieved: (data: any) => void;
+  onAnnouncementListRetrieved: (data: any) => void;
+  onAnnouncementsPublished: (data: any) => void;
+  onAnnouncementsDeleted: (data: any) => void;
+  onAnnouncementsUpdated: (data: any) => void;
 } = {
   onUserLoggedIn: jest.fn((data: UserLoggedInEvent) => {}),
   onUserRefreshedToken: jest.fn((data: UserRefreshedTokenEvent) => {}),
@@ -50,6 +69,10 @@ const testEventHandlers: {
   onAnnouncementsCreated: jest.fn((data: AnnouncementsCreatedEvent) => {}),
   onAnnouncementsRetrieved: jest.fn((data: AnnouncementsRetrievedEvent) => {}),
   onCurrentAnnouncementsRetrieved: jest.fn((data: CurrentAnnouncementsRetrievedEvent) => {}),
+  onAnnouncementListRetrieved: jest.fn((data: AnnouncementsListRetrievedEvent) => {}),
+  onAnnouncementsPublished: jest.fn((data: AnnouncementsPublishedEvent) => {}),
+  onAnnouncementsDeleted: jest.fn((data: AnnouncementsDeletedEvent) => {}),
+  onAnnouncementsUpdated: jest.fn((data: AnnouncementsUpdatedEvent) => {}),
 };
 
 const registerTestEventHandlers = (eventDispatcher: EventDispatcher): void => {

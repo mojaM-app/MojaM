@@ -54,7 +54,7 @@ export class CreateUserDto {
     },
   )
   @MaxLength(VALIDATOR_SETTINGS.EMAIL_MAX_LENGTH, {
-    message: errorKeys.users.Email_To_Long,
+    message: errorKeys.users.Email_Too_Long,
   })
   public email: string;
 
@@ -68,7 +68,7 @@ export class CreateUserDto {
     message: errorKeys.users.Invalid_Phone,
   })
   @MaxLength(VALIDATOR_SETTINGS.PHONE_MAX_LENGTH, {
-    message: errorKeys.users.Phone_To_Long,
+    message: errorKeys.users.Phone_Too_Long,
   })
   public phone: string;
 

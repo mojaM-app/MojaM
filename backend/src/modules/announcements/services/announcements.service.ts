@@ -4,6 +4,7 @@ import { TranslatableHttpException } from '@exceptions/TranslatableHttpException
 import {
   AnnouncementsCreatedEvent,
   AnnouncementsDeletedEvent,
+  AnnouncementsPublishedEvent,
   AnnouncementsRepository,
   AnnouncementStateValue,
   announcementToIAnnouncements,
@@ -36,7 +37,7 @@ export class AnnouncementsService extends BaseService {
     if (isDate(announcementsModel.validFromDate)) {
       const existAnnouncementWithSameDate = await this._announcementsRepository.checkIfExistWithDate(announcementsModel.validFromDate);
       if (existAnnouncementWithSameDate) {
-        throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcement_With_Given_Date_Already_Exists, [
+        throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcements_With_Given_Date_Already_Exists, [
           reqDto.announcements.validFromDate!,
         ]);
       }
@@ -70,7 +71,7 @@ export class AnnouncementsService extends BaseService {
 
     await this._announcementsRepository.delete(announcements!, reqDto);
 
-    this._eventDispatcher.dispatch(events.users.userDeleted, new AnnouncementsDeletedEvent(announcementToIAnnouncements(announcements!), reqDto.currentUserId));
+    this._eventDispatcher.dispatch(events.announcements.announcementsDeleted, new AnnouncementsDeletedEvent(announcementToIAnnouncements(announcements!), reqDto.currentUserId));
 
     return announcements!.uuid;
   }
@@ -86,6 +87,10 @@ export class AnnouncementsService extends BaseService {
       return true;
     }
 
-    return await this._announcementsRepository.publish(announcements!, reqDto);
+    const result = await this._announcementsRepository.publish(announcements!, reqDto);
+
+    this._eventDispatcher.dispatch(events.announcements.announcementsPublished, new AnnouncementsPublishedEvent(announcementToIAnnouncements(announcements!), reqDto.currentUserId));
+
+    return result;
   }
 }

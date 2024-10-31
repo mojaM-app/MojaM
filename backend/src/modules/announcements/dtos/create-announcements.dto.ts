@@ -1,28 +1,46 @@
 import { events } from '@events';
-import { IResponse } from '@interfaces';
+import { errorKeys } from '@exceptions';
+import { IHasDefaultValues, IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
+import { isNullOrUndefined } from '@utils';
 import { Type } from 'class-transformer';
-import { IsDate, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsArray, IsDate, IsNotEmpty, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
 import { IAnnouncementsDto } from './get-announcements.dto';
 
-export class CreateAnnouncementItemDto {
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(8000)
+export class CreateAnnouncementItemDto implements IHasDefaultValues {
+  @IsNotEmpty({ message: errorKeys.announcements.Announcements_Item_Content_Is_Required })
+  @IsString({ message: errorKeys.announcements.Announcements_Item_Content_Is_Required })
+  @MaxLength(8000, { message: errorKeys.announcements.Announcements_Item_Content_Too_Long })
   public content: string;
+
+  public setDefaultValues(): void {
+    if (isNullOrUndefined(this.content)) {
+      this.content = '';
+    }
+  }
 }
 
-export class CreateAnnouncementsDto {
+export class CreateAnnouncementsDto implements IHasDefaultValues {
   @IsOptional()
-  @MaxLength(255)
+  @MaxLength(255, { message: errorKeys.announcements.Announcements_Title_Too_Long })
   public title?: string | undefined;
 
-  @Type(() => Date)
   @IsOptional()
+  @Type(() => Date)
   @IsDate()
   public validFromDate?: Date | undefined;
 
-  public items: CreateAnnouncementItemDto[];
+  @IsOptional()
+  @IsArray()
+  @Type(() => CreateAnnouncementItemDto)
+  @ValidateNested({ each: true })
+  public items?: CreateAnnouncementItemDto[];
+
+  public setDefaultValues(): void {
+    if ((this.items?.length ?? 0) > 0) {
+      this.items!.forEach((item: CreateAnnouncementItemDto) => { item.setDefaultValues(); });
+    }
+  }
 }
 
 export class CreateAnnouncementsReqDto extends BaseReqDto {

@@ -1,19 +1,43 @@
 import { BadRequestException } from '@exceptions';
+import { IHasDefaultValues } from '@interfaces';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject, ValidationError } from 'class-validator';
 import { NextFunction, Request, Response } from 'express';
+
+export const getErrorConstraints = (error: ValidationError): string[] => {
+  if (error === undefined || error === null) {
+    return [];
+  }
+
+  const constraints: string[] = [];
+  if (error.constraints !== undefined && error.constraints !== null) {
+    constraints.push(...Object.values(error.constraints));
+  }
+
+  if ((error.children?.length ?? 0) > 0) {
+    error.children!.forEach((child: ValidationError) => {
+      const childConstraints = getErrorConstraints(child);
+      constraints.push(...childConstraints);
+    });
+  }
+
+  return [...new Set(constraints)];
+};
 
 export const validateData = (type: any, skipMissingProperties = false, whitelist = false, forbidNonWhitelisted = false) => {
   return (req: Request, res: Response, next: NextFunction) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const dto = plainToInstance(type, req.body);
+    if ('setDefaultValues' in dto) {
+      (dto as IHasDefaultValues).setDefaultValues();
+    }
     validateOrReject(dto, { skipMissingProperties, whitelist, forbidNonWhitelisted })
       .then(() => {
         req.body = dto;
         next();
       })
       .catch((errors: ValidationError[]) => {
-        const message = errors.map((error: ValidationError) => [...new Set(Object.values(error.constraints ?? {}))]).join(', ');
+        const message = [...new Set(errors.map((error: ValidationError) => getErrorConstraints(error)))].join(', ');
         next(new BadRequestException(message));
       });
   };

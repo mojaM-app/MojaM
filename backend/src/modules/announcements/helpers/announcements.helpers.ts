@@ -1,17 +1,5 @@
-import { IAnnouncementsDto, ICurrentAnnouncementsDto } from '@modules/announcements';
+import { IAnnouncementsDto } from '@modules/announcements';
 import { Announcement } from '../entities/announcement.entity';
-
-export function announcementToICurrentAnnouncements(announcement: Announcement): ICurrentAnnouncementsDto {
-  return {
-    id: announcement.uuid,
-    title: announcement.title ?? undefined,
-    validFromDate: announcement.validFromDate ?? undefined,
-    createdBy: announcement.createdBy?.getFullName() ?? undefined,
-    updatedAt: announcement.updatedAt ?? announcement.createdAt,
-    publishedBy: announcement.publishedBy?.getFullName() ?? undefined,
-    publishedAt: announcement.publishedAt ?? undefined,
-  } satisfies ICurrentAnnouncementsDto;
-}
 
 export function announcementToIAnnouncements(announcement: Announcement): IAnnouncementsDto {
   return {

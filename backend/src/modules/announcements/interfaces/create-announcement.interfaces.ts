@@ -3,7 +3,7 @@ import { IAnnouncementId } from './IAnnouncementId';
 
 export interface ICreateAnnouncementItem {
   announcement: IAnnouncementId;
-  content: string;
+  content?: string;
   createdBy: IUserId;
 }
 

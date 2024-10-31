@@ -1,9 +1,11 @@
 export { AnnouncementsCreatedEvent } from './events/announcements-created-event';
 export { AnnouncementsDeletedEvent } from './events/announcements-deleted-event';
+export { AnnouncementsListRetrievedEvent } from './events/announcements-list-retrieved-event';
 export { AnnouncementsPublishedEvent } from './events/announcements-published-event';
 export { AnnouncementsRetrievedEvent } from './events/announcements-retrieved-event';
+export { AnnouncementsUpdatedEvent } from './events/announcements-updated-event';
 export { CurrentAnnouncementsRetrievedEvent } from './events/current-announcements-retrieved-event';
-export { AnnouncementsEventSubscriber } from './events/event.subscriber';
+export { AnnouncementsEventSubscriber, AnnouncementsListEventSubscriber } from './events/event.subscriber';
 
 export { AnnouncementsController } from './controllers/announcements.controller';
 export { CurrentAnnouncementsController } from './controllers/current-announcements.controller';
@@ -14,7 +16,7 @@ export {
   CreateAnnouncementsReqDto,
   CreateAnnouncementsResponseDto
 } from './dtos/create-announcements.dto';
-export { GetCurrentAnnouncementsResponseDto, type ICurrentAnnouncementsDto } from './dtos/current-announcements.dto';
+export { GetCurrentAnnouncementsResponseDto, announcementToICurrentAnnouncements, type ICurrentAnnouncementsDto } from './dtos/current-announcements.dto';
 export { DeleteAnnouncementsReqDto, DeleteAnnouncementsResponseDto } from './dtos/delete-announcements.dto';
 export { GetAnnouncementListReqDto, GetAnnouncementListResponseDto, type AnnouncementsGridPageDto, type IAnnouncementGridItemDto } from './dtos/get-announcement-list.dto';
 export { GetAnnouncementsResponseDto, type IAnnouncementsDto } from './dtos/get-announcements.dto';
@@ -27,6 +29,6 @@ export { AnnouncementsRepository } from './repositories/announcements.repository
 export { CurrentAnnouncementsRepository } from './repositories/current-announcements.repository';
 
 export { AnnouncementStateValue } from './enums/announcement-state.enum';
-export { announcementToIAnnouncements, announcementToICurrentAnnouncements } from './helpers/announcements.helpers';
+export { announcementToIAnnouncements } from './helpers/announcements.helpers';
 
 export { AnnouncementsRout } from './routes/announcements.routes';
