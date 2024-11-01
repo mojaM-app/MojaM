@@ -61,7 +61,7 @@ export class Announcement implements IHasGuidId, IAnnouncementId, ICreateAnnounc
     nullable: true,
     transformer: {
       from(value: DatabaseType) {
-        return value !== null ? new Date(value + 'T00:00:00') : null;
+        return value !== null ? new Date(value + 'T00:00:00Z') : null;
       },
       to(value) {
         return value;

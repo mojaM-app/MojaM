@@ -20,7 +20,9 @@ describe('toUtcDate', () => {
   it('should return UTC date for valid date', () => {
     const date = new Date('2022-01-01');
     const utcDate = toUtcDate(date);
-    expect(utcDate).toEqual(new Date(Date.UTC(2022, 0, 1, 0, 0, 0, 0)));
+    const expectedUtcDate = new Date(Date.UTC(2022, 0, 1, 0, 0, 0, 0));
+    expect(utcDate).toEqual(expectedUtcDate);
+    expect(utcDate).toEqual(date);
   });
 });
 

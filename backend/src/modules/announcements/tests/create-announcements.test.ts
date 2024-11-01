@@ -409,9 +409,9 @@ describe('POST /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcements1 }: CreateAnnouncementsResponseDto = body;
-      expect(announcements1).toBeDefined();
-      expect(announcements1!.id).toBeDefined();
+      const { data: announcements }: CreateAnnouncementsResponseDto = body;
+      expect(announcements).toBeDefined();
+      expect(announcements!.id).toBeDefined();
 
       createAnnouncementsResponse = await request(app.getServer())
         .post(announcementRoute.path)
@@ -423,7 +423,7 @@ describe('POST /announcements', () => {
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app.getServer())
-        .delete(announcementRoute.path + '/' + announcements1!.id)
+        .delete(announcementRoute.path + '/' + announcements!.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);

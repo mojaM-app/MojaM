@@ -57,9 +57,12 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
       return false;
     }
 
-    return await this._dbContext.announcements.existsBy({
-      validFromDate,
-    } satisfies FindOptionsWhere<Announcement>);
+    const count = await this._dbContext.announcements
+      .createQueryBuilder('announcement')
+      .where('DATE(ValidFromDate) = :date', { date: validFromDate!.toISOString().split('T')[0] })
+      .getCount()
+
+    return count > 0;
   }
 
   public async getByUuid(uuid: string | null | undefined): Promise<Announcement | null> {

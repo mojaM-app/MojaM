@@ -1,3 +1,4 @@
+import './date.extensions';
 import { getDateNow } from './date.utils';
 
 const allowed = {
@@ -43,20 +44,13 @@ const generateRandomNumber = (length: number = 9): string => {
   return pwd;
 };
 
+const generateRandomInteger = (min: number, max: number): number => {
+  return Math.floor(min + Math.random() * (max - min + 1))
+}
+
 const generateRandomDate = (): Date => {
-  const from = getDateNow();
-  const month = from.getMonth();
-  from.setMonth(month - 1);
-  from.setHours(0, 0, 0, 0);
-
-  const to = getDateNow();
-  to.setMonth(month + 1);
-  from.setHours(0, 0, 0, 0);
-
-  const fromTime = from.getTime();
-  const toTime = to.getTime();
-  const randomDate = new Date(fromTime + Math.random() * (toTime - fromTime));
-  return new Date(randomDate.getFullYear(), randomDate.getMonth(), randomDate.getDate());
+  const day = generateRandomInteger(-30, 30);
+  return getDateNow().addDays(day);
 };
 
 const getAdminLoginData = (): { uuid: string; email: string; phone: string; password: string } => {
@@ -68,4 +62,4 @@ const getAdminLoginData = (): { uuid: string; email: string; phone: string; pass
   };
 };
 
-export { generateRandomDate, generateRandomEmail, generateRandomNumber, generateRandomPassword, generateRandomString, getAdminLoginData };
+export { generateRandomDate, generateRandomEmail, generateRandomInteger, generateRandomNumber, generateRandomPassword, generateRandomString, getAdminLoginData };

@@ -16,6 +16,7 @@ import { isDateString } from 'class-validator';
 import { EventDispatcher } from 'event-dispatch';
 import request from 'supertest';
 import { generateValidAnnouncements } from '../helpers/announcements-tests.helpers';
+import './../../../utils/date.extensions';
 
 describe('GET /announcements/current', () => {
   const announcementRoute = new AnnouncementsRout();
@@ -127,7 +128,7 @@ describe('GET /announcements/current', () => {
 
     it('when there are published announcements but they valid since tomorrow', async () => {
       const requestData = generateValidAnnouncements();
-      requestData.validFromDate = new Date(getDateNow().getTime() + 24 * 60 * 60 * 1000);
+      requestData.validFromDate = getDateNow().addDays(1);
       const createAnnouncementsResponse = await request(app.getServer())
         .post(announcementRoute.path)
         .send(requestData)
@@ -182,7 +183,100 @@ describe('GET /announcements/current', () => {
       jest.resetAllMocks();
     });
 
-    it('when there are published announcements with today`s date', async () => {
+    it('when there are one published announcements with validFromDate=6_days_ago and one unpublish with validFromDate=today_s_date', async () => {
+      const requestData1 = generateValidAnnouncements();
+      // 6 days ago
+      const x = getDateNow();
+      const y = x.addDays(-6);
+      requestData1.validFromDate = y;
+      const createAnnouncements1Response = await request(app.getServer())
+        .post(announcementRoute.path)
+        .send(requestData1)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createAnnouncements1Response.statusCode).toBe(201);
+      const { data: createdAnnouncements1 }: CreateAnnouncementsResponseDto = createAnnouncements1Response.body;
+
+      const publishAnnouncements1Response = await request(app.getServer())
+        .post(announcementRoute.path + '/' + createdAnnouncements1!.id + '/' + announcementRoute.publishPath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(publishAnnouncements1Response.statusCode).toBe(200);
+      const { data: publishResult }: PublishAnnouncementsResponseDto = publishAnnouncements1Response.body;
+      expect(publishResult).toBe(true);
+
+      const requestData2 = generateValidAnnouncements();
+      // today
+      requestData2.validFromDate = getDateNow();
+      const createAnnouncements2Response = await request(app.getServer())
+        .post(announcementRoute.path)
+        .send(requestData2)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createAnnouncements2Response.statusCode).toBe(201);
+      const { data: createdAnnouncements2 }: CreateAnnouncementsResponseDto = createAnnouncements2Response.body;
+
+      const response = await request(app.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
+      expect(response.statusCode).toBe(200);
+      expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = response.body;
+      expect(typeof body).toBe('object');
+      const { data: currentAnnouncements, message: getMessage }: GetCurrentAnnouncementsResponseDto = body;
+      expect(currentAnnouncements).toBeDefined();
+      expect(currentAnnouncements!.id).toBeDefined();
+      expect(isGuid(currentAnnouncements!.id)).toBe(true);
+      expect(currentAnnouncements!.id).toBe(createdAnnouncements1!.id);
+      expect(currentAnnouncements!.createdBy).toBeDefined();
+      expect(currentAnnouncements!.createdAt).toBeDefined();
+      expect(isDateString(currentAnnouncements!.createdAt)).toBe(true);
+      expect(currentAnnouncements!.updatedAt).toBeDefined();
+      expect(isDateString(currentAnnouncements!.updatedAt)).toBe(true);
+      expect(currentAnnouncements?.title).toBe(requestData1.title);
+      expect(currentAnnouncements?.publishedAt).toBeDefined();
+      expect(currentAnnouncements?.publishedBy).toBeDefined();
+      expect(currentAnnouncements!.validFromDate).toBe(requestData1.validFromDate.toISOString());
+      expect(currentAnnouncements?.items).toBeDefined();
+      expect(currentAnnouncements?.items.length).toBe(requestData1.items!.length);
+      expect(currentAnnouncements!.items.every(item => isGuid(item.id))).toBe(true);
+      expect(currentAnnouncements!.items.every(item => item.content !== undefined)).toBe(true);
+      expect(currentAnnouncements!.items.every(item => item.createdAt !== undefined)).toBe(true);
+      expect(currentAnnouncements!.items.every(item => item.createdBy !== undefined)).toBe(true);
+      expect(currentAnnouncements!.items.every(item => item.updatedAt !== undefined)).toBe(true);
+      expect(currentAnnouncements!.items.every(item => item.updatedBy === undefined)).toBe(true);
+      expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
+
+      // cleanup
+      const deleteAnnouncements1Response = await request(app.getServer())
+        .delete(announcementRoute.path + '/' + createdAnnouncements1!.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteAnnouncements1Response.statusCode).toBe(200);
+
+      const deleteAnnouncements2Response = await request(app.getServer())
+        .delete(announcementRoute.path + '/' + createdAnnouncements2!.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteAnnouncements2Response.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onAnnouncementsCreated,
+              testEventHandlers.onAnnouncementsPublished,
+              testEventHandlers.onCurrentAnnouncementsRetrieved,
+              testEventHandlers.onAnnouncementsDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(2);
+      expect(testEventHandlers.onAnnouncementsPublished).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onCurrentAnnouncementsRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(2);
+    });
+
+    it('when there are one published announcements with today`s date', async () => {
       const requestData = generateValidAnnouncements();
       requestData.validFromDate = getDateNow();
       const createAnnouncementsResponse = await request(app.getServer())

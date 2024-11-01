@@ -25,10 +25,7 @@ const getDateTimeNow = (): Date => {
 
 const getDateNow = (): Date => {
   const now = new Date();
-  return new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate());
+  return toUtcDate(now)!;
 }
 
 const getUtcNow = (): Date => {
