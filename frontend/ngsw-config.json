@@ -10,13 +10,7 @@
       "name": "app",
       "installMode": "prefetch",
       "resources": {
-        "files": [
-          "/favicon.ico",
-          "/index.html",
-          "/manifest.webmanifest",
-          "/*.css",
-          "/*.js"
-        ]
+        "files": ["/favicon.ico", "/index.html", "/manifest.webmanifest", "/*.css", "/*.js"]
       }
     },
     {
@@ -26,9 +20,16 @@
       "resources": {
         "files": [
           "/assets/**",
-          "/i18n/**",
           "/**/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2|json)"
         ]
+      }
+    },
+    {
+      "name": "assetsAlwaysNeeded",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": ["/assets/cldr-data/**", "/i18n/**"]
       }
     }
   ],
@@ -36,7 +37,15 @@
     {
       "name": "freshness-from-api",
       "version": 1,
-      "urls": ["/meetings", "/mission", "/diaconie", "/structure", "/regulations", "/calendar/events"],
+      "urls": [
+        "/meetings",
+        "/mission",
+        "/diaconie",
+        "/structure",
+        "/regulations",
+        "/calendar/events",
+        "announcements/current"
+      ],
       "cacheConfig": {
         "strategy": "freshness",
         "maxSize": 20,
