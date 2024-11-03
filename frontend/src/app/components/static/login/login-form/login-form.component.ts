@@ -1,18 +1,18 @@
 import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  Inject,
-  output,
-  signal,
-  viewChild,
+    ChangeDetectionStrategy,
+    Component,
+    ElementRef,
+    Inject,
+    output,
+    signal,
+    viewChild,
 } from '@angular/core';
 import {
-  FormBuilder,
-  FormControl,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
+    FormBuilder,
+    FormControl,
+    FormsModule,
+    ReactiveFormsModule,
+    Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -88,7 +88,7 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
   }
 
   public login(): void {
-    if (this.isRedyToSubmit() !== true) {
+    if (this.isReadyToSubmit() !== true) {
       return;
     }
 
