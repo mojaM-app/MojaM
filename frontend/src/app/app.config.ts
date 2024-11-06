@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorIntl } from '@angular/material/paginator';
@@ -77,6 +78,11 @@ export const appConfig: ApplicationConfig = {
     {
       provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
       useValue: { subscriptSizing: 'dynamic' },
+    },
+    provideNativeDateAdapter(),
+    {
+      provide: MAT_DATE_LOCALE,
+      useValue: 'pl-PL',
     },
     {
       provide: HTTP_INTERCEPTORS,
