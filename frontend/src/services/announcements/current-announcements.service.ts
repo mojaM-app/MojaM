@@ -4,12 +4,16 @@ import { Observable } from 'rxjs/internal/Observable';
 import { ICurrentAnnouncements } from 'src/interfaces/announcements/announcements';
 import { BaseService } from '../common/base.service';
 import { HttpClientService } from '../common/httpClient.service';
+import { SpinnerService } from '../spinner/spinner.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AnnouncementsService extends BaseService {
-  public constructor(private _httpClient: HttpClientService) {
+export class CurrentAnnouncementsService extends BaseService {
+  public constructor(
+    private _httpClient: HttpClientService,
+    private _spinnerService: SpinnerService
+  ) {
     super();
   }
 
@@ -19,12 +23,10 @@ export class AnnouncementsService extends BaseService {
       .withUrl(this.API_ROUTES.announcements.getCurrent())
       .get<ICurrentAnnouncements | null>()
       .pipe(
+        this._spinnerService.waitForSubscription(),
         map((resp: ICurrentAnnouncements | null) => {
           if (resp) {
-            resp.validFromDate =
-              resp.validFromDate !== undefined && resp.validFromDate !== null
-                ? new Date(resp.validFromDate)
-                : undefined;
+            resp.validFromDate = new Date(resp.validFromDate);
           }
           return resp ?? null;
         })

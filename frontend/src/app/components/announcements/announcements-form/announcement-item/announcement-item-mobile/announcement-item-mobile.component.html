@@ -1,0 +1,18 @@
+<div class="row position-relative clickable mx-0 mb-3">
+  <div class="col-12 position-relative">
+    <small class="section-title">{{
+      'Announcements/Form/SectionNo' | gmessage: { no: index() + 1 | gnumber }
+    }}</small>
+  </div>
+  <div tap class="col-12" (doubleTap)="editItem()">
+    <div class="w-100 py-3">
+      @if (content().length > 0) {
+        <div class="w-100 announcement-item-content-container" [innerHTML]="content()"></div>
+      } @else {
+        <div class="w-100 text-center">
+          <span class="opacity-50">{{ 'Announcements/Form/NoSectionContent' | gmessage }}</span>
+        </div>
+      }
+    </div>
+  </div>
+</div>

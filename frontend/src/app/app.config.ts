@@ -21,6 +21,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
+import { provideQuillConfig } from 'ngx-quill/config';
 import { GlobalErrorHandler } from 'src/core/global-error-handler';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { PipesModule } from 'src/pipes/pipes.module';
@@ -95,6 +96,28 @@ export const appConfig: ApplicationConfig = {
       useFactory: (translateService: TranslationService) =>
         new MatPaginatorTranslations(translateService).init(),
     },
+    provideQuillConfig({
+      modules: {
+        syntax: false,
+        toolbar: [
+          ['bold', 'italic', 'underline', 'strike'], // toggled buttons
+          //['blockquote', 'code-block'],
+
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          //[{ script: 'sub' }, { script: 'super' }], // superscript/subscript
+          //[{ indent: '-1' }, { indent: '+1' }], // outdent/indent
+
+          [{ size: ['small', false, 'large', 'huge'] }], // custom dropdown
+          //[{ header: [1, 2, 3, 4, 5, 6, false] }],
+
+          [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+          //[{ 'font': [] }],
+          [{ align: [] }],
+
+          ['clean'], // remove formatting button
+        ],
+      },
+    }),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',

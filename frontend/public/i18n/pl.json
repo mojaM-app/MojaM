@@ -8,6 +8,7 @@
     "BtnCancel": "Anuluj",
     "BtnNext": "Dalej",
     "BtnBack": "Wstecz",
+    "BtnSave": "Zapisz",
     "Location": "Lokalizacja"
   },
   "Header": {
@@ -54,7 +55,27 @@
   },
   "Announcements": {
     "Title": "Ogłoszenia",
-    "AnnouncementsOfTheDay": "Ogłoszenia z dnia"
+    "AnnouncementsOfTheDay": "Ogłoszenia z dnia {date}",
+    "NoAnnouncements": "Brak ogłoszeń",
+    "BtnAdd": "Dodaj ogłoszenia",
+    "BtnEdit": "Edytuj",
+    "FormAdd": {
+      "Title": "Dodaj ogłoszenia"
+    },
+    "FormEdit": {
+      "Title": "Edytuj ogłoszenia"
+    },
+    "Form": {
+      "ValidFrom": "Ważne od",
+      "ValidFromPlaceholder": "Wprowadź datę",
+      "ValidFromHint": "Data od której ogłoszenia będą obowiązywać",
+      "Announcements": "Ogłoszenia",
+      "NoAnnouncements": "Brak ogłoszeń, kliknij przycisk \"Dodaj ogłoszenie\" aby dodać nowe ogłoszenie.",
+      "AddItem": "Dodaj sekcję",
+      "SectionNo": "Sekcja {no}",
+      "NoSectionContent": "Brak treści, stuknij dwukrotnie aby edytować",
+      "AnnouncementPlaceholder": "Treść ogłoszenia"
+    }
   },
   "News": {
     "Title": "Aktualności"
@@ -156,5 +177,8 @@
     "LastPageLabel": "Ostatnia strona",
     "RangePageLabel1": "0 z {length}",
     "RangePageLabel2": "{startIndex} - {endIndex} z {length}"
+  },
+  "WysiwygEditor": {
+    "Placeholder": "Wprowadź treść"
   }
 }

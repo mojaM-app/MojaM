@@ -1,0 +1,25 @@
+.clickable {
+  .section-title {
+    position: absolute;
+    top: -0.5rem;
+    background: var(--mat-app-background-color);
+    padding: 0 0.5rem;
+    margin: 0;
+    line-height: normal;
+    border-radius: 6px;
+    border: 1px solid var(--mat-app-background-color);
+    z-index: 1;
+  }
+
+  border: 1px solid var(--mdc-filled-text-field-container-color);
+
+  &:hover,
+  &:active,
+  &:focus {
+    background-color: var(--bs-card-cap-bg);
+
+    .section-title {
+      border-color: var(--mdc-filled-text-field-container-color);
+    }
+  }
+}

@@ -42,12 +42,17 @@
               }
             ],
             "styles": [
+              "node_modules/quill/dist/quill.core.css",
+              "node_modules/quill/dist/quill.bubble.css",
+              "node_modules/quill/dist/quill.snow.css",
+              "node_modules/quill-mention/dist/quill.mention.css",
               "node_modules/bootstrap/dist/css/bootstrap.css",
               "@angular/material/prebuilt-themes/azure-blue.css",
               "node_modules/angular-calendar/css/angular-calendar.css",
               "src/styles.scss"
             ],
             "scripts": [
+              "node_modules/quill/dist/quill.js",
               "node_modules/bootstrap/dist/js/bootstrap.js"
             ],
             "allowedCommonJsDependencies": [

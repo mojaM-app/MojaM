@@ -1,0 +1,23 @@
+<div class="card border-0">
+  <div class="d-grid-with-header">
+    <header class="mat-toolbar">
+      <div class="card-header">
+        {{ title() }}
+      </div>
+    </header>
+    <main>
+      <div class="card-body">
+        @if (showButtonAddAnnouncement()) {
+          <div class="row mb-2">
+            <div class="col text-center">
+              <button mat-raised-button [routerLink]="['./' + AddAnnouncementsMenu.Route]">
+                <mat-icon>{{ AddAnnouncementsMenu.Icon }}</mat-icon>
+                <span>{{ AddAnnouncementsMenu.Label | gmessage }}</span>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </main>
+  </div>
+</div>

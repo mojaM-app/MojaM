@@ -6,6 +6,7 @@ import {
   signal,
   Signal,
   viewChild,
+  WritableSignal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -19,7 +20,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { WithForm } from 'src/mixins/with-form.mixin';
+import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
+import { AuthService } from 'src/services/auth/auth.service';
 import { ThemeService } from 'src/services/theme/theme.service';
 import { ISettingsForm, SettingsFormControlNames } from './settings.form';
 
@@ -38,10 +41,10 @@ import { ISettingsForm, SettingsFormControlNames } from './settings.form';
   styleUrl: './settings.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsComponent extends WithForm<ISettingsForm>() {
+export class SettingsComponent extends WithUnsubscribe(WithForm<ISettingsForm>()) {
   private _element = viewChild.required('darkModeSwitch', { read: ElementRef });
 
-  public readonly showSaveButton: Signal<boolean> = signal<boolean>(false);
+  public readonly showSaveButton: WritableSignal<boolean> = signal<boolean>(false);
   public readonly formControlNames = SettingsFormControlNames;
 
   private readonly darkModeChanged: Signal<boolean>;
@@ -52,7 +55,8 @@ export class SettingsComponent extends WithForm<ISettingsForm>() {
 
   public constructor(
     formBuilder: FormBuilder,
-    private _themeService: ThemeService
+    private _themeService: ThemeService,
+    private _authService: AuthService
   ) {
     const formGroup = formBuilder.group<ISettingsForm>({
       isDarkMode: new FormControl(false, { nonNullable: true, validators: [Validators.required] }),
@@ -80,5 +84,11 @@ export class SettingsComponent extends WithForm<ISettingsForm>() {
           .firstChild.setAttribute('d', this.sun);
       }
     });
+
+    this.addSubscription(
+      this._authService.isAuthenticated.subscribe((isAuthenticated: boolean) => {
+        this.showSaveButton.set(isAuthenticated);
+      })
+    );
   }
 }

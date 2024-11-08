@@ -1,0 +1,19 @@
+<div class="card border-0">
+  <div class="d-grid-with-header-and-footer">
+    <header class="mat-toolbar">
+      <div class="card-header">
+        {{ 'Announcements/FormEdit/Title' | gmessage }}
+      </div>
+    </header>
+    <main>
+      <div class="card-body">
+        <app-announcements-form [announcements]="announcements"> </app-announcements-form>
+      </div>
+    </main>
+    <footer class="sticky-bottom">
+      <div class="card-footer text-body-secondary text-end">
+        <button mat-raised-button>{{ 'Shared/BtnSave' | gmessage }}</button>
+      </div>
+    </footer>
+  </div>
+</div>
