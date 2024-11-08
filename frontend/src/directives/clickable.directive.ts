@@ -1,4 +1,3 @@
-/* eslint-disable @angular-eslint/directive-selector */
 import { Directive, ElementRef, OnDestroy, Renderer2, inject, output } from '@angular/core';
 
 @Directive({
