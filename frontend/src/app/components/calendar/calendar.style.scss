@@ -1,0 +1,23 @@
+.calendar-container {
+  .cal-month-view .cal-day-cell {
+    width: 10px;
+    padding: 0 0.125rem;
+
+    &.cal-out-month .cal-day-number {
+      opacity: 0.5;
+    }
+
+    &.cal-today .cal-day-number {
+      font-size: 1rem;
+    }
+
+    &.cal-in-month.cal-has-events {
+      cursor: default;
+    }
+  }
+
+  .cal-month-view .cal-day-number {
+    opacity: 1;
+    font-size: 1rem;
+  }
+}
