@@ -27,6 +27,10 @@ export class BrowserWindowService {
     this.emitEventOnWindowResize(null);
   }
 
+  public refreshWindow(): void {
+    window.location.reload();
+  }
+
   /**
    * https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry/borderBoxSize
    * https://drafts.csswg.org/resize-observer/#dom-resizeobserverentry-borderboxsize
