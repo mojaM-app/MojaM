@@ -1,16 +1,14 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, tap } from 'rxjs';
 import {
-  CheckResetPasswordTokenResult,
   ILoginModel,
   ILoginResponse,
-  ResetPasswordResultDto,
   UserInfoBeforeLogInResult,
 } from 'src/interfaces/auth/auth.models';
 import { BaseService } from '../common/base.service';
 import { HttpClientService } from '../common/httpClient.service';
-import { LocalStorageService } from '../storage/localstorage.service';
 import { AuthTokenService } from './auth-token.service';
+import { RefreshTokenService } from './refresh-token.service';
 
 @Injectable({
   providedIn: 'root',
@@ -20,17 +18,16 @@ export class AuthService extends BaseService {
     return this._isLoggedIn$.asObservable();
   }
 
-  private static _refreshTokenStorageKey = 'refresh_token';
   private _isLoggedIn$ = new BehaviorSubject<boolean>(false);
 
   public constructor(
     private _httpClient: HttpClientService,
     private _authTokenService: AuthTokenService,
-    private _localStorageService: LocalStorageService
+    private _refreshTokenService: RefreshTokenService
   ) {
     super();
 
-    this._isLoggedIn$.next(this._authTokenService.isTokenValid());
+    this._isLoggedIn$.next(this.isUserAuthenticated());
   }
 
   public getUserInfoBeforeLogIn(
@@ -42,14 +39,6 @@ export class AuthService extends BaseService {
       .withUrl(this.API_ROUTES.auth.getUserInfoBeforeLogIn())
       .withBody({ email, phone })
       .post<UserInfoBeforeLogInResult>();
-  }
-
-  public sendEmailResetPassword(email: string, phone?: string): Observable<boolean> {
-    return this._httpClient
-      .request()
-      .withUrl(this.API_ROUTES.auth.requestResetPassword())
-      .withBody({ email, phone })
-      .post<boolean>();
   }
 
   public login(
@@ -71,42 +60,20 @@ export class AuthService extends BaseService {
       .pipe(
         tap((response: ILoginResponse) => {
           this._authTokenService.saveToken(response?.accessToken);
-          this.saveRefreshToken(response?.refreshToken);
+          this._refreshTokenService.saveToken(response?.refreshToken);
           this._isLoggedIn$.next(this._authTokenService.isTokenValid());
         })
       );
   }
 
   public logout(): void {
-    this.removeRefreshToken();
+    this._refreshTokenService.removeToken();
     this._authTokenService.removeToken();
     this._isLoggedIn$.next(this._authTokenService.isTokenValid());
   }
 
-  public checkResetPasswordToken(
-    userId: string,
-    token: string
-  ): Observable<CheckResetPasswordTokenResult> {
-    return this._httpClient
-      .request()
-      .withUrl(this.API_ROUTES.auth.checkResetPasswordToken(userId, token))
-      .post<CheckResetPasswordTokenResult>();
-  }
-
-  public resetPassword(
-    userId: string,
-    token: string,
-    password: string
-  ): Observable<ResetPasswordResultDto> {
-    return this._httpClient
-      .request()
-      .withUrl(this.API_ROUTES.auth.resetPassword())
-      .withBody({ userId, token, password })
-      .post<ResetPasswordResultDto>();
-  }
-
   public refreshAccessToken(): Observable<string | null> {
-    const refreshToken = this.getRefreshToken();
+    const refreshToken = this._refreshTokenService.getToken();
     if (!(refreshToken?.length ?? 0)) {
       return of(null);
     }
@@ -126,19 +93,12 @@ export class AuthService extends BaseService {
       );
   }
 
-  private getRefreshToken(): string | null {
-    return this._localStorageService.loadString(AuthService._refreshTokenStorageKey);
-  }
-
-  private saveRefreshToken(refreshToken: string | undefined): void {
-    if ((refreshToken?.length ?? 0) > 0) {
-      this._localStorageService.saveString(AuthService._refreshTokenStorageKey, refreshToken!);
-    } else {
-      this.removeRefreshToken();
+  private isUserAuthenticated(): boolean {
+    const isAccessTokenValid = this._authTokenService.isTokenValid();
+    if (isAccessTokenValid) {
+      return true;
     }
-  }
 
-  private removeRefreshToken(): void {
-    this._localStorageService.removeItem(AuthService._refreshTokenStorageKey);
+    return this._refreshTokenService.isTokenValid();
   }
 }
