@@ -9,6 +9,9 @@
     "BtnNext": "Dalej",
     "BtnBack": "Wstecz",
     "BtnSave": "Zapisz",
+    "BtnDelete": "Usuń",
+    "BtnClose": "Zamknij",
+    "BtnEdit": "Edytuj",
     "Location": "Lokalizacja"
   },
   "Header": {

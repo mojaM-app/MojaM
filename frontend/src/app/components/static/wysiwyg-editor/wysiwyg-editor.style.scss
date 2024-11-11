@@ -74,3 +74,101 @@
     }
   }
 }
+
+.ql-container {
+  font-size: 1rem;
+}
+
+.ql-editor {
+  p {
+    margin: 0;
+    padding: 0;
+  }
+
+  &.ql-blank::before {
+    color: var(--mat-app-text-color);
+    opacity: 0.4;
+  }
+}
+
+.theme-dark {
+  .ql-editor.ql-blank::before {
+    color: var(--mat-app-text-color);
+  }
+  .ql-snow .ql-stroke {
+    stroke: var(--mat-app-text-color);
+  }
+  .ql-snow .ql-fill,
+  .ql-snow .ql-stroke.ql-fill {
+    fill: var(--mat-app-text-color);
+  }
+  .ql-snow .ql-editor blockquote {
+    border-left: 4px solid #ccc;
+  }
+  .ql-snow .ql-editor code,
+  .ql-snow .ql-editor pre {
+    background-color: #f0f0f0;
+  }
+  .ql-snow .ql-editor pre.ql-syntax {
+    background-color: #23241f;
+    color: #f8f8f2;
+  }
+  .ql-snow .ql-picker {
+    color: #444;
+  }
+  .ql-snow .ql-picker-label {
+    color: var(--mat-app-text-color);
+  }
+  .ql-snow .ql-picker-options {
+    background-color: #fff;
+  }
+  .ql-snow .ql-picker.ql-expanded .ql-picker-label {
+    color: #ccc;
+  }
+  .ql-snow .ql-picker.ql-expanded .ql-picker-label .ql-fill {
+    fill: #ccc;
+  }
+  .ql-snow .ql-picker.ql-expanded .ql-picker-label .ql-stroke {
+    stroke: #ccc;
+  }
+  .ql-snow .ql-color-picker.ql-background .ql-picker-item {
+    background-color: #fff;
+  }
+  .ql-snow .ql-color-picker.ql-color .ql-picker-item {
+    background-color: #000;
+  }
+  .ql-toolbar.ql-snow {
+    border: 1px solid #ccc;
+  }
+  .ql-toolbar.ql-snow .ql-picker-options {
+    box-shadow: rgba(0, 0, 0, 0.2) 0 2px 8px;
+  }
+  .ql-toolbar.ql-snow .ql-picker.ql-expanded .ql-picker-label {
+    border-color: #ccc;
+  }
+  .ql-toolbar.ql-snow .ql-picker.ql-expanded .ql-picker-options {
+    border-color: #ccc;
+  }
+  .ql-toolbar.ql-snow .ql-color-picker .ql-picker-item.ql-selected,
+  .ql-toolbar.ql-snow .ql-color-picker .ql-picker-item:hover {
+    border-color: #000;
+  }
+  .ql-snow .ql-tooltip {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0px 0px 5px #ddd;
+    color: #444;
+  }
+  .ql-snow .ql-tooltip input[type='text'] {
+    border: 1px solid #ccc;
+  }
+  .ql-snow .ql-tooltip a.ql-action::after {
+    border-right: 1px solid #ccc;
+  }
+  .ql-snow a {
+    color: #06c;
+  }
+  .ql-container.ql-snow {
+    border: 1px solid #ccc;
+  }
+}

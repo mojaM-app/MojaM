@@ -24,7 +24,8 @@
       @for (item of array(formControlNames.items).controls; track item; let i = $index) {
         <ng-container [formGroupName]="i">
           @if (isMobile) {
-            <app-announcement-item-mobile [itemFormGroup]="item" [index]="i"> </app-announcement-item-mobile>
+            <app-announcement-item-mobile [itemFormGroup]="item" [index]="i">
+            </app-announcement-item-mobile>
           } @else {
             <app-announcement-item-desktop [itemFormGroup]="item" [index]="i">
             </app-announcement-item-desktop>

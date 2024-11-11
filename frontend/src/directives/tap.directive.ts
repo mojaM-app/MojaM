@@ -28,7 +28,6 @@ export class TapDirective implements OnInit {
 
   @HostListener('click', ['$event'])
   public handleTaps(e: PointerEvent): void {
-    console.log(e);
     const tapTimestamp = Math.floor(e.timeStamp);
     const isDoubleTap = this._lastTap + this._tapGesture.interval > tapTimestamp;
     if (!this._tapGesture.enabled && !this._doubleTapGesture.enabled) {

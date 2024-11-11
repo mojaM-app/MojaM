@@ -13,13 +13,41 @@
 
   border: 1px solid var(--mdc-filled-text-field-container-color);
 
-  &:hover,
   &:active,
   &:focus {
     background-color: var(--bs-card-cap-bg);
 
     .section-title {
       border-color: var(--mdc-filled-text-field-container-color);
+    }
+
+    .swipe-animation {
+      display: block !important;
+    }
+  }
+
+  .options-panel {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: var(--mat-app-background-color);
+    padding-top: 0.5rem;
+
+    @media (min-width: 290px) {
+      padding-top: 1rem;
+    }
+
+    .buttons-container {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      position: -webkit-sticky;
+      position: sticky;
+      top: 5%;
     }
   }
 }

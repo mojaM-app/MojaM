@@ -176,6 +176,12 @@ body {
         event-color-primary: mat.get-theme-color($dark-theme, primary-container),
       )
     );
+
+    .swipe-animation {
+      .hand-icon {
+        background-image: url('/images/hand-white.png');
+      }
+    }
   }
 
   --mat-sidenav-container-width: 300px;
@@ -335,4 +341,35 @@ body {
 @import url('./app/components/static/wysiwyg-editor/wysiwyg-editor.style.scss');
 
 .swipe-animation {
+  position: absolute;
+  top: 0;
+  left: 35%;
+  width: calc(var(--main-container-width) * 0.2);
+
+  .hand-icon {
+    position: relative;
+    background-image: url('/images/hand-black.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 80px;
+    height: 80px;
+    opacity: 0.3;
+    animation: spin 4s infinite;
+    transform-origin: 52% 62%;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(30deg);
+      margin-left: calc(var(--main-container-width) * 0.2);
+    }
+    50% {
+      transform: rotate(-15deg);
+      margin-left: calc(var(--main-container-width) * -0.2);
+    }
+    100% {
+      transform: rotate(0deg);
+      margin-left: calc(var(--main-container-width) * 0.2);
+    }
+  }
 }

@@ -1,10 +1,16 @@
-<div class="row position-relative clickable mx-0 mb-3">
+<div clickable class="row position-relative mx-0 mb-3">
   <div class="col-12 position-relative">
     <small class="section-title">{{
       'Announcements/Form/SectionNo' | gmessage: { no: index() + 1 | gnumber }
     }}</small>
   </div>
-  <div tap class="col-12" (doubleTap)="editItem()">
+  <div
+    tap
+    swipe
+    class="col-12"
+    (doubleTap)="editItem()"
+    (swipeNext)="showOptionsPanel()"
+    (swipePrev)="showOptionsPanel()">
     <div class="w-100 py-3">
       @if (content().length > 0) {
         <div class="w-100 announcement-item-content-container" [innerHTML]="content()"></div>
@@ -14,5 +20,37 @@
         </div>
       }
     </div>
+
+    @if (showOptions()) {
+      <div class="options-panel">
+        <div class="buttons-container mx-md-4 mx-3">
+          <div class="col text-start">
+            <button mat-icon-button>
+              <mat-icon>arrow_upward</mat-icon>
+            </button>
+            <button mat-icon-button>
+              <mat-icon>arrow_downward</mat-icon>
+            </button>
+          </div>
+          <div class="col text-center">
+            <button mat-icon-button (click)="editItem()">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button>
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+          <div class="col text-end">
+            <button mat-icon-button (click)="hideOptionsPanel()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="swipe-animation d-none">
+        <div class="hand-icon"></div>
+      </div>
+    }
   </div>
 </div>

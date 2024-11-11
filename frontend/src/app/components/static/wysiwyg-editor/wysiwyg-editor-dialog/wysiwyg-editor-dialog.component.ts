@@ -25,9 +25,4 @@ export class WysiwygEditorPopupComponent {
   private readonly _data = inject(MAT_DIALOG_DATA);
 
   public readonly content = model(this._data.content);
-
-
-  public constructor() {
-    console.log(this._data);
-  }
 }

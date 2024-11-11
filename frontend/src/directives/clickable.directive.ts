@@ -12,7 +12,7 @@ export class ClickableDirective implements OnDestroy {
   private _clickMouseRef: (() => void) | null = null;
   private _clickKeyboardRef: (() => void) | null = null;
 
-  private get elRef(): ElementRef {
+  private get _elRef(): ElementRef {
     return this._elementRef.nativeElement.children[0] ?? this._elementRef.nativeElement;
   }
 
@@ -25,16 +25,16 @@ export class ClickableDirective implements OnDestroy {
   }
 
   private addClickableEffect(): void {
-    this._renderer.addClass(this.elRef, 'clickable');
+    this._renderer.addClass(this._elRef, 'clickable');
 
-    this._renderer.setAttribute(this.elRef, 'tabIndex', '0');
+    this._renderer.setAttribute(this._elRef, 'tabIndex', '0');
 
-    this._clickMouseRef = this._renderer.listen(this.elRef, 'click', (event: PointerEvent) => {
+    this._clickMouseRef = this._renderer.listen(this._elRef, 'click', (event: PointerEvent) => {
       this.itemClick.emit(event);
     });
 
     this._clickKeyboardRef = this._renderer.listen(
-      this.elRef,
+      this._elRef,
       'keydown.enter',
       (event: KeyboardEvent) => {
         this.itemClick.emit(event);
@@ -43,8 +43,8 @@ export class ClickableDirective implements OnDestroy {
   }
 
   private removeClickableEffect(): void {
-    this._renderer.removeClass(this.elRef, 'clickable');
-    this._renderer.removeAttribute(this.elRef, 'tabIndex');
+    this._renderer.removeClass(this._elRef, 'clickable');
+    this._renderer.removeAttribute(this._elRef, 'tabIndex');
 
     if (this._clickMouseRef) {
       this._clickMouseRef();

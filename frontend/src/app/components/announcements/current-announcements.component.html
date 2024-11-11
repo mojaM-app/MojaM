@@ -7,15 +7,22 @@
     </header>
     <main>
       <div class="card-body">
-        @if (showButtonAddAnnouncement()) {
-          <div class="row mb-2">
-            <div class="col text-center">
-              <button mat-raised-button [routerLink]="['./' + AddAnnouncementsMenu.Route]">
-                <mat-icon>{{ AddAnnouncementsMenu.Icon }}</mat-icon>
-                <span>{{ AddAnnouncementsMenu.Label | gmessage }}</span>
-              </button>
+        @if (announcements()) {
+        } @else {
+          @if (showButtonAddAnnouncement()) {
+            <div class="row mb-2">
+              <div class="col text-center">
+                <button mat-raised-button [routerLink]="['./' + AddAnnouncementsMenu.Route]">
+                  <mat-icon>{{ AddAnnouncementsMenu.Icon }}</mat-icon>
+                  <span>{{ AddAnnouncementsMenu.Label | gmessage }}</span>
+                </button>
+              </div>
             </div>
-          </div>
+          } @else {
+            <div class="w-100 text-center">
+              <span class="opacity-50">{{ 'Announcements/NoAnnouncements' | gmessage }}</span>
+            </div>
+          }
         }
       </div>
     </main>
