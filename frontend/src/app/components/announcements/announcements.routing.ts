@@ -21,6 +21,7 @@ const routes: Routes = [
     data: {
       checkSession: true,
       permissions: [SystemPermissionValue.AddAnnouncements],
+      hideFooter: true,
     } satisfies IPermissionRouteData,
   },
   {
@@ -33,6 +34,7 @@ const routes: Routes = [
     data: {
       checkSession: true,
       permissions: [SystemPermissionValue.EditAnnouncements],
+      hideFooter: true,
     } satisfies IPermissionRouteData,
   },
   {
