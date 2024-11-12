@@ -306,7 +306,7 @@ export class AuthService extends BaseService {
     } satisfies DataStoredInToken;
 
     return sign(dataStoredInToken, getAccessTokenSecret(), {
-      expiresIn: '1m',
+      expiresIn: '10m',
       notBefore: '0',
       algorithm: ACCESS_TOKEN_ALGORITHM,
       audience: getTokenAudience(),
