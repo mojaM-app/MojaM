@@ -12,9 +12,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { NgxResizeObserverModule } from 'ngx-resize-observer';
-import { distinctUntilChanged, filter } from 'rxjs';
+import { distinctUntilChanged, filter, map, mergeMap } from 'rxjs';
 import { IRouteData } from 'src/interfaces/common/route.data';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
@@ -31,6 +31,7 @@ import { SideMenuComponent } from './components/side-menu/side-menu.component';
   standalone: true,
   imports: [
     RouterOutlet,
+    RouterModule,
     HeaderComponent,
     FooterComponent,
     SideMenuComponent,
@@ -57,7 +58,8 @@ export class AppComponent extends WithUnsubscribe() implements OnInit {
     @Inject(IS_MOBILE) public isMobile: boolean,
     private _spinnerService: SpinnerService,
     private _browserService: BrowserWindowService,
-    router: Router
+    router: Router,
+    activatedRoute: ActivatedRoute
   ) {
     super();
 
@@ -68,20 +70,25 @@ export class AppComponent extends WithUnsubscribe() implements OnInit {
       router.events
         .pipe(
           filter(e => e instanceof NavigationEnd),
+          map(() => {
+            let route = activatedRoute;
+
+            while (route.firstChild) {
+              route = route.firstChild;
+            }
+
+            return route;
+          }),
+          filter(route => route?.outlet === 'primary'),
+          mergeMap(route => route?.data),
           distinctUntilChanged()
         )
-        .subscribe(event => {
-          if (event instanceof NavigationEnd) {
-            const routeData = router.routerState.root.firstChild?.snapshot.data as IRouteData;
+        .subscribe((routeData: IRouteData) => {
+          this.sideNavShouldBeOpened.set(
+            isMobile === true ? false : !(routeData?.closeSideNav ?? false)
+          );
 
-            this.sideNavShouldBeOpened.set(
-              isMobile === true ? false : !(routeData?.closeSideNav ?? false)
-            );
-
-            this.footerShouldBeVisible.set(
-              isMobile === true ? true : !(routeData?.hideFooter ?? true)
-            );
-          }
+          this.footerShouldBeVisible.set(!(routeData?.hideFooter ?? !isMobile));
         })
     );
   }
