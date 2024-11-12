@@ -2,7 +2,7 @@
   "$schema": "./node_modules/@angular/service-worker/config/schema.json",
   "index": "/index.html",
   "appData": {
-    "version": "1.0.0",
+    "version": "2024.11.12",
     "name": "Moja Miriam"
   },
   "assetGroups": [
@@ -36,7 +36,7 @@
   "dataGroups": [
     {
       "name": "freshness-from-api",
-      "version": 1,
+      "version": 2,
       "urls": [
         "/meetings",
         "/mission",
@@ -44,7 +44,7 @@
         "/structure",
         "/regulations",
         "/calendar/events",
-        "announcements/current"
+        "/announcements/current"
       ],
       "cacheConfig": {
         "strategy": "freshness",
