@@ -1,4 +1,4 @@
-<div clickable class="row position-relative mx-0 mb-3">
+<div clickable class="row position-relative mb-md-3 mx-0 mb-4">
   <div class="col-12 position-relative">
     <small class="section-title">{{
       'Announcements/Form/SectionNo' | gmessage: { no: index() + 1 | gnumber }
@@ -11,7 +11,7 @@
     (doubleTap)="editItem()"
     (swipeNext)="showOptionsPanel()"
     (swipePrev)="showOptionsPanel()">
-    <div class="w-100 py-3">
+    <div class="w-100 py-md-3 py-4">
       @if (content().length > 0) {
         <div class="w-100 announcement-item-content-container" [innerHTML]="content()"></div>
       } @else {
