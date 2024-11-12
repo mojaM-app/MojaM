@@ -89,6 +89,10 @@
     color: var(--mat-app-text-color);
     opacity: 0.4;
   }
+
+  &.ql-blank:focus::before {
+    content: '';
+  }
 }
 
 .theme-dark {
