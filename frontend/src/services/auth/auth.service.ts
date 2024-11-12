@@ -27,7 +27,7 @@ export class AuthService extends BaseService {
   ) {
     super();
 
-    this._isLoggedIn$.next(this.isUserAuthenticated());
+    this._isLoggedIn$.next(this.isSessionValid());
   }
 
   public getUserInfoBeforeLogIn(
@@ -93,7 +93,7 @@ export class AuthService extends BaseService {
       );
   }
 
-  private isUserAuthenticated(): boolean {
+  public isSessionValid(): boolean {
     const isAccessTokenValid = this._authTokenService.isTokenValid();
     if (isAccessTokenValid) {
       return true;

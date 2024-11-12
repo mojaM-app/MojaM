@@ -1,22 +1,33 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { SystemPermissionValue } from 'src/core/system-permission.enum';
+import { SnackBarService } from '../snackbar/snack-bar.service';
+import { AuthService } from './auth.service';
 import { PermissionService } from './permission.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PermissionGuard {
   private _componentToRedirect = '/no-permission';
 
   public constructor(
     private _permissionService: PermissionService,
-    private _router: Router
+    private _router: Router,
+    private _authService: AuthService,
+    private _snackBarService: SnackBarService
   ) {}
 
   public canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree {
     if (!route || state.url === this._componentToRedirect || route.children.length) {
       return true;
+    }
+
+    // when no permissions explicitly set for this route, check for parents permissions
+    const checkSession = route.data?.['checkSession'] || this.getParentCheckSession(route);
+    if (checkSession === true && this._authService.isSessionValid() !== true) {
+      this._snackBarService.translateAndShowError('Errors/Session_Expired');
+      return false;
     }
 
     // when no permissions explicitly set for this route, check for parents permissions
@@ -33,8 +44,23 @@ export class PermissionGuard {
     }
   }
 
-  public canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree {
+  public canActivateChild(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): boolean | UrlTree {
     return this.canActivate(route, state);
+  }
+
+  private getParentCheckSession(route: ActivatedRouteSnapshot): boolean {
+    if (!route?.parent) {
+      return false;
+    }
+
+    if (route.parent.data?.['checkSession']) {
+      return route.parent.data?.['checkSession'] || [];
+    } else {
+      return this.getParentCheckSession(route.parent);
+    }
   }
 
   private getParentPermissions(route: ActivatedRouteSnapshot): SystemPermissionValue[] {
