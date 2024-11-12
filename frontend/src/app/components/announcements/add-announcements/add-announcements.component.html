@@ -1,5 +1,5 @@
 <div class="card border-0">
-  <div class="d-grid-with-header-and-footer">
+  <div class="d-grid-with-header">
     <header class="mat-toolbar">
       <div class="card-header">
         {{ 'Announcements/FormAdd/Title' | gmessage }}
@@ -12,7 +12,12 @@
     </main>
     <footer class="sticky-bottom">
       <div class="card-footer text-body-secondary text-end">
-        <button mat-raised-button type="submit" (click)="save()">{{ 'Shared/BtnSave' | gmessage }}</button>
+        <button mat-raised-button type="button" class="me-4" (click)="cancel()">
+          {{ 'Shared/BtnCancel' | gmessage }}
+        </button>
+        <button mat-raised-button type="submit" (click)="save()">
+          {{ 'Shared/BtnSave' | gmessage }}
+        </button>
       </div>
     </footer>
   </div>

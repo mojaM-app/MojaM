@@ -23,7 +23,10 @@ export class AddAnnouncementsComponent extends WithUnsubscribe() {
 
   private _form = viewChild(AnnouncementsFormComponent);
 
-  public constructor(authService: AuthService, router: Router) {
+  public constructor(
+    authService: AuthService,
+    private _router: Router
+  ) {
     super();
 
     this.announcements = AddAnnouncementsDto.create();
@@ -31,7 +34,7 @@ export class AddAnnouncementsComponent extends WithUnsubscribe() {
     this.addSubscription(
       authService.isAuthenticated.subscribe((isAuthenticated: boolean) => {
         if (!isAuthenticated) {
-          router.navigateByUrl(AnnouncementsMenu.Path);
+          this.navigateToAnnouncements();
         }
       })
     );
@@ -47,5 +50,13 @@ export class AddAnnouncementsComponent extends WithUnsubscribe() {
     if (form.isReadyToSubmit()) {
       console.log(form.value);
     }
+  }
+
+  public cancel(): void {
+    this.navigateToAnnouncements();
+  }
+
+  private navigateToAnnouncements(): void {
+    this._router.navigateByUrl(AnnouncementsMenu.Path);
   }
 }
