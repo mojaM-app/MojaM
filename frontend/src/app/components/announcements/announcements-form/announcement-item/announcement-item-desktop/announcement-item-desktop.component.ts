@@ -18,14 +18,7 @@ export class AnnouncementItemDesktopComponent extends AnnouncementItemBase {
     super();
   }
 
-  public override editItem(): void {
-    //const content = this.array(this.formControlNames.items).at(index).value.content;
-    // const dialogRef = this._dialogService.openWysiwygEditor(content);
-    // dialogRef.afterClosed().subscribe(result => {
-    //   console.log(`Dialog result: ${result}`);
-    // });
-    // this.array(this.formControlNames.items).at(index).patchValue({
-    //   editing: true,
-    // });
-  }
+  public override editItem(): void {}
+
+  public override deleteItem(): void {}
 }

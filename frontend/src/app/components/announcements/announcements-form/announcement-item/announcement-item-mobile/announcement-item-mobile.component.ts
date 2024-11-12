@@ -33,6 +33,8 @@ export class AnnouncementItemMobileComponent extends AnnouncementItemBase {
     });
   }
 
+  public override deleteItem(): void {}
+
   public showOptionsPanel(): void {
     this.showOptions.set(true);
   }

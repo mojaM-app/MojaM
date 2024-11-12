@@ -30,6 +30,7 @@ export abstract class AnnouncementItemBase {
   }
 
   public abstract editItem(): void;
+  public abstract deleteItem(): void;
 
   protected setNewContent(content: string): void {
     const formGroup = this.itemFormGroup() as FormGroup<IAnnouncementsItemForm>;
