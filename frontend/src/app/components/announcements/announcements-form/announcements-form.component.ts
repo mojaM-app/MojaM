@@ -88,7 +88,7 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
       new FormGroup<IAnnouncementsItemForm>({
         content: new FormControl<string | undefined>(content, {
           nonNullable: true,
-          validators: [Validators.required, Validators.maxLength(8000)],
+          validators: [Validators.required, Validators.maxLength(20000)],
         }),
       } satisfies IAnnouncementsItemForm)
     );
