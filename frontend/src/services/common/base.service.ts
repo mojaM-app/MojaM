@@ -49,4 +49,12 @@ export class BaseService {
       get: (): string => `${environment.backendUrl}/${this.API_ROUTES.userList.path}`,
     },
   };
+
+  protected toDateTime(date: string | null | undefined | Date): Date | undefined {
+    if (!date) {
+      return undefined;
+    }
+
+    return new Date(date);
+  }
 }

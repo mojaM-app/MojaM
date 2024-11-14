@@ -77,7 +77,8 @@
       "AddItem": "Dodaj sekcję",
       "SectionNo": "Sekcja {no}",
       "NoSectionContent": "Brak treści, stuknij dwukrotnie aby edytować",
-      "AnnouncementPlaceholder": "Treść ogłoszenia"
+      "AnnouncementPlaceholder": "Treść ogłoszenia",
+      "CheckProvidedData": "Sprawdź poprawność wprowadzonych danych. Data rozpoczęcia obowiązywania nie może być wcześniejsza niż dzisiejsza. Każda z sekcji musi być wypełniona, usuń puste sekcje."
     }
   },
   "News": {

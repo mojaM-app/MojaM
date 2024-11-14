@@ -7,6 +7,7 @@ import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { AnnouncementsService } from 'src/services/announcements/announcements.service';
 import { AuthService } from 'src/services/auth/auth.service';
+import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { AnnouncementsFormComponent } from '../announcements-form/announcements-form.component';
 import { AnnouncementsMenu } from '../announcements.menu';
 import { AddAnnouncementsDto } from '../models/add-announcements.model';
@@ -27,7 +28,8 @@ export class AddAnnouncementsComponent extends WithUnsubscribe() {
   public constructor(
     authService: AuthService,
     private _router: Router,
-    private _announcementsService: AnnouncementsService
+    private _announcementsService: AnnouncementsService,
+    private _snackBarService: SnackBarService
   ) {
     super();
 
@@ -50,6 +52,7 @@ export class AddAnnouncementsComponent extends WithUnsubscribe() {
     }
 
     if (!form.isReadyToSubmit()) {
+      this._snackBarService.translateAndShowError('Announcements/Form/CheckProvidedData');
       return;
     }
 

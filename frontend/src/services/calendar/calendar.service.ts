@@ -27,8 +27,8 @@ export class CalendarService extends BaseService {
         map((events: ICalendarEvent[]) => {
           return events.map(event => {
             return {
-              start: this.toDateTime(event.start),
-              end: this.toDateTime(event.end),
+              start: this.toDateTime(event.start) ?? new Date(),
+              end: this.toDateTime(event.end) ?? new Date(),
               title: event.title ?? '',
               allDay: event.allDay ?? false,
               location: event.location,
@@ -36,13 +36,5 @@ export class CalendarService extends BaseService {
           });
         })
       );
-  }
-
-  private toDateTime(date: string | null | undefined): Date {
-    if (!date) {
-      return new Date();
-    }
-
-    return new Date(date);
   }
 }
