@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { IS_MOBILE } from 'src/app/app.config';
 import { SystemPermissionValue } from 'src/core/system-permission.enum';
-import { ICurrentAnnouncements } from 'src/interfaces/announcements/announcements';
+import { ICurrentAnnouncements } from 'src/interfaces/announcements/current-announcements';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { GdatePipe } from 'src/pipes/gdate.pipe';
 import { CurrentAnnouncementsService } from 'src/services/announcements/current-announcements.service';

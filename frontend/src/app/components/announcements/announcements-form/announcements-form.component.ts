@@ -7,6 +7,7 @@ import {
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -60,7 +61,9 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
     formBuilder: FormBuilder
   ) {
     const formGroup = formBuilder.group<IAnnouncementsForm>({
-      validFromDate: new FormControl<Date | undefined>(undefined, { nonNullable: true }),
+      validFromDate: new FormControl<Date | undefined>(undefined, {
+        nonNullable: true,
+      }),
       items: new FormArray<FormGroup<IAnnouncementsItemForm>>([]),
     } satisfies IAnnouncementsForm);
 
@@ -83,7 +86,10 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
   public addItem(content?: string): void {
     this.array(this.formControlNames.items).push(
       new FormGroup<IAnnouncementsItemForm>({
-        content: new FormControl<string | undefined>(content, { nonNullable: true }),
+        content: new FormControl<string | undefined>(content, {
+          nonNullable: true,
+          validators: [Validators.required, Validators.maxLength(8000)],
+        }),
       } satisfies IAnnouncementsItemForm)
     );
   }

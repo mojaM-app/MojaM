@@ -95,11 +95,7 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
     }
 
     this._authService
-      .login(
-        this.formControls.email.value,
-        this.formControls.phone.value,
-        this.formControls.password.value
-      )
+      .login(this.controls.email.value, this.controls.phone.value, this.controls.password.value)
       .subscribe({
         next: () => {
           this.afterLogIn.emit(true);
@@ -121,7 +117,7 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
   }
 
   public goToStepEnterPhone(): void {
-    const controlEmail = this.formControls.email;
+    const controlEmail = this.controls.email;
     const email = controlEmail.value;
     if (!controlEmail.valid || !email) {
       return;
@@ -151,14 +147,14 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
     };
 
     if (this.showStep() === LoginFormSteps.EnterPhone) {
-      const controlPhone = this.formControls.phone;
+      const controlPhone = this.controls.phone;
       const phone = controlPhone.value;
       if (!controlPhone.valid || !phone) {
         return;
       }
 
       this._authService
-        .getUserInfoBeforeLogIn(this.formControls.email.value, phone)
+        .getUserInfoBeforeLogIn(this.controls.email.value, phone)
         .subscribe((response: UserInfoBeforeLogInResult) => {
           this.showResetPasswordButton.set(response.isPasswordSet === true);
           if (response.isPasswordSet === true) {
@@ -179,7 +175,7 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
 
   public sendEmailResetPassword(): void {
     this._resetPasswordService
-      .sendEmailResetPassword(this.formControls.email.value, this.formControls.phone.value)
+      .sendEmailResetPassword(this.controls.email.value, this.controls.phone.value)
       .subscribe({
         next: () => {
           this.loginError.set('');

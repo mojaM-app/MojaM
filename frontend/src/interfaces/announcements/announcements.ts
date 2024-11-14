@@ -1,20 +1,21 @@
-export interface ICurrentAnnouncementsItem {
+export interface IAnnouncementItem {
   id: string;
   content: string;
   createdAt: Date;
   createdBy: string;
-  updatedAt: Date;
+  updatedAt?: Date;
   updatedBy?: string;
 }
 
-export interface ICurrentAnnouncements {
+export interface IAnnouncements {
   id: string;
   title?: string;
-  validFromDate: Date;
+  state: number;
+  validFromDate?: Date;
   createdAt: Date;
   createdBy: string;
   updatedAt: Date;
-  publishedAt: Date;
-  publishedBy: string;
-  items: ICurrentAnnouncementsItem[];
+  publishedAt?: Date;
+  publishedBy?: string;
+  items: IAnnouncementItem[];
 }

@@ -68,7 +68,7 @@ export class SettingsComponent extends WithUnsubscribe(WithForm<ISettingsForm>()
       isDarkMode: _themeService.isDarkMode(),
     });
 
-    this.darkModeChanged = toSignal(this.formControls.isDarkMode.valueChanges, {
+    this.darkModeChanged = toSignal(this.controls.isDarkMode.valueChanges, {
       initialValue: _themeService.isDarkMode(),
     });
 

@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,7 +11,14 @@ import { AnnouncementItemBase } from '../announcement-item.base';
 @Component({
   selector: 'app-announcement-item-mobile',
   standalone: true,
-  imports: [PipesModule, DirectivesModule, FormsModule, MatButtonModule, MatIconModule],
+  imports: [
+    CommonModule,
+    PipesModule,
+    DirectivesModule,
+    FormsModule,
+    MatButtonModule,
+    MatIconModule,
+  ],
   templateUrl: './announcement-item-mobile.component.html',
   styleUrl: './announcement-item-mobile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

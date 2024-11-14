@@ -12,6 +12,7 @@ import { IAnnouncementsItemForm } from '../announcements.form';
 @Directive()
 export abstract class AnnouncementItemBase {
   public readonly itemFormGroup = input.required<AbstractControl>();
+  public readonly controls = signal<IAnnouncementsItemForm | undefined>(undefined);
   public readonly index = input.required<number>();
   public content: WritableSignal<string> = signal('');
 
@@ -22,6 +23,7 @@ export abstract class AnnouncementItemBase {
         if ((formGroup?.value?.content?.length ?? 0) > 0) {
           this.content.set(formGroup.value.content ?? '');
         }
+        this.controls.set(formGroup.controls);
       },
       {
         allowSignalWrites: true,

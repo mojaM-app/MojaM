@@ -1,10 +1,22 @@
-import { AnnouncementItemDto, AnnouncementsDto } from "./announcements.model";
+import { FormArray, FormControl } from '@angular/forms';
+import { IAnnouncementsForm } from '../announcements-form/announcements.form';
+import { AnnouncementItemDto, AnnouncementsDto } from './announcements.model';
 
 export class AddAnnouncementsDto extends AnnouncementsDto {
-
-  public constructor() {
+  public constructor(formControls?: { [K in keyof IAnnouncementsForm]: FormControl<any> }) {
     super();
     this.items = [];
+
+    if (formControls) {
+      this.validFromDate = formControls.validFromDate?.value ?? undefined;
+
+      const items = formControls.items as any as FormArray;
+      items?.controls?.forEach((item: any) => {
+        this.items?.push({
+          content: item.controls.content.value ?? undefined,
+        } satisfies AnnouncementItemDto);
+      });
+    }
   }
 
   public static create(): AddAnnouncementsDto {

@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
+import { AnnouncementsService } from 'src/services/announcements/announcements.service';
 import { AuthService } from 'src/services/auth/auth.service';
 import { AnnouncementsFormComponent } from '../announcements-form/announcements-form.component';
 import { AnnouncementsMenu } from '../announcements.menu';
@@ -25,7 +26,8 @@ export class AddAnnouncementsComponent extends WithUnsubscribe() {
 
   public constructor(
     authService: AuthService,
-    private _router: Router
+    private _router: Router,
+    private _announcementsService: AnnouncementsService
   ) {
     super();
 
@@ -47,9 +49,14 @@ export class AddAnnouncementsComponent extends WithUnsubscribe() {
       return;
     }
 
-    if (form.isReadyToSubmit()) {
-      console.log(form.value);
+    if (!form.isReadyToSubmit()) {
+      return;
     }
+
+    const dto = new AddAnnouncementsDto(form.controls);
+    this._announcementsService.create(dto).subscribe(() => {
+      this.navigateToAnnouncements();
+    });
   }
 
   public cancel(): void {

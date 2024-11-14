@@ -16,7 +16,13 @@
         <div class="w-100 announcement-item-content-container" [innerHTML]="content()"></div>
       } @else {
         <div class="w-100 text-center">
-          <span class="opacity-50">{{ 'Announcements/Form/NoSectionContent' | gmessage }}</span>
+          <span
+            class="opacity-70"
+            [ngClass]="{
+              'mat-mdc-form-field-error': controls()?.content?.errors,
+            }"
+            >{{ 'Announcements/Form/NoSectionContent' | gmessage }}</span
+          >
         </div>
       }
     </div>

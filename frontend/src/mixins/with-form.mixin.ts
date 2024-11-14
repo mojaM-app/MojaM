@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { FormArray, FormControl, FormGroup, ValidationErrors } from '@angular/forms';
 import { Constructor, Empty, IForm } from './shared.mixin';
 
@@ -25,7 +25,7 @@ export function WithForm<
       return this.formGroup.value as any;
     }
 
-    public get formControls(): { [K in keyof TFormType]: FormControl<any> } {
+    public get controls(): { [K in keyof TFormType]: FormControl<any> } {
       return this.formGroup.controls as { [K in keyof TFormType]: FormControl<any> };
     }
 
