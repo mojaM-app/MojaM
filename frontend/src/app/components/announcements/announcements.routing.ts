@@ -44,6 +44,11 @@ const routes: Routes = [
         m => m.AnnouncementsListComponent
       ),
   },
+  {
+    path: AddAnnouncementsMenu.Route + '/:id',
+    redirectTo: AddAnnouncementsMenu.Route,
+    pathMatch: 'full',
+  },
   { path: '**', redirectTo: '', pathMatch: 'full' },
   { path: '', component: CurrentAnnouncementsComponent },
 ];
