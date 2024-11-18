@@ -37,7 +37,10 @@ export class RequestBuilder {
     }
 
     return this._http
-      .get<{ message: string; data: TResponse }>(this._url!, { headers: this._headers, params: this._params })
+      .get<{
+        message: string;
+        data: TResponse;
+      }>(this._url!, { headers: this._headers, params: this._params })
       .pipe(
         retry(1),
         map(response => response.data),
@@ -99,10 +102,14 @@ export class RequestBuilder {
     if ('error' in error && 'data' in error.error) {
       const data = error.error.data;
       if ('message' in data) {
-        data.errorMessage = translationService.getError(data.message);
+        data.errorMessage = translationService.getError(data.message, data?.args ?? []);
       }
       return throwError(() => {
-        return { ...data, status: error.status, httpMessage: error?.message } satisfies IResponseError;
+        return {
+          ...data,
+          status: error.status,
+          httpMessage: error?.message,
+        } satisfies IResponseError;
       });
     }
 

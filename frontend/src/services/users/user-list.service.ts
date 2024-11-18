@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SortDirection } from '@angular/material/sort';
 import { Observable } from 'rxjs';
-import { UsersGridData } from 'src/interfaces/users/users.interfaces';
+import { UsersGridData } from 'src/interfaces/users/user-list.interfaces';
 import { BaseService } from '../common/base.service';
 import { HttpClientService } from '../common/httpClient.service';
 import { SpinnerService } from '../spinner/spinner.service';

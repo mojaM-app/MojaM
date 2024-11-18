@@ -36,7 +36,7 @@ export class SnackBarService {
   public showError(message: string): void {
     this._emitToast.next({
       message: message,
-      action: "OK",
+      action: 'OK',
       timeStamp: new Date().getTime(),
       config: {
         panelClass: ['error'],
@@ -47,7 +47,7 @@ export class SnackBarService {
   public showSuccess(message: string): void {
     this._emitToast.next({
       message: message,
-      action: "OK",
+      action: 'OK',
       timeStamp: new Date().getTime(),
       config: {
         panelClass: ['success'],
@@ -55,14 +55,14 @@ export class SnackBarService {
     } satisfies IToast);
   }
 
-  public translateAndShowSuccess(message: string) : void{
-    message = this._translationService.get(message);
+  public translateAndShowSuccess(message: string, interpolateParams?: unknown): void {
+    message = this._translationService.get(message, interpolateParams);
 
     return this.showSuccess(message);
   }
 
-  public translateAndShowError(message: string) : void{
-    message = this._translationService.get(message);
+  public translateAndShowError(message: string, interpolateParams?: unknown): void {
+    message = this._translationService.get(message, interpolateParams);
 
     return this.showError(message);
   }
