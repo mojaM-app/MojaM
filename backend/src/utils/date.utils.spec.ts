@@ -1,30 +1,4 @@
-import { getUtcNow, isDate, toUtcDate } from './date.utils';
-
-describe('toUtcDate', () => {
-  it('should return null for null value', () => {
-    expect(toUtcDate(null)).toBe(null);
-  });
-
-  it('should return null for undefined value', () => {
-    expect(toUtcDate(undefined)).toBe(null);
-  });
-
-  it('should return null for non-date value', () => {
-    expect(toUtcDate('2022-01-01')).toBe(null);
-    expect(toUtcDate(123)).toBe(null);
-    expect(toUtcDate({})).toBe(null);
-    expect(toUtcDate([])).toBe(null);
-    expect(toUtcDate(() => {})).toBe(null);
-  });
-
-  it('should return UTC date for valid date', () => {
-    const date = new Date('2022-01-01');
-    const utcDate = toUtcDate(date);
-    const expectedUtcDate = new Date(Date.UTC(2022, 0, 1, 0, 0, 0, 0));
-    expect(utcDate).toEqual(expectedUtcDate);
-    expect(utcDate).toEqual(date);
-  });
-});
+import { getDateNow, getDateTimeNow, isDate } from './date.utils';
 
 describe('isDate', () => {
   it('should return false for null value', () => {
@@ -49,17 +23,20 @@ describe('isDate', () => {
   });
 });
 
-describe('getUtcNow', () => {
-  it('should return current UTC date', () => {
+describe('getDateTimeNow', () => {
+  it('should return current date and time', () => {
     const now = new Date();
-    const utcNow = getUtcNow();
-    expect(utcNow).toEqual(new Date(Date.UTC(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      now.getHours(),
-      now.getMinutes(),
-      now.getSeconds()
-    )));
+    const expectedDateTimeNow = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds());
+    const dateTimeNow = getDateTimeNow();
+    expect(dateTimeNow).toEqual(expectedDateTimeNow);
+  });
+});
+
+describe('getDateNow', () => {
+  it('should return current date', () => {
+    const now = new Date();
+    const expectedDateNow = new Date(now.toISOString().slice(0, 10));
+    const dateNow = getDateNow();
+    expect(dateNow).toEqual(expectedDateNow);
   });
 });
