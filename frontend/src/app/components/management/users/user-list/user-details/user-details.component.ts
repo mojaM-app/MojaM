@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { IUserGridItemDto } from 'src/interfaces/users/users.interfaces';
+import { IUserGridItemDto } from 'src/interfaces/users/user-list.interfaces';
 import { PipesModule } from 'src/pipes/pipes.module';
 
 @Component({
@@ -7,7 +7,7 @@ import { PipesModule } from 'src/pipes/pipes.module';
   standalone: true,
   imports: [PipesModule],
   templateUrl: './user-details.component.html',
-  styleUrl: './user-details.component.scss'
+  styleUrl: './user-details.component.scss',
 })
 export class UserDetailsComponent {
   public user = input<IUserGridItemDto>();

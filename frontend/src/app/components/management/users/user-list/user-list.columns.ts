@@ -1,4 +1,4 @@
-import { IUserGridItemColumns } from 'src/interfaces/users/users.interfaces';
+import { IUserGridItemColumns } from 'src/interfaces/users/user-list.interfaces';
 
 export const UserListColumns: { [K in keyof IUserGridItemColumns]: string } = {
   id: 'id',
