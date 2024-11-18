@@ -25,6 +25,10 @@ export class Identity {
     return (this.userId ?? 0) > 0;
   }
 
+  public hasPermissionToGetAnnouncements(): boolean {
+    return true;
+  }
+
   public hasPermissionToPublishAnnouncements(): boolean {
     return this.hasPermission(SystemPermission.PublishAnnouncements);
   }
