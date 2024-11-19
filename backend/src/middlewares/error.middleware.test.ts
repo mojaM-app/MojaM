@@ -34,19 +34,19 @@ describe('ErrorMiddleware tests', () => {
   it('should handle HttpException and send response with status code and error message', async () => {
     await ErrorMiddleware(error, req, res, next);
 
-    expect(logger.error).toHaveBeenCalledWith('[undefined] undefined >> StatusCode:: 400, Message:: Test error::[]');
+    expect(logger.error).toHaveBeenCalledWith('[undefined] undefined >> StatusCode:: 400, Message:: Test error::{}');
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ data: { message: 'Test error' } });
     expect(next).not.toHaveBeenCalled();
   });
 
   it('should handle TranslatableHttpException and send response with status code, error message, and arguments', async () => {
-    const translatableError = new TranslatableHttpException(500, 'Test error', [1, 'arg']);
+    const translatableError = new TranslatableHttpException(500, 'Test error', { id: 1, msg: 'message' });
     await ErrorMiddleware(translatableError, req, res, next);
 
-    expect(logger.error).toHaveBeenCalledWith('[undefined] undefined >> StatusCode:: 500, Message:: Test error::[1,"arg"]');
+    expect(logger.error).toHaveBeenCalledWith('[undefined] undefined >> StatusCode:: 500, Message:: Test error::{"id":1,"msg":"message"}');
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ data: { message: 'Test error', args: [1, 'arg'] } });
+    expect(res.json).toHaveBeenCalledWith({ data: { message: 'Test error', args: { id: 1, msg: 'message' } } });
     expect(next).not.toHaveBeenCalled();
   });
 
@@ -58,7 +58,7 @@ describe('ErrorMiddleware tests', () => {
 
     await ErrorMiddleware(error, req, res, next);
 
-    expect(logger.error).toHaveBeenCalledWith('[undefined] undefined >> StatusCode:: 400, Message:: Test error::[]');
+    expect(logger.error).toHaveBeenCalledWith('[undefined] undefined >> StatusCode:: 400, Message:: Test error::{}');
     expect(next).toHaveBeenCalledWith(unexpectedError);
   });
 });

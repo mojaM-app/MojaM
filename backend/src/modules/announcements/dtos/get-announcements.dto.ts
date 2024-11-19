@@ -1,5 +1,6 @@
 import { events } from '@events';
 import { IResponse } from '@interfaces';
+import { BaseReqDto } from '@modules/common';
 
 export interface IAnnouncementItemDto {
   id: string;
@@ -21,6 +22,15 @@ export interface IAnnouncementsDto {
   publishedAt?: Date;
   publishedBy?: string;
   items: IAnnouncementItemDto[];
+}
+
+export class GetAnnouncementsReqDto extends BaseReqDto {
+  public readonly idGuid: string | undefined;
+
+  public constructor(idGuid: string | undefined, currentUserId: number) {
+    super(currentUserId);
+    this.idGuid = idGuid;
+  }
 }
 
 export class GetAnnouncementsResponseDto implements IResponse<IAnnouncementsDto> {

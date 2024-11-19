@@ -7,7 +7,14 @@ import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-han
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
-import { CreateUserResponseDto, DeleteUserResponseDto, GetUserProfileResponseDto, UserProfileRetrievedEvent, UserProfileRoute, UserRoute } from '@modules/users';
+import {
+  CreateUserResponseDto,
+  DeleteUserResponseDto,
+  GetUserProfileResponseDto,
+  UserProfileRetrievedEvent,
+  UserProfileRoute,
+  UserRoute,
+} from '@modules/users';
 import { isGuid, isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
@@ -38,10 +45,7 @@ describe('GET/user/:id', () => {
 
     test('when data are valid and user has permission', async () => {
       const newUser = generateValidUser();
-      const createUserResponse = await request(app.getServer())
-        .post(userRoute.path)
-        .send(newUser)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
@@ -269,10 +273,9 @@ describe('GET/user/:id', () => {
       const body = getUserProfileResponse.body;
       expect(typeof body).toBe('object');
       const data = body.data;
-      const { message: getUserProfileMessage, args: createArgs }: { message: string; args: string[] } = data;
+      const { message: getUserProfileMessage, args: createArgs } = data;
       expect(getUserProfileMessage).toBe(errorKeys.users.User_Does_Not_Exist);
-      expect(createArgs.length).toBe(1);
-      expect(createArgs[0]).toBe(userId);
+      expect(createArgs).toEqual({ id: userId });
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {

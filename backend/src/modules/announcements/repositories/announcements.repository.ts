@@ -59,8 +59,8 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
 
     const count = await this._dbContext.announcements
       .createQueryBuilder('announcement')
-      .where('DATE(ValidFromDate) = :date', { date: validFromDate!.toISOString().split('T')[0] })
-      .getCount()
+      .where('ValidFromDate = :date', { date: validFromDate?.toISOString().slice(0, 10) })
+      .getCount();
 
     return count > 0;
   }

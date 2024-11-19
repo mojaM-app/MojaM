@@ -1,5 +1,11 @@
 import { events } from '@events';
-import { AnnouncementsCreatedEvent, AnnouncementsDeletedEvent, AnnouncementsPublishedEvent, AnnouncementsRetrievedEvent, CurrentAnnouncementsRetrievedEvent } from '@modules/announcements';
+import {
+  AnnouncementsCreatedEvent,
+  AnnouncementsDeletedEvent,
+  AnnouncementsPublishedEvent,
+  AnnouncementsRetrievedEvent,
+  CurrentAnnouncementsRetrievedEvent,
+} from '@modules/announcements';
 import { EventSubscriber, On } from 'event-dispatch';
 import { AnnouncementsListRetrievedEvent } from './announcements-list-retrieved-event';
 import { AnnouncementsUpdatedEvent } from './announcements-updated-event';
@@ -39,7 +45,7 @@ export class AnnouncementsEventSubscriber {
 
 @EventSubscriber()
 export class AnnouncementsListEventSubscriber {
-  @On(events.announcements.announcementListRetrieved)
+  @On(events.announcements.announcementsListRetrieved)
   public onAnnouncementListRetrieved(data: AnnouncementsListRetrievedEvent): void {
     console.log(`Announcements list retrieved by user with ID: ${data?.currentUserId}`);
   }

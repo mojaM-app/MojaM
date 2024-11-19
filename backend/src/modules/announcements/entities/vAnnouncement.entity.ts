@@ -3,7 +3,7 @@ import { IAnnouncementGridItemDto } from '../dtos/get-announcement-list.dto';
 import { User } from './../../../modules/users/entities/user.entity';
 import { Announcement } from './announcement.entity';
 
-const AnnouncementListViewColumns: { [K in keyof IAnnouncementGridItemDto]: string } = {
+export const AnnouncementListViewColumns: { [K in keyof IAnnouncementGridItemDto]: string } = {
   id: 'Id',
   title: 'Title',
   state: 'State',
@@ -25,13 +25,14 @@ const AnnouncementListViewColumns: { [K in keyof IAnnouncementGridItemDto]: stri
       .addSelect('announcement.State', AnnouncementListViewColumns.state)
       .addSelect('announcement.ValidFromDate', AnnouncementListViewColumns.validFromDate)
       .addSelect('announcement.CreatedAt', AnnouncementListViewColumns.createdAt)
-      .addSelect('concat(createdBy.FirstName, \' \', createdBy.LastName)', AnnouncementListViewColumns.createdBy)
+      .addSelect("concat(createdBy.FirstName, ' ', createdBy.LastName)", AnnouncementListViewColumns.createdBy)
       .addSelect('announcement.UpdatedAt', AnnouncementListViewColumns.updatedAt)
       .addSelect('announcement.PublishedAt', AnnouncementListViewColumns.publishedAt)
-      .addSelect('announcement.PublishedBy', AnnouncementListViewColumns.publishedBy)
+      .addSelect("concat(publishedBy.FirstName, ' ', publishedBy.LastName)", AnnouncementListViewColumns.publishedBy)
       .addSelect('(select count(0) from announcement_items as ai where announcement.Id = ai.AnnouncementId)', AnnouncementListViewColumns.itemsCount)
       .from(Announcement, 'announcement')
-      .innerJoin(User, 'createdBy', 'createdBy.id = announcement.CreatedById'),
+      .innerJoin(User, 'createdBy', 'createdBy.id = announcement.CreatedById')
+      .leftJoin(User, 'publishedBy', 'publishedBy.id = announcement.PublishedById'),
   name: 'vAnnouncements',
 })
 export class vAnnouncement implements IAnnouncementGridItemDto {
@@ -40,32 +41,29 @@ export class vAnnouncement implements IAnnouncementGridItemDto {
   public id: string;
 
   @ViewColumn()
-  public firstName?: string;
+  public title?: string;
 
   @ViewColumn()
-  public lastName?: string;
+  public state: number;
 
   @ViewColumn()
-  public email: string;
+  public validFromDate?: Date;
 
   @ViewColumn()
-  public phone: string;
+  public createdAt: Date;
 
   @ViewColumn()
-  public joiningDate?: Date;
+  public createdBy: string;
 
   @ViewColumn()
-  public lastLoginAt?: Date;
+  public updatedAt?: Date;
 
   @ViewColumn()
-  public isActive: boolean;
+  public publishedAt: Date;
 
   @ViewColumn()
-  public isLockedOut: boolean;
+  public publishedBy: string;
 
   @ViewColumn()
-  public isDeleted: boolean;
-
-  @ViewColumn()
-  public rolesCount: number;
+  public itemsCount: number;
 }

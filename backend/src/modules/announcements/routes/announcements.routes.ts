@@ -23,6 +23,8 @@ export class AnnouncementsRout implements IRoutes {
   }
 
   public initializeRoutes(): void {
+    this.router.get(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity, this.checkGetPermission], this._announcementsController.get);
+
     this.router.post(
       `${this.path}`,
       [validateData(CreateAnnouncementsDto), setIdentity, this.checkCreatePermission],
@@ -37,6 +39,16 @@ export class AnnouncementsRout implements IRoutes {
 
     this.router.get(this.currentAnnouncementsPath, this._currentAnnouncementsController.get);
   }
+
+  private readonly checkGetPermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+    if (!req.identity?.isAuthenticated()) {
+      next(new UnauthorizedException());
+    } else if (!req.identity.hasPermissionToGetAnnouncements()) {
+      next(new ForbiddenException());
+    } else {
+      next();
+    }
+  };
 
   private readonly checkPublishPermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     if (!req.identity?.isAuthenticated()) {

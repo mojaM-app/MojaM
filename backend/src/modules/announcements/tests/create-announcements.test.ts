@@ -5,7 +5,14 @@ import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
-import { AnnouncementsRout, AnnouncementStateValue, CreateAnnouncementsResponseDto } from '@modules/announcements';
+import {
+  AnnouncementItemContentMaxLength,
+  AnnouncementsRout,
+  AnnouncementStateValue,
+  AnnouncementsTitleMaxLength,
+  CreateAnnouncementsResponseDto,
+  GetAnnouncementsResponseDto,
+} from '@modules/announcements';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
@@ -40,55 +47,78 @@ describe('POST /announcements', () => {
 
     test('create unpublished announcement', async () => {
       const requestData = generateValidAnnouncements();
+      requestData.title = 'a'.repeat(AnnouncementsTitleMaxLength);
+      requestData.items![0].content = 'a'.repeat(AnnouncementItemContentMaxLength);
+
       const createAnnouncementsResponse = await request(app.getServer())
         .post(announcementRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      const body = createAnnouncementsResponse.body;
+      let body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcements, message: createMessage }: CreateAnnouncementsResponseDto = body;
-      expect(announcements).toBeDefined();
-      expect(announcements!.id).toBeDefined();
-      expect(isGuid(announcements!.id)).toBe(true);
-      expect(announcements!.createdBy).toBeDefined();
-      expect(announcements!.createdAt).toBeDefined();
-      expect(isDateString(announcements!.createdAt)).toBe(true);
-      expect(announcements!.updatedAt).toBeDefined();
-      expect(isDateString(announcements!.updatedAt)).toBe(true);
-      expect(announcements?.title).toBe(requestData.title);
-      expect(announcements?.state).toBe(AnnouncementStateValue.DRAFT);
-      expect(announcements?.publishedAt).toBeUndefined();
-      expect(announcements?.publishedBy).toBeUndefined();
-      expect(announcements!.validFromDate!).toBe(requestData.validFromDate!.toISOString());
-      expect(announcements?.items).toBeDefined();
-      expect(Array.isArray(announcements!.items)).toBe(true);
-      expect(announcements?.items.length).toBe(requestData.items!.length);
-      expect(announcements!.items.every(item => isGuid(item.id))).toBe(true);
-      expect(announcements!.items.every(item => item.content !== undefined)).toBe(true);
-      expect(announcements!.items.every(item => item.createdAt !== undefined)).toBe(true);
-      expect(announcements!.items.every(item => item.createdBy !== undefined)).toBe(true);
-      expect(announcements!.items.every(item => item.updatedAt !== undefined)).toBe(true);
-      expect(announcements!.items.every(item => item.updatedBy === undefined)).toBe(true);
-      expect(announcements!.items.every(item => item.updatedAt !== undefined)).toBe(true);
-      expect(announcements!.items.every(item => item.updatedBy === undefined)).toBe(true);
+      const { data: announcementsId, message: createMessage }: CreateAnnouncementsResponseDto = body;
+      expect(announcementsId).toBeDefined();
       expect(createMessage).toBe(events.announcements.announcementsCreated);
+
+      const getAnnouncementsResponse = await request(app.getServer())
+        .get(announcementRoute.path + '/' + announcementsId)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(getAnnouncementsResponse.statusCode).toBe(200);
+      expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = getAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: announcements, message: getMessage }: GetAnnouncementsResponseDto = body;
+      expect(getMessage).toBe(events.announcements.announcementsRetrieved);
+      expect(announcements).toBeDefined();
+      expect(announcements.id).toBeDefined();
+      expect(isGuid(announcements.id)).toBe(true);
+      expect(announcements.createdBy).toBeDefined();
+      expect(announcements.createdAt).toBeDefined();
+      expect(isDateString(announcements.createdAt)).toBe(true);
+      expect(announcements.updatedAt).toBeDefined();
+      expect(isDateString(announcements.updatedAt)).toBe(true);
+      expect(announcements.title).toBe(requestData.title);
+      expect(announcements.state).toBe(AnnouncementStateValue.DRAFT);
+      expect(announcements.publishedAt).toBeUndefined();
+      expect(announcements.publishedBy).toBeUndefined();
+      expect(new Date(announcements.validFromDate!)).toStrictEqual(requestData.validFromDate);
+      expect(announcements.items).toBeDefined();
+      expect(Array.isArray(announcements.items)).toBe(true);
+      expect(announcements.items.length).toBe(requestData.items!.length);
+      expect(announcements.items.every(item => isGuid(item.id))).toBe(true);
+      expect(announcements.items.every(item => item.content !== undefined)).toBe(true);
+      expect(announcements.items.every(item => item.createdAt !== undefined)).toBe(true);
+      expect(announcements.items.every(item => item.createdBy !== undefined)).toBe(true);
+      expect(announcements.items.every(item => item.updatedAt !== undefined)).toBe(true);
+      expect(announcements.items.every(item => item.updatedBy === undefined)).toBe(true);
+      expect(announcements.items.every(item => item.updatedAt !== undefined)).toBe(true);
+      expect(announcements.items.every(item => item.updatedBy === undefined)).toBe(true);
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app.getServer())
-        .delete(announcementRoute.path + '/' + announcements!.id)
+        .delete(announcementRoute.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
-        .filter(([, eventHandler]) => ![testEventHandlers.onAnnouncementsCreated, testEventHandlers.onAnnouncementsDeleted].includes(eventHandler))
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onAnnouncementsCreated,
+              testEventHandlers.onAnnouncementsRetrieved,
+              testEventHandlers.onAnnouncementsDeleted,
+            ].includes(eventHandler),
+        )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onAnnouncementsRetrieved).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
     });
 
@@ -103,47 +133,67 @@ describe('POST /announcements', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      const body = createAnnouncementsResponse.body;
+      let body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcements, message: createMessage }: CreateAnnouncementsResponseDto = body;
+      const { data: announcementsId, message: createMessage }: CreateAnnouncementsResponseDto = body;
+      expect(createMessage).toBe(events.announcements.announcementsCreated);
+      expect(announcementsId).toBeDefined();
+
+      const getAnnouncementsResponse = await request(app.getServer())
+        .get(announcementRoute.path + '/' + announcementsId)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(getAnnouncementsResponse.statusCode).toBe(200);
+      expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = getAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: announcements, message: getMessage }: GetAnnouncementsResponseDto = body;
+      expect(getMessage).toBe(events.announcements.announcementsRetrieved);
       expect(announcements).toBeDefined();
-      expect(announcements!.id).toBeDefined();
-      expect(isGuid(announcements!.id)).toBe(true);
-      expect(announcements!.createdBy).toBeDefined();
-      expect(announcements!.createdAt).toBeDefined();
-      expect(isDateString(announcements!.createdAt)).toBe(true);
-      expect(announcements!.updatedAt).toBeDefined();
-      expect(isDateString(announcements!.updatedAt)).toBe(true);
+      expect(announcements.id).toBeDefined();
+      expect(isGuid(announcements.id)).toBe(true);
+      expect(announcements.createdBy).toBeDefined();
+      expect(announcements.createdAt).toBeDefined();
+      expect(isDateString(announcements.createdAt)).toBe(true);
+      expect(announcements.updatedAt).toBeDefined();
+      expect(isDateString(announcements.updatedAt)).toBe(true);
       expect(announcements?.title).toBeUndefined();
       expect(announcements?.state).toBe(AnnouncementStateValue.DRAFT);
       expect(announcements?.publishedAt).toBeUndefined();
       expect(announcements?.publishedBy).toBeUndefined();
       expect(announcements?.validFromDate).toBeUndefined();
       expect(announcements?.items).toBeDefined();
-      expect(Array.isArray(announcements!.items)).toBe(true);
+      expect(Array.isArray(announcements.items)).toBe(true);
       expect(announcements?.items.length).toBe(requestData.items!.length);
-      expect(announcements!.items.every(item => isGuid(item.id))).toBe(true);
-      expect(announcements!.items.every(item => item.content !== undefined)).toBe(true);
-      expect(announcements!.items.every(item => item.createdAt !== undefined)).toBe(true);
-      expect(announcements!.items.every(item => item.createdBy !== undefined)).toBe(true);
-      expect(announcements!.items.every(item => item.updatedAt !== undefined)).toBe(true);
-      expect(announcements!.items.every(item => item.updatedBy === undefined)).toBe(true);
-      expect(createMessage).toBe(events.announcements.announcementsCreated);
+      expect(announcements.items.every(item => isGuid(item.id))).toBe(true);
+      expect(announcements.items.every(item => item.content !== undefined)).toBe(true);
+      expect(announcements.items.every(item => item.createdAt !== undefined)).toBe(true);
+      expect(announcements.items.every(item => item.createdBy !== undefined)).toBe(true);
+      expect(announcements.items.every(item => item.updatedAt !== undefined)).toBe(true);
+      expect(announcements.items.every(item => item.updatedBy === undefined)).toBe(true);
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app.getServer())
-        .delete(announcementRoute.path + '/' + announcements!.id)
+        .delete(announcementRoute.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
-        .filter(([, eventHandler]) => ![testEventHandlers.onAnnouncementsCreated, testEventHandlers.onAnnouncementsDeleted].includes(eventHandler))
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onAnnouncementsCreated,
+              testEventHandlers.onAnnouncementsRetrieved,
+              testEventHandlers.onAnnouncementsDeleted,
+            ].includes(eventHandler),
+        )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onAnnouncementsRetrieved).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
     });
 
@@ -158,47 +208,67 @@ describe('POST /announcements', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      const body = createAnnouncementsResponse.body;
+      let body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcements, message: createMessage }: CreateAnnouncementsResponseDto = body;
+      const { data: announcementsId, message: createMessage }: CreateAnnouncementsResponseDto = body;
+      expect(createMessage).toBe(events.announcements.announcementsCreated);
+      expect(announcementsId).toBeDefined();
+
+      const getAnnouncementsResponse = await request(app.getServer())
+        .get(announcementRoute.path + '/' + announcementsId)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(getAnnouncementsResponse.statusCode).toBe(200);
+      expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = getAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: announcements, message: getMessage }: GetAnnouncementsResponseDto = body;
+      expect(getMessage).toBe(events.announcements.announcementsRetrieved);
       expect(announcements).toBeDefined();
-      expect(announcements!.id).toBeDefined();
-      expect(isGuid(announcements!.id)).toBe(true);
-      expect(announcements!.createdBy).toBeDefined();
-      expect(announcements!.createdAt).toBeDefined();
-      expect(isDateString(announcements!.createdAt)).toBe(true);
-      expect(announcements!.updatedAt).toBeDefined();
-      expect(isDateString(announcements!.updatedAt)).toBe(true);
+      expect(announcements.id).toBeDefined();
+      expect(isGuid(announcements.id)).toBe(true);
+      expect(announcements.createdBy).toBeDefined();
+      expect(announcements.createdAt).toBeDefined();
+      expect(isDateString(announcements.createdAt)).toBe(true);
+      expect(announcements.updatedAt).toBeDefined();
+      expect(isDateString(announcements.updatedAt)).toBe(true);
       expect(announcements?.title).toBeUndefined();
       expect(announcements?.state).toBe(AnnouncementStateValue.DRAFT);
       expect(announcements?.publishedAt).toBeUndefined();
       expect(announcements?.publishedBy).toBeUndefined();
       expect(announcements?.validFromDate).toBeUndefined();
       expect(announcements?.items).toBeDefined();
-      expect(Array.isArray(announcements!.items)).toBe(true);
+      expect(Array.isArray(announcements.items)).toBe(true);
       expect(announcements?.items.length).toBe(requestData.items!.length);
-      expect(announcements!.items.every(item => isGuid(item.id))).toBe(true);
-      expect(announcements!.items.every(item => item.content !== undefined)).toBe(true);
-      expect(announcements!.items.every(item => item.createdAt !== undefined)).toBe(true);
-      expect(announcements!.items.every(item => item.createdBy !== undefined)).toBe(true);
-      expect(announcements!.items.every(item => item.updatedAt !== undefined)).toBe(true);
-      expect(announcements!.items.every(item => item.updatedBy === undefined)).toBe(true);
-      expect(createMessage).toBe(events.announcements.announcementsCreated);
+      expect(announcements.items.every(item => isGuid(item.id))).toBe(true);
+      expect(announcements.items.every(item => item.content !== undefined)).toBe(true);
+      expect(announcements.items.every(item => item.createdAt !== undefined)).toBe(true);
+      expect(announcements.items.every(item => item.createdBy !== undefined)).toBe(true);
+      expect(announcements.items.every(item => item.updatedAt !== undefined)).toBe(true);
+      expect(announcements.items.every(item => item.updatedBy === undefined)).toBe(true);
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app.getServer())
-        .delete(announcementRoute.path + '/' + announcements!.id)
+        .delete(announcementRoute.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
-        .filter(([, eventHandler]) => ![testEventHandlers.onAnnouncementsCreated, testEventHandlers.onAnnouncementsDeleted].includes(eventHandler))
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onAnnouncementsCreated,
+              testEventHandlers.onAnnouncementsRetrieved,
+              testEventHandlers.onAnnouncementsDeleted,
+            ].includes(eventHandler),
+        )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onAnnouncementsRetrieved).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
     });
 
@@ -214,9 +284,8 @@ describe('POST /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcements1 }: CreateAnnouncementsResponseDto = body;
-      expect(announcements1).toBeDefined();
-      expect(announcements1!.id).toBeDefined();
+      const { data: announcements1Id }: CreateAnnouncementsResponseDto = body;
+      expect(announcements1Id).toBeDefined();
 
       requestData.validFromDate = generateRandomDate();
       createAnnouncementsResponse = await request(app.getServer())
@@ -227,26 +296,32 @@ describe('POST /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcements2 }: CreateAnnouncementsResponseDto = body;
-      expect(announcements2).toBeDefined();
-      expect(announcements2!.id).toBeDefined();
+      const { data: announcements2Id }: CreateAnnouncementsResponseDto = body;
+      expect(announcements2Id).toBeDefined();
 
       // cleanup
       let deleteAnnouncementsResponse = await request(app.getServer())
-        .delete(announcementRoute.path + '/' + announcements1!.id)
+        .delete(announcementRoute.path + '/' + announcements1Id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       deleteAnnouncementsResponse = await request(app.getServer())
-        .delete(announcementRoute.path + '/' + announcements2!.id)
+        .delete(announcementRoute.path + '/' + announcements2Id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
-        .filter(([, eventHandler]) => ![testEventHandlers.onAnnouncementsCreated, testEventHandlers.onAnnouncementsDeleted].includes(eventHandler))
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onAnnouncementsCreated,
+              testEventHandlers.onAnnouncementsRetrieved,
+              testEventHandlers.onAnnouncementsDeleted,
+            ].includes(eventHandler),
+        )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
@@ -264,41 +339,61 @@ describe('POST /announcements', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      const body = createAnnouncementsResponse.body;
+      let body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcements, message: createMessage }: CreateAnnouncementsResponseDto = body;
-      expect(announcements).toBeDefined();
-      expect(announcements!.id).toBeDefined();
-      expect(isGuid(announcements!.id)).toBe(true);
-      expect(announcements!.createdBy).toBeDefined();
-      expect(announcements!.createdAt).toBeDefined();
-      expect(isDateString(announcements!.createdAt)).toBe(true);
-      expect(announcements!.updatedAt).toBeDefined();
-      expect(isDateString(announcements!.updatedAt)).toBe(true);
-      expect(announcements?.title).toBe(requestData.title);
-      expect(announcements?.state).toBe(AnnouncementStateValue.DRAFT);
-      expect(announcements?.publishedAt).toBeUndefined();
-      expect(announcements?.publishedBy).toBeUndefined();
-      expect(announcements?.validFromDate).toBe(requestData.validFromDate!.toISOString());
-      expect(announcements?.items).toBeDefined();
-      expect(Array.isArray(announcements!.items)).toBe(true);
-      expect(announcements?.items.length).toBe(0);
+      const { data: announcementsId, message: createMessage }: CreateAnnouncementsResponseDto = body;
       expect(createMessage).toBe(events.announcements.announcementsCreated);
+      expect(announcementsId).toBeDefined();
+
+      const getAnnouncementsResponse = await request(app.getServer())
+        .get(announcementRoute.path + '/' + announcementsId)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(getAnnouncementsResponse.statusCode).toBe(200);
+      expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = getAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: announcements, message: getMessage }: GetAnnouncementsResponseDto = body;
+      expect(getMessage).toBe(events.announcements.announcementsRetrieved);
+      expect(announcements).toBeDefined();
+      expect(announcements.id).toBeDefined();
+      expect(isGuid(announcements.id)).toBe(true);
+      expect(announcements.createdBy).toBeDefined();
+      expect(announcements.createdAt).toBeDefined();
+      expect(isDateString(announcements.createdAt)).toBe(true);
+      expect(announcements.updatedAt).toBeDefined();
+      expect(isDateString(announcements.updatedAt)).toBe(true);
+      expect(announcements.title).toBe(requestData.title);
+      expect(announcements.state).toBe(AnnouncementStateValue.DRAFT);
+      expect(announcements.publishedAt).toBeUndefined();
+      expect(announcements.publishedBy).toBeUndefined();
+      expect(new Date(announcements.validFromDate!)).toStrictEqual(requestData.validFromDate);
+      expect(announcements.items).toBeDefined();
+      expect(Array.isArray(announcements.items)).toBe(true);
+      expect(announcements?.items.length).toBe(0);
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app.getServer())
-        .delete(announcementRoute.path + '/' + announcements!.id)
+        .delete(announcementRoute.path + '/' + announcements.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
-        .filter(([, eventHandler]) => ![testEventHandlers.onAnnouncementsCreated, testEventHandlers.onAnnouncementsDeleted].includes(eventHandler))
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onAnnouncementsCreated,
+              testEventHandlers.onAnnouncementsRetrieved,
+              testEventHandlers.onAnnouncementsDeleted,
+            ].includes(eventHandler),
+        )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onAnnouncementsRetrieved).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
     });
   });
@@ -310,7 +405,7 @@ describe('POST /announcements', () => {
 
     test('when title is too long', async () => {
       const requestData = generateValidAnnouncements();
-      requestData.title = 'a'.repeat(256);
+      requestData.title = 'a'.repeat(AnnouncementsTitleMaxLength + 1);
 
       const createAnnouncementsResponse = await request(app.getServer())
         .post(announcementRoute.path)
@@ -318,7 +413,7 @@ describe('POST /announcements', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(400);
       const errors = (createAnnouncementsResponse.body.data.message as string)?.split(',');
-      expect(errors.filter(x => !x.includes('Title_Too_Long')).length).toBe(0);
+      expect(errors.filter(x => x !== errorKeys.announcements.Title_Too_Long).length).toBe(0);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -328,7 +423,7 @@ describe('POST /announcements', () => {
 
     test('when item content is too long', async () => {
       const requestData = generateValidAnnouncements();
-      requestData.items![0].content = 'a'.repeat(8001);
+      requestData.items![0].content = 'a'.repeat(AnnouncementItemContentMaxLength + 1);
 
       const createAnnouncementsResponse = await request(app.getServer())
         .post(announcementRoute.path)
@@ -336,7 +431,7 @@ describe('POST /announcements', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(400);
       const errors = (createAnnouncementsResponse.body.data.message as string)?.split(',');
-      expect(errors.filter(x => !x.includes('Item_Content_Too_Long')).length).toBe(0);
+      expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Too_Long).length).toBe(0);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -354,7 +449,7 @@ describe('POST /announcements', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(400);
       const errors = (createAnnouncementsResponse.body.data.message as string)?.split(',');
-      expect(errors.filter(x => !x.includes('Item_Content_Is_Required')).length).toBe(0);
+      expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Is_Required).length).toBe(0);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -372,7 +467,7 @@ describe('POST /announcements', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(400);
       const errors = (createAnnouncementsResponse.body.data.message as string)?.split(',');
-      expect(errors.filter(x => !x.includes('Item_Content_Is_Required')).length).toBe(0);
+      expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Is_Required).length).toBe(0);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -390,16 +485,33 @@ describe('POST /announcements', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(400);
       const errors = (createAnnouncementsResponse.body.data.message as string)?.split(',');
-      expect(errors.filter(x => !x.includes('Item_Content_Is_Required')).length).toBe(0);
+      expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Is_Required).length).toBe(0);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
         expect(eventHandler).not.toHaveBeenCalled();
       });
     });
+  });
+
+  describe.each([
+    new Date('2024-03-24'),
+    new Date('2024-03-25'),
+    new Date('2024-03-26'),
+    new Date('2024-03-27'),
+
+    new Date('2024-10-25'),
+    new Date('2024-10-26'),
+    new Date('2024-10-27'),
+    new Date('2024-10-28'),
+  ])('POST should respond with a status code of 400 for date %o', date => {
+    beforeEach(async () => {
+      jest.resetAllMocks();
+    });
 
     test('when creating many unpublished announcement with same validFromDate', async () => {
       const requestData = generateValidAnnouncements();
+      requestData.validFromDate = date;
 
       let createAnnouncementsResponse = await request(app.getServer())
         .post(announcementRoute.path)
@@ -409,9 +521,8 @@ describe('POST /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcements }: CreateAnnouncementsResponseDto = body;
-      expect(announcements).toBeDefined();
-      expect(announcements!.id).toBeDefined();
+      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
+      expect(announcementsId).toBeDefined();
 
       createAnnouncementsResponse = await request(app.getServer())
         .post(announcementRoute.path)
@@ -419,11 +530,11 @@ describe('POST /announcements', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(400);
       const errors = (createAnnouncementsResponse.body.data.message as string)?.split(',');
-      expect(errors.filter(x => !x.includes('Announcements_With_Given_Date_Already_Exists')).length).toBe(0);
+      expect(errors.filter(x => x !== errorKeys.announcements.Announcements_With_Given_ValidFromDate_Already_Exists).length).toBe(0);
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app.getServer())
-        .delete(announcementRoute.path + '/' + announcements!.id)
+        .delete(announcementRoute.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);

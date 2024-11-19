@@ -12,6 +12,8 @@
     "BtnDelete": "Usuń",
     "BtnClose": "Zamknij",
     "BtnEdit": "Edytuj",
+    "BtnYes": "Tak",
+    "BtnNo": "Nie",
     "Location": "Lokalizacja"
   },
   "Header": {
@@ -73,12 +75,25 @@
       "ValidFromPlaceholder": "Wprowadź datę",
       "ValidFromHint": "Data od której ogłoszenia będą obowiązywać",
       "Announcements": "Ogłoszenia",
-      "NoAnnouncements": "Brak ogłoszeń, kliknij przycisk \"Dodaj ogłoszenie\" aby dodać nowe ogłoszenie.",
+      "NoAnnouncements": "Brak ogłoszeń, kliknij poniższy przycisk \"Dodaj sekcję\".",
       "AddItem": "Dodaj sekcję",
       "SectionNo": "Sekcja {no}",
       "NoSectionContent": "Brak treści, stuknij dwukrotnie aby edytować",
       "AnnouncementPlaceholder": "Treść ogłoszenia",
+      "Errors": {
+        "AtLeastOneItemIsRequired": "Co najmniej jedna sekcja jest wymagana.",
+        "ContentIsRequired": "Treść ogłoszenia jest wymagana. Każda z sekcji musi być wypełniona, usuń puste sekcje.",
+        "ContentIsTooLong": "Treść ogłoszenia jest zbyt długa. Maksymalnie {maxlength} znaków."
+      },
+      "DeleteConfirmText": "Czy na pewno chcesz usunąć sekcję?",
       "CheckProvidedData": "Sprawdź poprawność wprowadzonych danych. Data rozpoczęcia obowiązywania nie może być wcześniejsza niż dzisiejsza. Każda z sekcji musi być wypełniona, usuń puste sekcje."
+    },
+    "List": {
+      "Title": "Lista ogłoszeń",
+      "GridColumns": {
+        "ValidFrom": "Ważne od",
+        "Content": "Treść"
+      }
     }
   },
   "News": {
@@ -132,13 +147,13 @@
     "ChangePasswordNotPossible": "Nie można zmienić hasła",
     "InvalidToken": "Nieprawidłowy token resetujący hasło!",
     "TryAgain": "Spróbuj ponownie raz jeszcze.",
-    "InvalidTokenHint": "Link do resetu hasła może być użyty tylko raz i jest ważny przez godzinę. Po tym czasie traci ważność i należy wysłać kolejną prośbę o zmianę hasła."
+    "InvalidTokenHint": "Link do resetu hasła może być użyty tylko raz i jest ważny przez godzinę. Po tym czasie traci ważność i należy wysłać kolejną prośbę o zmianę hasła.",
+    "HidePasswordAriaLabel": "Ukryj hasło"
   },
   "Management": {
     "Title": "Zarządzanie",
     "UserList": {
       "Title": "Użytkownicy",
-      "PaginationAriaLabel": "Wybierz stronę",
       "GridColumns": {
         "FirstName": "Imię",
         "LastName": "Nazwisko",
@@ -171,7 +186,12 @@
     "Bad_Request": "Wystąpił błąd podczas przetwarzania żądania. Spróbuj ponownie później.",
     "Wrong_Authentication_Token": "Nieprawidłowy token autoryzacyjny. Zaloguj się ponownie.",
     "Invalid_Login_Or_Password": "Wprowadzono nieprawidłowe dane logowania.",
-    "Session_Expired": "Twoja sesja wygasła. Zaloguj się ponownie."
+    "Session_Expired": "Twoja sesja wygasła. Zaloguj się ponownie.",
+    "Announcements_With_Given_ValidFromDate_Already_Exists": "Istnieją już ogłoszenia z wprowadzoną datą rozpoczęcia obowiązywania."
+  },
+  "Grid": {
+    "ActionsRowAriaLabel": "Akcje",
+    "ExpandBtnAriaLabel": "Rozwiń"
   },
   "Paginator": {
     "ItemsPerPageLabel": "Ilość elementów na stronie",
@@ -180,9 +200,16 @@
     "FirstPageLabel": "Pierwsza strona",
     "LastPageLabel": "Ostatnia strona",
     "RangePageLabel1": "0 z {length}",
-    "RangePageLabel2": "{startIndex} - {endIndex} z {length}"
+    "RangePageLabel2": "{startIndex} - {endIndex} z {length}",
+    "AriaLabel": "Wybierz stronę"
   },
   "WysiwygEditor": {
     "Placeholder": "Wprowadź treść"
+  },
+  "Dialog": {
+    "CloseBtnAriaLabel": "Zamknij okno"
+  },
+  "ConfirmDialog": {
+    "DefaultTitle": "Uwaga"
   }
 }

@@ -14,11 +14,9 @@ import { AnnouncementItemBase } from '../announcement-item.base';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AnnouncementItemDesktopComponent extends AnnouncementItemBase {
-  public constructor(private _dialogService: DialogService) {
-    super();
+  public constructor(dialogService: DialogService) {
+    super(dialogService);
   }
 
   public override editItem(): void {}
-
-  public override deleteItem(): void {}
 }

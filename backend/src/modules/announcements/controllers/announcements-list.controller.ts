@@ -1,24 +1,29 @@
 import { IPageData, IRequestWithIdentity, ISortData } from '@interfaces';
+import {
+  AnnouncementsGridPageDto,
+  AnnouncementsListService,
+  GetAnnouncementListReqDto,
+  GetAnnouncementListResponseDto,
+} from '@modules/announcements';
 import { BaseController } from '@modules/common';
-import { GetUserListReqDto, GetUserListResponseDto, UserListService, UsersGridPageDto } from '@modules/users';
 import { toNumber } from '@utils';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
-import { UserListViewColumns } from '../entities/vUser.entity';
+import { AnnouncementListViewColumns } from '../entities/vAnnouncement.entity';
 
-export class UserListController extends BaseController {
-  private readonly _service: UserListService;
+export class AnnouncementsListController extends BaseController {
+  private readonly _service: AnnouncementsListService;
 
   public constructor() {
     super();
-    this._service = Container.get(UserListService);
+    this._service = Container.get(AnnouncementsListService);
   }
 
   public get = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const reqDto = new GetUserListReqDto(this.getPageData(req), this.getSortData(req), this.getCurrentUserId(req));
-      const result: UsersGridPageDto = await this._service.get(reqDto);
-      res.status(200).json(new GetUserListResponseDto(result));
+      const reqDto = new GetAnnouncementListReqDto(this.getPageData(req), this.getSortData(req), this.getCurrentUserId(req));
+      const result: AnnouncementsGridPageDto = await this._service.get(reqDto);
+      res.status(200).json(new GetAnnouncementListResponseDto(result));
     } catch (error) {
       next(error);
     }
@@ -33,7 +38,7 @@ export class UserListController extends BaseController {
 
   private getSortData(req: IRequestWithIdentity): ISortData {
     return {
-      column: req?.query?.column?.toString() ?? UserListViewColumns.firstName!,
+      column: req?.query?.column?.toString() ?? AnnouncementListViewColumns.validFromDate!,
       direction: req?.query?.direction?.toString() ?? 'asc',
     } satisfies ISortData;
   }

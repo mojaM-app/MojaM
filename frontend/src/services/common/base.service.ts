@@ -25,6 +25,10 @@ export class BaseService {
         `${environment.backendUrl}/${this.API_ROUTES.announcements.path}/current`,
       create: (): string => `${environment.backendUrl}/${this.API_ROUTES.announcements.path}`,
     },
+    announcementsList: {
+      path: 'announcements-list',
+      get: (): string => `${environment.backendUrl}/${this.API_ROUTES.announcementsList.path}`,
+    },
     calendar: {
       path: 'calendar',
       getEvents: (): string => `${environment.backendUrl}/${this.API_ROUTES.calendar.path}/events`,

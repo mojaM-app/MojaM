@@ -1,5 +1,10 @@
 import { events } from '@events';
-import { announcementToICurrentAnnouncements, CurrentAnnouncementsRepository, CurrentAnnouncementsRetrievedEvent, ICurrentAnnouncementsDto } from '@modules/announcements';
+import {
+  announcementToICurrentAnnouncements,
+  CurrentAnnouncementsRepository,
+  CurrentAnnouncementsRetrievedEvent,
+  ICurrentAnnouncementsDto,
+} from '@modules/announcements';
 import { BaseService } from '@modules/common';
 import { isNullOrUndefined } from '@utils';
 import Container, { Service } from 'typedi';

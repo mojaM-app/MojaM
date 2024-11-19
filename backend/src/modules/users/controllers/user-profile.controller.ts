@@ -6,17 +6,17 @@ import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
 
 export class UserProfileController extends BaseController {
-  private readonly _userProfileService: UsersProfileService;
+  private readonly _service: UsersProfileService;
 
   public constructor() {
     super();
-    this._userProfileService = Container.get(UsersProfileService);
+    this._service = Container.get(UsersProfileService);
   }
 
   public get = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const reqDto = new GetUserProfileReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
-      const result: IUserProfileDto | null = await this._userProfileService.get(reqDto);
+      const result: IUserProfileDto | null = await this._service.get(reqDto);
       res.status(200).json(new GetUserProfileResponseDto(result));
     } catch (error) {
       next(error);

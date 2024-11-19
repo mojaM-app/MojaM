@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
+import { errorKeys } from '@exceptions';
 import { registerTestEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { AuthRoute, GetUserInfoBeforeLogInResponseDto, LoginDto, UserInfoBeforeLogInResultDto, UserTryingToLogInDto } from '@modules/auth';
@@ -380,7 +381,7 @@ describe('POST /auth/get-user-who-logs-in', () => {
           .send({ email } satisfies UserTryingToLogInDto);
         expect(response.statusCode).toBe(400);
         const errors = (response.body.data.message as string)?.split(',');
-        expect(errors.filter(x => !x.includes('Invalid_Email')).length).toBe(0);
+        expect(errors.filter(x => x !== errorKeys.users.Invalid_Email).length).toBe(0);
       }
     });
   });

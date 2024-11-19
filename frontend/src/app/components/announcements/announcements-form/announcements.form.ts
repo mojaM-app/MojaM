@@ -8,8 +8,6 @@ export const AnnouncementItemFormControlNames: { [K in keyof IAnnouncementsItemF
   content: 'content',
 } as const;
 
-
-
 export interface IAnnouncementsForm {
   validFromDate: FormControl<Date | undefined>;
   items: FormArray<FormGroup<IAnnouncementsItemForm>>;

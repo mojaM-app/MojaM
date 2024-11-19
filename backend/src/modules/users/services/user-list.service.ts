@@ -7,21 +7,21 @@ import { vUser } from '../entities/vUser.entity';
 
 @Service()
 export class UserListService extends BaseService {
-  private readonly _userListRepository: UserListRepository;
+  private readonly _repository: UserListRepository;
 
   public constructor() {
     super();
-    this._userListRepository = Container.get(UserListRepository);
+    this._repository = Container.get(UserListRepository);
   }
 
   public async get(reqDto: GetUserListReqDto): Promise<UsersGridPageDto> {
-    const usersWithTotal: IGridPageResponseDto<vUser> = await this._userListRepository.get(reqDto.page, reqDto.sort);
+    const recordsWithTotal: IGridPageResponseDto<vUser> = await this._repository.get(reqDto.page, reqDto.sort);
 
     this._eventDispatcher.dispatch(events.users.userListRetrieved, new UserListRetrievedEvent(reqDto.currentUserId));
 
     return {
-      items: usersWithTotal.items.map(user => vUserToIUserGridItemDto(user)),
-      totalCount: usersWithTotal.totalCount,
+      items: recordsWithTotal.items.map(user => vUserToIUserGridItemDto(user)),
+      totalCount: recordsWithTotal.totalCount,
     } satisfies UsersGridPageDto;
   }
 }

@@ -117,7 +117,10 @@ describe('POST /user', () => {
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(400);
-      const errors = (createUserResponse.body.data.message as string)?.split(',');
+      const body = createUserResponse.body;
+      expect(typeof body).toBe('object');
+      const { message: createUserResponseMessage } = body.data;
+      const errors = (createUserResponseMessage as string)?.split(',');
       expect(errors.filter(x => !x.includes('Password')).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -133,7 +136,10 @@ describe('POST /user', () => {
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(400);
-      const errors = (createUserResponse.body.data.message as string)?.split(',');
+      const body = createUserResponse.body;
+      expect(typeof body).toBe('object');
+      const { message: createUserResponseMessage } = body.data;
+      const errors = (createUserResponseMessage as string)?.split(',');
       expect(errors.filter(x => !x.includes('Email')).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -149,7 +155,10 @@ describe('POST /user', () => {
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(400);
-      const errors = (createUserResponse.body.data.message as string)?.split(',');
+      const body = createUserResponse.body;
+      expect(typeof body).toBe('object');
+      const { message: createUserResponseMessage } = body.data;
+      const errors = (createUserResponseMessage as string)?.split(',');
       expect(errors.filter(x => !x.includes('Phone')).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -175,7 +184,9 @@ describe('POST /user', () => {
       expect(createUserResponse2.statusCode).toBe(400);
       const body = createUserResponse2.body;
       expect(typeof body).toBe('object');
-      expect(body.data.message).toBe(errorKeys.users.User_Already_Exists);
+      const { message: createUserResponse2Message, args: createUserResponse2Args } = body.data;
+      expect(createUserResponse2Message).toBe(errorKeys.users.User_Already_Exists);
+      expect(createUserResponse2Args).toEqual({ email: requestData.email, phone: requestData.phone });
 
       const deleteUserResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + user.id)
@@ -211,7 +222,9 @@ describe('POST /user', () => {
       expect(createUserResponse2.statusCode).toBe(400);
       const body = createUserResponse2.body;
       expect(typeof body).toBe('object');
-      expect(body.data.message).toBe(errorKeys.users.User_Already_Exists);
+      const { message: createUserResponse2Message, args: createUserResponse2Args } = body.data;
+      expect(createUserResponse2Message).toBe(errorKeys.users.User_Already_Exists);
+      expect(createUserResponse2Args).toEqual({ email: requestData.email, phone: requestData.phone });
 
       const deleteUserResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + user.id)

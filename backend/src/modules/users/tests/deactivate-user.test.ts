@@ -363,10 +363,9 @@ describe('POST /user/:id/deactivate', () => {
       const body = deactivateResponse.body;
       expect(typeof body).toBe('object');
       const data = body.data;
-      const { message: deactivateMessage, args: deactivateArgs }: { message: string; args: string[] } = data;
+      const { message: deactivateMessage, args: deactivateArgs } = data;
       expect(deactivateMessage).toBe(errorKeys.users.User_Does_Not_Exist);
-      expect(deactivateArgs.length).toBe(1);
-      expect(deactivateArgs[0]).toBe(userId);
+      expect(deactivateArgs).toEqual({ id: userId });
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {

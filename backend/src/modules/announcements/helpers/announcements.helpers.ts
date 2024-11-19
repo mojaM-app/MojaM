@@ -1,5 +1,6 @@
-import { IAnnouncementsDto } from '@modules/announcements';
+import { IAnnouncementGridItemDto, IAnnouncementsDto } from '@modules/announcements';
 import { Announcement } from '../entities/announcement.entity';
+import { vAnnouncement } from '../entities/vAnnouncement.entity';
 
 export function announcementToIAnnouncements(announcement: Announcement): IAnnouncementsDto {
   return {
@@ -21,4 +22,19 @@ export function announcementToIAnnouncements(announcement: Announcement): IAnnou
       updatedAt: item.updatedAt ?? undefined,
     })),
   } satisfies IAnnouncementsDto;
+}
+
+export function vAnnouncementToIAnnouncementGridItemDto(announcement: vAnnouncement): IAnnouncementGridItemDto {
+  return {
+    id: announcement.id,
+    title: announcement.title,
+    state: announcement.state,
+    validFromDate: announcement.validFromDate,
+    createdAt: announcement.createdAt,
+    createdBy: announcement.createdBy,
+    updatedAt: announcement.updatedAt,
+    publishedAt: announcement.publishedAt,
+    publishedBy: announcement.publishedBy,
+    itemsCount: announcement.itemsCount,
+  } satisfies IAnnouncementGridItemDto;
 }

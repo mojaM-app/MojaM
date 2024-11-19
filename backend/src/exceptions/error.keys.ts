@@ -27,10 +27,10 @@ export const errorKeys = {
     Invalid_User_Id: 'Invalid_User_Id',
   },
   announcements: {
-    Announcements_With_Given_Date_Already_Exists: 'Announcements_With_Given_Date_Already_Exists',
+    Announcements_With_Given_ValidFromDate_Already_Exists: 'Announcements_With_Given_ValidFromDate_Already_Exists',
     Announcements_Does_Not_Exist: 'Announcements_Does_Not_Exist',
-    Announcements_Title_Too_Long: 'Announcements_Title_Too_Long',
-    Announcements_Item_Content_Is_Required: 'Announcements_Item_Content_Is_Required',
-    Announcements_Item_Content_Too_Long: 'Announcements_Item_Content_Too_Long',
+    Title_Too_Long: 'Announcements_Title_Too_Long',
+    Item_Content_Is_Required: 'Announcements_Item_Content_Is_Required',
+    Item_Content_Too_Long: 'Announcements_Item_Content_Too_Long',
   },
 };

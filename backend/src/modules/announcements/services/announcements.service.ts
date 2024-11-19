@@ -6,10 +6,12 @@ import {
   AnnouncementsDeletedEvent,
   AnnouncementsPublishedEvent,
   AnnouncementsRepository,
+  AnnouncementsRetrievedEvent,
   AnnouncementStateValue,
   announcementToIAnnouncements,
   CreateAnnouncementsReqDto,
   DeleteAnnouncementsReqDto,
+  GetAnnouncementsReqDto,
   IAnnouncementsDto,
   PublishAnnouncementsReqDto,
 } from '@modules/announcements';
@@ -27,6 +29,21 @@ export class AnnouncementsService extends BaseService {
     this._announcementsRepository = Container.get(AnnouncementsRepository);
   }
 
+  public async get(reqDto: GetAnnouncementsReqDto): Promise<IAnnouncementsDto | null> {
+    const announcements = await this._announcementsRepository.getByUuid(reqDto.idGuid);
+
+    if (isNullOrUndefined(announcements)) {
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcements_Does_Not_Exist, {
+        id: reqDto.idGuid,
+      });
+    }
+    const dto = announcementToIAnnouncements(announcements!);
+
+    this._eventDispatcher.dispatch(events.announcements.announcementsRetrieved, new AnnouncementsRetrievedEvent(dto, reqDto.currentUserId!));
+
+    return dto;
+  }
+
   public async create(reqDto: CreateAnnouncementsReqDto): Promise<IAnnouncementsDto | null> {
     if (isNullOrUndefined(reqDto.announcements)) {
       return null;
@@ -37,17 +54,19 @@ export class AnnouncementsService extends BaseService {
     if (isDate(announcementsModel.validFromDate)) {
       const existAnnouncementWithSameDate = await this._announcementsRepository.checkIfExistWithDate(announcementsModel.validFromDate);
       if (existAnnouncementWithSameDate) {
-        throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcements_With_Given_Date_Already_Exists, [
-          reqDto.announcements.validFromDate!,
-        ]);
+        throw new TranslatableHttpException(
+          StatusCode.ClientErrorBadRequest,
+          errorKeys.announcements.Announcements_With_Given_ValidFromDate_Already_Exists,
+          { validFromDate: reqDto.announcements.validFromDate },
+        );
       }
     }
 
     const { id: announcementsId } = await this._announcementsRepository.create(reqDto);
     const announcements = await this._announcementsRepository.get(announcementsId);
-    const dto = announcements === null ? null : announcementToIAnnouncements(announcements);
+    const dto = announcementToIAnnouncements(announcements!);
 
-    this._eventDispatcher.dispatch(events.announcements.announcementsCreated, new AnnouncementsCreatedEvent(dto, reqDto.currentUserId));
+    this._eventDispatcher.dispatch(events.announcements.announcementsCreated, new AnnouncementsCreatedEvent(dto, reqDto.currentUserId!));
 
     return dto;
   }
@@ -56,7 +75,9 @@ export class AnnouncementsService extends BaseService {
     const announcements = await this._announcementsRepository.getByUuid(reqDto.idGuid);
 
     if (isNullOrUndefined(announcements)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcements_Does_Not_Exist, [reqDto.idGuid!]);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcements_Does_Not_Exist, {
+        id: reqDto.idGuid,
+      });
     }
 
     const relatedData: string[] = await this._announcementsRepository.checkIfCanBeDeleted(announcements!.id);
@@ -65,13 +86,19 @@ export class AnnouncementsService extends BaseService {
       throw new TranslatableHttpException(
         StatusCode.ClientErrorBadRequest,
         errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted,
-        [announcements!.uuid].concat(relatedData),
+        {
+          id: announcements?.uuid,
+          relatedData,
+        },
       );
     }
 
     await this._announcementsRepository.delete(announcements!, reqDto);
 
-    this._eventDispatcher.dispatch(events.announcements.announcementsDeleted, new AnnouncementsDeletedEvent(announcementToIAnnouncements(announcements!), reqDto.currentUserId));
+    this._eventDispatcher.dispatch(
+      events.announcements.announcementsDeleted,
+      new AnnouncementsDeletedEvent(announcementToIAnnouncements(announcements!), reqDto.currentUserId!),
+    );
 
     return announcements!.uuid;
   }
@@ -80,7 +107,9 @@ export class AnnouncementsService extends BaseService {
     const announcements = await this._announcementsRepository.getByUuid(reqDto.idGuid);
 
     if (isNullOrUndefined(announcements)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcements_Does_Not_Exist, [reqDto.idGuid!]);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcements_Does_Not_Exist, {
+        id: reqDto.idGuid,
+      });
     }
 
     if (announcements!.state === AnnouncementStateValue.PUBLISHED) {
@@ -89,7 +118,10 @@ export class AnnouncementsService extends BaseService {
 
     const result = await this._announcementsRepository.publish(announcements!, reqDto);
 
-    this._eventDispatcher.dispatch(events.announcements.announcementsPublished, new AnnouncementsPublishedEvent(announcementToIAnnouncements(announcements!), reqDto.currentUserId));
+    this._eventDispatcher.dispatch(
+      events.announcements.announcementsPublished,
+      new AnnouncementsPublishedEvent(announcementToIAnnouncements(announcements!), reqDto.currentUserId!),
+    );
 
     return result;
   }

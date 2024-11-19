@@ -14,6 +14,6 @@ module.exports = {
   bail: 1,
   maxConcurrency: 1,
   openHandlesTimeout: 0,
-  testTimeout: 30000,
+  testTimeout: 30_000,
   coveragePathIgnorePatterns: ['<rootDir>/src/dataBase/pascal-naming.strategy.ts', '<rootDir>/src/dataBase/migrations/'],
 };

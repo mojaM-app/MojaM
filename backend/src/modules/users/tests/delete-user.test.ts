@@ -371,10 +371,9 @@ describe('DELETE /user', () => {
       const body = deleteResponse.body;
       expect(typeof body).toBe('object');
       const data = body.data;
-      const { message: deleteMessage, args: deleteArgs }: { message: string; args: string[] } = data;
+      const { message: deleteMessage, args: deleteArgs } = data;
       expect(deleteMessage).toBe(errorKeys.users.User_Does_Not_Exist);
-      expect(deleteArgs.length).toBe(1);
-      expect(deleteArgs[0]).toBe(userId);
+      expect(deleteArgs).toEqual({ id: userId });
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -451,7 +450,7 @@ describe('DELETE /user', () => {
       const data = body.data;
       const { message: deleteUserMessage, args: deleteUserArgs }: { message: string; args: string[] } = data;
       expect(deleteUserMessage).toBe(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted);
-      expect(deleteUserArgs).toEqual([user1.id, relatedDataNames.SystemPermission_AssignedBy]);
+      expect(deleteUserArgs).toEqual({ id: user1.id, relatedData: [relatedDataNames.SystemPermission_AssignedBy] });
 
       path = permissionsRoute.path + '/' + user1.id;
       let deleteAllPermissionsResponse = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);

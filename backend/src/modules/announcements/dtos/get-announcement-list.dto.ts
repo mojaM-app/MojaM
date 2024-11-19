@@ -34,6 +34,6 @@ export class GetAnnouncementListResponseDto implements IResponse<AnnouncementsGr
 
   public constructor(data: AnnouncementsGridPageDto) {
     this.data = data;
-    this.message = events.announcements.announcementListRetrieved;
+    this.message = events.announcements.announcementsListRetrieved;
   }
 }

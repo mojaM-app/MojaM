@@ -1,9 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
+import { errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
-import { AuthRoute, LoginDto, RequestResetPasswordResponseDto, ResetPasswordDto, ResetPasswordResponseDto, UserPasswordChangedEvent, UserTryingToLogInDto } from '@modules/auth';
+import {
+  AuthRoute,
+  LoginDto,
+  RequestResetPasswordResponseDto,
+  ResetPasswordDto,
+  ResetPasswordResponseDto,
+  UserPasswordChangedEvent,
+  UserTryingToLogInDto,
+} from '@modules/auth';
 import { EmailService } from '@modules/notifications';
 import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, IUserDto, IUserProfileDto, UserRoute } from '@modules/users';
@@ -328,7 +337,7 @@ describe('POST /auth/request-reset-password', () => {
           .send({ email } satisfies UserTryingToLogInDto);
         expect(response.statusCode).toBe(400);
         const errors = (response.body.data.message as string)?.split(',');
-        expect(errors.filter(x => !x.includes('Invalid_Email')).length).toBe(0);
+        expect(errors.filter(x => x !== errorKeys.users.Invalid_Email).length).toBe(0);
 
         expect(mockSendMail).toHaveBeenCalledTimes(0);
       }
@@ -482,7 +491,9 @@ describe('POST /auth/request-reset-password', () => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onUserPasswordChanged).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserPasswordChanged).toHaveBeenCalledWith(new UserPasswordChangedEvent({ id: uuid, phone, email } satisfies IUserDto));
+      expect(testEventHandlers.onUserPasswordChanged).toHaveBeenCalledWith(
+        new UserPasswordChangedEvent({ id: uuid, phone, email } satisfies IUserDto),
+      );
     });
   });
 

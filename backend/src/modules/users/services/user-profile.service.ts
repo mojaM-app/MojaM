@@ -9,18 +9,18 @@ import { Container, Service } from 'typedi';
 
 @Service()
 export class UsersProfileService extends BaseService {
-  private readonly _userProfileRepository: UserProfileRepository;
+  private readonly _repository: UserProfileRepository;
 
   public constructor() {
     super();
-    this._userProfileRepository = Container.get(UserProfileRepository);
+    this._repository = Container.get(UserProfileRepository);
   }
 
   public async get(reqDto: GetUserProfileReqDto): Promise<IUserProfileDto | null> {
-    const user = await this._userProfileRepository.getByUuid(reqDto.userGuid);
+    const user = await this._repository.getByUuid(reqDto.userGuid);
 
     if (isNullOrUndefined(user)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.User_Does_Not_Exist, [reqDto.userGuid!]);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.User_Does_Not_Exist, { id: reqDto.userGuid });
     }
 
     const userProfile = userToIUserProfile(user!);

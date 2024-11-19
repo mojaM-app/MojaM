@@ -1,6 +1,7 @@
 import { DataSource, DataSourceOptions, Repository } from 'typeorm';
 import { AnnouncementItem } from '../modules/announcements/entities/announcement-item.entity';
 import { Announcement } from '../modules/announcements/entities/announcement.entity';
+import { vAnnouncement } from '../modules/announcements/entities/vAnnouncement.entity';
 import { UserResetPasswordToken } from '../modules/auth/entities/user-reset-password-tokens.entity';
 import { SystemPermission } from '../modules/permissions/entities/system-permission.entity';
 import { UserSystemPermission } from '../modules/users/entities/user-system-permission.entity';
@@ -34,6 +35,10 @@ export class DbContext extends DataSource {
 
   public get announcementItems(): Repository<AnnouncementItem> {
     return this.getRepository(AnnouncementItem);
+  }
+
+  public get vAnnouncements(): Repository<vAnnouncement> {
+    return this.getRepository(vAnnouncement);
   }
 
   public constructor(options: DataSourceOptions) {

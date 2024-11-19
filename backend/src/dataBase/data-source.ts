@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { DATABASE_HOST, DATABASE_MIGRATIONS_PATH, DATABASE_NAME, DATABASE_PASSWORD, DATABASE_PORT, DATABASE_USERNAME } from '../config/index';
 import { AnnouncementItem } from '../modules/announcements/entities/announcement-item.entity';
 import { Announcement } from '../modules/announcements/entities/announcement.entity';
+import { vAnnouncement } from '../modules/announcements/entities/vAnnouncement.entity';
 import { UserResetPasswordToken } from '../modules/auth/entities/user-reset-password-tokens.entity';
 import { SystemPermission } from '../modules/permissions/entities/system-permission.entity';
 import { UserSystemPermission } from '../modules/users/entities/user-system-permission.entity';
@@ -20,7 +21,7 @@ export const AppDataSource = new DbContext({
   database: DATABASE_NAME,
   synchronize: false,
   logging: true,
-  entities: [User, SystemPermission, UserSystemPermission, UserResetPasswordToken, vUser, Announcement, AnnouncementItem],
+  entities: [User, SystemPermission, UserSystemPermission, UserResetPasswordToken, vUser, Announcement, AnnouncementItem, vAnnouncement],
   subscribers: [],
   namingStrategy: new TitleCaseNamingStrategy(),
   migrationsTableName: '_migrations_history',

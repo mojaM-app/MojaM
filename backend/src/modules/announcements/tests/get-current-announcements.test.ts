@@ -64,7 +64,7 @@ describe('GET /announcements/current', () => {
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
-      const { data: announcements }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
+      const { data: announcementsId }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
 
       const response = await request(app.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
       expect(response.statusCode).toBe(200);
@@ -75,7 +75,7 @@ describe('GET /announcements/current', () => {
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app.getServer())
-        .delete(announcementRoute.path + '/' + announcements!.id)
+        .delete(announcementRoute.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
@@ -99,7 +99,7 @@ describe('GET /announcements/current', () => {
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
-      const { data: announcements }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
+      const { data: announcementsId }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
 
       const response = await request(app.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
       expect(response.statusCode).toBe(200);
@@ -110,7 +110,7 @@ describe('GET /announcements/current', () => {
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app.getServer())
-        .delete(announcementRoute.path + '/' + announcements!.id)
+        .delete(announcementRoute.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
@@ -134,10 +134,10 @@ describe('GET /announcements/current', () => {
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
-      const { data: announcements }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
+      const { data: announcementsId }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
 
       const publishAnnouncementsResponse = await request(app.getServer())
-        .post(announcementRoute.path + '/' + announcements!.id + '/' + announcementRoute.publishPath)
+        .post(announcementRoute.path + '/' + announcementsId + '/' + announcementRoute.publishPath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(publishAnnouncementsResponse.statusCode).toBe(200);
@@ -153,7 +153,7 @@ describe('GET /announcements/current', () => {
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app.getServer())
-        .delete(announcementRoute.path + '/' + announcements!.id)
+        .delete(announcementRoute.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
@@ -194,10 +194,10 @@ describe('GET /announcements/current', () => {
         .send(requestData1)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncements1Response.statusCode).toBe(201);
-      const { data: createdAnnouncements1 }: CreateAnnouncementsResponseDto = createAnnouncements1Response.body;
+      const { data: createdAnnouncements1Id }: CreateAnnouncementsResponseDto = createAnnouncements1Response.body;
 
       const publishAnnouncements1Response = await request(app.getServer())
-        .post(announcementRoute.path + '/' + createdAnnouncements1!.id + '/' + announcementRoute.publishPath)
+        .post(announcementRoute.path + '/' + createdAnnouncements1Id + '/' + announcementRoute.publishPath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(publishAnnouncements1Response.statusCode).toBe(200);
@@ -212,7 +212,7 @@ describe('GET /announcements/current', () => {
         .send(requestData2)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncements2Response.statusCode).toBe(201);
-      const { data: createdAnnouncements2 }: CreateAnnouncementsResponseDto = createAnnouncements2Response.body;
+      const { data: createdAnnouncements2Id }: CreateAnnouncementsResponseDto = createAnnouncements2Response.body;
 
       const response = await request(app.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
       expect(response.statusCode).toBe(200);
@@ -223,7 +223,7 @@ describe('GET /announcements/current', () => {
       expect(currentAnnouncements).toBeDefined();
       expect(currentAnnouncements!.id).toBeDefined();
       expect(isGuid(currentAnnouncements!.id)).toBe(true);
-      expect(currentAnnouncements!.id).toBe(createdAnnouncements1!.id);
+      expect(currentAnnouncements!.id).toBe(createdAnnouncements1Id);
       expect(currentAnnouncements!.createdBy).toBeDefined();
       expect(currentAnnouncements!.createdAt).toBeDefined();
       expect(isDateString(currentAnnouncements!.createdAt)).toBe(true);
@@ -245,13 +245,13 @@ describe('GET /announcements/current', () => {
 
       // cleanup
       const deleteAnnouncements1Response = await request(app.getServer())
-        .delete(announcementRoute.path + '/' + createdAnnouncements1!.id)
+        .delete(announcementRoute.path + '/' + createdAnnouncements1Id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncements1Response.statusCode).toBe(200);
 
       const deleteAnnouncements2Response = await request(app.getServer())
-        .delete(announcementRoute.path + '/' + createdAnnouncements2!.id)
+        .delete(announcementRoute.path + '/' + createdAnnouncements2Id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncements2Response.statusCode).toBe(200);
@@ -284,10 +284,10 @@ describe('GET /announcements/current', () => {
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
-      const { data: createdAnnouncements }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
+      const { data: createdAnnouncementsId }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
 
       const publishAnnouncementsResponse = await request(app.getServer())
-        .post(announcementRoute.path + '/' + createdAnnouncements!.id + '/' + announcementRoute.publishPath)
+        .post(announcementRoute.path + '/' + createdAnnouncementsId + '/' + announcementRoute.publishPath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(publishAnnouncementsResponse.statusCode).toBe(200);
@@ -303,7 +303,7 @@ describe('GET /announcements/current', () => {
       expect(currentAnnouncements).toBeDefined();
       expect(currentAnnouncements!.id).toBeDefined();
       expect(isGuid(currentAnnouncements!.id)).toBe(true);
-      expect(currentAnnouncements!.id).toBe(createdAnnouncements!.id);
+      expect(currentAnnouncements!.id).toBe(createdAnnouncementsId);
       expect(currentAnnouncements!.createdBy).toBeDefined();
       expect(currentAnnouncements!.createdAt).toBeDefined();
       expect(isDateString(currentAnnouncements!.createdAt)).toBe(true);
@@ -325,7 +325,7 @@ describe('GET /announcements/current', () => {
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app.getServer())
-        .delete(announcementRoute.path + '/' + createdAnnouncements!.id)
+        .delete(announcementRoute.path + '/' + createdAnnouncementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);

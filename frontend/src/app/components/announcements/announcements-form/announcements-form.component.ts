@@ -18,6 +18,7 @@ import { IS_MOBILE } from 'src/app/app.config';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
+import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { AnnouncementsDto } from '../models/announcements.model';
 import { AnnouncementItemDesktopComponent } from './announcement-item/announcement-item-desktop/announcement-item-desktop.component';
 import { AnnouncementItemMobileComponent } from './announcement-item/announcement-item-mobile/announcement-item-mobile.component';
@@ -56,9 +57,12 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
 
   public readonly announcements = input.required<AnnouncementsDto>();
 
+  private readonly _contentMaxLength: number = 20_000; //max number or chars
+
   public constructor(
     @Inject(IS_MOBILE) public isMobile: boolean,
-    formBuilder: FormBuilder
+    formBuilder: FormBuilder,
+    private _snackBarService: SnackBarService
   ) {
     const formGroup = formBuilder.group<IAnnouncementsForm>({
       validFromDate: new FormControl<Date | undefined>(undefined, {
@@ -88,9 +92,50 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
       new FormGroup<IAnnouncementsItemForm>({
         content: new FormControl<string | undefined>(content, {
           nonNullable: true,
-          validators: [Validators.required, Validators.maxLength(20000)],
+          validators: [Validators.required, Validators.maxLength(this._contentMaxLength)],
         }),
       } satisfies IAnnouncementsItemForm)
     );
+  }
+
+  public removeItem(index: number): void {
+    const items = this.array(this.formControlNames.items);
+    items.removeAt(index);
+  }
+
+  public containsValidData(): boolean {
+    const items = this.array(this.formControlNames.items);
+
+    if ((items?.length ?? 0) === 0) {
+      this._snackBarService.translateAndShowError(
+        'Announcements/Form/Errors/AtLeastOneItemIsRequired'
+      );
+      return false;
+    }
+
+    for (const formGroup of items.controls) {
+      const controls = (formGroup as FormGroup<IAnnouncementsItemForm>).controls;
+
+      if (controls.content.errors) {
+        const isRequired = controls.content.errors['required'];
+        if (isRequired) {
+          this._snackBarService.translateAndShowError(
+            'Announcements/Form/Errors/ContentIsRequired'
+          );
+          return false;
+        }
+
+        const tooLength = controls.content.errors['maxlength'];
+        if (tooLength) {
+          this._snackBarService.translateAndShowError(
+            'Announcements/Form/Errors/ContentIsTooLong',
+            { maxlength: this._contentMaxLength }
+          );
+          return false;
+        }
+      }
+    }
+
+    return this.isReadyToSubmit();
   }
 }

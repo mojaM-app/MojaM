@@ -26,8 +26,8 @@ import { AnnouncementItemBase } from '../announcement-item.base';
 export class AnnouncementItemMobileComponent extends AnnouncementItemBase {
   public showOptions: WritableSignal<boolean> = signal<boolean>(false);
 
-  public constructor(private _dialogService: DialogService) {
-    super();
+  public constructor(dialogService: DialogService) {
+    super(dialogService);
   }
 
   public override editItem(): void {
@@ -40,8 +40,6 @@ export class AnnouncementItemMobileComponent extends AnnouncementItemBase {
       this.hideOptionsPanel();
     });
   }
-
-  public override deleteItem(): void {}
 
   public showOptionsPanel(): void {
     this.showOptions.set(true);

@@ -2,7 +2,6 @@
 import {
   Column,
   CreateDateColumn,
-  DatabaseType,
   Entity,
   Generated,
   JoinColumn,
@@ -60,12 +59,8 @@ export class Announcement implements IHasGuidId, IAnnouncementId, ICreateAnnounc
     type: 'date',
     nullable: true,
     transformer: {
-      from(value: DatabaseType) {
-        return value !== null ? new Date(value + 'T00:00:00Z') : null;
-      },
-      to(value) {
-        return value;
-      },
+      from: (value: string) => (value?.length > 0 ? new Date(value + 'T00:00:00Z') : undefined),
+      to: (value: Date) => value?.toISOString().slice(0, 10), // format the Date to YYYY-MM-DD
     },
   })
   public validFromDate?: Date;

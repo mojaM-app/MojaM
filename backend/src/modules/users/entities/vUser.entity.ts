@@ -2,7 +2,7 @@ import { DataSource, PrimaryColumn, ViewColumn, ViewEntity } from 'typeorm';
 import { IUserGridItemDto } from '../dtos/get-user-list.dto';
 import { User } from './user.entity';
 
-const UserListViewColumns: { [K in keyof IUserGridItemDto]: string } = {
+export const UserListViewColumns: { [K in keyof IUserGridItemDto]: string } = {
   id: 'Id',
   firstName: 'FirstName',
   lastName: 'LastName',

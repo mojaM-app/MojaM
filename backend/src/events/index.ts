@@ -9,7 +9,7 @@ export const events = {
     announcementsCreated: 'onAnnouncementsCreated',
     currentAnnouncementsRetrieved: 'onCurrentAnnouncementsRetrieved',
     announcementsRetrieved: 'onAnnouncementsRetrieved',
-    announcementListRetrieved: 'onAnnouncementListRetrieved',
+    announcementsListRetrieved: 'onAnnouncementsListRetrieved',
     announcementsDeleted: 'onAnnouncementsDeleted',
     announcementsPublished: 'onAnnouncementsPublished',
     announcementsUpdated: 'onAnnouncementsUpdated',
