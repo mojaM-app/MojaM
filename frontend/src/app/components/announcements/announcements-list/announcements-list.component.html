@@ -8,101 +8,13 @@
     <main>
       <div class="card-body p-0">
         <div class="content-container">
-          <div class="table-container">
-            <table
-              mat-table
-              [dataSource]="data()"
-              matSort
-              [matSortActive]="tableColumns.validFromDate!"
-              matSortDisableClear
-              matSortDirection="desc"
-              multiTemplateDataRows>
-              <ng-container [matColumnDef]="tableColumns.validFromDate!">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  {{ 'Announcements/List/GridColumns/ValidFromDate' | gmessage }}
-                </th>
-                <td mat-cell *matCellDef="let row">{{ row[tableColumns.validFromDate!] }}</td>
-              </ng-container>
-
-              <!-- <ng-container [matColumnDef]="tableColumns.lastName!">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  {{ 'Announcements/List/GridColumns/LastName' | gmessage }}
-                </th>
-                <td mat-cell *matCellDef="let row">{{ row[tableColumns.lastName!] }}</td>
-              </ng-container>
-
-              <ng-container [matColumnDef]="tableColumns.email!">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  {{ 'Announcements/List/GridColumns/Email' | gmessage }}
-                </th>
-                <td mat-cell *matCellDef="let row">{{ row[tableColumns.email!] }}</td>
-              </ng-container>
-
-              <ng-container [matColumnDef]="tableColumns.phone!">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  {{ 'Announcements/List/GridColumns/Phone' | gmessage }}
-                </th>
-                <td mat-cell *matCellDef="let row">{{ row[tableColumns.phone!] }}</td>
-              </ng-container> -->
-
-              <ng-container matColumnDef="expand">
-                <th
-                  mat-header-cell
-                  *matHeaderCellDef
-                  [attr.aria-label]="'Grid/ActionsRowAriaLabel' | gmessage">
-                  &nbsp;
-                </th>
-                <td mat-cell *matCellDef="let element">
-                  <button
-                    mat-icon-button
-                    [attr.aria-label]="'Grid/ExpandBtnAriaLabel' | gmessage"
-                    (click)="
-                      expandedElement = expandedElement === element ? null : element;
-                      $event.stopPropagation()
-                    ">
-                    @if (expandedElement === element) {
-                      <mat-icon>keyboard_arrow_up</mat-icon>
-                    } @else {
-                      <mat-icon>keyboard_arrow_down</mat-icon>
-                    }
-                  </button>
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="itemDetails">
-                <td
-                  mat-cell
-                  *matCellDef="let element"
-                  [attr.colspan]="displayedColumnsWithExpand.length">
-                  <div
-                    class="element-details"
-                    [@detailExpand]="element === expandedElement ? 'expanded' : 'collapsed'">
-                    <!-- <app-user-details [user]="element"></app-user-details> -->
-                  </div>
-                </td>
-              </ng-container>
-
-              <tr mat-header-row *matHeaderRowDef="displayedColumnsWithExpand; sticky: true"></tr>
-              <tr
-                mat-row
-                *matRowDef="let row; columns: displayedColumnsWithExpand"
-                class="item-row"></tr>
-              <tr
-                mat-row
-                *matRowDef="let row; columns: ['itemDetails']"
-                class="item-details-row"></tr>
-            </table>
-          </div>
-
-          <mat-paginator
-            [length]="itemsTotalCount()"
-            [pageSize]="20"
-            [pageSizeOptions]="[20, 50, 100]"
-            [showFirstLastButtons]="true"
-            [hidePageSize]="true"
-            [attr.aria-label]="'Paginator/AriaLabel' | gmessage"></mat-paginator>
+          <app-grid [itemTemplate]="details"></app-grid>
         </div>
       </div>
     </main>
   </div>
 </div>
+
+<ng-template #details let-element>
+  <!-- <app-user-details [user]="element"> </app-user-details> -->
+</ng-template>

@@ -1,4 +1,4 @@
-import { GridData } from '../common/grid.data';
+import { IGridData } from '../common/grid.data';
 
 export interface IUserGridItemColumns {
   id: string;
@@ -16,4 +16,4 @@ export interface IUserGridItemDto extends IUserGridItemColumns {
   rolesCount: number;
 }
 
-export type UsersGridData = GridData<IUserGridItemDto>;
+export type UsersGridData = IGridData<IUserGridItemDto>;

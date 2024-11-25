@@ -92,8 +92,19 @@
       "Title": "Lista ogłoszeń",
       "GridColumns": {
         "ValidFrom": "Ważne od",
-        "Content": "Treść"
+        "State": "Status",
+        "CreatedAt": "Data utworzenia",
+        "CreatedBy": "Utworzone przez",
+        "UpdatedAt": "Data modyfikacji",
+        "PublishedAt": "Data publikacji",
+        "PublishedBy": "Opublikowane przez",
+        "ItemsCount": "Ilość ogłoszeń"
       }
+    },
+    "State": {
+      "0": "Nowe",
+      "1": "Opublikowane",
+      "2": "Zarchiwizowane"
     }
   },
   "News": {
@@ -190,6 +201,8 @@
     "Announcements_With_Given_ValidFromDate_Already_Exists": "Istnieją już ogłoszenia z wprowadzoną datą rozpoczęcia obowiązywania."
   },
   "Grid": {
+    "NoColumns": "Brak kolumn",
+    "NoData": "Brak danych",
     "ActionsRowAriaLabel": "Akcje",
     "ExpandBtnAriaLabel": "Rozwiń"
   },

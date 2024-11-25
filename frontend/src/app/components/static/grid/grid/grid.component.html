@@ -1,0 +1,111 @@
+<div class="table-container">
+  <table
+    mat-table
+    [dataSource]="dataSource"
+    matSort
+    [matSortActive]="sortActiveColumnName()"
+    matSortDisableClear
+    matSortDirection="asc"
+    multiTemplateDataRows>
+    @for (column of visibleColumns(); track column) {
+      @if (column.isExpandable) {
+        <ng-container [matColumnDef]="column.propertyName">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            [attr.aria-label]="'Grid/ActionsRowAriaLabel' | gmessage">
+            &nbsp;
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <button
+              mat-icon-button
+              [attr.aria-label]="'Grid/ExpandBtnAriaLabel' | gmessage"
+              (click)="
+                expandedElement = expandedElement === element ? null : element;
+                $event.stopPropagation()
+              ">
+              @if (expandedElement === element) {
+                <mat-icon>keyboard_arrow_up</mat-icon>
+              } @else {
+                <mat-icon>keyboard_arrow_down</mat-icon>
+              }
+            </button>
+          </td>
+        </ng-container>
+      } @else {
+        <ng-container [matColumnDef]="column.propertyName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ column.title }}
+          </th>
+          @switch (column.type) {
+            @case (ColumnType.Date) {
+              <td mat-cell *matCellDef="let row">{{ row[column.propertyName] | gdate }}</td>
+            }
+            @case (ColumnType.DateEgo) {
+              <td mat-cell *matCellDef="let row">{{ row[column.propertyName] | gdateAgo }}</td>
+            }
+            @case (ColumnType.DateTime) {
+              <td mat-cell *matCellDef="let row">{{ row[column.propertyName] | gdatetime }}</td>
+            }
+            @case (ColumnType.Number) {
+              <td mat-cell *matCellDef="let row">{{ row[column.propertyName] | gnumber }}</td>
+            }
+            @case (ColumnType.Time) {
+              <td mat-cell *matCellDef="let row">{{ row[column.propertyName] | gtime }}</td>
+            }
+            @default {
+              @if (column.transform) {
+                <td mat-cell *matCellDef="let row">
+                  {{ column.transform(row[column.propertyName]) }}
+                </td>
+              } @else {
+                <td mat-cell *matCellDef="let row">{{ row[column.propertyName] }}</td>
+              }
+            }
+          }
+        </ng-container>
+      }
+    } @empty {
+      <p>{{ 'Grid/NoColumns' | gmessage }}</p>
+    }
+
+    @if (showExpandableColumn()) {
+      <ng-container matColumnDef="itemDetails">
+        <td mat-cell *matCellDef="let element" [attr.colspan]="visibleColumnNames().length">
+          <div
+            class="element-details"
+            [@detailExpand]="element === expandedElement ? 'expanded' : 'collapsed'">
+            @if (itemTemplate) {
+              <ng-container
+                [ngTemplateOutlet]="itemTemplate"
+                [ngTemplateOutletContext]="{ $implicit: element }">
+              </ng-container>
+            }
+          </div>
+        </td>
+      </ng-container>
+    }
+
+    <tr mat-header-row *matHeaderRowDef="visibleColumnNames(); sticky: true"></tr>
+    <tr mat-row *matRowDef="let row; columns: visibleColumnNames()" class="item-row"></tr>
+    @if (showExpandableColumn()) {
+      <tr mat-row *matRowDef="let row; columns: ['itemDetails']" class="item-details-row"></tr>
+    }
+
+    @if (itemsTotalCount() === 0) {
+      <tr *matNoDataRow>
+        <td class="p-1 text-center" [attr.colspan]="visibleColumnNames().length">
+          {{ 'Grid/NoData' | gmessage }}
+        </td>
+      </tr>
+    }
+  </table>
+</div>
+
+<mat-paginator
+  [length]="itemsTotalCount()"
+  [pageSize]="pageSize"
+  [pageSizeOptions]="pageSizeOptions"
+  [showFirstLastButtons]="true"
+  [hidePageSize]="true"
+  [attr.aria-label]="'Paginator/AriaLabel' | gmessage"></mat-paginator>

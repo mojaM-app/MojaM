@@ -6,4 +6,8 @@ export const AnnouncementsListColumns: { [K in keyof IAnnouncementsGridItemColum
   validFromDate: 'validFromDate',
   createdAt: 'createdAt',
   createdBy: 'createdBy',
+  updatedAt: 'updatedAt',
+  publishedAt: 'publishedAt',
+  publishedBy: 'publishedBy',
+  itemsCount: 'itemsCount',
 } as const;

@@ -1,4 +1,4 @@
-import { GridData } from '../common/grid.data';
+import { IGridData } from '../common/grid.data';
 
 export interface IAnnouncementsGridItemColumns {
   id: string;
@@ -6,13 +6,12 @@ export interface IAnnouncementsGridItemColumns {
   validFromDate?: Date;
   createdAt: Date;
   createdBy?: string;
-}
-
-export interface IAnnouncementsGridItemDto extends IAnnouncementsGridItemColumns {
   updatedAt?: Date;
   publishedAt?: Date;
   publishedBy?: string;
   itemsCount: number;
 }
 
-export type AnnouncementsGridData = GridData<IAnnouncementsGridItemDto>;
+export interface IAnnouncementsGridItemDto extends IAnnouncementsGridItemColumns {}
+
+export type AnnouncementsGridData = IGridData<IAnnouncementsGridItemDto>;

@@ -1,4 +1,4 @@
-export interface GridData<T> {
+export interface IGridData<T> {
   items: T[];
   totalCount: number;
 }
