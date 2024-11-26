@@ -34,20 +34,16 @@ export class DialogService {
     });
   }
 
-  public openWysiwygEditorMobile(content: string): MatDialogRef<WysiwygEditorPopupComponent> {
+  public openWysiwygEditor(
+    content: string,
+    config: MatDialogConfig
+  ): MatDialogRef<WysiwygEditorPopupComponent> {
     const currentUrl = this._location.path();
 
     const dialogRef = this.open(WysiwygEditorPopupComponent, {
-      restoreFocus: false,
-      height: 'calc(100% - 10px)',
-      width: 'calc(100% - 10px)',
-      maxWidth: '100%',
-      maxHeight: '100%',
-      position: { top: '5px', left: '5px' },
-      autoFocus: false,
-      panelClass: ['mobile-wysiwyg-editor-dialog', 'full-size-dialog'],
+      ...config,
       data: { content },
-    });
+    } satisfies MatDialogConfig);
 
     dialogRef
       .afterOpened()
@@ -74,5 +70,31 @@ export class DialogService {
         })
       )
     );
+  }
+
+  public static getMobileWysiwygEditorDialogConfig(): MatDialogConfig {
+    return {
+      restoreFocus: false,
+      height: 'calc(100% - 10px)',
+      width: 'calc(100% - 10px)',
+      maxWidth: '100%',
+      maxHeight: '100%',
+      position: { top: '5px', left: '5px' },
+      autoFocus: false,
+      panelClass: ['mobile-wysiwyg-editor-dialog', 'full-size-dialog'],
+    } satisfies MatDialogConfig;
+  }
+
+  public static getDesktopWysiwygEditorDialogConfig(): MatDialogConfig {
+    return {
+      restoreFocus: false,
+      height: '80%',
+      width: '60%',
+      maxWidth: '100%',
+      maxHeight: '100%',
+      position: { top: '5%', left: '20%' },
+      autoFocus: false,
+      panelClass: ['desktop-wysiwyg-editor-dialog', 'full-size-dialog'],
+    } satisfies MatDialogConfig;
   }
 }

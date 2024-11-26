@@ -1,5 +1,9 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogConfig } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { DialogService } from 'src/services/dialog/dialog.service';
@@ -8,7 +12,14 @@ import { AnnouncementItemBase } from '../announcement-item.base';
 @Component({
   selector: 'app-announcement-item-desktop',
   standalone: true,
-  imports: [PipesModule, DirectivesModule, FormsModule],
+  imports: [
+    CommonModule,
+    PipesModule,
+    DirectivesModule,
+    FormsModule,
+    MatButtonModule,
+    MatIconModule,
+  ],
   templateUrl: './announcement-item-desktop.component.html',
   styleUrl: './announcement-item-desktop.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -18,5 +29,9 @@ export class AnnouncementItemDesktopComponent extends AnnouncementItemBase {
     super(dialogService);
   }
 
-  public override editItem(): void {}
+  protected override afterCloseDialog(): void {}
+
+  protected override getDialogConfig(): MatDialogConfig {
+    return DialogService.getDesktopWysiwygEditorDialogConfig();
+  }
 }

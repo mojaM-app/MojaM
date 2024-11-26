@@ -78,7 +78,8 @@
       "NoAnnouncements": "Brak ogłoszeń, kliknij poniższy przycisk \"Dodaj sekcję\".",
       "AddItem": "Dodaj sekcję",
       "SectionNo": "Sekcja {no}",
-      "NoSectionContent": "Brak treści, stuknij dwukrotnie aby edytować",
+      "NoSectionContentMobile": "Brak treści, stuknij dwukrotnie aby edytować",
+      "NoSectionContentDesktop": "Brak treści, kliknij aby edytować",
       "AnnouncementPlaceholder": "Treść ogłoszenia",
       "Errors": {
         "AtLeastOneItemIsRequired": "Co najmniej jedna sekcja jest wymagana.",

@@ -1,0 +1,37 @@
+.clickable {
+  .section-title {
+    position: absolute;
+    top: -0.5rem;
+    background: var(--mat-app-background-color);
+    padding: 0 0.5rem;
+    margin: 0;
+    line-height: normal;
+    border-radius: 6px;
+    border: 1px solid var(--mdc-filled-text-field-container-color);
+    z-index: 1;
+  }
+
+  border: 1px solid var(--mdc-filled-text-field-container-color);
+
+  &:active,
+  &:focus,
+  &:hover {
+    .options-panel {
+      display: block;
+    }
+  }
+
+  .options-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: none;
+    background: color-mix(in srgb, var(--bs-card-cap-bg) 70%, transparent);
+
+    .buttons-container {
+      display: flex;
+      flex-direction: row;
+      background-color: var(--bs-card-cap-bg);
+    }
+  }
+}

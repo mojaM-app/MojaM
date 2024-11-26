@@ -1,1 +1,40 @@
-<p>announcement-item-desktop works!</p>
+<div clickable class="row position-relative mb-md-3 mx-0 mb-4">
+  <div class="col-12 position-relative">
+    <small class="section-title">{{
+      'Announcements/Form/SectionNo' | gmessage: { no: index() + 1 | gnumber }
+    }}</small>
+  </div>
+  <div class="col-12 cursor-pointer">
+    <div clickable class="w-100 py-md-3 border-0 py-4" (itemClick)="editItem()">
+      @if (content().length > 0) {
+        <div class="w-100 announcement-item-content-container" [innerHTML]="content()"></div>
+      } @else {
+        <div class="w-100 text-center">
+          <span
+            class="opacity-70"
+            [ngClass]="{
+              'mat-mdc-form-field-error': controls()?.content?.errors,
+            }"
+            >{{ 'Announcements/Form/NoSectionContentDesktop' | gmessage }}</span
+          >
+        </div>
+      }
+    </div>
+    <div class="options-panel">
+      <div class="buttons-container px-2 py-1">
+        <button mat-icon-button class="me-2">
+          <mat-icon>arrow_upward</mat-icon>
+        </button>
+        <button mat-icon-button class="me-2">
+          <mat-icon>arrow_downward</mat-icon>
+        </button>
+        <button mat-icon-button class="me-2" (click)="editItem()">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button (click)="confirmDeleteItem()">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

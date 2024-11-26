@@ -8,6 +8,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
+import { MatDialogConfig } from '@angular/material/dialog';
 import { IDialogSettings } from 'src/interfaces/common/dialog.settings';
 import { DialogService } from 'src/services/dialog/dialog.service';
 import { IAnnouncementsItemForm } from '../announcements.form';
@@ -36,7 +37,19 @@ export abstract class AnnouncementItemBase {
     );
   }
 
-  public abstract editItem(): void;
+  public editItem(): void {
+    const dialogRef = this._dialogService.openWysiwygEditor(
+      this.content() ?? '',
+      this.getDialogConfig()
+    );
+
+    dialogRef.afterClosed().subscribe((result: string | undefined) => {
+      if (result !== undefined) {
+        this.setNewContent(result ?? '');
+      }
+      this.afterCloseDialog();
+    });
+  }
 
   public confirmDeleteItem(): void {
     this._dialogService
@@ -59,4 +72,8 @@ export abstract class AnnouncementItemBase {
     });
     this.content.set(content);
   }
+
+  protected abstract afterCloseDialog(): void;
+
+  protected abstract getDialogConfig(): MatDialogConfig;
 }

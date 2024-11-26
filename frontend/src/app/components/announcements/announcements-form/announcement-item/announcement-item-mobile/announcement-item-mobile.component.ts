@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialogConfig } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { PipesModule } from 'src/pipes/pipes.module';
@@ -30,22 +31,19 @@ export class AnnouncementItemMobileComponent extends AnnouncementItemBase {
     super(dialogService);
   }
 
-  public override editItem(): void {
-    const dialogRef = this._dialogService.openWysiwygEditorMobile(this.content() ?? '');
-
-    dialogRef.afterClosed().subscribe((result: string | undefined) => {
-      if (result !== undefined) {
-        this.setNewContent(result ?? '');
-      }
-      this.hideOptionsPanel();
-    });
-  }
-
   public showOptionsPanel(): void {
     this.showOptions.set(true);
   }
 
   public hideOptionsPanel(): void {
     this.showOptions.set(false);
+  }
+
+  protected override afterCloseDialog(): void {
+    this.hideOptionsPanel();
+  }
+
+  protected override getDialogConfig(): MatDialogConfig {
+    return DialogService.getMobileWysiwygEditorDialogConfig();
   }
 }

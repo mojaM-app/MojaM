@@ -1,4 +1,5 @@
-.mobile-wysiwyg-editor-dialog {
+.mobile-wysiwyg-editor-dialog,
+.desktop-wysiwyg-editor-dialog {
   --mat-mdc-dialog-content-padding: 0.25rem;
   --mat-mdc-dialog-surface-border-radius: 0.25rem;
 
@@ -14,63 +15,125 @@
       }
     }
   }
+}
 
-  &.full-size-dialog {
-    --mat-mdc-dialog-actions-height: 5rem;
-    --mat-mdc-dialog-margin: 5px; //this margin is set in dialog.service.ts
+.mobile-wysiwyg-editor-dialog.full-size-dialog {
+  --mat-mdc-dialog-actions-height: 5rem;
+  --mat-mdc-dialog-margin: 5px; //this margin is set in dialog.service.ts
 
-    .mat-mdc-dialog-container-with-actions {
+  .mat-mdc-dialog-container-with-actions {
+    height: calc(var(--main-container-height) - var(--mat-mdc-dialog-margin) * 2);
+    width: calc(var(--main-container-width) - var(--mat-mdc-dialog-margin) * 2);
+
+    .mat-mdc-dialog-component-host {
       height: calc(var(--main-container-height) - var(--mat-mdc-dialog-margin) * 2);
       width: calc(var(--main-container-width) - var(--mat-mdc-dialog-margin) * 2);
 
-      .mat-mdc-dialog-component-host {
-        height: calc(var(--main-container-height) - var(--mat-mdc-dialog-margin) * 2);
+      .mat-mdc-dialog-content {
+        height: calc(
+          var(--main-container-height) - var(--mat-mdc-dialog-margin) * 2 - var(
+              --mat-mdc-dialog-actions-height
+            )
+        );
+        max-height: calc(
+          var(--main-container-height) - var(--mat-mdc-dialog-margin) * 2 - var(
+              --mat-mdc-dialog-actions-height
+            )
+        );
         width: calc(var(--main-container-width) - var(--mat-mdc-dialog-margin) * 2);
+        max-width: calc(var(--main-container-width) - var(--mat-mdc-dialog-margin) * 2);
 
-        .mat-mdc-dialog-content {
+        app-wysiwyg-editor {
+          width: calc(
+            var(--main-container-width) - var(--mat-mdc-dialog-margin) * 2 - var(
+                --mat-mdc-dialog-content-padding
+              ) * 2
+          );
           height: calc(
             var(--main-container-height) - var(--mat-mdc-dialog-margin) * 2 - var(
-                --mat-mdc-dialog-actions-height
-              )
+                --mat-mdc-dialog-content-padding
+              ) - var(--mat-mdc-dialog-actions-height)
           );
-          max-height: calc(
-            var(--main-container-height) - var(--mat-mdc-dialog-margin) * 2 - var(
-                --mat-mdc-dialog-actions-height
-              )
-          );
-          width: calc(var(--main-container-width) - var(--mat-mdc-dialog-margin) * 2);
-          max-width: calc(var(--main-container-width) - var(--mat-mdc-dialog-margin) * 2);
+          display: block;
 
-          app-wysiwyg-editor {
-            width: calc(
-              var(--main-container-width) - var(--mat-mdc-dialog-margin) * 2 - var(
-                  --mat-mdc-dialog-content-padding
-                ) * 2
-            );
+          quill-editor {
             height: calc(
               var(--main-container-height) - var(--mat-mdc-dialog-margin) * 2 - var(
                   --mat-mdc-dialog-content-padding
                 ) - var(--mat-mdc-dialog-actions-height)
             );
-            display: block;
-
-            quill-editor {
-              height: calc(
-                var(--main-container-height) - var(--mat-mdc-dialog-margin) * 2 - var(
-                    --mat-mdc-dialog-content-padding
-                  ) - var(--mat-mdc-dialog-actions-height)
-              );
-              display: grid;
-              grid-template-columns: 100%;
-              grid-template-rows: auto 1fr;
-            }
+            display: grid;
+            grid-template-columns: 100%;
+            grid-template-rows: auto 1fr;
           }
         }
       }
+    }
 
-      .mat-mdc-dialog-actions {
-        height: var(--mat-mdc-dialog-actions-height);
+    .mat-mdc-dialog-actions {
+      height: var(--mat-mdc-dialog-actions-height);
+    }
+  }
+}
+
+.desktop-wysiwyg-editor-dialog.full-size-dialog {
+  --mat-mdc-dialog-actions-height: 5rem;
+  --mat-mdc-dialog-margin-x: calc(var(--main-container-width) * 0.2);
+  --mat-mdc-dialog-margin-y: calc(
+    var(--main-container-height) * 0.1
+  ); //this margin is set in dialog.service.ts
+
+  .mat-mdc-dialog-container-with-actions {
+    height: calc(var(--main-container-height) - var(--mat-mdc-dialog-margin-y) * 2);
+    width: calc(var(--main-container-width) - var(--mat-mdc-dialog-margin-x) * 2);
+
+    .mat-mdc-dialog-component-host {
+      height: calc(var(--main-container-height) - var(--mat-mdc-dialog-margin-y) * 2);
+      width: calc(var(--main-container-width) - var(--mat-mdc-dialog-margin-x) * 2);
+
+      .mat-mdc-dialog-content {
+        height: calc(
+          var(--main-container-height) - var(--mat-mdc-dialog-margin-y) * 2 - var(
+              --mat-mdc-dialog-actions-height
+            )
+        );
+        max-height: calc(
+          var(--main-container-height) - var(--mat-mdc-dialog-margin-y) * 2 - var(
+              --mat-mdc-dialog-actions-height
+            )
+        );
+        width: calc(var(--main-container-width) - var(--mat-mdc-dialog-margin-x) * 2);
+        max-width: calc(var(--main-container-width) - var(--mat-mdc-dialog-margin-x) * 2);
+
+        app-wysiwyg-editor {
+          width: calc(
+            var(--main-container-width) - var(--mat-mdc-dialog-margin-x) * 2 - var(
+                --mat-mdc-dialog-content-padding
+              ) * 2
+          );
+          height: calc(
+            var(--main-container-height) - var(--mat-mdc-dialog-margin-y) * 2 - var(
+                --mat-mdc-dialog-content-padding
+              ) - var(--mat-mdc-dialog-actions-height)
+          );
+          display: block;
+
+          quill-editor {
+            height: calc(
+              var(--main-container-height) - var(--mat-mdc-dialog-margin-y) * 2 - var(
+                  --mat-mdc-dialog-content-padding
+                ) - var(--mat-mdc-dialog-actions-height)
+            );
+            display: grid;
+            grid-template-columns: 100%;
+            grid-template-rows: auto 1fr;
+          }
+        }
       }
+    }
+
+    .mat-mdc-dialog-actions {
+      height: var(--mat-mdc-dialog-actions-height);
     }
   }
 }

@@ -30,7 +30,10 @@
               (deleteItem)="removeItem($event)">
             </app-announcement-item-mobile>
           } @else {
-            <app-announcement-item-desktop [itemFormGroup]="item" [index]="i">
+            <app-announcement-item-desktop
+              [itemFormGroup]="item"
+              [index]="i"
+              (deleteItem)="removeItem($event)">
             </app-announcement-item-desktop>
           }
         </ng-container>
