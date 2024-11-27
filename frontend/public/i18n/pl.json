@@ -198,7 +198,13 @@
     "Bad_Request": "Wystąpił błąd podczas przetwarzania żądania. Spróbuj ponownie później.",
     "Wrong_Authentication_Token": "Nieprawidłowy token autoryzacyjny. Zaloguj się ponownie.",
     "Invalid_Login_Or_Password": "Wprowadzono nieprawidłowe dane logowania.",
+    "User_Password_Is_Not_Set": "Hasło użytkownika nie zostało ustawione.",
+    "User_Not_Authenticated": "Użytkownik nie jest uwierzytelniony. Zaloguj się.",
+    "User_Not_Authorized": "Brak uprawnień do wykonania tej operacji.",
+    "User_Is_Not_Active": "Konto użytkownika nie zostało aktywowane.",
+    "User_Is_Locked_Out": "Konto użytkownika zostało zablokowane. Skontaktuj się z liderem.",
     "Session_Expired": "Twoja sesja wygasła. Zaloguj się ponownie.",
+
     "Announcements_With_Given_ValidFromDate_Already_Exists": "Istnieją już ogłoszenia z wprowadzoną datą rozpoczęcia obowiązywania."
   },
   "Grid": {
