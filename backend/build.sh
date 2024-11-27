@@ -13,7 +13,7 @@ echo ">>>>>>>>>> Building the project"
 npm run build
 
 # echo ">>>>>>>>>> Testing the project"
-# npm run test
+npm run test
 
 echo ">>>>>>>>>> Copying the package.json file"
 cp package.json "$WORKING_DIR"/package.json
