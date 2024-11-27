@@ -2,9 +2,9 @@ DROP TABLE IF EXISTS
 user_reset_password_tokens,
 user_to_systempermissions,
 system_permissions,
-users,
+announcement_items,
 announcements,
-announcement_items;
+users;
 
 DROP VIEW IF EXISTS
 vusers,
