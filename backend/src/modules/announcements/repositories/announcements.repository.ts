@@ -123,4 +123,8 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
 
     return true;
   }
+
+  public async count(): Promise<number> {
+    return await this._dbContext.announcements.count();
+  }
 }

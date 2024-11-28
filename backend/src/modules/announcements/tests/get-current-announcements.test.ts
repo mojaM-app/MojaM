@@ -7,6 +7,7 @@ import {
   AnnouncementsRout,
   CreateAnnouncementsResponseDto,
   GetCurrentAnnouncementsResponseDto,
+  IGetCurrentAnnouncementsDto,
   PublishAnnouncementsResponseDto,
 } from '@modules/announcements';
 import { LoginDto } from '@modules/auth';
@@ -42,17 +43,19 @@ describe('GET /announcements/current', () => {
     it('when there is no announcements', async () => {
       const response = await request(app.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
       expect(response.statusCode).toBe(200);
-      const body: GetCurrentAnnouncementsResponseDto = response.body;
+      const body = response.body;
       expect(typeof body).toBe('object');
-      expect(typeof body.data).toBe('object');
-      expect(body.data).toBeNull();
+      const { data: getData, message: getMessage }: GetCurrentAnnouncementsResponseDto = body;
+      const { currentAnnouncements, announcementsCount }: IGetCurrentAnnouncementsDto = getData;
+      expect(currentAnnouncements).toBeNull();
+      expect(announcementsCount).toBe(0);
+      expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
 
       // checking events running via eventDispatcher
-      Object.entries(testEventHandlers)
-        .filter(([, eventHandler]) => ![testEventHandlers.onAnnouncementsRetrieved].includes(eventHandler))
-        .forEach(([, eventHandler]) => {
-          expect(eventHandler).not.toHaveBeenCalled();
-        });
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+      expect(testEventHandlers.onCurrentAnnouncementsRetrieved).toHaveBeenCalledTimes(0);
       expect(testEventHandlers.onAnnouncementsRetrieved).toHaveBeenCalledTimes(0);
     });
 
@@ -68,10 +71,13 @@ describe('GET /announcements/current', () => {
 
       const response = await request(app.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
       expect(response.statusCode).toBe(200);
-      const body: GetCurrentAnnouncementsResponseDto = response.body;
+      const body = response.body;
       expect(typeof body).toBe('object');
-      expect(typeof body.data).toBe('object');
-      expect(body.data).toBeNull();
+      const { data: getData, message: getMessage }: GetCurrentAnnouncementsResponseDto = body;
+      const { currentAnnouncements, announcementsCount }: IGetCurrentAnnouncementsDto = getData;
+      expect(currentAnnouncements).toBeNull();
+      expect(announcementsCount).toBe(1);
+      expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app.getServer())
@@ -86,6 +92,7 @@ describe('GET /announcements/current', () => {
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
+      expect(testEventHandlers.onCurrentAnnouncementsRetrieved).toHaveBeenCalledTimes(0);
       expect(testEventHandlers.onAnnouncementsRetrieved).toHaveBeenCalledTimes(0);
       expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
@@ -103,10 +110,13 @@ describe('GET /announcements/current', () => {
 
       const response = await request(app.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
       expect(response.statusCode).toBe(200);
-      const body: GetCurrentAnnouncementsResponseDto = response.body;
+      const body = response.body;
       expect(typeof body).toBe('object');
-      expect(typeof body.data).toBe('object');
-      expect(body.data).toBeNull();
+      const { data: getData, message: getMessage }: GetCurrentAnnouncementsResponseDto = body;
+      const { currentAnnouncements, announcementsCount }: IGetCurrentAnnouncementsDto = getData;
+      expect(currentAnnouncements).toBeNull();
+      expect(announcementsCount).toBe(1);
+      expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app.getServer())
@@ -121,6 +131,7 @@ describe('GET /announcements/current', () => {
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
+      expect(testEventHandlers.onCurrentAnnouncementsRetrieved).toHaveBeenCalledTimes(0);
       expect(testEventHandlers.onAnnouncementsRetrieved).toHaveBeenCalledTimes(0);
       expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
@@ -146,10 +157,13 @@ describe('GET /announcements/current', () => {
 
       const response = await request(app.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
       expect(response.statusCode).toBe(200);
-      const body: GetCurrentAnnouncementsResponseDto = response.body;
+      const body = response.body;
       expect(typeof body).toBe('object');
-      expect(typeof body.data).toBe('object');
-      expect(body.data).toBeNull();
+      const { data: getData, message: getMessage }: GetCurrentAnnouncementsResponseDto = body;
+      const { currentAnnouncements, announcementsCount }: IGetCurrentAnnouncementsDto = getData;
+      expect(currentAnnouncements).toBeNull();
+      expect(announcementsCount).toBe(1);
+      expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app.getServer())
@@ -171,6 +185,7 @@ describe('GET /announcements/current', () => {
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
+      expect(testEventHandlers.onCurrentAnnouncementsRetrieved).toHaveBeenCalledTimes(0);
       expect(testEventHandlers.onAnnouncementsRetrieved).toHaveBeenCalledTimes(0);
       expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onAnnouncementsPublished).toHaveBeenCalledTimes(1);
@@ -219,7 +234,11 @@ describe('GET /announcements/current', () => {
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = response.body;
       expect(typeof body).toBe('object');
-      const { data: currentAnnouncements, message: getMessage }: GetCurrentAnnouncementsResponseDto = body;
+      const { data: getData, message: getMessage }: GetCurrentAnnouncementsResponseDto = body;
+      expect(getData).not.toBeNull();
+      expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
+      const { currentAnnouncements, announcementsCount }: IGetCurrentAnnouncementsDto = getData;
+      expect(announcementsCount).toBe(2);
       expect(currentAnnouncements).toBeDefined();
       expect(currentAnnouncements!.id).toBeDefined();
       expect(isGuid(currentAnnouncements!.id)).toBe(true);
@@ -241,7 +260,6 @@ describe('GET /announcements/current', () => {
       expect(currentAnnouncements!.items.every(item => item.createdBy !== undefined)).toBe(true);
       expect(currentAnnouncements!.items.every(item => item.updatedAt !== undefined)).toBe(true);
       expect(currentAnnouncements!.items.every(item => item.updatedBy === undefined)).toBe(true);
-      expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
 
       // cleanup
       const deleteAnnouncements1Response = await request(app.getServer())
@@ -299,7 +317,11 @@ describe('GET /announcements/current', () => {
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = response.body;
       expect(typeof body).toBe('object');
-      const { data: currentAnnouncements, message: getMessage }: GetCurrentAnnouncementsResponseDto = body;
+      const { data: getData, message: getMessage }: GetCurrentAnnouncementsResponseDto = body;
+      expect(getData).not.toBeNull();
+      expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
+      const { currentAnnouncements, announcementsCount }: IGetCurrentAnnouncementsDto = getData;
+      expect(announcementsCount).toBe(1);
       expect(currentAnnouncements).toBeDefined();
       expect(currentAnnouncements!.id).toBeDefined();
       expect(isGuid(currentAnnouncements!.id)).toBe(true);

@@ -18,6 +18,22 @@
                 </button>
               </div>
             </div>
+          } @else if (showButtonGoToAnnouncementList()) {
+            <div class="row mb-2">
+              <div class="w-100 text-center">
+                <span class="opacity-50">{{
+                  'Announcements/NoPublishedAnnouncements' | gmessage
+                }}</span>
+              </div>
+            </div>
+            <div class="row mb-2">
+              <div class="col text-center">
+                <button mat-raised-button [routerLink]="['./' + AnnouncementsListMenu.Route]">
+                  <mat-icon>{{ AnnouncementsListMenu.Icon }}</mat-icon>
+                  <span>{{ AnnouncementsListMenu.Label | gmessage }}</span>
+                </button>
+              </div>
+            </div>
           } @else {
             <div class="w-100 text-center">
               <span class="opacity-50">{{ 'Announcements/NoAnnouncements' | gmessage }}</span>

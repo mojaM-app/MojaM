@@ -23,11 +23,16 @@ export interface ICurrentAnnouncementsDto {
   items: ICurrentAnnouncementsItemDto[];
 }
 
-export class GetCurrentAnnouncementsResponseDto implements IResponse<ICurrentAnnouncementsDto | null> {
-  public readonly data: ICurrentAnnouncementsDto | null;
+export interface IGetCurrentAnnouncementsDto {
+  currentAnnouncements: ICurrentAnnouncementsDto | null;
+  announcementsCount: number;
+}
+
+export class GetCurrentAnnouncementsResponseDto implements IResponse<IGetCurrentAnnouncementsDto> {
+  public readonly data: IGetCurrentAnnouncementsDto;
   public readonly message: string;
 
-  public constructor(data: ICurrentAnnouncementsDto | null) {
+  public constructor(data: IGetCurrentAnnouncementsDto) {
     this.data = data;
     this.message = events.announcements.currentAnnouncementsRetrieved;
   }
@@ -43,13 +48,13 @@ export function announcementToICurrentAnnouncements(announcement: Announcement):
     updatedAt: announcement.updatedAt ?? announcement.createdAt,
     publishedBy: announcement.publishedBy!.getFullName(),
     publishedAt: announcement.publishedAt!,
-    items: announcement.items.map((item) => ({
+    items: announcement.items.map(item => ({
       id: item.id,
       content: item.content,
       createdBy: item.createdBy.getFullName(),
       createdAt: item.createdAt,
       updatedBy: item.updatedBy?.getFullName() ?? undefined,
       updatedAt: item.updatedAt ?? item.createdAt,
-    }))
+    })),
   } satisfies ICurrentAnnouncementsDto;
 }

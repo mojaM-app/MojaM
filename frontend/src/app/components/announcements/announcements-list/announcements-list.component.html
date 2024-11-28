@@ -2,7 +2,17 @@
   <div class="d-grid-with-header">
     <header class="mat-toolbar">
       <div class="card-header">
-        {{ 'Announcements/List/Title' | gmessage }}
+        <div class="row">
+          <div class="col">
+            {{ 'Announcements/List/Title' | gmessage }}
+          </div>
+          <div class="col">
+            <button mat-flat-button type="button">
+              <mat-icon>add</mat-icon>
+              <span class="d-none d-sm-block">{{ 'Shared/BtnAdd' | gmessage }}</span>
+            </button>
+          </div>
+        </div>
       </div>
     </header>
     <main>

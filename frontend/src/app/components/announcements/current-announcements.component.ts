@@ -8,7 +8,10 @@ import {
 } from '@angular/core';
 import { IS_MOBILE } from 'src/app/app.config';
 import { SystemPermissionValue } from 'src/core/system-permission.enum';
-import { ICurrentAnnouncements } from 'src/interfaces/announcements/current-announcements';
+import {
+  ICurrentAnnouncements,
+  IGetCurrentAnnouncements,
+} from 'src/interfaces/announcements/current-announcements';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { GdatePipe } from 'src/pipes/gdate.pipe';
 import { CurrentAnnouncementsService } from 'src/services/announcements/current-announcements.service';
@@ -16,7 +19,7 @@ import { AuthService } from 'src/services/auth/auth.service';
 import { PermissionService } from 'src/services/auth/permission.service';
 import { CultureService } from 'src/services/translate/culture.service';
 import { TranslationService } from 'src/services/translate/translation.service';
-import { AddAnnouncementsMenu } from './announcements.menu';
+import { AddAnnouncementsMenu, AnnouncementsListMenu } from './announcements.menu';
 
 @Component({
   selector: 'app-current-announcements',
@@ -25,11 +28,13 @@ import { AddAnnouncementsMenu } from './announcements.menu';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CurrentAnnouncementsComponent extends WithUnsubscribe() implements OnInit {
-  public AddAnnouncementsMenu = AddAnnouncementsMenu;
+  public readonly AddAnnouncementsMenu = AddAnnouncementsMenu;
+  public readonly AnnouncementsListMenu = AnnouncementsListMenu;
 
   public title: WritableSignal<string | null> = signal(null);
   public announcements: WritableSignal<ICurrentAnnouncements | null> = signal(null);
   public showButtonAddAnnouncement: WritableSignal<boolean> = signal(false);
+  public showButtonGoToAnnouncementList: WritableSignal<boolean> = signal(false);
 
   public constructor(
     @Inject(IS_MOBILE) public isMobile: boolean,
@@ -49,22 +54,29 @@ export class CurrentAnnouncementsComponent extends WithUnsubscribe() implements 
   }
 
   public ngOnInit(): void {
-    this._currentAnnouncementsService.get().subscribe((resp: ICurrentAnnouncements | null) => {
-      if (resp) {
-        let title = resp.title;
+    this._currentAnnouncementsService.get().subscribe((resp: IGetCurrentAnnouncements) => {
+      const currentAnnouncements = resp?.currentAnnouncements ?? null;
+      const announcementsCount = resp?.announcementsCount ?? 0;
+      if (currentAnnouncements) {
+        let title = currentAnnouncements.title;
         if ((title?.length ?? 0) === 0) {
           title = this._translationService.get('Announcements/AnnouncementsOfTheDay', {
             date: new GdatePipe(this._cultureService, this._translationService).transform(
-              resp.validFromDate
+              currentAnnouncements.validFromDate
             ),
           });
         }
         this.title.set(title!);
-        this.announcements.set(resp);
+        this.announcements.set(currentAnnouncements);
       } else {
         this.title.set(this._translationService.get('Announcements/NoAnnouncements'));
         this.showButtonAddAnnouncement.set(
-          this._permissionService.hasPermission(SystemPermissionValue.AddAnnouncements)
+          announcementsCount === 0 &&
+            this._permissionService.hasPermission(SystemPermissionValue.AddAnnouncements)
+        );
+        this.showButtonGoToAnnouncementList.set(
+          announcementsCount > 0 &&
+            this._permissionService.hasPermission(SystemPermissionValue.PreviewAnnouncementsList)
         );
       }
     });

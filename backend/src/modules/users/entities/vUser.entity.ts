@@ -3,16 +3,16 @@ import { IUserGridItemDto } from '../dtos/get-user-list.dto';
 import { User } from './user.entity';
 
 export const UserListViewColumns: { [K in keyof IUserGridItemDto]: string } = {
-  id: 'Id',
-  firstName: 'FirstName',
-  lastName: 'LastName',
-  email: 'Email',
-  phone: 'Phone',
-  joiningDate: 'JoiningDate',
-  lastLoginAt: 'LastLoginAt',
-  isActive: 'IsActive',
-  isLockedOut: 'IsLockedOut',
-  rolesCount: 'RolesCount',
+  id: 'id',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  email: 'email',
+  phone: 'phone',
+  joiningDate: 'joiningDate',
+  lastLoginAt: 'lastLoginAt',
+  isActive: 'isActive',
+  isLockedOut: 'isLockedOut',
+  rolesCount: 'rolesCount',
 } as const;
 
 @ViewEntity({

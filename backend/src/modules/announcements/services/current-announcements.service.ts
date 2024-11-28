@@ -1,9 +1,10 @@
 import { events } from '@events';
 import {
+  AnnouncementsRepository,
   announcementToICurrentAnnouncements,
   CurrentAnnouncementsRepository,
   CurrentAnnouncementsRetrievedEvent,
-  ICurrentAnnouncementsDto,
+  IGetCurrentAnnouncementsDto,
 } from '@modules/announcements';
 import { BaseService } from '@modules/common';
 import { isNullOrUndefined } from '@utils';
@@ -11,24 +12,31 @@ import Container, { Service } from 'typedi';
 
 @Service()
 export class CurrentAnnouncementsService extends BaseService {
-  private readonly _repository: CurrentAnnouncementsRepository;
+  private readonly _currentAnnouncementsRepository: CurrentAnnouncementsRepository;
+  private readonly _announcementsRepository: AnnouncementsRepository;
 
   public constructor() {
     super();
-    this._repository = Container.get(CurrentAnnouncementsRepository);
+    this._currentAnnouncementsRepository = Container.get(CurrentAnnouncementsRepository);
+    this._announcementsRepository = Container.get(AnnouncementsRepository);
   }
 
-  public async get(currentUserId: number | undefined): Promise<ICurrentAnnouncementsDto | null> {
-    const announcement = await this._repository.get();
+  public async get(currentUserId: number | undefined): Promise<IGetCurrentAnnouncementsDto> {
+    const announcement = await this._currentAnnouncementsRepository.get();
 
-    if (isNullOrUndefined(announcement)) {
-      return null;
+    const currentAnnouncements = isNullOrUndefined(announcement) ? null : announcementToICurrentAnnouncements(announcement!);
+    const count = await this._announcementsRepository.count();
+
+    if (!isNullOrUndefined(announcement)) {
+      this._eventDispatcher.dispatch(
+        events.announcements.currentAnnouncementsRetrieved,
+        new CurrentAnnouncementsRetrievedEvent(currentAnnouncements, currentUserId),
+      );
     }
 
-    const result = announcementToICurrentAnnouncements(announcement!);
-
-    this._eventDispatcher.dispatch(events.announcements.currentAnnouncementsRetrieved, new CurrentAnnouncementsRetrievedEvent(result, currentUserId));
-
-    return result;
+    return {
+      currentAnnouncements,
+      announcementsCount: count,
+    } satisfies IGetCurrentAnnouncementsDto;
   }
 }

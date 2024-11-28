@@ -14,6 +14,7 @@
     "BtnEdit": "Edytuj",
     "BtnYes": "Tak",
     "BtnNo": "Nie",
+    "BtnAdd": "Dodaj",
     "Location": "Lokalizacja"
   },
   "Header": {
@@ -62,8 +63,10 @@
     "Title": "Ogłoszenia",
     "AnnouncementsOfTheDay": "Ogłoszenia z dnia {date}",
     "NoAnnouncements": "Brak ogłoszeń",
+    "NoPublishedAnnouncements": "Brak opublikowanych ogłoszeń, przejdź do listy ogłoszeń i dodaj, zmień lub opublikuj ogłoszenia.",
     "BtnAdd": "Dodaj ogłoszenia",
     "BtnEdit": "Edytuj",
+    "BtnList": "Lista ogłoszeń",
     "FormAdd": {
       "Title": "Dodaj ogłoszenia"
     },

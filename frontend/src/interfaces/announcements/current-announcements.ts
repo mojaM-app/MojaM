@@ -18,3 +18,8 @@ export interface ICurrentAnnouncements {
   publishedBy: string;
   items: ICurrentAnnouncementsItem[];
 }
+
+export interface IGetCurrentAnnouncements {
+  currentAnnouncements: ICurrentAnnouncements | null;
+  announcementsCount: number;
+}

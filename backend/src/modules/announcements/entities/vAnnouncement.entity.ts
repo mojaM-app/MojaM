@@ -4,16 +4,16 @@ import { User } from './../../../modules/users/entities/user.entity';
 import { Announcement } from './announcement.entity';
 
 export const AnnouncementListViewColumns: { [K in keyof IAnnouncementGridItemDto]: string } = {
-  id: 'Id',
-  title: 'Title',
-  state: 'State',
-  validFromDate: 'ValidFromDate',
-  createdAt: 'CreatedAt',
-  createdBy: 'CreatedBy',
-  updatedAt: 'UpdatedAt',
-  publishedAt: 'PublishedAt',
-  publishedBy: 'PublishedBy',
-  itemsCount: 'ItemsCount',
+  id: 'id',
+  title: 'title',
+  state: 'state',
+  validFromDate: 'validFromDate',
+  createdAt: 'createdAt',
+  createdBy: 'createdBy',
+  updatedAt: 'updatedAt',
+  publishedAt: 'publishedAt',
+  publishedBy: 'publishedBy',
+  itemsCount: 'itemsCount',
 } as const;
 
 @ViewEntity({
