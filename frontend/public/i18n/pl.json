@@ -63,7 +63,7 @@
     "Title": "Ogłoszenia",
     "AnnouncementsOfTheDay": "Ogłoszenia z dnia {date}",
     "NoAnnouncements": "Brak ogłoszeń",
-    "NoPublishedAnnouncements": "Brak opublikowanych ogłoszeń, przejdź do listy ogłoszeń i dodaj, zmień lub opublikuj ogłoszenia.",
+    "NoPublishedAnnouncements": "Brak opublikowanych ogłoszeń, przejdź do listy ogłoszeń aby dodać, zmienić lub opublikować ogłoszenia.",
     "BtnAdd": "Dodaj ogłoszenia",
     "BtnEdit": "Edytuj",
     "BtnList": "Lista ogłoszeń",
@@ -207,7 +207,6 @@
     "User_Is_Not_Active": "Konto użytkownika nie zostało aktywowane.",
     "User_Is_Locked_Out": "Konto użytkownika zostało zablokowane. Skontaktuj się z liderem.",
     "Session_Expired": "Twoja sesja wygasła. Zaloguj się ponownie.",
-
     "Announcements_With_Given_ValidFromDate_Already_Exists": "Istnieją już ogłoszenia z wprowadzoną datą rozpoczęcia obowiązywania."
   },
   "Grid": {

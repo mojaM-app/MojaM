@@ -214,6 +214,10 @@ body {
       var(--bs-card-cap-padding-y) * 2 + var(--mat-toolbar-title-text-line-height) +
         var(--bs-card-border-width)
     );
+
+    .card-header {
+      height: 100%;
+    }
   }
 
   main {
@@ -275,6 +279,10 @@ body {
       var(--bs-card-cap-padding-y) * 2 + var(--mat-toolbar-title-text-line-height) +
         var(--bs-card-border-width)
     );
+
+    .card-header {
+      height: 100%;
+    }
   }
 
   main {
@@ -342,6 +350,49 @@ body {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.card-header {
+  &.with-buttons {
+    padding: 0.25rem 1rem;
+
+    .d-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+
+      .card-title {
+        margin: 0;
+        padding: 0;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .buttons-container {
+        text-align: end;
+
+        .mdc-button {
+          padding: 0;
+          min-width: var(--mdc-filled-button-container-height);
+
+          .mat-icon {
+            margin: 0;
+          }
+        }
+
+        @media (min-width: 576px) {
+          .mdc-button {
+            padding: 0 var(--mat-filled-button-horizontal-padding, 16px);
+
+            .mat-icon {
+              margin-right: var(--mat-filled-button-icon-spacing, 8px);
+              margin-left: var(--mat-filled-button-icon-offset, -4px);
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 @import url('./app/components/calendar/calendar.style.scss');
