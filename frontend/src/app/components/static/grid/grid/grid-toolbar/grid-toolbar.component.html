@@ -1,0 +1,11 @@
+<div class="card-header with-buttons">
+  <div class="d-grid align-items-center">
+    <div class="card-title">
+      {{ title() | gmessage }}
+    </div>
+
+    <div class="buttons-container">
+      <ng-content select="[slot=buttons]"> </ng-content>
+    </div>
+  </div>
+</div>

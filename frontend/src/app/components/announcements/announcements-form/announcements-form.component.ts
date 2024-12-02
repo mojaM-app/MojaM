@@ -117,7 +117,7 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
       const controls = (formGroup as FormGroup<IAnnouncementsItemForm>).controls;
 
       if (controls.content.errors) {
-        const isRequired = controls.content.errors['required'];
+        const isRequired = controls.content.errors[this.errorNames.required];
         if (isRequired) {
           this._snackBarService.translateAndShowError(
             'Announcements/Form/Errors/ContentIsRequired'
@@ -125,11 +125,11 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
           return false;
         }
 
-        const tooLength = controls.content.errors['maxlength'];
+        const tooLength = controls.content.errors[this.errorNames.maxLength];
         if (tooLength) {
           this._snackBarService.translateAndShowError(
             'Announcements/Form/Errors/ContentIsTooLong',
-            { maxlength: this._contentMaxLength }
+            { maxLength: this._contentMaxLength }
           );
           return false;
         }

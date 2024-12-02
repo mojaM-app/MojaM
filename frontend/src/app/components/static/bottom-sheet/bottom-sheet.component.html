@@ -1,0 +1,16 @@
+<mat-nav-list>
+  @for (menuItem of menuItems(); track menuItem) {
+    <a href="#" mat-list-item (click)="menuItemClick($event, menuItem)">
+      @if (menuItem.icon) {
+        <mat-icon matListItemIcon>{{ menuItem.icon }}</mat-icon>
+      }
+      @if (menuItem.title) {
+        <span matListItemTitle>{{ menuItem.title }}</span>
+      }
+    </a>
+  }
+</mat-nav-list>
+
+<mat-action-list class="text-center">
+  <button mat-icon-button (click)="close()"><mat-icon>close</mat-icon></button>
+</mat-action-list>

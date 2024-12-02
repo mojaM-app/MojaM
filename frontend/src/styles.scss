@@ -115,6 +115,16 @@ body {
       background-color: mat.get-theme-color($light-theme, secondary-container);
       color: mat.get-theme-color($light-theme, on-secondary-container);
     }
+
+    .mat-mdc-row {
+      &.even-row {
+        background-color: mat.get-theme-color($light-theme, surface-container-low);
+      }
+
+      &:hover {
+        background-color: mat.get-theme-color($light-theme, surface-container);
+      }
+    }
   }
 
   &.theme-dark {
@@ -160,6 +170,16 @@ body {
       .mat-mdc-header-row {
         background-color: mat.get-theme-color($dark-theme, secondary-container);
         color: mat.get-theme-color($dark-theme, on-secondary-container);
+      }
+
+      .mat-mdc-row {
+        &.even-row {
+          background-color: mat.get-theme-color($dark-theme, surface-container);
+        }
+
+        &:hover {
+          background-color: mat.get-theme-color($dark-theme, surface-container-high);
+        }
       }
     }
 

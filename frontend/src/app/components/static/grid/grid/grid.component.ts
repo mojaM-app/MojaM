@@ -15,16 +15,19 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatRippleModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { map, merge, startWith, switchMap } from 'rxjs';
+import { IS_MOBILE } from 'src/app/app.config';
 import { IGridData } from 'src/interfaces/common/grid.data';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { BrowserWindowService } from 'src/services/browser/browser-window.service';
+import { BottomSheetService } from '../../bottom-sheet/bottom-sheet.service';
 import { ColumnType, IGridColumn, IGridService } from './grid-service.interface';
 
 @Component({
@@ -38,6 +41,7 @@ import { ColumnType, IGridColumn, IGridService } from './grid-service.interface'
     MatProgressSpinnerModule,
     MatIconModule,
     MatButtonModule,
+    MatRippleModule,
     PipesModule,
   ],
   templateUrl: './grid.component.html',
@@ -77,8 +81,10 @@ export class GridComponent<TGridItemDto, TGridData extends IGridData<TGridItemDt
   private readonly _sort = viewChild.required(MatSort);
 
   public constructor(
+    @Inject(IS_MOBILE) public isMobile: boolean,
     @Inject('gridService') private _gridService: IGridService<TGridItemDto, TGridData>,
     private _mediaMatcher: MediaMatcher,
+    private _bottomSheetService: BottomSheetService,
     browserService: BrowserWindowService
   ) {
     super();
@@ -141,6 +147,16 @@ export class GridComponent<TGridItemDto, TGridData extends IGridData<TGridItemDt
         })
       )
       .subscribe((items: TGridItemDto[]) => this.items.set(items));
+  }
+
+  public showRowMenu(row: TGridItemDto): void {
+    console.log('showRowMenu', row);
+  }
+
+  public showBottomSheet(row: TGridItemDto): void {
+    this._bottomSheetService.open({
+      data: this._gridService.getContextMenuItems(row),
+    });
   }
 
   private refreshVisibleColumns(): void {

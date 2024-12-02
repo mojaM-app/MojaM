@@ -1,9 +1,11 @@
 import { SortDirection } from '@angular/material/sort';
 import { Observable } from 'rxjs';
 import { IGridData } from 'src/interfaces/common/grid.data';
+import { IMenuItem } from 'src/interfaces/menu/menu-item';
 
 export const COLUMN_NAMES = {
   EXPAND: 'expand',
+  ACTIONS: 'actions',
 };
 
 export enum ColumnType {
@@ -18,10 +20,15 @@ export interface IGridExpandableColumn {
   isExpandable?: boolean;
 }
 
-export interface IGridColumn extends IGridExpandableColumn {
+export interface IGridActionsColumn {
+  isActions?: boolean;
+}
+
+export interface IGridColumn extends IGridExpandableColumn, IGridActionsColumn {
   propertyName: string;
   title?: string;
   type?: ColumnType;
+  cssClass?: string;
   mediaMinWidth?: number;
   transform?: (value: any) => string;
 }
@@ -37,4 +44,6 @@ export interface IGridService<TGridItemDto, TGridData extends IGridData<TGridIte
   ): Observable<TGridData | null>;
 
   getSortActiveColumnName(): string;
+
+  getContextMenuItems(item: TGridItemDto): IMenuItem[];
 }

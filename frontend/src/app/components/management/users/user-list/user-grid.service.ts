@@ -7,6 +7,7 @@ import {
   IGridService,
 } from 'src/app/components/static/grid/grid/grid-service.interface';
 import { IGridData } from 'src/interfaces/common/grid.data';
+import { IMenuItem } from 'src/interfaces/menu/menu-item';
 import { IUserGridItemDto } from 'src/interfaces/users/user-list.interfaces';
 import { TranslationService } from 'src/services/translate/translation.service';
 import { UserListService } from 'src/services/users/user-list.service';
@@ -59,5 +60,9 @@ export class UserGridService
 
   public getSortActiveColumnName(): string {
     return UserListColumns.lastName!;
+  }
+
+  public getContextMenuItems(item: IUserGridItemDto): IMenuItem[] {
+    throw new Error('Method not implemented.');
   }
 }

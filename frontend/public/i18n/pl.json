@@ -87,7 +87,7 @@
       "Errors": {
         "AtLeastOneItemIsRequired": "Co najmniej jedna sekcja jest wymagana.",
         "ContentIsRequired": "Treść ogłoszenia jest wymagana. Każda z sekcji musi być wypełniona, usuń puste sekcje.",
-        "ContentIsTooLong": "Treść ogłoszenia jest zbyt długa. Maksymalnie {maxlength} znaków."
+        "ContentIsTooLong": "Treść ogłoszenia jest zbyt długa. Maksymalnie {maxLength} znaków."
       },
       "DeleteConfirmText": "Czy na pewno chcesz usunąć sekcję?",
       "CheckProvidedData": "Sprawdź poprawność wprowadzonych danych. Data rozpoczęcia obowiązywania nie może być wcześniejsza niż dzisiejsza. Każda z sekcji musi być wypełniona, usuń puste sekcje."
@@ -103,6 +103,12 @@
         "PublishedAt": "Data publikacji",
         "PublishedBy": "Opublikowane przez",
         "ItemsCount": "Ilość ogłoszeń"
+      },
+      "ContextMenu": {
+        "Edit": "Edytuj",
+        "Publish": "Opublikuj",
+        "Archive": "Zarchiwizuj",
+        "Delete": "Usuń"
       }
     },
     "State": {
@@ -213,6 +219,7 @@
     "NoColumns": "Brak kolumn",
     "NoData": "Brak danych",
     "ActionsRowAriaLabel": "Akcje",
+    "ExpandRowAriaLabel": "Rozwiń",
     "ExpandBtnAriaLabel": "Rozwiń"
   },
   "Paginator": {
