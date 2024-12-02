@@ -1,7 +1,7 @@
-export interface IMenuItem {
+export interface ISideMenuItem {
   name: string;
   icon: string;
   route?: string;
-  children?: IMenuItem[];
+  children?: ISideMenuItem[];
   isVisible(): boolean;
 }

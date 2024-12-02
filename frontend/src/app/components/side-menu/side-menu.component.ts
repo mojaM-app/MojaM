@@ -5,7 +5,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { IS_MOBILE } from 'src/app/app.config';
 import { SystemPermissionValue } from 'src/core/system-permission.enum';
-import { IMenuItem } from 'src/interfaces/menu/menu-item';
+import { ISideMenuItem } from 'src/interfaces/menu/menu-item';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthTokenService } from 'src/services/auth/auth-token.service';
 import { PermissionService } from 'src/services/auth/permission.service';
@@ -36,9 +36,9 @@ import { SettingsMenu } from '../settings/settings.menu';
 })
 export class SideMenuComponent {
   public isDarkMode = false;
-  public readonly menuItems: WritableSignal<IMenuItem[]> = signal<IMenuItem[]>([]);
+  public readonly menuItems: WritableSignal<ISideMenuItem[]> = signal<ISideMenuItem[]>([]);
 
-  private readonly _menuItems: IMenuItem[] = [
+  private readonly _menuItems: ISideMenuItem[] = [
     {
       name: NewsMenu.Label,
       icon: NewsMenu.Icon,
