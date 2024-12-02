@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import { FormArray, FormControl, FormGroup, ValidationErrors } from '@angular/forms';
+import { errorNames } from 'src/validators/error-names.const';
 import { Constructor, Empty, IForm } from './shared.mixin';
 
 export function WithForm<
@@ -10,6 +11,7 @@ export function WithForm<
   T extends Constructor = Constructor<Empty>,
 >(Base: T = Empty as T) {
   return class extends Base implements IForm<TFormType> {
+    public readonly errorNames = errorNames;
     public formGroup: FormGroup<TFormType>;
 
     public constructor(...args: any[]) {
