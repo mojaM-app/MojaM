@@ -36,11 +36,10 @@ import { IResetPasswordForm, ResetPasswordFormControlNames } from './reset-passw
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetPasswordComponent extends WithForm<IResetPasswordForm>() implements OnInit {
-  public isTokenValid = signal<boolean | null>(null);
-  public userEmail = signal<string | undefined>(undefined);
-  public hideConfirmPassword = signal(true);
-  public hidePassword = signal(true);
-
+  public readonly isTokenValid = signal<boolean | null>(null);
+  public readonly userEmail = signal<string | undefined>(undefined);
+  public readonly hideConfirmPassword = signal(true);
+  public readonly hidePassword = signal(true);
   public readonly formControlNames = ResetPasswordFormControlNames;
 
   public constructor(
