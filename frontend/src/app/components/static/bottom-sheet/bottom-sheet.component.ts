@@ -21,12 +21,12 @@ export class BottomSheetComponent {
   public readonly menuItems = model(this._data ?? []);
 
   public menuItemClick(event: MouseEvent, menuItem: IMenuItem): void {
-    this._bottomSheetRef.dismiss();
-    event.preventDefault();
-
+    let result = undefined;
     if (menuItem.action) {
-      menuItem.action();
+      result = menuItem.action();
     }
+    this._bottomSheetRef.dismiss(result);
+    event.preventDefault();
   }
 
   public close(): void {

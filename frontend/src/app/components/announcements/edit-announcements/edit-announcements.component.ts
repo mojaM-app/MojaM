@@ -25,10 +25,8 @@ export class EditAnnouncementsComponent extends WithUnsubscribe() {
     super();
 
     this.addSubscription(
-      authService.isAuthenticated.subscribe((isAuthenticated: boolean) => {
-        if (!isAuthenticated) {
-          router.navigateByUrl(AnnouncementsMenu.Path);
-        }
+      authService.onAuthStateChanged.subscribe(() => {
+        router.navigateByUrl(AnnouncementsMenu.Path);
       })
     );
   }

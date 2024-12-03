@@ -27,6 +27,7 @@ import { IGridData } from 'src/interfaces/common/grid.data';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { BrowserWindowService } from 'src/services/browser/browser-window.service';
+import { BottomSheetActionResult } from '../../bottom-sheet/bottom-sheet.enum';
 import { BottomSheetService } from '../../bottom-sheet/bottom-sheet.service';
 import { ColumnType, IGridColumn, IGridService } from './grid-service.interface';
 
@@ -124,29 +125,7 @@ export class GridComponent<TGridItemDto, TGridData extends IGridData<TGridItemDt
   }
 
   public ngAfterViewInit(): void {
-    merge(this._sort().sortChange, this._paginator().page)
-      .pipe(
-        startWith(null),
-        switchMap(() => {
-          return this._gridService.getData(
-            this._sort()!.active,
-            this._sort()!.direction,
-            this._paginator()!.pageIndex,
-            this._paginator()!.pageSize
-          );
-        }),
-        map((response: TGridData | null) => {
-          if (response === null) {
-            return [];
-          }
-          // Only refresh the result length if there is new data. In case of rate
-          // limit errors, we do not want to reset the paginator to zero, as that
-          // would prevent users from re-triggering requests.
-          this.itemsTotalCount.set(response.totalCount);
-          return response.items;
-        })
-      )
-      .subscribe((items: TGridItemDto[]) => this.items.set(items));
+    this.refreshDataSource();
   }
 
   public showRowMenu(row: TGridItemDto): void {
@@ -154,9 +133,19 @@ export class GridComponent<TGridItemDto, TGridData extends IGridData<TGridItemDt
   }
 
   public showBottomSheet(row: TGridItemDto): void {
-    this._bottomSheetService.open({
-      data: this._gridService.getContextMenuItems(row),
-    });
+    this._bottomSheetService
+      .open({
+        data: this._gridService.getContextMenuItems(row),
+      })
+      .then((result?: BottomSheetActionResult) => {
+        switch (result) {
+          case BottomSheetActionResult.REFRESH_GRID:
+            this.refreshDataSource();
+            break;
+          default:
+            break;
+        }
+      });
   }
 
   private refreshVisibleColumns(): void {
@@ -167,6 +156,34 @@ export class GridComponent<TGridItemDto, TGridData extends IGridData<TGridItemDt
           ? this._mediaMatcher.matchMedia(`(min-width: ${column.mediaMinWidth}px)`).matches
           : true
       )
+    );
+  }
+
+  private refreshDataSource(): void {
+    this.addSubscription(
+      merge(this._sort().sortChange, this._paginator().page)
+        .pipe(
+          startWith(null),
+          switchMap(() => {
+            return this._gridService.getData(
+              this._sort()!.active,
+              this._sort()!.direction,
+              this._paginator()!.pageIndex,
+              this._paginator()!.pageSize
+            );
+          }),
+          map((response: TGridData | null) => {
+            if (response === null) {
+              return [];
+            }
+            // Only refresh the result length if there is new data. In case of rate
+            // limit errors, we do not want to reset the paginator to zero, as that
+            // would prevent users from re-triggering requests.
+            this.itemsTotalCount.set(response.totalCount);
+            return response.items;
+          })
+        )
+        .subscribe((items: TGridItemDto[]) => this.items.set(items))
     );
   }
 }

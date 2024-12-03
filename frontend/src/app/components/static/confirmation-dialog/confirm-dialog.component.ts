@@ -28,18 +28,27 @@ import { TranslationService } from 'src/services/translate/translation.service';
   styleUrl: './confirm-dialog.component.scss',
 })
 export class ConfirmDialogComponent {
-  public readonly settings: WritableSignal<IDialogSettings>;
+  public readonly model: WritableSignal<{
+    title: string;
+    message: string;
+    yesBtnText: string;
+    noBtnText: string;
+  }>;
 
   public constructor(
     @Inject(MAT_DIALOG_DATA) data: IDialogSettings,
     private _dialogRef: MatDialogRef<ConfirmDialogComponent>,
     translationService: TranslationService
   ) {
-    data.title = translationService.get(data.title ?? 'ConfirmDialog/DefaultTitle');
-    data.text = data.text?.length > 0 ? translationService.get(data.text) : '';
-    data.noBtnText = translationService.get(data.noBtnText ?? 'Shared/BtnNo');
-    data.yesBtnText = translationService.get(data.yesBtnText ?? 'Shared/BtnYes');
-    this.settings = signal(data);
+    this.model = signal({
+      title: translationService.get(data.title ?? 'ConfirmDialog/DefaultTitle'),
+      message:
+        data?.message.text?.length > 0
+          ? translationService.get(data.message.text, data.message.interpolateParams)
+          : '',
+      noBtnText: translationService.get(data.noBtnText ?? 'Shared/BtnNo'),
+      yesBtnText: translationService.get(data.yesBtnText ?? 'Shared/BtnYes'),
+    });
   }
 
   public noClick(): void {

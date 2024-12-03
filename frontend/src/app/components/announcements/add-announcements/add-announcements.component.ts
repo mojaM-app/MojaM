@@ -3,10 +3,10 @@ import { ChangeDetectionStrategy, Component, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
+import { AnnouncementsService } from 'src/app/components/announcements/services/announcements.service';
 import { IResponseError } from 'src/interfaces/errors/response.error';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
-import { AnnouncementsService } from 'src/services/announcements/announcements.service';
 import { AuthService } from 'src/services/auth/auth.service';
 import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { AnnouncementsFormComponent } from '../announcements-form/announcements-form.component';
@@ -37,10 +37,8 @@ export class AddAnnouncementsComponent extends WithUnsubscribe() {
     this.announcements = AddAnnouncementsDto.create();
 
     this.addSubscription(
-      authService.isAuthenticated.subscribe((isAuthenticated: boolean) => {
-        if (!isAuthenticated) {
-          this.navigateToAnnouncementsList();
-        }
+      authService.onAuthStateChanged.subscribe(() => {
+        this.navigateToAnnouncementsList();
       })
     );
   }

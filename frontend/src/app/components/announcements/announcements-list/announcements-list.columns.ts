@@ -1,4 +1,4 @@
-import { IAnnouncementsGridItemColumns } from 'src/interfaces/announcements/announcements-list.interfaces';
+import { IAnnouncementsGridItemColumns } from 'src/app/components/announcements/interfaces/announcements-list.interfaces';
 
 export const AnnouncementsListColumns: { [K in keyof IAnnouncementsGridItemColumns]: string } = {
   id: 'id',

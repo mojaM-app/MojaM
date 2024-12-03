@@ -7,14 +7,14 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { IS_MOBILE } from 'src/app/app.config';
-import { SystemPermissionValue } from 'src/core/system-permission.enum';
 import {
   ICurrentAnnouncements,
   IGetCurrentAnnouncements,
-} from 'src/interfaces/announcements/current-announcements';
+} from 'src/app/components/announcements/interfaces/current-announcements';
+import { CurrentAnnouncementsService } from 'src/app/components/announcements/services/current-announcements.service';
+import { SystemPermissionValue } from 'src/core/system-permission.enum';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { GdatePipe } from 'src/pipes/gdate.pipe';
-import { CurrentAnnouncementsService } from 'src/services/announcements/current-announcements.service';
 import { AuthService } from 'src/services/auth/auth.service';
 import { PermissionService } from 'src/services/auth/permission.service';
 import { CultureService } from 'src/services/translate/culture.service';
@@ -47,7 +47,7 @@ export class CurrentAnnouncementsComponent extends WithUnsubscribe() implements 
     super();
 
     this.addSubscription(
-      authService.isAuthenticated.subscribe(() => {
+      authService.onAuthStateChanged.subscribe(() => {
         this.ngOnInit();
       })
     );

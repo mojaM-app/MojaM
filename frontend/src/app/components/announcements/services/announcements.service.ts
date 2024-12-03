@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { AddAnnouncementsDto } from 'src/app/components/announcements/models/add-announcements.model';
-import { BaseService } from '../common/base.service';
-import { HttpClientService } from '../common/httpClient.service';
-import { SpinnerService } from '../spinner/spinner.service';
+import { BaseService } from '../../../../services/common/base.service';
+import { HttpClientService } from '../../../../services/common/httpClient.service';
+import { SpinnerService } from '../../../../services/spinner/spinner.service';
 
 @Injectable({
   providedIn: 'root',

@@ -109,7 +109,8 @@
         "Publish": "Opublikuj",
         "Archive": "Zarchiwizuj",
         "Delete": "Usuń"
-      }
+      },
+      "DeleteConfirmText": "Czy na pewno chcesz usunąć ogłoszenia utworzone {createdAt} przez '{createdBy}'?"
     },
     "State": {
       "0": "Nowe",
@@ -213,7 +214,10 @@
     "User_Is_Not_Active": "Konto użytkownika nie zostało aktywowane.",
     "User_Is_Locked_Out": "Konto użytkownika zostało zablokowane. Skontaktuj się z liderem.",
     "Session_Expired": "Twoja sesja wygasła. Zaloguj się ponownie.",
-    "Announcements_With_Given_ValidFromDate_Already_Exists": "Istnieją już ogłoszenia z wprowadzoną datą rozpoczęcia obowiązywania."
+    "Announcements_With_Given_ValidFromDate_Already_Exists": "Istnieją już ogłoszenia z wprowadzoną datą rozpoczęcia obowiązywania.",
+    "Announcements_Published_Announcements_Cant_Be_Deleted": "Nie można usunąć opublikowanych ogłoszeń. Można przenieść je do archiwum.",
+    "Announcements_Archived_Announcements_Cant_Be_Deleted": "Nie można usunąć zarchiwizowanych ogłoszeń.",
+    "Announcements_Archived_Announcements_Cant_Be_Edited": "Nie można edytować zarchiwizowanych ogłoszeń."
   },
   "Grid": {
     "NoColumns": "Brak kolumn",

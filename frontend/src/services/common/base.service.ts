@@ -24,6 +24,8 @@ export class BaseService {
       getCurrent: (): string =>
         `${environment.backendUrl}/${this.API_ROUTES.announcements.path}/current`,
       create: (): string => `${environment.backendUrl}/${this.API_ROUTES.announcements.path}`,
+      delete: (uuid: string): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.announcements.path}/${uuid}`,
     },
     announcementsList: {
       path: 'announcements-list',

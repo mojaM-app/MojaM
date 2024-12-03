@@ -1,7 +1,9 @@
+import { BottomSheetActionResult } from 'src/app/components/static/bottom-sheet/bottom-sheet.enum';
+
 export interface IMenuItem {
   title?: string;
   icon?: string;
-  action?: () => void;
+  action?: () => Promise<BottomSheetActionResult | undefined>;
 }
 
 export interface ISideMenuItem {

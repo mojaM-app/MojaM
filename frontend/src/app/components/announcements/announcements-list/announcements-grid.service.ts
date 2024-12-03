@@ -1,29 +1,45 @@
 import { Injectable } from '@angular/core';
 import { SortDirection } from '@angular/material/sort';
-import { Observable } from 'rxjs';
+import { firstValueFrom, map, Observable } from 'rxjs';
+import { IAnnouncementsGridItemDto } from 'src/app/components/announcements/interfaces/announcements-list.interfaces';
+import { AnnouncementsListService } from 'src/app/components/announcements/services/announcements-list.service';
 import {
   COLUMN_NAMES,
   ColumnType,
   IGridColumn,
   IGridService,
 } from 'src/app/components/static/grid/grid/grid-service.interface';
-import { IAnnouncementsGridItemDto } from 'src/interfaces/announcements/announcements-list.interfaces';
+import { SystemPermissionValue } from 'src/core/system-permission.enum';
+import { IDialogSettings } from 'src/interfaces/common/dialog.settings';
 import { IGridData } from 'src/interfaces/common/grid.data';
 import { IMenuItem } from 'src/interfaces/menu/menu-item';
-import { AnnouncementsListService } from 'src/services/announcements/announcements-list.service';
+import { PermissionService } from 'src/services/auth/permission.service';
+import { DialogService } from 'src/services/dialog/dialog.service';
+import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
+import { CultureService } from 'src/services/translate/culture.service';
 import { TranslationService } from 'src/services/translate/translation.service';
+import { BottomSheetActionResult } from '../../static/bottom-sheet/bottom-sheet.enum';
+import { BaseGridService } from '../../static/grid/grid/base-grid.service';
+import { AnnouncementStateValue } from '../announcement-state.enum';
 import { AnnouncementsListColumns } from './announcements-list.columns';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AnnouncementsGridService
+  extends BaseGridService
   implements IGridService<IAnnouncementsGridItemDto, IGridData<IAnnouncementsGridItemDto>>
 {
   public constructor(
+    permissionService: PermissionService,
     private _listService: AnnouncementsListService,
-    private _translationService: TranslationService
-  ) {}
+    dialogService: DialogService,
+    translationService: TranslationService,
+    snackBarService: SnackBarService,
+    cultureService: CultureService
+  ) {
+    super(permissionService, dialogService, translationService, snackBarService, cultureService);
+  }
 
   public getData(
     sortColumn: string,
@@ -35,7 +51,7 @@ export class AnnouncementsGridService
   }
 
   public getDisplayedColumns(): IGridColumn[] {
-    return [
+    const result: IGridColumn[] = [
       {
         propertyName: AnnouncementsListColumns.validFromDate!,
         title: this._translationService.get('Announcements/List/GridColumns/ValidFrom'),
@@ -45,7 +61,8 @@ export class AnnouncementsGridService
         propertyName: AnnouncementsListColumns.state,
         title: this._translationService.get('Announcements/List/GridColumns/State'),
         cssClass: 'text-center',
-        transform: (value: string) => this._translationService.get(`Announcements/State/${value}`),
+        transform: (value: string): string =>
+          this._translationService.get(`Announcements/State/${value}`),
       },
       {
         propertyName: AnnouncementsListColumns.createdAt,
@@ -82,37 +99,89 @@ export class AnnouncementsGridService
         mediaMinWidth: 650,
         cssClass: 'text-center',
       },
-      // {
-      //   propertyName: COLUMN_NAMES.EXPAND,
-      //   isExpandable: true,
-      // },
-      {
+    ];
+
+    if (
+      this._permissionService.hasAnyPermission([
+        SystemPermissionValue.EditAnnouncements,
+        SystemPermissionValue.DeleteAnnouncements,
+        SystemPermissionValue.PublishAnnouncements,
+      ])
+    ) {
+      result.push({
         propertyName: COLUMN_NAMES.ACTIONS,
         isActions: true,
-      },
-    ] as const;
+      } satisfies IGridColumn);
+    }
+
+    return result;
   }
 
   public getSortActiveColumnName(): string {
     return AnnouncementsListColumns.validFromDate!;
   }
 
-  public getContextMenuItems(item: IAnnouncementsGridItemDto): IMenuItem[] {
-    return [
-      {
-        title: this._translationService.get('Announcements/List/ContextMenu/Edit'),
-        icon: 'edit',
-        action: (): void => {
-          console.log('Edit announcement', item);
-        },
-      },
-      {
+  public getContextMenuItems(announcements: IAnnouncementsGridItemDto): IMenuItem[] {
+    const result: IMenuItem[] = [];
+
+    if (this._permissionService.hasPermission(SystemPermissionValue.DeleteAnnouncements)) {
+      result.push({
         title: this._translationService.get('Announcements/List/ContextMenu/Delete'),
         icon: 'delete',
-        action: (): void => {
-          console.log('Delete announcement', item);
+        action: async () => this.handleDelete(announcements),
+      });
+    }
+
+    if (this._permissionService.hasPermission(SystemPermissionValue.EditAnnouncements)) {
+      result.push({
+        title: this._translationService.get('Announcements/List/ContextMenu/Edit'),
+        icon: 'edit',
+        action: async () => this.handleEdit(announcements),
+      });
+    }
+
+    return result;
+  }
+
+  private async handleEdit(
+    announcements: IAnnouncementsGridItemDto
+  ): Promise<BottomSheetActionResult | undefined> {
+    if (announcements.state === AnnouncementStateValue.ARCHIVED) {
+      this._snackBarService.translateAndShowError(
+        'Errors/Announcements_Archived_Announcements_Cant_Be_Edited'
+      );
+      return;
+    }
+
+    //this._dialogService.openEditAnnouncementDialog(announcements.id);
+    return;
+  }
+
+  private async handleDelete(
+    announcements: IAnnouncementsGridItemDto
+  ): Promise<BottomSheetActionResult | undefined> {
+    const confirmed = await this._dialogService
+      .confirm({
+        message: {
+          text: 'Announcements/List/DeleteConfirmText',
+          interpolateParams: {
+            createdAt: this._datetimePipe.transform(announcements.createdAt),
+            createdBy: announcements.createdBy,
+          },
         },
-      },
-    ];
+        noBtnText: 'Shared/BtnCancel',
+        yesBtnText: 'Shared/BtnDelete',
+      } satisfies IDialogSettings)
+      .then((result: boolean) => result);
+
+    if (confirmed !== true) {
+      return;
+    }
+
+    return firstValueFrom(
+      this._listService
+        .delete(announcements.id)
+        .pipe(map((result: boolean) => (result ? BottomSheetActionResult.REFRESH_GRID : undefined)))
+    );
   }
 }

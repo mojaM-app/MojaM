@@ -1,4 +1,4 @@
-import { IGridData } from '../common/grid.data';
+import { IGridData } from '../../../../interfaces/common/grid.data';
 
 export interface IAnnouncementsGridItemColumns {
   id: string;

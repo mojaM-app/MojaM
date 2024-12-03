@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Pipe, PipeTransform } from '@angular/core';
 import * as Globalize from 'globalize';
 import { TranslationService } from 'src/services/translate/translation.service';
@@ -19,6 +18,8 @@ export class GdatePipe implements PipeTransform {
       if (style) {
         if (style.indexOf('raw:') === 0) {
           format.raw = style.slice(4);
+        } else if (style.indexOf('skeleton:') === 0) {
+          format.skeleton = style.slice(9);
         } else {
           (format as any).date = style;
         }

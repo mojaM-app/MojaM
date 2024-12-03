@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
-import { IGetCurrentAnnouncements } from 'src/interfaces/announcements/current-announcements';
-import { BaseService } from '../common/base.service';
-import { HttpClientService } from '../common/httpClient.service';
-import { SpinnerService } from '../spinner/spinner.service';
+import { IGetCurrentAnnouncements } from 'src/app/components/announcements/interfaces/current-announcements';
+import { BaseService } from '../../../../services/common/base.service';
+import { HttpClientService } from '../../../../services/common/httpClient.service';
+import { SpinnerService } from '../../../../services/spinner/spinner.service';
 
 @Injectable({
   providedIn: 'root',

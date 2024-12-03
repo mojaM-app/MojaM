@@ -54,7 +54,7 @@ export abstract class AnnouncementItemBase {
   public confirmDeleteItem(): void {
     this._dialogService
       .confirm({
-        text: 'Announcements/Form/DeleteConfirmText',
+        message: { text: 'Announcements/Form/DeleteConfirmText' },
         noBtnText: 'Shared/BtnCancel',
         yesBtnText: 'Shared/BtnDelete',
       } satisfies IDialogSettings)

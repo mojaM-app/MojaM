@@ -26,10 +26,8 @@ export class UserListComponent extends WithUnsubscribe() {
     super();
 
     this.addSubscription(
-      authService.isAuthenticated.subscribe((isAuthenticated: boolean) => {
-        if (!isAuthenticated) {
-          this.refreshPage();
-        }
+      authService.onAuthStateChanged.subscribe(() => {
+        this.refreshPage();
       })
     );
   }

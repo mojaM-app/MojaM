@@ -40,7 +40,6 @@ import {
     MatInputModule,
     MatFormFieldModule,
     MatDatepickerModule,
-    AnnouncementsFormComponent,
     AnnouncementItemMobileComponent,
     AnnouncementItemDesktopComponent,
     PipesModule,

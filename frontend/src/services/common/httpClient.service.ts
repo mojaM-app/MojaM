@@ -65,6 +65,19 @@ export class RequestBuilder {
       );
   }
 
+  public delete<TResponse>(): Observable<TResponse> {
+    if ((this._url?.length ?? 0) === 0) {
+      return EMPTY;
+    }
+
+    return this._http
+      .delete<{ message: string; data: TResponse }>(this._url!, { headers: this._headers })
+      .pipe(
+        map(response => response.data),
+        catchError((error: unknown) => this.handleError(error, this._translationService))
+      );
+  }
+
   public withUrl(url: string): RequestBuilder {
     this._url = url;
     return this;

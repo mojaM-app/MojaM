@@ -1,10 +1,10 @@
 <div class="dialog-header">
-  <div mat-dialog-title>{{ settings().title }}</div>
+  <div mat-dialog-title>{{ model().title }}</div>
 </div>
 <mat-dialog-content>
-  {{ settings().text }}
+  {{ model().message }}
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button type="button" mat-button (click)="noClick()">{{ settings().noBtnText }}</button>
-  <button type="submit" mat-button (click)="yesClick()">{{ settings().yesBtnText }}</button>
+  <button type="button" mat-button (click)="noClick()">{{ model().noBtnText }}</button>
+  <button type="submit" mat-button (click)="yesClick()">{{ model().yesBtnText }}</button>
 </mat-dialog-actions>

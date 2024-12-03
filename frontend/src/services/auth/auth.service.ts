@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, Observable, of, skip, tap } from 'rxjs';
 import {
   ILoginModel,
   ILoginResponse,
@@ -15,10 +15,11 @@ import { RefreshTokenService } from './refresh-token.service';
 })
 export class AuthService extends BaseService {
   public get isAuthenticated(): Observable<boolean> {
-    return this._isLoggedIn$.asObservable();
+    return this._isAuthenticated$.asObservable();
   }
+  public readonly onAuthStateChanged: Observable<boolean>;
 
-  private _isLoggedIn$ = new BehaviorSubject<boolean>(false);
+  private _isAuthenticated$ = new BehaviorSubject<boolean>(false);
 
   public constructor(
     private _httpClient: HttpClientService,
@@ -27,7 +28,9 @@ export class AuthService extends BaseService {
   ) {
     super();
 
-    this._isLoggedIn$.next(this.isSessionValid());
+    this._isAuthenticated$.next(this.isSessionValid());
+
+    this.onAuthStateChanged = this._isAuthenticated$.asObservable().pipe(skip(1));
   }
 
   public getUserInfoBeforeLogIn(
@@ -61,7 +64,7 @@ export class AuthService extends BaseService {
         tap((response: ILoginResponse) => {
           this._authTokenService.saveToken(response?.accessToken);
           this._refreshTokenService.saveToken(response?.refreshToken);
-          this._isLoggedIn$.next(this._authTokenService.isTokenValid());
+          this._isAuthenticated$.next(this._authTokenService.isTokenValid());
         })
       );
   }
@@ -69,7 +72,7 @@ export class AuthService extends BaseService {
   public logout(): void {
     this._refreshTokenService.removeToken();
     this._authTokenService.removeToken();
-    this._isLoggedIn$.next(this._authTokenService.isTokenValid());
+    this._isAuthenticated$.next(this._authTokenService.isTokenValid());
   }
 
   public refreshAccessToken(): Observable<string | null> {
@@ -88,7 +91,7 @@ export class AuthService extends BaseService {
       .pipe(
         tap((newAccessToken: string | null) => {
           this._authTokenService.saveToken(newAccessToken);
-          this._isLoggedIn$.next(this._authTokenService.isTokenValid());
+          this._isAuthenticated$.next(this._authTokenService.isTokenValid());
         })
       );
   }

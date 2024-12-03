@@ -4,10 +4,10 @@ import { map, Observable } from 'rxjs';
 import {
   AnnouncementsGridData,
   IAnnouncementsGridItemDto,
-} from 'src/interfaces/announcements/announcements-list.interfaces';
-import { BaseService } from '../common/base.service';
-import { HttpClientService } from '../common/httpClient.service';
-import { SpinnerService } from '../spinner/spinner.service';
+} from 'src/app/components/announcements/interfaces/announcements-list.interfaces';
+import { BaseService } from '../../../../services/common/base.service';
+import { HttpClientService } from '../../../../services/common/httpClient.service';
+import { SpinnerService } from '../../../../services/spinner/spinner.service';
 
 @Injectable({
   providedIn: 'root',
@@ -51,5 +51,9 @@ export class AnnouncementsListService extends BaseService {
           return resp;
         })
       );
+  }
+
+  public delete(uuid: string): Observable<boolean> {
+    return this._httpClient.request().withUrl(this.API_ROUTES.announcements.delete(uuid)).delete();
   }
 }
