@@ -151,7 +151,8 @@
     "BtnResetPassword": "Resetuj hasło",
     "BtnResetPasswordHint": "Kliknij w powyższy przycisk, aby zresetować hasło do swojego konta. Następnie sprawdź pocztę. Jeśli nie otrzymano wiadomości, sprawdź folder ze spamem.",
     "ResetPasswordSuccess": "Hasło zostało zresetowane.",
-    "ResetPasswordFailed": "Wystąpił błąd podczas resetowania hasła."
+    "ResetPasswordFailed": "Wystąpił błąd podczas resetowania hasła.",
+    "HidePasswordAriaLabel": "Ukryj hasło"
   },
   "ResetPassword": {
     "ChangePasswordTitle": "Zmiana hasła",

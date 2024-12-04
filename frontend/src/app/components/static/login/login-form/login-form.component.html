@@ -74,10 +74,18 @@
           <mat-label>{{ 'Login/Password' | gmessage }}</mat-label>
           <input
             #passwordInput
-            type="password"
             matInput
+            [type]="hidePassword() ? 'password' : 'text'"
             [placeholder]="'Login/PasswordPlaceholder' | gmessage"
             [formControlName]="formControlNames.password" />
+          <button
+            mat-icon-button
+            matSuffix
+            (click)="togglePasswordVisibility($event)"
+            [attr.aria-label]="'Login/HidePasswordAriaLabel' | gmessage"
+            [attr.aria-pressed]="hidePassword()">
+            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
         </mat-form-field>
       </div>
       @if (showResetPasswordButton()) {

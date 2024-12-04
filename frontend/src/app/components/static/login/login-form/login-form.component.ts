@@ -16,6 +16,7 @@ import {
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { IS_MOBILE } from 'src/app/app.config';
 import { environment } from 'src/environments/environment';
@@ -39,6 +40,7 @@ import { ILoginForm, LoginFormControlNames, LoginFormSteps } from './login.form'
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
+    MatIconModule,
     PipesModule,
     ReactiveFormsModule,
   ],
@@ -53,6 +55,7 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
   public showStep = signal<LoginFormSteps>(LoginFormSteps.EnterEmail);
   public loginError = signal<string | undefined>(undefined);
   public showResetPasswordButton = signal<boolean>(false);
+  public hidePassword = signal(true);
 
   private _emailInput = viewChild('emailInput', { read: ElementRef });
   private _phoneInput = viewChild('phoneInput', { read: ElementRef });
@@ -199,6 +202,11 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
 
   public focusEmailInput(): void {
     setTimeout(() => this._emailInput()?.nativeElement.focus(), 100);
+  }
+
+  public togglePasswordVisibility(event: MouseEvent): void {
+    this.hidePassword.set(!this.hidePassword());
+    event.stopPropagation();
   }
 
   private focusPhoneInput(): void {
