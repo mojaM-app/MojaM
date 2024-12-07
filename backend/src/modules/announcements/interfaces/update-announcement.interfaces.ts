@@ -1,15 +1,13 @@
 import { IUserId } from '@modules/users';
 import { IAnnouncementId } from './IAnnouncementId';
 
-export interface ICreateAnnouncementItem {
+export interface IUpdateAnnouncementItem {
   announcement: IAnnouncementId;
   content?: string;
-  createdBy: IUserId;
+  updatedBy?: IUserId;
 }
 
-export interface ICreateAnnouncement {
-  createdBy: IUserId;
-  state: number;
+export interface IUpdateAnnouncement {
   validFromDate?: Date | null;
   title?: string;
 }

@@ -45,7 +45,7 @@ export class RequestBuilder {
         retry(1),
         map(response => response.data),
         catchError((error: unknown) => {
-          return this.handleError(error, this._translationService);
+          return this.handleError(error);
         })
       );
   }
@@ -61,7 +61,22 @@ export class RequestBuilder {
       })
       .pipe(
         map(response => response.data),
-        catchError((error: unknown) => this.handleError(error, this._translationService))
+        catchError((error: unknown) => this.handleError(error))
+      );
+  }
+
+  public put<TResponse>(): Observable<TResponse> {
+    if ((this._url?.length ?? 0) === 0) {
+      return EMPTY;
+    }
+
+    return this._http
+      .put<{ message: string; data: TResponse }>(this._url!, this._body, {
+        headers: this._headers,
+      })
+      .pipe(
+        map(response => response.data),
+        catchError((error: unknown) => this.handleError(error))
       );
   }
 
@@ -74,7 +89,7 @@ export class RequestBuilder {
       .delete<{ message: string; data: TResponse }>(this._url!, { headers: this._headers })
       .pipe(
         map(response => response.data),
-        catchError((error: unknown) => this.handleError(error, this._translationService))
+        catchError((error: unknown) => this.handleError(error))
       );
   }
 
@@ -111,11 +126,11 @@ export class RequestBuilder {
   //   return this;
   // }
 
-  private handleError(error: any, translationService: TranslationService): Observable<never> {
+  private handleError(error: any): Observable<never> {
     if ('error' in error && 'data' in error.error) {
       const data = error.error.data;
       if ('message' in data) {
-        data.errorMessage = translationService.getError(data.message, data?.args ?? []);
+        data.errorMessage = this._translationService.getError(data.message, data?.args ?? []);
       }
       return throwError(() => {
         return {

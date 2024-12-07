@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SortDirection } from '@angular/material/sort';
+import { Router } from '@angular/router';
 import { firstValueFrom, map, Observable } from 'rxjs';
 import { IAnnouncementsGridItemDto } from 'src/app/components/announcements/interfaces/announcements-list.interfaces';
 import { AnnouncementsListService } from 'src/app/components/announcements/services/announcements-list.service';
@@ -21,6 +22,7 @@ import { TranslationService } from 'src/services/translate/translation.service';
 import { BottomSheetActionResult } from '../../static/bottom-sheet/bottom-sheet.enum';
 import { BaseGridService } from '../../static/grid/grid/base-grid.service';
 import { AnnouncementStateValue } from '../announcement-state.enum';
+import { EditAnnouncementsMenu } from '../announcements.menu';
 import { AnnouncementsListColumns } from './announcements-list.columns';
 
 @Injectable({
@@ -31,14 +33,22 @@ export class AnnouncementsGridService
   implements IGridService<IAnnouncementsGridItemDto, IGridData<IAnnouncementsGridItemDto>>
 {
   public constructor(
-    permissionService: PermissionService,
     private _listService: AnnouncementsListService,
+    permissionService: PermissionService,
     dialogService: DialogService,
     translationService: TranslationService,
     snackBarService: SnackBarService,
+    router: Router,
     cultureService: CultureService
   ) {
-    super(permissionService, dialogService, translationService, snackBarService, cultureService);
+    super(
+      permissionService,
+      dialogService,
+      translationService,
+      snackBarService,
+      router,
+      cultureService
+    );
   }
 
   public getData(
@@ -153,8 +163,9 @@ export class AnnouncementsGridService
       return;
     }
 
-    //this._dialogService.openEditAnnouncementDialog(announcements.id);
-    return;
+    return this._router
+      .navigateByUrl(EditAnnouncementsMenu.Path + '/' + announcements.id)
+      .then(() => BottomSheetActionResult.REDIRECT_TO_URL);
   }
 
   private async handleDelete(

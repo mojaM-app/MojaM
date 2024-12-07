@@ -34,6 +34,12 @@ export {
   type IGetCurrentAnnouncementsDto,
 } from './dtos/get-current-announcements.dto';
 export { PublishAnnouncementsReqDto, PublishAnnouncementsResponseDto } from './dtos/publish-announcements.dto';
+export {
+  UpdateAnnouncementItemDto,
+  UpdateAnnouncementsDto,
+  UpdateAnnouncementsReqDto,
+  UpdateAnnouncementsResponseDto,
+} from './dtos/update-announcements.dto';
 
 export { AnnouncementsListService } from './services/announcements-list.service';
 export { AnnouncementsService } from './services/announcements.service';

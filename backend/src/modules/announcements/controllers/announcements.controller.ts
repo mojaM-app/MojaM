@@ -10,6 +10,9 @@ import {
   GetAnnouncementsResponseDto,
   PublishAnnouncementsReqDto,
   PublishAnnouncementsResponseDto,
+  UpdateAnnouncementsDto,
+  UpdateAnnouncementsReqDto,
+  UpdateAnnouncementsResponseDto,
 } from '@modules/announcements';
 import { BaseController } from '@modules/common';
 import { isGuid } from '@utils';
@@ -39,6 +42,17 @@ export class AnnouncementsController extends BaseController {
       const model: CreateAnnouncementsDto = req.body;
       const result = await this._service.create(new CreateAnnouncementsReqDto(model, this.getCurrentUserId(req)));
       res.status(201).json(new CreateAnnouncementsResponseDto(result!.id));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public update = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const model: UpdateAnnouncementsDto = req.body;
+      const reqDto = new UpdateAnnouncementsReqDto(model, this.getCurrentUserId(req));
+      const result = await this._service.update(reqDto);
+      res.status(200).json(new UpdateAnnouncementsResponseDto(result!.id));
     } catch (error) {
       next(error);
     }

@@ -14,6 +14,7 @@ import {
 } from 'typeorm';
 import { ICreateAnnouncement } from '../interfaces/create-announcement.interfaces';
 import { IAnnouncementId } from '../interfaces/IAnnouncementId';
+import { IUpdateAnnouncement } from '../interfaces/update-announcement.interfaces';
 import { IHasGuidId } from './../../../interfaces/IHasGuidId';
 import { User } from './../../../modules/users/entities/user.entity';
 import { AnnouncementItem } from './announcement-item.entity';
@@ -21,7 +22,7 @@ import { AnnouncementItem } from './announcement-item.entity';
 @Entity({
   name: 'announcements',
 })
-export class Announcement implements IHasGuidId, IAnnouncementId, ICreateAnnouncement {
+export class Announcement implements IHasGuidId, IAnnouncementId, ICreateAnnouncement, IUpdateAnnouncement {
   @PrimaryGeneratedColumn({
     name: 'Id',
     type: 'int',
@@ -60,10 +61,10 @@ export class Announcement implements IHasGuidId, IAnnouncementId, ICreateAnnounc
     nullable: true,
     transformer: {
       from: (value: string) => (value?.length > 0 ? new Date(value + 'T00:00:00Z') : undefined),
-      to: (value: Date) => value?.toISOString().slice(0, 10), // format the Date to YYYY-MM-DD
+      to: (value: Date | null) => value?.toISOString().slice(0, 10), // format the Date to YYYY-MM-DD
     },
   })
-  public validFromDate?: Date;
+  public validFromDate?: Date | null;
 
   @CreateDateColumn({
     name: 'CreatedAt',

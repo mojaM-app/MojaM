@@ -8,12 +8,14 @@ import {
   AnnouncementsRepository,
   AnnouncementsRetrievedEvent,
   AnnouncementStateValue,
+  AnnouncementsUpdatedEvent,
   announcementToIAnnouncements,
   CreateAnnouncementsReqDto,
   DeleteAnnouncementsReqDto,
   GetAnnouncementsReqDto,
   IAnnouncementsDto,
   PublishAnnouncementsReqDto,
+  UpdateAnnouncementsReqDto,
 } from '@modules/announcements';
 import { BaseService } from '@modules/common';
 import { isDate, isNullOrUndefined } from '@utils';
@@ -67,6 +69,36 @@ export class AnnouncementsService extends BaseService {
     const dto = announcementToIAnnouncements(announcements!);
 
     this._eventDispatcher.dispatch(events.announcements.announcementsCreated, new AnnouncementsCreatedEvent(dto, reqDto.currentUserId!));
+
+    return dto;
+  }
+
+  public async update(reqDto: UpdateAnnouncementsReqDto): Promise<IAnnouncementsDto | null> {
+    if (isNullOrUndefined(reqDto.announcements)) {
+      return null;
+    }
+
+    const announcementsModel = reqDto.announcements;
+
+    if (isDate(announcementsModel.validFromDate)) {
+      const existAnnouncementWithSameDate = await this._announcementsRepository.checkIfExistWithDate(
+        announcementsModel.validFromDate,
+        announcementsModel.id,
+      );
+      if (existAnnouncementWithSameDate) {
+        throw new TranslatableHttpException(
+          StatusCode.ClientErrorBadRequest,
+          errorKeys.announcements.Announcements_With_Given_ValidFromDate_Already_Exists,
+          { validFromDate: reqDto.announcements.validFromDate },
+        );
+      }
+    }
+
+    const { id: announcementsId } = await this._announcementsRepository.update(reqDto);
+    const announcements = await this._announcementsRepository.get(announcementsId);
+    const dto = announcementToIAnnouncements(announcements!);
+
+    this._eventDispatcher.dispatch(events.announcements.announcementsUpdated, new AnnouncementsUpdatedEvent(dto, reqDto.currentUserId!));
 
     return dto;
   }

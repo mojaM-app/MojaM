@@ -1,12 +1,16 @@
+import { errorKeys } from '@exceptions';
+import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import { IUserId } from '@modules/users';
 import { isNullOrUndefined } from '@utils';
 import { isDate } from '@utils/date.utils';
+import StatusCode from 'status-code-enum';
 import { Service } from 'typedi';
 import { FindOptionsRelations, FindOptionsWhere } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { CreateAnnouncementsReqDto } from '../dtos/create-announcements.dto';
 import { DeleteAnnouncementsReqDto } from '../dtos/delete-announcements.dto';
 import { PublishAnnouncementsReqDto } from '../dtos/publish-announcements.dto';
+import { UpdateAnnouncementsReqDto } from '../dtos/update-announcements.dto';
 import { AnnouncementItem } from '../entities/announcement-item.entity';
 import { Announcement } from '../entities/announcement.entity';
 import { AnnouncementStateValue } from '../enums/announcement-state.enum';
@@ -52,7 +56,54 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
     });
   }
 
-  public async checkIfExistWithDate(validFromDate: Date | undefined): Promise<boolean> {
+  public async update(reqDto: UpdateAnnouncementsReqDto): Promise<Announcement> {
+    return await this._dbContext.transaction(async transactionalEntityManager => {
+      const announcementsRepository = transactionalEntityManager.getRepository(Announcement);
+
+      const id = await this.getIdByUuid(reqDto.announcements.id);
+
+      if (isNullOrUndefined(id)) {
+        throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcements_Does_Not_Exist, {
+          id: reqDto.announcements.id,
+        });
+      }
+
+      await announcementsRepository.update(
+        {
+          id,
+        } satisfies FindOptionsWhere<Announcement>,
+        {
+          validFromDate: isNullOrUndefined(reqDto.announcements.validFromDate) ? null : reqDto.announcements.validFromDate!,
+          title: reqDto.announcements.title,
+        } satisfies QueryDeepPartialEntity<Announcement>,
+      );
+
+      // const announcementItemsRepository = transactionalEntityManager.getRepository(AnnouncementItem);
+
+      // await announcementItemsRepository
+      //   .createQueryBuilder()
+      //   .delete()
+      //   .where('AnnouncementId = :announcementId', { announcementId: announcement.id })
+      //   .execute();
+
+      // const items = reqDto.announcements.items ?? [];
+
+      // for await (const item of items) {
+      //   const announcementItem = await announcementItemsRepository.save({
+      //     announcement,
+      //     content: item.content,
+      //     createdBy: { id: reqDto.currentUserId! } satisfies IUserId,
+      //   } satisfies ICreateAnnouncementItem);
+
+      //   announcement.items.push(announcementItem);
+      // }
+
+      const result = await this.get(id!);
+      return result!;
+    });
+  }
+
+  public async checkIfExistWithDate(validFromDate: Date | undefined, skippedAnnouncementUuid?: string | undefined): Promise<boolean> {
     if (!isDate(validFromDate)) {
       return false;
     }
@@ -60,6 +111,7 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
     const count = await this._dbContext.announcements
       .createQueryBuilder('announcement')
       .where('ValidFromDate = :date', { date: validFromDate?.toISOString().slice(0, 10) })
+      .andWhere('Uuid != :uuid', { uuid: skippedAnnouncementUuid ?? '' })
       .getCount();
 
     return count > 0;

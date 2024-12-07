@@ -4,6 +4,8 @@ import { AddAnnouncementsDto } from 'src/app/components/announcements/models/add
 import { BaseService } from '../../../../services/common/base.service';
 import { HttpClientService } from '../../../../services/common/httpClient.service';
 import { SpinnerService } from '../../../../services/spinner/spinner.service';
+import { IAnnouncements } from '../interfaces/announcements';
+import { EditAnnouncementsDto } from '../models/edit-announcements.model';
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +24,44 @@ export class AnnouncementsService extends BaseService {
       .withUrl(this.API_ROUTES.announcements.create())
       .withBody({ ...model })
       .post<string | null>()
+      .pipe(
+        this._spinnerService.waitForSubscription(),
+        map((resp: string | null) => {
+          return resp ?? null;
+        })
+      );
+  }
+
+  public get(uuid: string): Observable<IAnnouncements> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.announcements.get(uuid))
+      .get<IAnnouncements>()
+      .pipe(
+        this._spinnerService.waitForSubscription(),
+        map((resp: IAnnouncements) => {
+          if (resp) {
+            resp.validFromDate = resp.validFromDate ? new Date(resp.validFromDate) : undefined;
+            resp.createdAt = new Date(resp.createdAt);
+            resp.updatedAt = new Date(resp.updatedAt);
+            resp.publishedAt = resp.publishedAt ? new Date(resp.publishedAt) : undefined;
+            resp.items?.forEach(item => {
+              item.createdAt = new Date(item.createdAt);
+              item.updatedAt = item.updatedAt ? new Date(item.updatedAt) : undefined;
+            });
+          }
+
+          return resp;
+        })
+      );
+  }
+
+  public update(model: EditAnnouncementsDto): Observable<string | null> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.announcements.update(model.id!))
+      .withBody({ ...model })
+      .put<string | null>()
       .pipe(
         this._spinnerService.waitForSubscription(),
         map((resp: string | null) => {

@@ -5,6 +5,7 @@ import { AnnouncementsController, CreateAnnouncementsDto, CurrentAnnouncementsCo
 import { setIdentity } from '@modules/auth';
 import { REGEX_GUID_PATTERN } from '@utils';
 import express, { NextFunction, Response } from 'express';
+import { UpdateAnnouncementsDto } from '../dtos/update-announcements.dto';
 
 export class AnnouncementsRout implements IRoutes {
   public path = '/announcements';
@@ -24,11 +25,15 @@ export class AnnouncementsRout implements IRoutes {
 
   public initializeRoutes(): void {
     this.router.get(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity, this.checkGetPermission], this._announcementsController.get);
-
     this.router.post(
       `${this.path}`,
       [validateData(CreateAnnouncementsDto), setIdentity, this.checkCreatePermission],
       this._announcementsController.create,
+    );
+    this.router.put(
+      `${this.path}/:id(${REGEX_GUID_PATTERN})`,
+      [validateData(UpdateAnnouncementsDto), setIdentity, this.checkUpdatePermission],
+      this._announcementsController.update,
     );
     this.router.delete(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity, this.checkDeletePermission], this._announcementsController.delete);
     this.router.post(
@@ -64,6 +69,16 @@ export class AnnouncementsRout implements IRoutes {
     if (!req.identity?.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToAddAnnouncements()) {
+      next(new ForbiddenException());
+    } else {
+      next();
+    }
+  };
+
+  private readonly checkUpdatePermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+    if (!req.identity?.isAuthenticated()) {
+      next(new UnauthorizedException());
+    } else if (!req.identity.hasPermissionToEditAnnouncements()) {
       next(new ForbiddenException());
     } else {
       next();

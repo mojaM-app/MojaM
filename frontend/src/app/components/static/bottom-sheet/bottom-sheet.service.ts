@@ -16,18 +16,25 @@ export class BottomSheetService {
 
   public open(config: MatBottomSheetConfig): Promise<BottomSheetActionResult | undefined> {
     const currentUrl = this._location.path();
+    const newPath = currentUrl + `/menu/${Guid.raw()}`;
 
     const bottomSheetRef = this._bottomSheet.open(BottomSheetComponent, config);
 
     bottomSheetRef
       .afterOpened()
-      .pipe(tap(() => this._location.go(currentUrl + `/menu/${Guid.raw()}`)))
+      .pipe(tap(() => this._location.go(newPath)))
       .subscribe();
 
     return firstValueFrom(
       bottomSheetRef.afterDismissed().pipe(
-        tap(() => this._location.go(currentUrl)),
-        map((result?: BottomSheetActionResult) => result)
+        tap(() => {
+          if (this._location.path() === newPath) {
+            this._location.go(currentUrl);
+          }
+        }),
+        map(result => {
+          return result;
+        })
       )
     );
   }

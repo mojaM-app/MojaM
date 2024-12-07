@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { GdatePipe } from 'src/pipes/gdate.pipe';
 import { GdatetimePipe } from 'src/pipes/gdatetime.pipe';
 import { GtimePipe } from 'src/pipes/gtime.pipe';
@@ -17,6 +18,7 @@ export class BaseGridService {
     protected _dialogService: DialogService,
     protected _translationService: TranslationService,
     protected _snackBarService: SnackBarService,
+    protected _router: Router,
     cultureService: CultureService
   ) {
     this._datetimePipe = new GdatetimePipe(cultureService, _translationService);

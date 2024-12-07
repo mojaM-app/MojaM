@@ -1,13 +1,14 @@
 /* eslint-disable no-use-before-define */
 import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from 'typeorm';
 import { ICreateAnnouncementItem } from '../interfaces/create-announcement.interfaces';
+import { IUpdateAnnouncementItem } from '../interfaces/update-announcement.interfaces';
 import { User } from './../../../modules/users/entities/user.entity';
 import { Announcement } from './announcement.entity';
 
 @Entity({
   name: 'announcement_items',
 })
-export class AnnouncementItem implements ICreateAnnouncementItem {
+export class AnnouncementItem implements ICreateAnnouncementItem, IUpdateAnnouncementItem {
   @PrimaryGeneratedColumn('uuid', {
     name: 'Id',
     primaryKeyConstraintName: 'PK_AnnouncementItem_Id',
@@ -67,8 +68,7 @@ export class AnnouncementItem implements ICreateAnnouncementItem {
   })
   public updatedBy?: Relation<User>;
 
-  @ManyToOne(() => Announcement, announcement => announcement.items,
-    { onDelete: 'RESTRICT', onUpdate: 'RESTRICT', })
+  @ManyToOne(() => Announcement, announcement => announcement.items, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
   @JoinColumn({
     name: 'AnnouncementId',
     referencedColumnName: 'id',
