@@ -9,5 +9,5 @@ export interface IUpdateAnnouncementItem {
 
 export interface IUpdateAnnouncement {
   validFromDate?: Date | null;
-  title?: string;
+  title?: string | null;
 }

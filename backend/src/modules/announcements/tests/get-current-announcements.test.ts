@@ -16,8 +16,8 @@ import { getAdminLoginData } from '@utils/tests.utils';
 import { isDateString } from 'class-validator';
 import { EventDispatcher } from 'event-dispatch';
 import request from 'supertest';
-import { generateValidAnnouncements } from '../helpers/announcements-tests.helpers';
 import './../../../utils/date.extensions';
+import { generateValidAnnouncements } from './announcements-tests.helpers';
 
 describe('GET /announcements/current', () => {
   const announcementRoute = new AnnouncementsRout();
@@ -201,9 +201,7 @@ describe('GET /announcements/current', () => {
     it('when there are one published announcements with validFromDate=6_days_ago and one unpublish with validFromDate=today_s_date', async () => {
       const requestData1 = generateValidAnnouncements();
       // 6 days ago
-      const x = getDateNow();
-      const y = x.addDays(-6);
-      requestData1.validFromDate = y;
+      requestData1.validFromDate = getDateNow().addDays(-6);
       const createAnnouncements1Response = await request(app.getServer())
         .post(announcementRoute.path)
         .send(requestData1)
@@ -243,14 +241,14 @@ describe('GET /announcements/current', () => {
       expect(currentAnnouncements!.id).toBeDefined();
       expect(isGuid(currentAnnouncements!.id)).toBe(true);
       expect(currentAnnouncements!.id).toBe(createdAnnouncements1Id);
-      expect(currentAnnouncements!.createdBy).toBeDefined();
+      expect(currentAnnouncements!.createdBy.length).toBeGreaterThan(0);
       expect(currentAnnouncements!.createdAt).toBeDefined();
       expect(isDateString(currentAnnouncements!.createdAt)).toBe(true);
       expect(currentAnnouncements!.updatedAt).toBeDefined();
       expect(isDateString(currentAnnouncements!.updatedAt)).toBe(true);
       expect(currentAnnouncements?.title).toBe(requestData1.title);
       expect(currentAnnouncements?.publishedAt).toBeDefined();
-      expect(currentAnnouncements?.publishedBy).toBeDefined();
+      expect(currentAnnouncements?.publishedBy.length).toBeGreaterThan(0);
       expect(currentAnnouncements!.validFromDate).toBe(requestData1.validFromDate.toISOString());
       expect(currentAnnouncements?.items).toBeDefined();
       expect(currentAnnouncements?.items.length).toBe(requestData1.items!.length);
@@ -260,7 +258,9 @@ describe('GET /announcements/current', () => {
       expect(currentAnnouncements!.items.every(item => item.createdBy !== undefined)).toBe(true);
       expect(currentAnnouncements!.items.every(item => item.updatedAt !== undefined)).toBe(true);
       expect(currentAnnouncements!.items.every(item => item.updatedBy === undefined)).toBe(true);
-
+      requestData1.items!.forEach((item, index) => {
+        expect(currentAnnouncements!.items[index].content).toBe(item.content);
+      });
       // cleanup
       const deleteAnnouncements1Response = await request(app.getServer())
         .delete(announcementRoute.path + '/' + createdAnnouncements1Id)
@@ -326,14 +326,15 @@ describe('GET /announcements/current', () => {
       expect(currentAnnouncements!.id).toBeDefined();
       expect(isGuid(currentAnnouncements!.id)).toBe(true);
       expect(currentAnnouncements!.id).toBe(createdAnnouncementsId);
-      expect(currentAnnouncements!.createdBy).toBeDefined();
+      expect(currentAnnouncements!.createdBy.length).toBeGreaterThan(0);
       expect(currentAnnouncements!.createdAt).toBeDefined();
       expect(isDateString(currentAnnouncements!.createdAt)).toBe(true);
       expect(currentAnnouncements!.updatedAt).toBeDefined();
       expect(isDateString(currentAnnouncements!.updatedAt)).toBe(true);
       expect(currentAnnouncements?.title).toBe(requestData.title);
       expect(currentAnnouncements?.publishedAt).toBeDefined();
-      expect(currentAnnouncements?.publishedBy).toBeDefined();
+      expect(isDateString(currentAnnouncements!.publishedAt)).toBe(true);
+      expect(currentAnnouncements?.publishedBy?.length).toBeGreaterThan(0);
       expect(currentAnnouncements!.validFromDate).toBe(requestData.validFromDate.toISOString());
       expect(currentAnnouncements?.items).toBeDefined();
       expect(currentAnnouncements?.items.length).toBe(requestData.items!.length);
@@ -343,6 +344,9 @@ describe('GET /announcements/current', () => {
       expect(currentAnnouncements!.items.every(item => item.createdBy !== undefined)).toBe(true);
       expect(currentAnnouncements!.items.every(item => item.updatedAt !== undefined)).toBe(true);
       expect(currentAnnouncements!.items.every(item => item.updatedBy === undefined)).toBe(true);
+      requestData.items!.forEach((item, index) => {
+        expect(currentAnnouncements!.items[index].content).toBe(item.content);
+      });
       expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
 
       // cleanup

@@ -3,10 +3,12 @@ import { errorKeys } from '@exceptions';
 import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
 import { Type } from 'class-transformer';
-import { IsArray, IsDate, IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength, ValidateNested } from 'class-validator';
+import { IsArray, IsDate, IsNotEmpty, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
 import { AnnouncementItemContentMaxLength, AnnouncementsTitleMaxLength } from './create-announcements.dto';
 
 export class UpdateAnnouncementItemDto {
+  public id?: string;
+
   @IsNotEmpty({ message: errorKeys.announcements.Item_Content_Is_Required })
   @IsString({ message: errorKeys.announcements.Item_Content_Is_Required })
   @MaxLength(AnnouncementItemContentMaxLength, { message: errorKeys.announcements.Item_Content_Too_Long })
@@ -14,18 +16,14 @@ export class UpdateAnnouncementItemDto {
 }
 
 export class UpdateAnnouncementsDto {
-  @IsNotEmpty()
-  @IsUUID()
-  public id: string;
-
   @IsOptional()
   @MaxLength(AnnouncementsTitleMaxLength, { message: errorKeys.announcements.Title_Too_Long })
-  public title?: string | undefined;
+  public title?: string | null;
 
   @IsOptional()
   @Type(() => Date)
   @IsDate()
-  public validFromDate?: Date | undefined;
+  public validFromDate?: Date | null;
 
   @IsOptional()
   @IsArray()
@@ -35,10 +33,12 @@ export class UpdateAnnouncementsDto {
 }
 
 export class UpdateAnnouncementsReqDto extends BaseReqDto {
+  public readonly announcementsId: string | undefined;
   public readonly announcements: UpdateAnnouncementsDto;
 
-  public constructor(announcements: UpdateAnnouncementsDto, currentUserId: number | undefined) {
+  public constructor(announcementsId: string | undefined, announcements: UpdateAnnouncementsDto, currentUserId: number | undefined) {
     super(currentUserId);
+    this.announcementsId = announcementsId;
     this.announcements = announcements;
   }
 }

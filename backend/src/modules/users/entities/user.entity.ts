@@ -198,7 +198,15 @@ export class User implements IHasGuidId, IUserId, ICreateUser {
   @OneToMany(() => AnnouncementItem, (announcementItem: AnnouncementItem) => announcementItem.updatedBy)
   public updatedAnnouncementItems: Relation<AnnouncementItem[]>;
 
-  public getFullName(): string {
-    return `${this.firstName} ${this.lastName}`;
+  public getFullName(): string | null {
+    if ((this.firstName?.length ?? 0) > 0 && (this.lastName?.length ?? 0) > 0) {
+      return `${this.firstName} ${this.lastName}`;
+    } else if ((this.firstName?.length ?? 0) > 0) {
+      return this.firstName!;
+    } else if ((this.lastName?.length ?? 0) > 0) {
+      return this.lastName!;
+    } else {
+      return null;
+    }
   }
 }

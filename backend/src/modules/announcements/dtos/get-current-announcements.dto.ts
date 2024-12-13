@@ -13,7 +13,7 @@ export interface ICurrentAnnouncementsItemDto {
 
 export interface ICurrentAnnouncementsDto {
   id: string;
-  title?: string;
+  title: string | null;
   validFromDate: Date;
   createdAt: Date;
   createdBy: string;
@@ -41,17 +41,17 @@ export class GetCurrentAnnouncementsResponseDto implements IResponse<IGetCurrent
 export function announcementToICurrentAnnouncements(announcement: Announcement): ICurrentAnnouncementsDto {
   return {
     id: announcement.uuid,
-    title: announcement.title ?? undefined,
+    title: announcement.title,
     validFromDate: announcement.validFromDate!,
-    createdBy: announcement.createdBy.getFullName(),
+    createdBy: announcement.createdBy.getFullName()!,
     createdAt: announcement.createdAt,
     updatedAt: announcement.updatedAt ?? announcement.createdAt,
-    publishedBy: announcement.publishedBy!.getFullName(),
+    publishedBy: announcement.publishedBy!.getFullName()!,
     publishedAt: announcement.publishedAt!,
     items: announcement.items.map(item => ({
       id: item.id,
       content: item.content,
-      createdBy: item.createdBy.getFullName(),
+      createdBy: item.createdBy.getFullName()!,
       createdAt: item.createdAt,
       updatedBy: item.updatedBy?.getFullName() ?? undefined,
       updatedAt: item.updatedAt ?? item.createdAt,

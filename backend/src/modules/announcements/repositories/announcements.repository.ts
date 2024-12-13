@@ -5,7 +5,7 @@ import { isNullOrUndefined } from '@utils';
 import { isDate } from '@utils/date.utils';
 import StatusCode from 'status-code-enum';
 import { Service } from 'typedi';
-import { FindOptionsRelations, FindOptionsWhere } from 'typeorm';
+import { Equal, FindManyOptions, FindOptionsOrder, FindOptionsRelations, FindOptionsSelect, FindOptionsWhere } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { CreateAnnouncementsReqDto } from '../dtos/create-announcements.dto';
 import { DeleteAnnouncementsReqDto } from '../dtos/delete-announcements.dto';
@@ -15,6 +15,7 @@ import { AnnouncementItem } from '../entities/announcement-item.entity';
 import { Announcement } from '../entities/announcement.entity';
 import { AnnouncementStateValue } from '../enums/announcement-state.enum';
 import { ICreateAnnouncement, ICreateAnnouncementItem } from '../interfaces/create-announcement.interfaces';
+import { IAnnouncementId } from '../interfaces/IAnnouncementId';
 import { BaseAnnouncementsRepository } from './base.announcements.repository';
 
 @Service()
@@ -30,8 +31,8 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
       const announcement = await announcementsRepository.save({
         createdBy: { id: reqDto.currentUserId! } satisfies IUserId,
         state: AnnouncementStateValue.DRAFT,
-        validFromDate: isNullOrUndefined(reqDto.announcements.validFromDate) ? undefined : reqDto.announcements.validFromDate!,
-        title: reqDto.announcements.title,
+        validFromDate: reqDto.announcements.validFromDate ?? null,
+        title: reqDto.announcements.title ?? null,
       } satisfies ICreateAnnouncement);
 
       if (announcement.items === undefined) {
@@ -57,14 +58,14 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
   }
 
   public async update(reqDto: UpdateAnnouncementsReqDto): Promise<Announcement> {
-    return await this._dbContext.transaction(async transactionalEntityManager => {
-      const announcementsRepository = transactionalEntityManager.getRepository(Announcement);
+    const id = await this.getIdByUuid(reqDto.announcementsId);
 
-      const id = await this.getIdByUuid(reqDto.announcements.id);
+    await this._dbContext.transaction(async transactionalEntityManager => {
+      const announcementsRepository = transactionalEntityManager.getRepository(Announcement);
 
       if (isNullOrUndefined(id)) {
         throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcements_Does_Not_Exist, {
-          id: reqDto.announcements.id,
+          id: reqDto.announcementsId,
         });
       }
 
@@ -73,44 +74,75 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
           id,
         } satisfies FindOptionsWhere<Announcement>,
         {
-          validFromDate: isNullOrUndefined(reqDto.announcements.validFromDate) ? null : reqDto.announcements.validFromDate!,
+          validFromDate: reqDto.announcements.validFromDate,
           title: reqDto.announcements.title,
         } satisfies QueryDeepPartialEntity<Announcement>,
       );
 
-      // const announcementItemsRepository = transactionalEntityManager.getRepository(AnnouncementItem);
+      if (reqDto.announcements.items !== undefined) {
+        const announcementItemsRepository = transactionalEntityManager.getRepository(AnnouncementItem);
+        const announcementItems = await announcementItemsRepository.find({
+          where: {
+            announcement: Equal(`${id}`),
+          } satisfies FindOptionsWhere<AnnouncementItem>,
+          relations: {
+            announcement: true,
+          } satisfies FindOptionsRelations<AnnouncementItem>,
+          select: {
+            announcement: {
+              id: false,
+            },
+            id: true,
+            content: true,
+          } satisfies FindOptionsSelect<AnnouncementItem>,
+        } satisfies FindManyOptions<AnnouncementItem>);
 
-      // await announcementItemsRepository
-      //   .createQueryBuilder()
-      //   .delete()
-      //   .where('AnnouncementId = :announcementId', { announcementId: announcement.id })
-      //   .execute();
+        for await (const item of reqDto.announcements.items ?? []) {
+          const existingItem = announcementItems.find(x => x.id === item.id);
 
-      // const items = reqDto.announcements.items ?? [];
+          if (existingItem === undefined) {
+            await announcementItemsRepository.save({
+              announcement: { id: id! } satisfies IAnnouncementId,
+              content: item.content,
+              createdBy: { id: reqDto.currentUserId! } satisfies IUserId,
+            } satisfies ICreateAnnouncementItem);
+            continue;
+          } else {
+            await announcementItemsRepository.update(
+              {
+                id: existingItem.id,
+              } satisfies FindOptionsWhere<AnnouncementItem>,
+              {
+                content: item.content,
+                updatedBy: { id: reqDto.currentUserId! } satisfies IUserId,
+              } satisfies QueryDeepPartialEntity<AnnouncementItem>,
+            );
+          }
+        }
 
-      // for await (const item of items) {
-      //   const announcementItem = await announcementItemsRepository.save({
-      //     announcement,
-      //     content: item.content,
-      //     createdBy: { id: reqDto.currentUserId! } satisfies IUserId,
-      //   } satisfies ICreateAnnouncementItem);
+        for await (const item of announcementItems) {
+          const existingItem = reqDto.announcements.items?.find(x => x.id === item.id);
 
-      //   announcement.items.push(announcementItem);
-      // }
-
-      const result = await this.get(id!);
-      return result!;
+          if (existingItem === undefined) {
+            await announcementItemsRepository.delete({ id: item.id });
+            continue;
+          }
+        }
+      }
     });
+
+    const result = await this.get(id!);
+    return result!;
   }
 
-  public async checkIfExistWithDate(validFromDate: Date | undefined, skippedAnnouncementUuid?: string | undefined): Promise<boolean> {
+  public async checkIfExistWithDate(validFromDate: Date | null | undefined, skippedAnnouncementUuid?: string): Promise<boolean> {
     if (!isDate(validFromDate)) {
       return false;
     }
 
     const count = await this._dbContext.announcements
       .createQueryBuilder('announcement')
-      .where('ValidFromDate = :date', { date: validFromDate?.toISOString().slice(0, 10) })
+      .where('ValidFromDate = :date', { date: validFromDate!.toISOString().slice(0, 10) })
       .andWhere('Uuid != :uuid', { uuid: skippedAnnouncementUuid ?? '' })
       .getCount();
 
@@ -138,6 +170,11 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
           updatedBy: true,
         },
       } satisfies FindOptionsRelations<Announcement>,
+      order: {
+        items: {
+          createdAt: 'ASC',
+        },
+      } satisfies FindOptionsOrder<Announcement>,
     });
   }
 

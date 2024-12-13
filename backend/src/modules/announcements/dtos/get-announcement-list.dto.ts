@@ -4,14 +4,14 @@ import { BaseReqDto } from '@modules/common';
 
 export interface IAnnouncementGridItemDto {
   id: string;
-  title?: string;
+  title: string | null;
   state: number;
-  validFromDate?: Date;
+  validFromDate: Date | null;
   createdAt: Date;
   createdBy: string;
-  updatedAt?: Date;
-  publishedAt?: Date;
-  publishedBy?: string;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  publishedBy: string | null;
   itemsCount: number;
 }
 

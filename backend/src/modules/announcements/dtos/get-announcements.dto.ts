@@ -7,7 +7,7 @@ export interface IAnnouncementItemDto {
   content: string;
   createdAt: Date;
   createdBy: string;
-  updatedAt?: Date;
+  updatedAt: Date;
   updatedBy?: string;
 }
 
@@ -15,7 +15,7 @@ export interface IAnnouncementsDto {
   id: string;
   title?: string;
   state: number;
-  validFromDate?: Date;
+  validFromDate: Date | null;
   createdAt: Date;
   createdBy: string;
   updatedAt: Date;

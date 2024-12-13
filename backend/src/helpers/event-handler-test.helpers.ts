@@ -46,7 +46,7 @@ const testEventHandlers: {
   onAnnouncementsCreated: (data: any) => void;
   onCurrentAnnouncementsRetrieved: (data: any) => void;
   onAnnouncementsRetrieved: (data: any) => void;
-  onAnnouncementListRetrieved: (data: any) => void;
+  onAnnouncementsListRetrieved: (data: any) => void;
   onAnnouncementsPublished: (data: any) => void;
   onAnnouncementsDeleted: (data: any) => void;
   onAnnouncementsUpdated: (data: any) => void;
@@ -69,7 +69,7 @@ const testEventHandlers: {
   onAnnouncementsCreated: jest.fn((data: AnnouncementsCreatedEvent) => {}),
   onAnnouncementsRetrieved: jest.fn((data: AnnouncementsRetrievedEvent) => {}),
   onCurrentAnnouncementsRetrieved: jest.fn((data: CurrentAnnouncementsRetrievedEvent) => {}),
-  onAnnouncementListRetrieved: jest.fn((data: AnnouncementsListRetrievedEvent) => {}),
+  onAnnouncementsListRetrieved: jest.fn((data: AnnouncementsListRetrievedEvent) => {}),
   onAnnouncementsPublished: jest.fn((data: AnnouncementsPublishedEvent) => {}),
   onAnnouncementsDeleted: jest.fn((data: AnnouncementsDeletedEvent) => {}),
   onAnnouncementsUpdated: jest.fn((data: AnnouncementsUpdatedEvent) => {}),

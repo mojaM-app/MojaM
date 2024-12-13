@@ -50,7 +50,7 @@ export class AnnouncementsController extends BaseController {
   public update = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const model: UpdateAnnouncementsDto = req.body;
-      const reqDto = new UpdateAnnouncementsReqDto(model, this.getCurrentUserId(req));
+      const reqDto = new UpdateAnnouncementsReqDto(this.getAnnouncementsGuid(req), model, this.getCurrentUserId(req));
       const result = await this._service.update(reqDto);
       res.status(200).json(new UpdateAnnouncementsResponseDto(result!.id));
     } catch (error) {

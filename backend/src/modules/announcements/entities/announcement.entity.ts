@@ -46,7 +46,7 @@ export class Announcement implements IHasGuidId, IAnnouncementId, ICreateAnnounc
     length: 255,
     nullable: true,
   })
-  public title?: string;
+  public title: string | null;
 
   @Column({
     name: 'State',
@@ -60,11 +60,11 @@ export class Announcement implements IHasGuidId, IAnnouncementId, ICreateAnnounc
     type: 'date',
     nullable: true,
     transformer: {
-      from: (value: string) => (value?.length > 0 ? new Date(value + 'T00:00:00Z') : undefined),
+      from: (value: string) => (value?.length > 0 ? new Date(value + 'T00:00:00Z') : null),
       to: (value: Date | null) => value?.toISOString().slice(0, 10), // format the Date to YYYY-MM-DD
     },
   })
-  public validFromDate?: Date | null;
+  public validFromDate: Date | null;
 
   @CreateDateColumn({
     name: 'CreatedAt',
@@ -96,7 +96,7 @@ export class Announcement implements IHasGuidId, IAnnouncementId, ICreateAnnounc
     default: () => 'CURRENT_TIMESTAMP',
     onUpdate: 'CURRENT_TIMESTAMP',
   })
-  public updatedAt?: Date;
+  public updatedAt: Date;
 
   @Column({
     name: 'PublishedAt',
@@ -104,7 +104,7 @@ export class Announcement implements IHasGuidId, IAnnouncementId, ICreateAnnounc
     nullable: true,
     precision: 0,
   })
-  public publishedAt?: Date;
+  public publishedAt: Date | null;
 
   @ManyToOne(() => User, (user: User) => user.publishedAnnouncements, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
   @JoinColumn({
@@ -117,7 +117,7 @@ export class Announcement implements IHasGuidId, IAnnouncementId, ICreateAnnounc
     type: 'int',
     nullable: true,
   })
-  public publishedBy?: Relation<User>;
+  public publishedBy: Relation<User> | null;
 
   @OneToMany(() => AnnouncementItem, item => item.announcement)
   public items: Relation<AnnouncementItem[]>;

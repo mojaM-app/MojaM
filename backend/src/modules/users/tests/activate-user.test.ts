@@ -374,7 +374,7 @@ describe('POST /user/:id/activate', () => {
       const body = activateResponse.body;
       expect(typeof body).toBe('object');
       const { message: activateMessage }: { message: string } = body;
-      expect(activateMessage).toBe(errorKeys.general.Page_Does_Not_Exist);
+      expect(activateMessage).toBe(errorKeys.general.Resource_Does_Not_Exist);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {

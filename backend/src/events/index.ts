@@ -6,10 +6,10 @@ export const events = {
     retrieved: 'onCalendarRetrieved',
   },
   announcements: {
-    announcementsCreated: 'onAnnouncementsCreated',
     currentAnnouncementsRetrieved: 'onCurrentAnnouncementsRetrieved',
-    announcementsRetrieved: 'onAnnouncementsRetrieved',
     announcementsListRetrieved: 'onAnnouncementsListRetrieved',
+    announcementsCreated: 'onAnnouncementsCreated',
+    announcementsRetrieved: 'onAnnouncementsRetrieved',
     announcementsDeleted: 'onAnnouncementsDeleted',
     announcementsPublished: 'onAnnouncementsPublished',
     announcementsUpdated: 'onAnnouncementsUpdated',

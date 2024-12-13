@@ -389,7 +389,7 @@ describe('POST /user/:id/deactivate', () => {
       const body = deactivateResponse.body;
       expect(typeof body).toBe('object');
       const { message: deactivateMessage }: { message: string } = body;
-      expect(deactivateMessage).toBe(errorKeys.general.Page_Does_Not_Exist);
+      expect(deactivateMessage).toBe(errorKeys.general.Resource_Does_Not_Exist);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {

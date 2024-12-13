@@ -21,7 +21,7 @@ import { generateRandomDate, getAdminLoginData } from '@utils/tests.utils';
 import { isDateString } from 'class-validator';
 import { EventDispatcher } from 'event-dispatch';
 import request from 'supertest';
-import { generateValidAnnouncements } from '../helpers/announcements-tests.helpers';
+import { generateValidAnnouncements } from './announcements-tests.helpers';
 
 describe('POST /announcements', () => {
   const announcementRoute = new AnnouncementsRout();
@@ -80,11 +80,12 @@ describe('POST /announcements', () => {
       expect(isDateString(announcements.createdAt)).toBe(true);
       expect(announcements.updatedAt).toBeDefined();
       expect(isDateString(announcements.updatedAt)).toBe(true);
+      expect(announcements.createdAt).toBe(announcements.updatedAt);
       expect(announcements.title).toBe(requestData.title);
       expect(announcements.state).toBe(AnnouncementStateValue.DRAFT);
       expect(announcements.publishedAt).toBeUndefined();
       expect(announcements.publishedBy).toBeUndefined();
-      expect(new Date(announcements.validFromDate!)).toStrictEqual(requestData.validFromDate);
+      expect(new Date(announcements.validFromDate!)).toEqual(requestData.validFromDate);
       expect(announcements.items).toBeDefined();
       expect(Array.isArray(announcements.items)).toBe(true);
       expect(announcements.items.length).toBe(requestData.items!.length);
@@ -94,8 +95,9 @@ describe('POST /announcements', () => {
       expect(announcements.items.every(item => item.createdBy !== undefined)).toBe(true);
       expect(announcements.items.every(item => item.updatedAt !== undefined)).toBe(true);
       expect(announcements.items.every(item => item.updatedBy === undefined)).toBe(true);
-      expect(announcements.items.every(item => item.updatedAt !== undefined)).toBe(true);
-      expect(announcements.items.every(item => item.updatedBy === undefined)).toBe(true);
+      requestData.items!.forEach((item, index) => {
+        expect(announcements.items[index].content).toBe(item.content);
+      });
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app.getServer())
@@ -157,11 +159,12 @@ describe('POST /announcements', () => {
       expect(isDateString(announcements.createdAt)).toBe(true);
       expect(announcements.updatedAt).toBeDefined();
       expect(isDateString(announcements.updatedAt)).toBe(true);
+      expect(announcements.createdAt).toBe(announcements.updatedAt);
       expect(announcements?.title).toBeUndefined();
       expect(announcements?.state).toBe(AnnouncementStateValue.DRAFT);
       expect(announcements?.publishedAt).toBeUndefined();
       expect(announcements?.publishedBy).toBeUndefined();
-      expect(announcements?.validFromDate).toBeUndefined();
+      expect(announcements?.validFromDate).toBeNull();
       expect(announcements?.items).toBeDefined();
       expect(Array.isArray(announcements.items)).toBe(true);
       expect(announcements?.items.length).toBe(requestData.items!.length);
@@ -171,6 +174,9 @@ describe('POST /announcements', () => {
       expect(announcements.items.every(item => item.createdBy !== undefined)).toBe(true);
       expect(announcements.items.every(item => item.updatedAt !== undefined)).toBe(true);
       expect(announcements.items.every(item => item.updatedBy === undefined)).toBe(true);
+      requestData.items!.forEach((item, index) => {
+        expect(announcements.items[index].content).toBe(item.content);
+      });
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app.getServer())
@@ -232,11 +238,12 @@ describe('POST /announcements', () => {
       expect(isDateString(announcements.createdAt)).toBe(true);
       expect(announcements.updatedAt).toBeDefined();
       expect(isDateString(announcements.updatedAt)).toBe(true);
+      expect(announcements.createdAt).toBe(announcements.updatedAt);
       expect(announcements?.title).toBeUndefined();
       expect(announcements?.state).toBe(AnnouncementStateValue.DRAFT);
       expect(announcements?.publishedAt).toBeUndefined();
       expect(announcements?.publishedBy).toBeUndefined();
-      expect(announcements?.validFromDate).toBeUndefined();
+      expect(announcements?.validFromDate).toBeNull();
       expect(announcements?.items).toBeDefined();
       expect(Array.isArray(announcements.items)).toBe(true);
       expect(announcements?.items.length).toBe(requestData.items!.length);
@@ -246,6 +253,9 @@ describe('POST /announcements', () => {
       expect(announcements.items.every(item => item.createdBy !== undefined)).toBe(true);
       expect(announcements.items.every(item => item.updatedAt !== undefined)).toBe(true);
       expect(announcements.items.every(item => item.updatedBy === undefined)).toBe(true);
+      requestData.items!.forEach((item, index) => {
+        expect(announcements.items[index].content).toBe(item.content);
+      });
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app.getServer())
@@ -363,11 +373,12 @@ describe('POST /announcements', () => {
       expect(isDateString(announcements.createdAt)).toBe(true);
       expect(announcements.updatedAt).toBeDefined();
       expect(isDateString(announcements.updatedAt)).toBe(true);
+      expect(announcements.createdAt).toBe(announcements.updatedAt);
       expect(announcements.title).toBe(requestData.title);
       expect(announcements.state).toBe(AnnouncementStateValue.DRAFT);
       expect(announcements.publishedAt).toBeUndefined();
       expect(announcements.publishedBy).toBeUndefined();
-      expect(new Date(announcements.validFromDate!)).toStrictEqual(requestData.validFromDate);
+      expect(new Date(announcements.validFromDate!)).toEqual(requestData.validFromDate);
       expect(announcements.items).toBeDefined();
       expect(Array.isArray(announcements.items)).toBe(true);
       expect(announcements?.items.length).toBe(0);

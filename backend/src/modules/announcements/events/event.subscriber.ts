@@ -46,7 +46,7 @@ export class AnnouncementsEventSubscriber {
 @EventSubscriber()
 export class AnnouncementsListEventSubscriber {
   @On(events.announcements.announcementsListRetrieved)
-  public onAnnouncementListRetrieved(data: AnnouncementsListRetrievedEvent): void {
+  public onAnnouncementsListRetrieved(data: AnnouncementsListRetrievedEvent): void {
     console.log(`Announcements list retrieved by user with ID: ${data?.currentUserId}`);
   }
 }

@@ -1,6 +1,6 @@
 export const errorKeys = {
   general: {
-    Page_Does_Not_Exist: 'Page_Does_Not_Exist',
+    Resource_Does_Not_Exist: 'Resource_Does_Not_Exist',
     Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted: 'Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted',
   },
   login: {
@@ -32,5 +32,6 @@ export const errorKeys = {
     Title_Too_Long: 'Announcements_Title_Too_Long',
     Item_Content_Is_Required: 'Announcements_Item_Content_Is_Required',
     Item_Content_Too_Long: 'Announcements_Item_Content_Too_Long',
+    Announcements_Without_ValidFromDate_Can_Not_Be_Published: 'Announcements_Without_ValidFromDate_Can_Not_Be_Published',
   },
 };

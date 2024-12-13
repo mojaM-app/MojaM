@@ -41,7 +41,7 @@ export class AnnouncementsService extends BaseService {
         this._spinnerService.waitForSubscription(),
         map((resp: IAnnouncements) => {
           if (resp) {
-            resp.validFromDate = resp.validFromDate ? new Date(resp.validFromDate) : undefined;
+            resp.validFromDate = resp.validFromDate ? new Date(resp.validFromDate) : null;
             resp.createdAt = new Date(resp.createdAt);
             resp.updatedAt = new Date(resp.updatedAt);
             resp.publishedAt = resp.publishedAt ? new Date(resp.publishedAt) : undefined;

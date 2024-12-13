@@ -7,7 +7,14 @@ import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-han
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
-import { CreateUserResponseDto, DeleteUserResponseDto, GetUserListResponseDto, UserListRetrievedEvent, UserListRoute, UserRoute } from '@modules/users';
+import {
+  CreateUserResponseDto,
+  DeleteUserResponseDto,
+  GetUserListResponseDto,
+  UserListRetrievedEvent,
+  UserListRoute,
+  UserRoute,
+} from '@modules/users';
 import { isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
@@ -15,13 +22,13 @@ import request from 'supertest';
 
 describe('GET/user-list', () => {
   const userRoute = new UserRoute();
-  const userListRouter = new UserListRoute();
+  const userListRoute = new UserListRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App();
   let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
-    await app.initialize([userRoute, userListRouter, permissionsRoute]);
+    await app.initialize([userRoute, userListRoute, permissionsRoute]);
     const { email: login, password } = getAdminLoginData();
 
     adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
@@ -37,19 +44,13 @@ describe('GET/user-list', () => {
 
     test('when data are valid and user has permission', async () => {
       const newUser = generateValidUser();
-      const createUserResponse = await request(app.getServer())
-        .post(userRoute.path)
-        .send(newUser)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const getUserListResponse = await request(app.getServer())
-        .get(userListRouter.path)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const getUserListResponse = await request(app.getServer()).get(userListRoute.path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(getUserListResponse.statusCode).toBe(200);
       expect(getUserListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = getUserListResponse.body;
@@ -93,9 +94,7 @@ describe('GET/user-list', () => {
     });
 
     test('when token is not set', async () => {
-      const getUserListResponse = await request(app.getServer())
-        .get(userListRouter.path)
-        .send();
+      const getUserListResponse = await request(app.getServer()).get(userListRoute.path).send();
       expect(getUserListResponse.statusCode).toBe(401);
       const body = getUserListResponse.body;
       expect(typeof body).toBe('object');
@@ -129,10 +128,7 @@ describe('GET/user-list', () => {
 
       const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
 
-      const getUserListResponse = await request(app.getServer())
-        .get(userListRouter.path)
-        .send()
-        .set('Authorization', `Bearer ${newUserAccessToken}`);
+      const getUserListResponse = await request(app.getServer()).get(userListRoute.path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(getUserListResponse.statusCode).toBe(403);
       expect(getUserListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getUserListResponse.body;
@@ -205,10 +201,7 @@ describe('GET/user-list', () => {
 
       const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
 
-      const getUserListResponse = await request(app.getServer())
-        .get(userListRouter.path)
-        .send()
-        .set('Authorization', `Bearer ${newUserAccessToken}`);
+      const getUserListResponse = await request(app.getServer()).get(userListRoute.path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(getUserListResponse.statusCode).toBe(403);
       expect(getUserListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getUserListResponse.body;
@@ -257,7 +250,7 @@ describe('GET/user-list', () => {
 
     test('when token is invalid', async () => {
       const getUserListResponse = await request(app.getServer())
-        .get(userListRouter.path)
+        .get(userListRoute.path)
         .send()
         .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
       expect(getUserListResponse.statusCode).toBe(401);

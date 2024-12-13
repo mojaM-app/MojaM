@@ -73,7 +73,7 @@ export class App {
 
     this.app.use(function (req, res) {
       const url = getFullUrl(req);
-      res.status(404).json({ message: errorKeys.general.Page_Does_Not_Exist, url });
+      res.status(404).json({ message: errorKeys.general.Resource_Does_Not_Exist, url });
     });
   }
 

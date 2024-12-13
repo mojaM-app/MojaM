@@ -2,14 +2,7 @@ import { relatedDataNames } from '@db';
 import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import { CryptoService, PasswordService } from '@modules/auth';
-import {
-  ActivateUserReqDto,
-  CreateUserDto,
-  CreateUserReqDto,
-  DeactivateUserReqDto,
-  DeleteUserReqDto,
-  UpdateUserReqDto,
-} from '@modules/users';
+import { ActivateUserReqDto, CreateUserDto, CreateUserReqDto, DeactivateUserReqDto, DeleteUserReqDto, UpdateUserReqDto } from '@modules/users';
 import { getDateTimeNow, isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import StatusCode from 'status-code-enum';
 import Container, { Service } from 'typedi';
@@ -83,19 +76,39 @@ export class UserRepository extends BaseUserRepository {
   }
 
   public async checkIfCanBeDeleted(userId: number): Promise<string[]> {
-    const relatedData: string[] = [];
+    const relatedDataConnectedWithUser = await this._dbContext.query(
+      `SELECT COUNT(*) AS count, '${relatedDataNames.SystemPermission_AssignedBy}' as entities
+        FROM user_to_systempermissions uts
+        WHERE uts.AssignedById = ${userId} AND uts.UserId != ${userId}
+      UNION
+      SELECT COUNT(*) AS count, '${relatedDataNames.Announcements_CreatedBy}' as entities
+        FROM announcements an_cr
+        WHERE an_cr.CreatedById = ${userId}
+      UNION
+      SELECT COUNT(*) AS count, '${relatedDataNames.Announcements_PublishedBy}' as entities
+      FROM announcements an_pub
+        WHERE an_pub.PublishedById = ${userId}
+      UNION
+        SELECT COUNT(*) AS count, '${relatedDataNames.AnnouncementItems_CreatedBy}' as entities
+        FROM announcement_items ani_cr
+        WHERE ani_cr.CreatedById = ${userId}
+      UNION
+        SELECT COUNT(*) AS count, '${relatedDataNames.AnnouncementItems_UpdatedBy}' as entities
+        FROM announcement_items ani_up
+        WHERE ani_up.UpdatedById = ${userId}
+      `,
+      [userId],
+    );
 
-    const count = await this._dbContext.userSystemPermissions
-      .createQueryBuilder()
-      .where('AssignedById = :userId', { userId })
-      .andWhere('UserId != :userId', { userId })
-      .getCount();
-
-    if (count > 0) {
-      relatedData.push(relatedDataNames.SystemPermission_AssignedBy);
-    }
-
-    return relatedData;
+    return relatedDataConnectedWithUser
+      .map((x: { count: string; entities: string }) => {
+        return {
+          count: parseInt(x.count),
+          entities: x.entities,
+        };
+      })
+      .filter((x: { count: number; entities: string }) => x.count > 0)
+      .map((x: { count: number; entities: string }) => x.entities);
   }
 
   public async delete(user: User, reqDto: DeleteUserReqDto): Promise<boolean> {

@@ -41,13 +41,13 @@ export class vAnnouncement implements IAnnouncementGridItemDto {
   public id: string;
 
   @ViewColumn()
-  public title?: string;
+  public title: string | null;
 
   @ViewColumn()
   public state: number;
 
   @ViewColumn()
-  public validFromDate?: Date;
+  public validFromDate: Date | null;
 
   @ViewColumn()
   public createdAt: Date;
@@ -56,13 +56,13 @@ export class vAnnouncement implements IAnnouncementGridItemDto {
   public createdBy: string;
 
   @ViewColumn()
-  public updatedAt?: Date;
+  public updatedAt: Date;
 
   @ViewColumn()
-  public publishedAt: Date;
+  public publishedAt: Date | null;
 
   @ViewColumn()
-  public publishedBy: string;
+  public publishedBy: string | null;
 
   @ViewColumn()
   public itemsCount: number;

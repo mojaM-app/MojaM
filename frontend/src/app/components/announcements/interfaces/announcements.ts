@@ -9,9 +9,9 @@ export interface IAnnouncementItem {
 
 export interface IAnnouncements {
   id: string;
-  title?: string;
+  title: string | null;
   state: number;
-  validFromDate?: Date;
+  validFromDate: Date | null;
   createdAt: Date;
   createdBy: string;
   updatedAt: Date;

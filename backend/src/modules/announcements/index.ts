@@ -50,7 +50,6 @@ export { AnnouncementsRepository } from './repositories/announcements.repository
 export { CurrentAnnouncementsRepository } from './repositories/current-announcements.repository';
 
 export { AnnouncementStateValue } from './enums/announcement-state.enum';
-export { announcementToIAnnouncements, vAnnouncementToIAnnouncementGridItemDto } from './helpers/announcements.helpers';
 
 export { AnnouncementsListRoute } from './routes/announcements-list.routes';
 export { AnnouncementsRout } from './routes/announcements.routes';

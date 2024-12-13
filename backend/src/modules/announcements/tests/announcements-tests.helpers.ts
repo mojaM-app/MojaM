@@ -7,19 +7,19 @@ const generateValidAnnouncements = (): CreateAnnouncementsDto => {
     title: generateRandomString(40),
     items: [
       {
-        content: generateRandomString(400),
+        content: '1' + generateRandomString(400),
         setDefaultValues: () => {},
       } satisfies CreateAnnouncementItemDto,
       {
-        content: generateRandomString(800),
+        content: '2' + generateRandomString(800),
         setDefaultValues: () => {},
       } satisfies CreateAnnouncementItemDto,
       {
-        content: generateRandomString(1500),
+        content: '3' + generateRandomString(1500),
         setDefaultValues: () => {},
       } satisfies CreateAnnouncementItemDto,
       {
-        content: generateRandomString(255),
+        content: '4' + generateRandomString(255),
         setDefaultValues: () => {},
       } satisfies CreateAnnouncementItemDto,
     ],

@@ -9,7 +9,6 @@ import {
   AnnouncementsRetrievedEvent,
   AnnouncementStateValue,
   AnnouncementsUpdatedEvent,
-  announcementToIAnnouncements,
   CreateAnnouncementsReqDto,
   DeleteAnnouncementsReqDto,
   GetAnnouncementsReqDto,
@@ -21,6 +20,8 @@ import { BaseService } from '@modules/common';
 import { isDate, isNullOrUndefined } from '@utils';
 import StatusCode from 'status-code-enum';
 import Container, { Service } from 'typedi';
+import { IAnnouncementItemDto } from '../dtos/get-announcements.dto';
+import { Announcement } from '../entities/announcement.entity';
 
 @Service()
 export class AnnouncementsService extends BaseService {
@@ -39,7 +40,7 @@ export class AnnouncementsService extends BaseService {
         id: reqDto.idGuid,
       });
     }
-    const dto = announcementToIAnnouncements(announcements!);
+    const dto = this.announcementToIAnnouncements(announcements!);
 
     this._eventDispatcher.dispatch(events.announcements.announcementsRetrieved, new AnnouncementsRetrievedEvent(dto, reqDto.currentUserId!));
 
@@ -66,7 +67,7 @@ export class AnnouncementsService extends BaseService {
 
     const { id: announcementsId } = await this._announcementsRepository.create(reqDto);
     const announcements = await this._announcementsRepository.get(announcementsId);
-    const dto = announcementToIAnnouncements(announcements!);
+    const dto = this.announcementToIAnnouncements(announcements!);
 
     this._eventDispatcher.dispatch(events.announcements.announcementsCreated, new AnnouncementsCreatedEvent(dto, reqDto.currentUserId!));
 
@@ -74,7 +75,7 @@ export class AnnouncementsService extends BaseService {
   }
 
   public async update(reqDto: UpdateAnnouncementsReqDto): Promise<IAnnouncementsDto | null> {
-    if (isNullOrUndefined(reqDto.announcements)) {
+    if (isNullOrUndefined(reqDto.announcementsId) || isNullOrUndefined(reqDto.announcements)) {
       return null;
     }
 
@@ -83,7 +84,7 @@ export class AnnouncementsService extends BaseService {
     if (isDate(announcementsModel.validFromDate)) {
       const existAnnouncementWithSameDate = await this._announcementsRepository.checkIfExistWithDate(
         announcementsModel.validFromDate,
-        announcementsModel.id,
+        reqDto.announcementsId,
       );
       if (existAnnouncementWithSameDate) {
         throw new TranslatableHttpException(
@@ -96,7 +97,7 @@ export class AnnouncementsService extends BaseService {
 
     const { id: announcementsId } = await this._announcementsRepository.update(reqDto);
     const announcements = await this._announcementsRepository.get(announcementsId);
-    const dto = announcementToIAnnouncements(announcements!);
+    const dto = this.announcementToIAnnouncements(announcements!);
 
     this._eventDispatcher.dispatch(events.announcements.announcementsUpdated, new AnnouncementsUpdatedEvent(dto, reqDto.currentUserId!));
 
@@ -129,7 +130,7 @@ export class AnnouncementsService extends BaseService {
 
     this._eventDispatcher.dispatch(
       events.announcements.announcementsDeleted,
-      new AnnouncementsDeletedEvent(announcementToIAnnouncements(announcements!), reqDto.currentUserId!),
+      new AnnouncementsDeletedEvent(this.announcementToIAnnouncements(announcements!), reqDto.currentUserId!),
     );
 
     return announcements!.uuid;
@@ -144,6 +145,16 @@ export class AnnouncementsService extends BaseService {
       });
     }
 
+    if (isNullOrUndefined(announcements?.validFromDate)) {
+      throw new TranslatableHttpException(
+        StatusCode.ClientErrorBadRequest,
+        errorKeys.announcements.Announcements_Without_ValidFromDate_Can_Not_Be_Published,
+        {
+          id: reqDto.idGuid,
+        },
+      );
+    }
+
     if (announcements!.state === AnnouncementStateValue.PUBLISHED) {
       return true;
     }
@@ -152,9 +163,34 @@ export class AnnouncementsService extends BaseService {
 
     this._eventDispatcher.dispatch(
       events.announcements.announcementsPublished,
-      new AnnouncementsPublishedEvent(announcementToIAnnouncements(announcements!), reqDto.currentUserId!),
+      new AnnouncementsPublishedEvent(this.announcementToIAnnouncements(announcements!), reqDto.currentUserId!),
     );
 
     return result;
+  }
+
+  private announcementToIAnnouncements(announcement: Announcement): IAnnouncementsDto {
+    return {
+      id: announcement.uuid,
+      title: announcement.title ?? undefined,
+      state: announcement.state,
+      validFromDate: announcement.validFromDate,
+      createdBy: announcement.createdBy.getFullName()!,
+      createdAt: announcement.createdAt,
+      updatedAt: announcement.updatedAt ?? announcement.createdAt,
+      publishedAt: announcement.publishedAt ?? undefined,
+      publishedBy: announcement.publishedBy?.getFullName() ?? undefined,
+      items: (announcement.items ?? []).map(
+        item =>
+          ({
+            id: item.id,
+            content: item.content,
+            createdAt: item.createdAt,
+            createdBy: item.createdBy.getFullName()!,
+            updatedAt: item.updatedAt ?? item.createdAt,
+            updatedBy: item.updatedBy?.getFullName() ?? undefined,
+          }) satisfies IAnnouncementItemDto,
+      ),
+    } satisfies IAnnouncementsDto;
   }
 }

@@ -1,27 +1,33 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
+import { generateValidAnnouncements } from '@/modules/announcements/tests/announcements-tests.helpers';
 import { relatedDataNames } from '@db';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
-import { LoginDto } from '@modules/auth';
+import { AnnouncementsRout, CreateAnnouncementsResponseDto, GetAnnouncementsResponseDto, UpdateAnnouncementsDto } from '@modules/announcements';
+import { AuthRoute, LoginDto, UserTryingToLogInDto } from '@modules/auth';
 import { AddPermissionsResponseDto, PermissionsRoute, SystemPermission } from '@modules/permissions';
 import { CreateUserResponseDto, DeleteUserResponseDto, UserDeletedEvent, UserRoute } from '@modules/users';
 import { isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import { Guid } from 'guid-typescript';
+import nodemailer from 'nodemailer';
 import request from 'supertest';
 
 describe('DELETE /user', () => {
   const userRoute = new UserRoute();
   const permissionsRoute = new PermissionsRoute();
+  const authRoute = new AuthRoute();
+  const announcementRoute = new AnnouncementsRout();
   const app = new App();
   let adminAccessToken: string | undefined;
+  let mockSendMail: any;
 
   beforeAll(async () => {
-    await app.initialize([userRoute, permissionsRoute]);
+    await app.initialize([userRoute, permissionsRoute, authRoute, announcementRoute]);
     const { email: login, password } = getAdminLoginData();
 
     adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
@@ -33,6 +39,15 @@ describe('DELETE /user', () => {
   describe('DELETE should respond with a status code of 200', () => {
     beforeEach(async () => {
       jest.resetAllMocks();
+
+      mockSendMail = jest.fn().mockImplementation((mailoptions: any, callback: (error: any, info: any) => void) => {
+        callback(null, null);
+      });
+
+      jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
+        sendMail: mockSendMail,
+        close: jest.fn().mockImplementation(() => {}),
+      } as any);
     });
 
     test('when data are valid and logged user has permission', async () => {
@@ -189,6 +204,59 @@ describe('DELETE /user', () => {
       expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
       expect(testEventHandlers.onPermissionAdded).toHaveBeenCalled();
     });
+
+    test('when a user has reset password token', async () => {
+      const requestData = generateValidUser();
+
+      const createUserResponse = await request(app.getServer())
+        .post(userRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(201);
+      let body = createUserResponse.body;
+      const { data: user }: CreateUserResponseDto = body;
+      expect(user?.id).toBeDefined();
+
+      const requestResetPasswordResponse = await request(app.getServer())
+        .post(authRoute.requestResetPasswordPath)
+        .send({ email: requestData.email } satisfies UserTryingToLogInDto);
+      expect(requestResetPasswordResponse.statusCode).toBe(200);
+      body = requestResetPasswordResponse.body;
+      expect(typeof body).toBe('object');
+      expect(body.data).toBe(true);
+
+      const deleteUserWithResetPasswordTokenResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + user.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteUserWithResetPasswordTokenResponse.statusCode).toBe(200);
+      expect(deleteUserWithResetPasswordTokenResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = deleteUserWithResetPasswordTokenResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: deletedUserUuid, message: deleteMessage }: DeleteUserResponseDto = body;
+      expect(deleteMessage).toBe(events.users.userDeleted);
+      expect(deletedUserUuid).toBe(user.id);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onUserCreated,
+              // testEventHandlers.onUserActivated,
+              testEventHandlers.onUserDeleted,
+              // testEventHandlers.onPermissionAdded,
+              // testEventHandlers.onUserLoggedIn,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
+      // expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
+      // expect(testEventHandlers.onPermissionAdded).toHaveBeenCalled();
+    });
   });
 
   describe('DELETE should respond with a status code of 403', () => {
@@ -276,7 +344,7 @@ describe('DELETE /user', () => {
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
     });
 
-    test('when user have all permissions expect AddPermission', async () => {
+    test('when user have all permissions expect DeleteUser', async () => {
       const requestData = generateValidUser();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -360,7 +428,7 @@ describe('DELETE /user', () => {
       jest.resetAllMocks();
     });
 
-    test('DELETE should respond with a status code of 400 when user not exist', async () => {
+    test('when user not exist', async () => {
       const userId: string = Guid.EMPTY;
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + userId)
@@ -495,6 +563,435 @@ describe('DELETE /user', () => {
       expect(testEventHandlers.onPermissionDeleted).toHaveBeenCalled();
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
     });
+
+    test('when a user has created announcements', async () => {
+      const userRequestData = generateValidUser();
+
+      const createUserResponse = await request(app.getServer())
+        .post(userRoute.path)
+        .send(userRequestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(201);
+      let body = createUserResponse.body;
+      const { data: user }: CreateUserResponseDto = body;
+      expect(user?.id).toBeDefined();
+
+      const activateUserResponse = await request(app.getServer())
+        .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateUserResponse.statusCode).toBe(200);
+
+      let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.AddAnnouncements.toString();
+      const addUserPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(addUserPermissionResponse.statusCode).toBe(201);
+      expect(addUserPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = addUserPermissionResponse.body;
+      const { data: addPermissionResult, message: addPermissionMessage }: AddPermissionsResponseDto = body;
+      expect(addPermissionResult).toBe(true);
+      expect(addPermissionMessage).toBe(events.permissions.permissionAdded);
+
+      const userAccessToken = (await loginAs(app, { email: userRequestData.email, password: userRequestData.password } satisfies LoginDto))
+        ?.accessToken;
+
+      const createAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path)
+        .send(generateValidAnnouncements())
+        .set('Authorization', `Bearer ${userAccessToken}`);
+      expect(createAnnouncementsResponse.statusCode).toBe(201);
+      expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = createAnnouncementsResponse.body;
+      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
+      expect(announcementsId).toBeDefined();
+
+      let deleteUserResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + user.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteUserResponse.statusCode).toBe(400);
+      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = deleteUserResponse.body;
+      const data = body.data;
+      const { message: deleteUserMessage, args: deleteUserArgs }: { message: string; args: string[] } = data;
+      expect(deleteUserMessage).toBe(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted);
+      expect(deleteUserArgs).toEqual({
+        id: user.id,
+        relatedData: [relatedDataNames.Announcements_CreatedBy, relatedDataNames.AnnouncementItems_CreatedBy],
+      });
+
+      path = announcementRoute.path + '/' + announcementsId;
+      const deleteAnnouncementsResponse = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteAnnouncementsResponse.statusCode).toBe(200);
+
+      deleteUserResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + user.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteUserResponse.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onUserDeleted,
+              testEventHandlers.onPermissionAdded,
+              testEventHandlers.onAnnouncementsCreated,
+              testEventHandlers.onAnnouncementsDeleted,
+              testEventHandlers.onUserLoggedIn,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
+      expect(testEventHandlers.onPermissionAdded).toHaveBeenCalled();
+      expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalled();
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
+    });
+
+    test('when a user has published announcements', async () => {
+      const userRequestData = generateValidUser();
+
+      const createUserResponse = await request(app.getServer())
+        .post(userRoute.path)
+        .send(userRequestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(201);
+      let body = createUserResponse.body;
+      const { data: user }: CreateUserResponseDto = body;
+      expect(user?.id).toBeDefined();
+
+      const activateUserResponse = await request(app.getServer())
+        .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateUserResponse.statusCode).toBe(200);
+
+      const createAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path)
+        .send(generateValidAnnouncements())
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createAnnouncementsResponse.statusCode).toBe(201);
+      expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = createAnnouncementsResponse.body;
+      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
+      expect(announcementsId).toBeDefined();
+
+      let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.PublishAnnouncements.toString();
+      const addUserPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(addUserPermissionResponse.statusCode).toBe(201);
+      expect(addUserPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = addUserPermissionResponse.body;
+      const { data: addPermissionResult, message: addPermissionMessage }: AddPermissionsResponseDto = body;
+      expect(addPermissionResult).toBe(true);
+      expect(addPermissionMessage).toBe(events.permissions.permissionAdded);
+
+      const userAccessToken = (await loginAs(app, { email: userRequestData.email, password: userRequestData.password } satisfies LoginDto))
+        ?.accessToken;
+
+      const publishAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path + '/' + announcementsId + '/' + announcementRoute.publishPath)
+        .send()
+        .set('Authorization', `Bearer ${userAccessToken}`);
+      expect(publishAnnouncementsResponse.statusCode).toBe(200);
+
+      let deleteUserResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + user.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteUserResponse.statusCode).toBe(400);
+      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = deleteUserResponse.body;
+      expect(typeof body).toBe('object');
+      const data = body.data;
+      const { message: deleteUserMessage, args: deleteUserArgs }: { message: string; args: string[] } = data;
+      expect(deleteUserMessage).toBe(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted);
+      expect(deleteUserArgs).toEqual({ id: user.id, relatedData: [relatedDataNames.Announcements_PublishedBy] });
+
+      path = announcementRoute.path + '/' + announcementsId;
+      const deleteAnnouncementsResponse = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteAnnouncementsResponse.statusCode).toBe(200);
+
+      deleteUserResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + user.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteUserResponse.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onUserDeleted,
+              testEventHandlers.onPermissionAdded,
+              testEventHandlers.onAnnouncementsCreated,
+              testEventHandlers.onAnnouncementsPublished,
+              testEventHandlers.onAnnouncementsDeleted,
+              testEventHandlers.onUserLoggedIn,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
+      expect(testEventHandlers.onPermissionAdded).toHaveBeenCalled();
+      expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onAnnouncementsPublished).toHaveBeenCalled();
+      expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalled();
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
+    });
+
+    test('when a user has created announcements items', async () => {
+      const userRequestData = generateValidUser();
+
+      const createUserResponse = await request(app.getServer())
+        .post(userRoute.path)
+        .send(userRequestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(201);
+      let body = createUserResponse.body;
+      const { data: user }: CreateUserResponseDto = body;
+      expect(user?.id).toBeDefined();
+
+      const activateUserResponse = await request(app.getServer())
+        .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateUserResponse.statusCode).toBe(200);
+
+      const createAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path)
+        .send(generateValidAnnouncements())
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createAnnouncementsResponse.statusCode).toBe(201);
+      expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = createAnnouncementsResponse.body;
+      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
+      expect(announcementsId).toBeDefined();
+
+      let getAnnouncementsResponse = await request(app.getServer())
+        .get(announcementRoute.path + '/' + announcementsId)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(getAnnouncementsResponse.statusCode).toBe(200);
+      body = getAnnouncementsResponse.body;
+      const { data: announcementsBeforeUpdate }: GetAnnouncementsResponseDto = body;
+
+      let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.EditAnnouncements.toString();
+      const addUserPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(addUserPermissionResponse.statusCode).toBe(201);
+      expect(addUserPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = addUserPermissionResponse.body;
+      const { data: addPermissionResult, message: addPermissionMessage }: AddPermissionsResponseDto = body;
+      expect(addPermissionResult).toBe(true);
+      expect(addPermissionMessage).toBe(events.permissions.permissionAdded);
+
+      const userAccessToken = (await loginAs(app, { email: userRequestData.email, password: userRequestData.password } satisfies LoginDto))
+        ?.accessToken;
+
+      const updateAnnouncementsModel: UpdateAnnouncementsDto = {
+        items: [...announcementsBeforeUpdate.items, { id: '', content: 'new item' }].map((item, index) => ({
+          id: item.id,
+          content: `${index + 1}_New_Content_${item.id}`,
+        })),
+      };
+      const updateAnnouncementsResponse = await request(app.getServer())
+        .put(announcementRoute.path + '/' + announcementsId)
+        .send(updateAnnouncementsModel)
+        .set('Authorization', `Bearer ${userAccessToken}`);
+      expect(updateAnnouncementsResponse.statusCode).toBe(200);
+
+      getAnnouncementsResponse = await request(app.getServer())
+        .get(announcementRoute.path + '/' + announcementsId)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(getAnnouncementsResponse.statusCode).toBe(200);
+
+      let deleteUserResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + user.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteUserResponse.statusCode).toBe(400);
+      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = deleteUserResponse.body;
+      expect(typeof body).toBe('object');
+      const data = body.data;
+      const { message: deleteUserMessage, args: deleteUserArgs }: { message: string; args: string[] } = data;
+      expect(deleteUserMessage).toBe(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted);
+      expect(deleteUserArgs).toEqual({
+        id: user.id,
+        relatedData: [relatedDataNames.AnnouncementItems_CreatedBy, relatedDataNames.AnnouncementItems_UpdatedBy],
+      });
+
+      path = announcementRoute.path + '/' + announcementsId;
+      const deleteAnnouncementsResponse = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteAnnouncementsResponse.statusCode).toBe(200);
+
+      deleteUserResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + user.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteUserResponse.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onUserDeleted,
+              testEventHandlers.onPermissionAdded,
+              testEventHandlers.onAnnouncementsCreated,
+              testEventHandlers.onAnnouncementsUpdated,
+              testEventHandlers.onAnnouncementsDeleted,
+              testEventHandlers.onAnnouncementsRetrieved,
+              testEventHandlers.onUserLoggedIn,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
+      expect(testEventHandlers.onPermissionAdded).toHaveBeenCalled();
+      expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onAnnouncementsUpdated).toHaveBeenCalled();
+      expect(testEventHandlers.onAnnouncementsRetrieved).toHaveBeenCalled();
+      expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalled();
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
+    });
+
+    test('when a user has updated announcements items', async () => {
+      const userRequestData = generateValidUser();
+
+      const createUserResponse = await request(app.getServer())
+        .post(userRoute.path)
+        .send(userRequestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(201);
+      let body = createUserResponse.body;
+      const { data: user }: CreateUserResponseDto = body;
+      expect(user?.id).toBeDefined();
+
+      const activateUserResponse = await request(app.getServer())
+        .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateUserResponse.statusCode).toBe(200);
+
+      const createAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path)
+        .send(generateValidAnnouncements())
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createAnnouncementsResponse.statusCode).toBe(201);
+      expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = createAnnouncementsResponse.body;
+      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
+      expect(announcementsId).toBeDefined();
+
+      let getAnnouncementsResponse = await request(app.getServer())
+        .get(announcementRoute.path + '/' + announcementsId)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(getAnnouncementsResponse.statusCode).toBe(200);
+      body = getAnnouncementsResponse.body;
+      const { data: announcementsBeforeUpdate }: GetAnnouncementsResponseDto = body;
+
+      let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.EditAnnouncements.toString();
+      const addUserPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(addUserPermissionResponse.statusCode).toBe(201);
+      expect(addUserPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = addUserPermissionResponse.body;
+      const { data: addPermissionResult, message: addPermissionMessage }: AddPermissionsResponseDto = body;
+      expect(addPermissionResult).toBe(true);
+      expect(addPermissionMessage).toBe(events.permissions.permissionAdded);
+
+      const userAccessToken = (await loginAs(app, { email: userRequestData.email, password: userRequestData.password } satisfies LoginDto))
+        ?.accessToken;
+
+      const updateAnnouncementsModel: UpdateAnnouncementsDto = {
+        items: announcementsBeforeUpdate.items.map((item, index) => ({
+          id: item.id,
+          content: `${index + 1}_New_Content_${item.id}`,
+        })),
+      };
+      const updateAnnouncementsResponse = await request(app.getServer())
+        .put(announcementRoute.path + '/' + announcementsId)
+        .send(updateAnnouncementsModel)
+        .set('Authorization', `Bearer ${userAccessToken}`);
+      expect(updateAnnouncementsResponse.statusCode).toBe(200);
+
+      getAnnouncementsResponse = await request(app.getServer())
+        .get(announcementRoute.path + '/' + announcementsId)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(getAnnouncementsResponse.statusCode).toBe(200);
+
+      let deleteUserResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + user.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteUserResponse.statusCode).toBe(400);
+      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = deleteUserResponse.body;
+      expect(typeof body).toBe('object');
+      const data = body.data;
+      const { message: deleteUserMessage, args: deleteUserArgs }: { message: string; args: string[] } = data;
+      expect(deleteUserMessage).toBe(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted);
+      expect(deleteUserArgs).toEqual({ id: user.id, relatedData: [relatedDataNames.AnnouncementItems_UpdatedBy] });
+
+      path = announcementRoute.path + '/' + announcementsId;
+      const deleteAnnouncementsResponse = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteAnnouncementsResponse.statusCode).toBe(200);
+
+      deleteUserResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + user.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteUserResponse.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onUserDeleted,
+              testEventHandlers.onPermissionAdded,
+              testEventHandlers.onAnnouncementsCreated,
+              testEventHandlers.onAnnouncementsUpdated,
+              testEventHandlers.onAnnouncementsDeleted,
+              testEventHandlers.onAnnouncementsRetrieved,
+              testEventHandlers.onUserLoggedIn,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
+      expect(testEventHandlers.onPermissionAdded).toHaveBeenCalled();
+      expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onAnnouncementsUpdated).toHaveBeenCalled();
+      expect(testEventHandlers.onAnnouncementsRetrieved).toHaveBeenCalled();
+      expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalled();
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
+    });
   });
 
   describe('DELETE should respond with a status code of 404', () => {
@@ -512,7 +1009,7 @@ describe('DELETE /user', () => {
       const body = deleteResponse.body;
       expect(typeof body).toBe('object');
       const { message: deleteMessage }: { message: string } = body;
-      expect(deleteMessage).toBe(errorKeys.general.Page_Does_Not_Exist);
+      expect(deleteMessage).toBe(errorKeys.general.Resource_Does_Not_Exist);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {

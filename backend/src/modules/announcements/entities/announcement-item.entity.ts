@@ -25,10 +25,10 @@ export class AnnouncementItem implements ICreateAnnouncementItem, IUpdateAnnounc
 
   @CreateDateColumn({
     name: 'CreatedAt',
-    precision: 0,
+    precision: 3,
     nullable: false,
     type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
+    default: () => 'CURRENT_TIMESTAMP(3)',
   })
   public createdAt: Date;
 
@@ -47,13 +47,13 @@ export class AnnouncementItem implements ICreateAnnouncementItem, IUpdateAnnounc
 
   @UpdateDateColumn({
     name: 'UpdatedAt',
-    precision: 0,
+    precision: 3,
     nullable: true,
     type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
+    default: () => 'CURRENT_TIMESTAMP(3)',
+    onUpdate: 'CURRENT_TIMESTAMP(3)',
   })
-  public updatedAt?: Date;
+  public updatedAt: Date;
 
   @ManyToOne(() => User, (user: User) => user.updatedAnnouncementItems, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
   @JoinColumn({
@@ -66,7 +66,7 @@ export class AnnouncementItem implements ICreateAnnouncementItem, IUpdateAnnounc
     type: 'int',
     nullable: true,
   })
-  public updatedBy?: Relation<User>;
+  public updatedBy: Relation<User>;
 
   @ManyToOne(() => Announcement, announcement => announcement.items, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
   @JoinColumn({

@@ -19,6 +19,9 @@ export class CurrentAnnouncementsRepository extends BaseAnnouncementsRepository 
       } satisfies FindOptionsWhere<Announcement>,
       order: {
         validFromDate: 'DESC',
+        items: {
+          createdAt: 'ASC',
+        },
       } satisfies FindOptionsOrder<Announcement>,
       relations: {
         createdBy: true,
@@ -26,7 +29,7 @@ export class CurrentAnnouncementsRepository extends BaseAnnouncementsRepository 
         items: {
           createdBy: true,
           updatedBy: true,
-        }
+        },
       } satisfies FindOptionsRelations<Announcement>,
     };
 
