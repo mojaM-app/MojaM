@@ -39,7 +39,7 @@ describe('POST /announcements/publish', () => {
       jest.resetAllMocks();
     });
 
-    test('create and published announcement', async () => {
+    test('create and publish announcement', async () => {
       const requestData = generateValidAnnouncements();
       const createAnnouncementsResponse = await request(app.getServer())
         .post(announcementRoute.path)
@@ -125,9 +125,49 @@ describe('POST /announcements/publish', () => {
       jest.resetAllMocks();
     });
 
-    test('when validFromDate is not set', async () => {
+    test('when validFromDate is undefined', async () => {
       const requestData = generateValidAnnouncements();
       requestData.validFromDate = undefined;
+      const createAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createAnnouncementsResponse.statusCode).toBe(201);
+      expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = createAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: announcementsId, message: createMessage }: CreateAnnouncementsResponseDto = body;
+      expect(announcementsId).toBeDefined();
+      expect(createMessage).toBe(events.announcements.announcementsCreated);
+
+      const publishAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path + '/' + announcementsId + '/' + announcementRoute.publishPath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(publishAnnouncementsResponse.statusCode).toBe(400);
+      const errors = (publishAnnouncementsResponse.body.data.message as string)?.split(',');
+      expect(errors.filter(x => x !== errorKeys.announcements.Announcements_Without_ValidFromDate_Can_Not_Be_Published).length).toBe(0);
+
+      // cleanup
+      const deleteAnnouncementsResponse = await request(app.getServer())
+        .delete(announcementRoute.path + '/' + announcementsId)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteAnnouncementsResponse.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(([, eventHandler]) => ![testEventHandlers.onAnnouncementsCreated, testEventHandlers.onAnnouncementsDeleted].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('when validFromDate is null', async () => {
+      const requestData = generateValidAnnouncements();
+      requestData.validFromDate = null;
       const createAnnouncementsResponse = await request(app.getServer())
         .post(announcementRoute.path)
         .send(requestData)

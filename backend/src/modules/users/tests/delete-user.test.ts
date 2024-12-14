@@ -801,10 +801,7 @@ describe('DELETE /user', () => {
         ?.accessToken;
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        items: [...announcementsBeforeUpdate.items, { id: '', content: 'new item' }].map((item, index) => ({
-          id: item.id,
-          content: `${index + 1}_New_Content_${item.id}`,
-        })),
+        items: [...announcementsBeforeUpdate.items, { id: '', content: 'new item' }],
       };
       const updateAnnouncementsResponse = await request(app.getServer())
         .put(announcementRoute.path + '/' + announcementsId)

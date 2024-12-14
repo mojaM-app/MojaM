@@ -30,7 +30,7 @@ export class CreateAnnouncementsDto implements IHasDefaultValues {
   @IsOptional()
   @Type(() => Date)
   @IsDate()
-  public validFromDate?: Date | undefined;
+  public validFromDate?: Date | null;
 
   @IsOptional()
   @IsArray()
