@@ -11,6 +11,7 @@ export class AnnouncementsRout implements IRoutes {
   public path = '/announcements';
   public currentAnnouncementsPath = `${this.path}/current`;
   public publishPath = 'publish';
+  public copyPath = 'copy';
 
   public router = express.Router();
 
@@ -40,6 +41,11 @@ export class AnnouncementsRout implements IRoutes {
       `${this.path}/:id(${REGEX_GUID_PATTERN})/${this.publishPath}`,
       [setIdentity, this.checkPublishPermission],
       this._announcementsController.publish,
+    );
+    this.router.post(
+      `${this.path}/:id(${REGEX_GUID_PATTERN})/${this.copyPath}`,
+      [setIdentity, this.checkCreatePermission],
+      this._announcementsController.copy,
     );
 
     this.router.get(this.currentAnnouncementsPath, this._currentAnnouncementsController.get);

@@ -46,6 +46,11 @@ export class EditAnnouncementsComponent extends WithUnsubscribe() implements OnI
   public ngOnInit(): void {
     const id = this._route.snapshot.params['id'];
 
+    if (!id) {
+      this.navigateToAnnouncementsList();
+      return;
+    }
+
     this.addSubscription(
       this._announcementsService.get(id).subscribe((announcements: IAnnouncements) => {
         this.announcements.set(EditAnnouncementsDto.create(announcements));

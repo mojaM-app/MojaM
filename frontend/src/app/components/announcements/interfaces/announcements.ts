@@ -2,20 +2,20 @@ export interface IAnnouncementItem {
   id: string;
   content: string;
   createdAt: Date;
-  createdBy: string;
+  createdBy: string | null;
   updatedAt?: Date;
-  updatedBy?: string;
+  updatedBy?: string | null;
 }
 
 export interface IAnnouncements {
   id: string;
-  title: string | null;
+  title?: string | null;
   state: number;
-  validFromDate: Date | null;
+  validFromDate?: Date | null;
   createdAt: Date;
-  createdBy: string;
+  createdBy: string | null;
   updatedAt: Date;
   publishedAt?: Date;
-  publishedBy?: string;
+  publishedBy?: string | null;
   items: IAnnouncementItem[];
 }

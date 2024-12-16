@@ -2,9 +2,9 @@ export interface ICurrentAnnouncementsItem {
   id: string;
   content: string;
   createdAt: Date;
-  createdBy: string;
+  createdBy: string | null;
   updatedAt: Date;
-  updatedBy?: string;
+  updatedBy?: string | null;
 }
 
 export interface ICurrentAnnouncements {
@@ -12,10 +12,10 @@ export interface ICurrentAnnouncements {
   title?: string;
   validFromDate: Date;
   createdAt: Date;
-  createdBy: string;
+  createdBy: string | null;
   updatedAt: Date;
   publishedAt: Date;
-  publishedBy: string;
+  publishedBy: string | null;
   items: ICurrentAnnouncementsItem[];
 }
 

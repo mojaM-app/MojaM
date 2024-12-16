@@ -124,11 +124,7 @@ describe('PUT /announcements', () => {
       expect(announcementsAfterUpdate.items.every(item => item.createdAt !== undefined)).toBe(true);
       expect(announcementsAfterUpdate.items.every(item => item.createdBy !== undefined)).toBe(true);
       expect(announcementsAfterUpdate.items.every(item => item.updatedAt !== undefined)).toBe(true);
-      expect(
-        announcementsAfterUpdate.items
-          .filter(f => announcementsBeforeUpdate.items.some(s => s.id === f.id))
-          .every(item => item.updatedBy !== undefined),
-      ).toBe(true);
+      expect(announcementsAfterUpdate.items.every(item => item.updatedBy === undefined)).toBe(true);
       announcementsAfterUpdate.items.forEach((item, index) => {
         expect(updateAnnouncementsModel.items![index].content).toBe(item.content);
         // expect(announcementsBeforeUpdate.items[index].content).not.toBe(item.content);

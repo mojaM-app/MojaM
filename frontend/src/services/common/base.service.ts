@@ -30,6 +30,8 @@ export class BaseService {
         `${environment.backendUrl}/${this.API_ROUTES.announcements.path}/${uuid}`,
       delete: (uuid: string): string =>
         `${environment.backendUrl}/${this.API_ROUTES.announcements.path}/${uuid}`,
+      publish: (uuid: string): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.announcements.path}/${uuid}/publish`,
     },
     announcementsList: {
       path: 'announcements-list',

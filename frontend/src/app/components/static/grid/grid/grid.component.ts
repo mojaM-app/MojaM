@@ -19,7 +19,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule, SortDirection } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { map, merge, startWith, switchMap } from 'rxjs';
 import { IS_MOBILE } from 'src/app/app.config';
@@ -68,6 +68,7 @@ export class GridComponent<TGridItemDto, TGridData extends IGridData<TGridItemDt
   public dataSource = new MatTableDataSource<TGridItemDto>([]);
 
   public readonly sortActiveColumnName: WritableSignal<string>;
+  public readonly sortActiveColumnDirection: WritableSignal<SortDirection>;
   public readonly columns: WritableSignal<IGridColumn[]>;
   public readonly items: WritableSignal<TGridItemDto[]> = signal([]);
   public readonly itemsTotalCount: WritableSignal<number> = signal(0);
@@ -90,6 +91,7 @@ export class GridComponent<TGridItemDto, TGridData extends IGridData<TGridItemDt
   ) {
     super();
 
+    this.sortActiveColumnDirection = signal(_gridService.getSortActiveColumnDirection());
     this.sortActiveColumnName = signal(_gridService.getSortActiveColumnName());
     this.columns = signal(_gridService.getDisplayedColumns());
 

@@ -5,7 +5,7 @@
     matSort
     [matSortActive]="sortActiveColumnName()"
     matSortDisableClear
-    matSortDirection="asc"
+    [matSortDirection]="sortActiveColumnDirection()"
     multiTemplateDataRows>
     @for (column of visibleColumns(); track column) {
       @if (column.isExpandable) {

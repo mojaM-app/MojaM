@@ -11,6 +11,7 @@ export { AnnouncementsListController } from './controllers/announcements-list.co
 export { AnnouncementsController } from './controllers/announcements.controller';
 export { CurrentAnnouncementsController } from './controllers/current-announcements.controller';
 
+export { CopyAnnouncementsReqDto, CopyAnnouncementsResponseDto, CopyAnnouncementsResultDto } from './dtos/copy-announcements.dto';
 export {
   AnnouncementItemContentMaxLength,
   AnnouncementsTitleMaxLength,
@@ -29,7 +30,6 @@ export {
 export { GetAnnouncementsReqDto, GetAnnouncementsResponseDto, type IAnnouncementsDto } from './dtos/get-announcements.dto';
 export {
   GetCurrentAnnouncementsResponseDto,
-  announcementToICurrentAnnouncements,
   type ICurrentAnnouncementsDto,
   type IGetCurrentAnnouncementsDto,
 } from './dtos/get-current-announcements.dto';

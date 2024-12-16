@@ -8,6 +8,50 @@
     <main>
       <div class="card-body">
         @if (announcements()) {
+          <div class="row mb-2">
+            <div class="col-4 col-sm-5 text-center">
+              <button mat-raised-button [matMenuTriggerFor]="addMenu">
+                <mat-icon>{{ AddAnnouncementsMenu.Icon }}</mat-icon>
+                <span>{{ 'Shared/BtnAdd' | gmessage }}</span>
+              </button>
+              <mat-menu #addMenu="matMenu">
+                <button mat-menu-item [routerLink]="['./' + AddAnnouncementsMenu.Route]">
+                  <mat-icon>add</mat-icon>
+                  <span>{{ 'Announcements/MenuAdd/AddBlank' | gmessage }}</span>
+                </button>
+                <button
+                  mat-menu-item
+                  [routerLink]="['./' + AddAnnouncementsMenu.Route + '/' + announcements()?.id]">
+                  <mat-icon>content_copy</mat-icon>
+                  <span>{{ 'Announcements/MenuAdd/AddByCopy' | gmessage }}</span>
+                </button>
+              </mat-menu>
+            </div>
+            <div class="col-8 col-sm-7 text-center">
+              <button mat-raised-button [routerLink]="['./' + AnnouncementsListMenu.Route]">
+                <mat-icon>{{ AnnouncementsListMenu.Icon }}</mat-icon>
+                <span>{{ AnnouncementsListMenu.Label | gmessage }}</span>
+              </button>
+            </div>
+          </div>
+          <ol class="ps-3">
+            @for (item of announcements()!.items; track item; let i = $index) {
+              <li class="pb-4">
+                <div
+                  class="w-100 announcement-item-content-container text-justify"
+                  [innerHTML]="item.content"></div>
+                <div class="row lh-1">
+                  <div class="col p-0 opacity-25">
+                    <mat-icon class="fs-8 align-middle">person</mat-icon>
+                    <span class="fs-8"
+                      >{{ 'Announcements/CreatedBy' | gmessage }}
+                      {{ item.updatedBy ?? item.createdBy }},{{ item.updatedAt | gdatetime }}</span
+                    >
+                  </div>
+                </div>
+              </li>
+            }
+          </ol>
         } @else {
           @if (showButtonAddAnnouncement()) {
             <div class="row mb-2">

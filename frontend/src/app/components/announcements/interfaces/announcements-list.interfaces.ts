@@ -5,10 +5,10 @@ export interface IAnnouncementsGridItemColumns {
   state: number;
   validFromDate?: Date;
   createdAt: Date;
-  createdBy?: string;
+  createdBy?: string | null;
   updatedAt?: Date;
   publishedAt?: Date;
-  publishedBy?: string;
+  publishedBy?: string | null;
   itemsCount: number;
 }
 

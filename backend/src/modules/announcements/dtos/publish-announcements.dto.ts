@@ -3,11 +3,11 @@ import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
 
 export class PublishAnnouncementsReqDto extends BaseReqDto {
-  public readonly idGuid: string | undefined;
+  public readonly announcementsId: string | undefined;
 
-  public constructor(idGuid: string | undefined, currentUserId: number) {
+  public constructor(announcementsId: string | undefined, currentUserId: number) {
     super(currentUserId);
-    this.idGuid = idGuid;
+    this.announcementsId = announcementsId;
   }
 }
 
@@ -17,6 +17,6 @@ export class PublishAnnouncementsResponseDto implements IResponse<boolean> {
 
   public constructor(data: boolean) {
     this.data = data;
-    this.message = events.announcements.announcementsDeleted;
+    this.message = events.announcements.announcementsPublished;
   }
 }

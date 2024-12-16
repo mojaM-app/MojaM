@@ -1,14 +1,15 @@
 import { events } from '@events';
 import {
   AnnouncementsRepository,
-  announcementToICurrentAnnouncements,
   CurrentAnnouncementsRepository,
   CurrentAnnouncementsRetrievedEvent,
+  ICurrentAnnouncementsDto,
   IGetCurrentAnnouncementsDto,
 } from '@modules/announcements';
 import { BaseService } from '@modules/common';
 import { isNullOrUndefined } from '@utils';
 import Container, { Service } from 'typedi';
+import { Announcement } from '../entities/announcement.entity';
 
 @Service()
 export class CurrentAnnouncementsService extends BaseService {
@@ -24,7 +25,7 @@ export class CurrentAnnouncementsService extends BaseService {
   public async get(currentUserId: number | undefined): Promise<IGetCurrentAnnouncementsDto> {
     const announcement = await this._currentAnnouncementsRepository.get();
 
-    const currentAnnouncements = isNullOrUndefined(announcement) ? null : announcementToICurrentAnnouncements(announcement!);
+    const currentAnnouncements = isNullOrUndefined(announcement) ? null : this.announcementToICurrentAnnouncements(announcement!);
     const count = await this._announcementsRepository.count();
 
     if (!isNullOrUndefined(announcement)) {
@@ -38,5 +39,26 @@ export class CurrentAnnouncementsService extends BaseService {
       currentAnnouncements,
       announcementsCount: count,
     } satisfies IGetCurrentAnnouncementsDto;
+  }
+
+  private announcementToICurrentAnnouncements(announcement: Announcement): ICurrentAnnouncementsDto {
+    return {
+      id: announcement.uuid,
+      title: announcement.title,
+      validFromDate: announcement.validFromDate!,
+      createdBy: announcement.createdBy.getFullName()!,
+      createdAt: announcement.createdAt,
+      updatedAt: announcement.updatedAt ?? announcement.createdAt,
+      publishedBy: announcement.publishedBy!.getFullName()!,
+      publishedAt: announcement.publishedAt!,
+      items: announcement.items.map(item => ({
+        id: item.id,
+        content: item.content,
+        createdBy: item.createdBy.getFullName()!,
+        createdAt: item.createdAt,
+        updatedBy: item.updatedBy?.getFullName() ?? undefined,
+        updatedAt: item.updatedAt ?? item.createdAt,
+      })),
+    } satisfies ICurrentAnnouncementsDto;
   }
 }

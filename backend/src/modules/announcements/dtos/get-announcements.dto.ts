@@ -25,11 +25,11 @@ export interface IAnnouncementsDto {
 }
 
 export class GetAnnouncementsReqDto extends BaseReqDto {
-  public readonly idGuid: string | undefined;
+  public readonly announcementsId: string | undefined;
 
-  public constructor(idGuid: string | undefined, currentUserId: number) {
+  public constructor(announcementsId: string | undefined, currentUserId: number) {
     super(currentUserId);
-    this.idGuid = idGuid;
+    this.announcementsId = announcementsId;
   }
 }
 

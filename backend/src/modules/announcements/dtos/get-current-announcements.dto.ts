@@ -1,6 +1,5 @@
 import { events } from '@events';
 import { IResponse } from '@interfaces';
-import { Announcement } from '../entities/announcement.entity';
 
 export interface ICurrentAnnouncementsItemDto {
   id: string;
@@ -36,25 +35,4 @@ export class GetCurrentAnnouncementsResponseDto implements IResponse<IGetCurrent
     this.data = data;
     this.message = events.announcements.currentAnnouncementsRetrieved;
   }
-}
-
-export function announcementToICurrentAnnouncements(announcement: Announcement): ICurrentAnnouncementsDto {
-  return {
-    id: announcement.uuid,
-    title: announcement.title,
-    validFromDate: announcement.validFromDate!,
-    createdBy: announcement.createdBy.getFullName()!,
-    createdAt: announcement.createdAt,
-    updatedAt: announcement.updatedAt ?? announcement.createdAt,
-    publishedBy: announcement.publishedBy!.getFullName()!,
-    publishedAt: announcement.publishedAt!,
-    items: announcement.items.map(item => ({
-      id: item.id,
-      content: item.content,
-      createdBy: item.createdBy.getFullName()!,
-      createdAt: item.createdAt,
-      updatedBy: item.updatedBy?.getFullName() ?? undefined,
-      updatedAt: item.updatedAt ?? item.createdAt,
-    })),
-  } satisfies ICurrentAnnouncementsDto;
 }

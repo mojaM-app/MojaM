@@ -15,6 +15,7 @@
     "BtnYes": "Tak",
     "BtnNo": "Nie",
     "BtnAdd": "Dodaj",
+    "BtnPublish": "Opublikuj",
     "Location": "Lokalizacja"
   },
   "Header": {
@@ -62,9 +63,14 @@
   "Announcements": {
     "Title": "Ogłoszenia",
     "AnnouncementsOfTheDay": "Ogłoszenia z dnia {date}",
+    "CreatedBy": "Utworzone przez",
     "NoAnnouncements": "Brak ogłoszeń",
     "NoPublishedAnnouncements": "Brak opublikowanych ogłoszeń, przejdź do listy ogłoszeń aby dodać, zmienić lub opublikować ogłoszenia.",
     "BtnAdd": "Dodaj ogłoszenia",
+    "MenuAdd": {
+      "AddBlank": "Puste",
+      "AddByCopy": "Na podstawie obecnych"
+    },
     "BtnEdit": "Edytuj",
     "BtnList": "Lista ogłoszeń",
     "FormAdd": {
@@ -105,12 +111,14 @@
         "ItemsCount": "Ilość ogłoszeń"
       },
       "ContextMenu": {
+        "Copy": "Utworz nowe na bazie",
         "Edit": "Edytuj",
         "Publish": "Opublikuj",
         "Archive": "Zarchiwizuj",
         "Delete": "Usuń"
       },
-      "DeleteConfirmText": "Czy na pewno chcesz usunąć ogłoszenia utworzone {createdAt} przez '{createdBy}'?"
+      "DeleteConfirmText": "Czy na pewno chcesz usunąć ogłoszenia utworzone {createdAt} przez '{createdBy}'?",
+      "PublishConfirmText": "Czy na pewno chcesz opublikować ogłoszenia utworzone {createdAt} przez '{createdBy}'?"
     },
     "State": {
       "0": "Nowe",

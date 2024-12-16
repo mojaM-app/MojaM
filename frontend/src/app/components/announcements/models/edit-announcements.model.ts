@@ -24,6 +24,7 @@ export class EditAnnouncementsDto extends AnnouncementsDto {
       const items = formControls.items as any as FormArray;
       items?.controls?.forEach((item: any) => {
         this.items?.push({
+          id: item.controls.id.value ?? undefined,
           content: item.controls.content.value ?? undefined,
         } satisfies AnnouncementItemDto);
       });
@@ -32,10 +33,11 @@ export class EditAnnouncementsDto extends AnnouncementsDto {
 
   public static create(announcements: IAnnouncements): EditAnnouncementsDto {
     const result = new EditAnnouncementsDto(announcements.id);
-    result.validFromDate = announcements.validFromDate;
+    result.validFromDate = announcements.validFromDate ?? null;
     result.items = (announcements.items ?? []).map(
       item =>
         ({
+          id: item.id,
           content: item.content,
         }) satisfies AnnouncementItemDto
     );

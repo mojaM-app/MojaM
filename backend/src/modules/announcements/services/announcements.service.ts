@@ -9,6 +9,9 @@ import {
   AnnouncementsRetrievedEvent,
   AnnouncementStateValue,
   AnnouncementsUpdatedEvent,
+  CopyAnnouncementsReqDto,
+  CreateAnnouncementItemDto,
+  CreateAnnouncementsDto,
   CreateAnnouncementsReqDto,
   DeleteAnnouncementsReqDto,
   GetAnnouncementsReqDto,
@@ -33,13 +36,14 @@ export class AnnouncementsService extends BaseService {
   }
 
   public async get(reqDto: GetAnnouncementsReqDto): Promise<IAnnouncementsDto | null> {
-    const announcements = await this._announcementsRepository.getByUuid(reqDto.idGuid);
+    const announcements = await this._announcementsRepository.getByUuid(reqDto.announcementsId);
 
     if (isNullOrUndefined(announcements)) {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcements_Does_Not_Exist, {
-        id: reqDto.idGuid,
+        id: reqDto.announcementsId,
       });
     }
+
     const dto = this.announcementToIAnnouncements(announcements!);
 
     this._eventDispatcher.dispatch(events.announcements.announcementsRetrieved, new AnnouncementsRetrievedEvent(dto, reqDto.currentUserId!));
@@ -104,12 +108,41 @@ export class AnnouncementsService extends BaseService {
     return dto;
   }
 
-  public async delete(reqDto: DeleteAnnouncementsReqDto): Promise<string | null> {
-    const announcements = await this._announcementsRepository.getByUuid(reqDto.idGuid);
+  public async copy(reqDto: CopyAnnouncementsReqDto): Promise<IAnnouncementsDto | null> {
+    let announcements = await this._announcementsRepository.getByUuid(reqDto.announcementsId);
 
     if (isNullOrUndefined(announcements)) {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcements_Does_Not_Exist, {
-        id: reqDto.idGuid,
+        id: reqDto.announcementsId,
+      });
+    }
+
+    const model = new CreateAnnouncementsDto();
+    model.title = announcements!.title ?? undefined;
+    model.validFromDate = null;
+    model.items = (announcements!.items ?? []).map(item => {
+      const newItem = new CreateAnnouncementItemDto();
+      newItem.content = item.content;
+      return newItem;
+    });
+
+    const { id: announcementsId } = await this._announcementsRepository.create(new CreateAnnouncementsReqDto(model, reqDto.currentUserId));
+
+    announcements = await this._announcementsRepository.get(announcementsId);
+
+    const dto = this.announcementToIAnnouncements(announcements!);
+
+    this._eventDispatcher.dispatch(events.announcements.announcementsCreated, new AnnouncementsCreatedEvent(dto, reqDto.currentUserId!));
+
+    return dto;
+  }
+
+  public async delete(reqDto: DeleteAnnouncementsReqDto): Promise<string | null> {
+    const announcements = await this._announcementsRepository.getByUuid(reqDto.announcementsId);
+
+    if (isNullOrUndefined(announcements)) {
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcements_Does_Not_Exist, {
+        id: reqDto.announcementsId,
       });
     }
 
@@ -137,11 +170,11 @@ export class AnnouncementsService extends BaseService {
   }
 
   public async publish(reqDto: PublishAnnouncementsReqDto): Promise<boolean> {
-    const announcements = await this._announcementsRepository.getByUuid(reqDto.idGuid);
+    const announcements = await this._announcementsRepository.getByUuid(reqDto.announcementsId);
 
     if (isNullOrUndefined(announcements)) {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcements_Does_Not_Exist, {
-        id: reqDto.idGuid,
+        id: reqDto.announcementsId,
       });
     }
 
@@ -150,7 +183,7 @@ export class AnnouncementsService extends BaseService {
         StatusCode.ClientErrorBadRequest,
         errorKeys.announcements.Announcements_Without_ValidFromDate_Can_Not_Be_Published,
         {
-          id: reqDto.idGuid,
+          id: reqDto.announcementsId,
         },
       );
     }

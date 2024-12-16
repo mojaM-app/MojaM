@@ -420,36 +420,58 @@ body {
 @import url('./app/components/static/wysiwyg-editor/wysiwyg-editor.style.scss');
 @import url('./app/components/static/grid/grid.style.scss');
 
-.swipe-animation {
+.swipe-animation-container {
   position: absolute;
-  top: 0;
-  left: 35%;
-  width: calc(var(--main-container-width) * 0.2);
+  left: 0;
+  top: 1rem;
+  right: 0;
+  bottom: 0;
 
-  .hand-icon {
-    position: relative;
-    background-image: url('/images/hand-black.png');
-    background-repeat: no-repeat;
-    background-position: center;
-    width: 80px;
-    height: 80px;
-    opacity: 0.3;
-    animation: spin 4s infinite;
-    transform-origin: 52% 62%;
-  }
+  .swipe-animation {
+    position: sticky;
+    top: 0;
+    left: 35%;
+    width: calc(var(--main-container-width) * 0.2);
 
-  @keyframes spin {
-    0% {
-      transform: rotate(30deg);
-      margin-left: calc(var(--main-container-width) * 0.2);
+    .hand-icon {
+      position: relative;
+      background-image: url('/images/hand-black.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      width: 80px;
+      height: 80px;
+      opacity: 0.3;
+      animation: spin 4s infinite;
+      transform-origin: 52% 62%;
     }
-    50% {
-      transform: rotate(-15deg);
-      margin-left: calc(var(--main-container-width) * -0.2);
-    }
-    100% {
-      transform: rotate(0deg);
-      margin-left: calc(var(--main-container-width) * 0.2);
+
+    @keyframes spin {
+      0% {
+        transform: rotate(30deg);
+        margin-left: calc(var(--main-container-width) * 0.2);
+      }
+      50% {
+        transform: rotate(-15deg);
+        margin-left: calc(var(--main-container-width) * -0.2);
+      }
+      100% {
+        transform: rotate(0deg);
+        margin-left: calc(var(--main-container-width) * 0.2);
+      }
     }
   }
+}
+
+.fs-7 {
+  font-size: 0.875rem;
+}
+
+.fs-8 {
+  font-size: 0.65rem;
+}
+
+.text-justify {
+  text-align: justify;
+  text-justify: inter-word;
+  text-align-last: start;
 }

@@ -44,6 +44,7 @@ export interface IGridService<TGridItemDto, TGridData extends IGridData<TGridIte
   ): Observable<TGridData | null>;
 
   getSortActiveColumnName(): string;
+  getSortActiveColumnDirection(): SortDirection;
 
   getContextMenuItems(item: TGridItemDto): IMenuItem[];
 }

@@ -5,7 +5,13 @@ import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
-import { AnnouncementsRout, AnnouncementStateValue, CreateAnnouncementsResponseDto, GetAnnouncementsResponseDto } from '@modules/announcements';
+import {
+  AnnouncementsRout,
+  AnnouncementStateValue,
+  CreateAnnouncementsResponseDto,
+  GetAnnouncementsResponseDto,
+  PublishAnnouncementsResponseDto,
+} from '@modules/announcements';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
@@ -58,6 +64,11 @@ describe('POST /announcements/publish', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(publishAnnouncementsResponse.statusCode).toBe(200);
+      body = publishAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: publishAnnouncementsResult, message: publishMessage }: PublishAnnouncementsResponseDto = body;
+      expect(publishAnnouncementsResult).toBe(true);
+      expect(publishMessage).toBe(events.announcements.announcementsPublished);
 
       const getAnnouncementsResponse = await request(app.getServer())
         .get(announcementRoute.path + '/' + announcementsId)

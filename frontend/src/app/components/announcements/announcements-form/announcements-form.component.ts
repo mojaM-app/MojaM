@@ -64,7 +64,7 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
     private _snackBarService: SnackBarService
   ) {
     const formGroup = formBuilder.group<IAnnouncementsForm>({
-      validFromDate: new FormControl<Date | undefined>(undefined, {
+      validFromDate: new FormControl<Date | null>(null, {
         nonNullable: true,
       }),
       items: new FormArray<FormGroup<IAnnouncementsItemForm>>([]),
@@ -76,21 +76,23 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
       const model = this.announcements();
       if (model) {
         formGroup.patchValue({
-          validFromDate: model.validFromDate,
+          validFromDate: model.validFromDate ?? null,
         } satisfies AnnouncementsDto);
 
         (model.items ?? []).forEach(item => {
-          this.addItem(item.content);
+          this.addItem(item.id, item.content);
         });
       }
     });
   }
 
-  public addItem(content?: string): void {
+  public addItem(id?: string, content?: string): void {
     this.array(this.formControlNames.items).push(
       new FormGroup<IAnnouncementsItemForm>({
-        content: new FormControl<string | undefined>(content, {
+        id: new FormControl<string | undefined>(id, {
           nonNullable: true,
+        }),
+        content: new FormControl<string | null>(content ?? null, {
           validators: [Validators.required, Validators.maxLength(this._contentMaxLength)],
         }),
       } satisfies IAnnouncementsItemForm)

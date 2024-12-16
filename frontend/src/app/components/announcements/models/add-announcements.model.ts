@@ -1,6 +1,7 @@
 import { FormArray, FormControl } from '@angular/forms';
 import { DateUtils } from 'src/utils/date.utils';
 import { IAnnouncementsForm } from '../announcements-form/announcements.form';
+import { IAnnouncements } from '../interfaces/announcements';
 import { AnnouncementItemDto, AnnouncementsDto } from './announcements.model';
 
 export class AddAnnouncementsDto extends AnnouncementsDto {
@@ -21,6 +22,16 @@ export class AddAnnouncementsDto extends AnnouncementsDto {
         } satisfies AnnouncementItemDto);
       });
     }
+  }
+
+  public set(announcements: IAnnouncements): void {
+    this.validFromDate = announcements?.validFromDate ?? null;
+    this.items = (announcements.items ?? []).map(
+      item =>
+        ({
+          content: item.content ?? null,
+        }) satisfies AnnouncementItemDto
+    );
   }
 
   public static create(): AddAnnouncementsDto {

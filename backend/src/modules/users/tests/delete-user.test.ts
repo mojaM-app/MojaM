@@ -826,10 +826,7 @@ describe('DELETE /user', () => {
       const data = body.data;
       const { message: deleteUserMessage, args: deleteUserArgs }: { message: string; args: string[] } = data;
       expect(deleteUserMessage).toBe(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted);
-      expect(deleteUserArgs).toEqual({
-        id: user.id,
-        relatedData: [relatedDataNames.AnnouncementItems_CreatedBy, relatedDataNames.AnnouncementItems_UpdatedBy],
-      });
+      expect(deleteUserArgs).toEqual({ id: user.id, relatedData: [relatedDataNames.AnnouncementItems_CreatedBy] });
 
       path = announcementRoute.path + '/' + announcementsId;
       const deleteAnnouncementsResponse = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);

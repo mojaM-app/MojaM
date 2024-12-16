@@ -10,7 +10,7 @@ import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity
 import { CreateAnnouncementsReqDto } from '../dtos/create-announcements.dto';
 import { DeleteAnnouncementsReqDto } from '../dtos/delete-announcements.dto';
 import { PublishAnnouncementsReqDto } from '../dtos/publish-announcements.dto';
-import { UpdateAnnouncementsReqDto } from '../dtos/update-announcements.dto';
+import { UpdateAnnouncementsDto, UpdateAnnouncementsReqDto } from '../dtos/update-announcements.dto';
 import { AnnouncementItem } from '../entities/announcement-item.entity';
 import { Announcement } from '../entities/announcement.entity';
 import { AnnouncementStateValue } from '../enums/announcement-state.enum';
@@ -69,17 +69,27 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
         });
       }
 
-      await announcementsRepository.update(
-        {
-          id,
-        } satisfies FindOptionsWhere<Announcement>,
-        {
-          validFromDate: reqDto.announcements.validFromDate,
-          title: reqDto.announcements.title,
-        } satisfies QueryDeepPartialEntity<Announcement>,
-      );
+      const announcements = await announcementsRepository.findOne({
+        where: { id },
+      });
 
-      if (reqDto.announcements.items !== undefined) {
+      if (isNullOrUndefined(announcements)) {
+        throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcements_Does_Not_Exist, {
+          id: reqDto.announcementsId,
+        });
+      }
+
+      const updateAnnouncementModel = this.getUpdateAnnouncementModel(announcements!, reqDto.announcements);
+      if (updateAnnouncementModel !== null) {
+        await announcementsRepository.update(
+          {
+            id,
+          } satisfies FindOptionsWhere<Announcement>,
+          updateAnnouncementModel,
+        );
+      }
+
+      if ((reqDto.announcements.items ?? []).length > 0) {
         const announcementItemsRepository = transactionalEntityManager.getRepository(AnnouncementItem);
         const announcementItems = await announcementItemsRepository.find({
           where: {
@@ -108,15 +118,17 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
             } satisfies ICreateAnnouncementItem);
             continue;
           } else {
-            await announcementItemsRepository.update(
-              {
-                id: existingItem.id,
-              } satisfies FindOptionsWhere<AnnouncementItem>,
-              {
-                content: item.content,
-                updatedBy: { id: reqDto.currentUserId! } satisfies IUserId,
-              } satisfies QueryDeepPartialEntity<AnnouncementItem>,
-            );
+            if ((existingItem.content ?? null) !== (item.content ?? null)) {
+              await announcementItemsRepository.update(
+                {
+                  id: existingItem.id,
+                } satisfies FindOptionsWhere<AnnouncementItem>,
+                {
+                  content: item.content,
+                  updatedBy: { id: reqDto.currentUserId! } satisfies IUserId,
+                } satisfies QueryDeepPartialEntity<AnnouncementItem>,
+              );
+            }
           }
         }
 
@@ -125,7 +137,6 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
 
           if (existingItem === undefined) {
             await announcementItemsRepository.delete({ id: item.id });
-            continue;
           }
         }
       }
@@ -197,23 +208,63 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
   }
 
   public async publish(announcements: Announcement, reqDto: PublishAnnouncementsReqDto): Promise<boolean> {
-    await this._dbContext.announcements.update(
-      {
-        id: announcements.id,
-      } satisfies FindOptionsWhere<Announcement>,
-      {
-        state: AnnouncementStateValue.PUBLISHED,
-        publishedBy: {
-          id: reqDto.currentUserId!,
-        } satisfies IUserId,
-        publishedAt: new Date(),
-      } satisfies QueryDeepPartialEntity<Announcement>,
-    );
+    return await this._dbContext.transaction(async transactionalEntityManager => {
+      const announcementsRepository = transactionalEntityManager.getRepository(Announcement);
 
-    return true;
+      const currentPublishedAnnouncement = await announcementsRepository.findOne({
+        where: {
+          state: AnnouncementStateValue.PUBLISHED,
+        },
+        order: {
+          validFromDate: 'DESC',
+        } satisfies FindOptionsOrder<Announcement>,
+      });
+
+      await announcementsRepository.update(
+        {
+          // id: LessThanOrEqual(currentPublishedAnnouncement?.id ?? null),
+          state: AnnouncementStateValue.PUBLISHED,
+        } satisfies FindOptionsWhere<Announcement>,
+        {
+          state: AnnouncementStateValue.ARCHIVED,
+        } satisfies QueryDeepPartialEntity<Announcement>,
+      );
+
+      await announcementsRepository.update(
+        {
+          id: announcements.id,
+        } satisfies FindOptionsWhere<Announcement>,
+        {
+          state: AnnouncementStateValue.PUBLISHED,
+          publishedBy: {
+            id: reqDto.currentUserId!,
+          } satisfies IUserId,
+          publishedAt: new Date(),
+        } satisfies QueryDeepPartialEntity<Announcement>,
+      );
+
+      return true;
+    });
   }
 
   public async count(): Promise<number> {
     return await this._dbContext.announcements.count();
+  }
+
+  public getUpdateAnnouncementModel(announcementFromDb: Announcement, dto: UpdateAnnouncementsDto): QueryDeepPartialEntity<Announcement> | null {
+    const result: QueryDeepPartialEntity<Announcement> = {};
+
+    let wasChanged = false;
+    if ((announcementFromDb.title ?? null) !== (dto.title ?? null)) {
+      result.title = dto.title;
+      wasChanged = true;
+    }
+
+    if ((announcementFromDb.validFromDate ?? null) !== (dto.validFromDate ?? null)) {
+      result.validFromDate = dto.validFromDate;
+      wasChanged = true;
+    }
+
+    return wasChanged ? result : null;
   }
 }

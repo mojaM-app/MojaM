@@ -116,6 +116,25 @@ export const appConfig: ApplicationConfig = {
 
           ['clean'], // remove formatting button
         ],
+        clipboard: {
+          matchers: [
+            [
+              Node.ELEMENT_NODE,
+              (node: any, delta: any): any => {
+                const ops: any[] = [];
+                delta.ops.forEach((op: any) => {
+                  if (op.insert && typeof op.insert === 'string') {
+                    ops.push({
+                      insert: op.insert,
+                    });
+                  }
+                });
+                delta.ops = ops;
+                return delta;
+              },
+            ],
+          ],
+        },
       },
     }),
     provideServiceWorker('ngsw-worker.js', {

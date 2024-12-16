@@ -25,6 +25,19 @@ const routes: Routes = [
     } satisfies IPermissionRouteData,
   },
   {
+    path: AddAnnouncementsMenu.Route + '/:id',
+    loadComponent: () =>
+      import('./add-announcements/add-announcements.component').then(
+        m => m.AddAnnouncementsComponent
+      ),
+    canActivate: [PermissionGuard],
+    data: {
+      checkSession: true,
+      permissions: [SystemPermissionValue.AddAnnouncements],
+      hideFooter: true,
+    } satisfies IPermissionRouteData,
+  },
+  {
     path: EditAnnouncementsMenu.Route + '/:id',
     loadComponent: () =>
       import('./edit-announcements/edit-announcements.component').then(

@@ -22,7 +22,7 @@ import { TranslationService } from 'src/services/translate/translation.service';
 import { BottomSheetActionResult } from '../../static/bottom-sheet/bottom-sheet.enum';
 import { BaseGridService } from '../../static/grid/grid/base-grid.service';
 import { AnnouncementStateValue } from '../announcement-state.enum';
-import { EditAnnouncementsMenu } from '../announcements.menu';
+import { AddAnnouncementsMenu, EditAnnouncementsMenu } from '../announcements.menu';
 import { AnnouncementsListColumns } from './announcements-list.columns';
 
 @Injectable({
@@ -128,7 +128,11 @@ export class AnnouncementsGridService
   }
 
   public getSortActiveColumnName(): string {
-    return AnnouncementsListColumns.validFromDate!;
+    return AnnouncementsListColumns.createdAt!;
+  }
+
+  public getSortActiveColumnDirection(): SortDirection {
+    return 'desc';
   }
 
   public getContextMenuItems(announcements: IAnnouncementsGridItemDto): IMenuItem[] {
@@ -142,7 +146,29 @@ export class AnnouncementsGridService
       });
     }
 
-    if (this._permissionService.hasPermission(SystemPermissionValue.EditAnnouncements)) {
+    if (
+      this._permissionService.hasPermission(SystemPermissionValue.PublishAnnouncements) &&
+      announcements.state === AnnouncementStateValue.DRAFT
+    ) {
+      result.push({
+        title: this._translationService.get('Announcements/List/ContextMenu/Publish'),
+        icon: 'publish',
+        action: async () => this.handlePublish(announcements),
+      });
+    }
+
+    if (this._permissionService.hasPermission(SystemPermissionValue.AddAnnouncements)) {
+      result.push({
+        title: this._translationService.get('Announcements/List/ContextMenu/Copy'),
+        icon: 'content_copy',
+        action: async () => this.handleCopy(announcements),
+      });
+    }
+
+    if (
+      announcements.state !== AnnouncementStateValue.ARCHIVED &&
+      this._permissionService.hasPermission(SystemPermissionValue.EditAnnouncements)
+    ) {
       result.push({
         title: this._translationService.get('Announcements/List/ContextMenu/Edit'),
         icon: 'edit',
@@ -151,6 +177,42 @@ export class AnnouncementsGridService
     }
 
     return result;
+  }
+
+  private async handleCopy(
+    announcements: IAnnouncementsGridItemDto
+  ): Promise<BottomSheetActionResult | undefined> {
+    return this._router
+      .navigateByUrl(AddAnnouncementsMenu.Path + '/' + announcements.id)
+      .then(() => BottomSheetActionResult.REDIRECT_TO_URL);
+  }
+
+  private async handlePublish(
+    announcements: IAnnouncementsGridItemDto
+  ): Promise<BottomSheetActionResult | undefined> {
+    const confirmed = await this._dialogService
+      .confirm({
+        message: {
+          text: 'Announcements/List/PublishConfirmText',
+          interpolateParams: {
+            createdAt: this._datetimePipe.transform(announcements.createdAt),
+            createdBy: announcements.createdBy,
+          },
+        },
+        noBtnText: 'Shared/BtnCancel',
+        yesBtnText: 'Shared/BtnPublish',
+      } satisfies IDialogSettings)
+      .then((result: boolean) => result);
+
+    if (confirmed !== true) {
+      return;
+    }
+
+    return firstValueFrom(
+      this._listService
+        .publish(announcements.id)
+        .pipe(map((result: boolean) => (result ? BottomSheetActionResult.REFRESH_GRID : undefined)))
+    );
   }
 
   private async handleEdit(

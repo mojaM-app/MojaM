@@ -62,6 +62,10 @@ export class UserGridService
     return UserListColumns.lastName!;
   }
 
+  public getSortActiveColumnDirection(): SortDirection {
+    return 'asc';
+  }
+
   public getContextMenuItems(item: IUserGridItemDto): IMenuItem[] {
     throw new Error('Method not implemented.');
   }
