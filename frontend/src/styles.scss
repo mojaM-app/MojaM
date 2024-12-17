@@ -136,6 +136,12 @@ body {
       --bs-card-inner-border-radius: 0;
       --bs-card-cap-bg: #{mat.get-theme-color($dark-theme, surface-container-high)};
     }
+    .alert-light {
+      --bs-alert-color: #{mat.get-theme-color($dark-theme, secondary)};
+      --bs-alert-bg: #{mat.get-theme-color($dark-theme, on-secondary)};
+      --bs-alert-border-color: #{mat.get-theme-color($dark-theme, secondary-container)};
+      // --bs-alert-link-color: var(--bs-dark-text-emphasis);
+    }
 
     .bg-color-primary {
       background-color: mat.get-theme-color($dark-theme, primary-container);
@@ -234,9 +240,15 @@ body {
       var(--bs-card-cap-padding-y) * 2 + var(--mat-toolbar-title-text-line-height) +
         var(--bs-card-border-width)
     );
+    &.mobile {
+      width: var(--main-container-width);
+    }
 
     .card-header {
       height: 100%;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
   }
 
@@ -299,9 +311,15 @@ body {
       var(--bs-card-cap-padding-y) * 2 + var(--mat-toolbar-title-text-line-height) +
         var(--bs-card-border-width)
     );
+    &.mobile {
+      width: var(--main-container-width);
+    }
 
     .card-header {
       height: 100%;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
   }
 

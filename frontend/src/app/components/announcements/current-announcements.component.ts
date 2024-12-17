@@ -54,31 +54,52 @@ export class CurrentAnnouncementsComponent extends WithUnsubscribe() implements 
   }
 
   public ngOnInit(): void {
-    this._currentAnnouncementsService.get().subscribe((resp: IGetCurrentAnnouncements) => {
-      const currentAnnouncements = resp?.currentAnnouncements ?? null;
-      const announcementsCount = resp?.announcementsCount ?? 0;
-      if (currentAnnouncements) {
-        let title = currentAnnouncements.title;
-        if ((title?.length ?? 0) === 0) {
-          title = this._translationService.get('Announcements/AnnouncementsOfTheDay', {
-            date: new GdatePipe(this._cultureService, this._translationService).transform(
-              currentAnnouncements.validFromDate
-            ),
-          });
+    this.addSubscription(
+      this._currentAnnouncementsService.get().subscribe((resp: IGetCurrentAnnouncements) => {
+        const currentAnnouncements = resp?.currentAnnouncements ?? null;
+        const announcementsCount = resp?.announcementsCount ?? 0;
+        if (currentAnnouncements) {
+          this.setAnnouncements(currentAnnouncements);
+        } else {
+          this.setEmptyAnnouncements(announcementsCount);
         }
-        this.title.set(title!);
-        this.announcements.set(currentAnnouncements);
-      } else {
-        this.title.set(this._translationService.get('Announcements/NoAnnouncements'));
-        this.showButtonAddAnnouncement.set(
-          announcementsCount === 0 &&
-            this._permissionService.hasPermission(SystemPermissionValue.AddAnnouncements)
-        );
-        this.showButtonGoToAnnouncementList.set(
-          announcementsCount > 0 &&
-            this._permissionService.hasPermission(SystemPermissionValue.PreviewAnnouncementsList)
-        );
-      }
-    });
+      })
+    );
+  }
+
+  private setAnnouncements(announcements: ICurrentAnnouncements): void {
+    let title = announcements.title;
+    if ((title?.length ?? 0) === 0) {
+      title = this._translationService.get('Announcements/AnnouncementsOfTheDay', {
+        date: new GdatePipe(this._cultureService, this._translationService).transform(
+          announcements.validFromDate
+        ),
+      });
+    }
+    this.title.set(title!);
+
+    this.showButtonAddAnnouncement.set(
+      this._permissionService.hasPermission(SystemPermissionValue.AddAnnouncements)
+    );
+
+    this.showButtonGoToAnnouncementList.set(
+      this._permissionService.hasPermission(SystemPermissionValue.PreviewAnnouncementsList)
+    );
+
+    this.announcements.set(announcements);
+  }
+
+  private setEmptyAnnouncements(announcementsCount: number): void {
+    this.title.set(this._translationService.get('Announcements/NoAnnouncements'));
+
+    this.showButtonAddAnnouncement.set(
+      announcementsCount === 0 &&
+        this._permissionService.hasPermission(SystemPermissionValue.AddAnnouncements)
+    );
+
+    this.showButtonGoToAnnouncementList.set(
+      announcementsCount > 0 &&
+        this._permissionService.hasPermission(SystemPermissionValue.PreviewAnnouncementsList)
+    );
   }
 }

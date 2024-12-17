@@ -62,7 +62,7 @@
   },
   "Announcements": {
     "Title": "Ogłoszenia",
-    "AnnouncementsOfTheDay": "Ogłoszenia z dnia {date}",
+    "AnnouncementsOfTheDay": "Ogłoszenia od {date}",
     "CreatedBy": "Utworzone przez",
     "NoAnnouncements": "Brak ogłoszeń",
     "NoPublishedAnnouncements": "Brak opublikowanych ogłoszeń, przejdź do listy ogłoszeń aby dodać, zmienić lub opublikować ogłoszenia.",
