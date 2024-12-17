@@ -9,9 +9,6 @@ import {
   AnnouncementsRetrievedEvent,
   AnnouncementStateValue,
   AnnouncementsUpdatedEvent,
-  CopyAnnouncementsReqDto,
-  CreateAnnouncementItemDto,
-  CreateAnnouncementsDto,
   CreateAnnouncementsReqDto,
   DeleteAnnouncementsReqDto,
   GetAnnouncementsReqDto,
@@ -104,35 +101,6 @@ export class AnnouncementsService extends BaseService {
     const dto = this.announcementToIAnnouncements(announcements!);
 
     this._eventDispatcher.dispatch(events.announcements.announcementsUpdated, new AnnouncementsUpdatedEvent(dto, reqDto.currentUserId!));
-
-    return dto;
-  }
-
-  public async copy(reqDto: CopyAnnouncementsReqDto): Promise<IAnnouncementsDto | null> {
-    let announcements = await this._announcementsRepository.getByUuid(reqDto.announcementsId);
-
-    if (isNullOrUndefined(announcements)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcements_Does_Not_Exist, {
-        id: reqDto.announcementsId,
-      });
-    }
-
-    const model = new CreateAnnouncementsDto();
-    model.title = announcements!.title ?? undefined;
-    model.validFromDate = null;
-    model.items = (announcements!.items ?? []).map(item => {
-      const newItem = new CreateAnnouncementItemDto();
-      newItem.content = item.content;
-      return newItem;
-    });
-
-    const { id: announcementsId } = await this._announcementsRepository.create(new CreateAnnouncementsReqDto(model, reqDto.currentUserId));
-
-    announcements = await this._announcementsRepository.get(announcementsId);
-
-    const dto = this.announcementToIAnnouncements(announcements!);
-
-    this._eventDispatcher.dispatch(events.announcements.announcementsCreated, new AnnouncementsCreatedEvent(dto, reqDto.currentUserId!));
 
     return dto;
   }

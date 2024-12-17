@@ -11,7 +11,6 @@ export { AnnouncementsListController } from './controllers/announcements-list.co
 export { AnnouncementsController } from './controllers/announcements.controller';
 export { CurrentAnnouncementsController } from './controllers/current-announcements.controller';
 
-export { CopyAnnouncementsReqDto, CopyAnnouncementsResponseDto, CopyAnnouncementsResultDto } from './dtos/copy-announcements.dto';
 export {
   AnnouncementItemContentMaxLength,
   AnnouncementsTitleMaxLength,

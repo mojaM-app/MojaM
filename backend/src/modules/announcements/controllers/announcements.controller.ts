@@ -1,9 +1,6 @@
 import { IRequestWithIdentity } from '@interfaces';
 import {
   AnnouncementsService,
-  CopyAnnouncementsReqDto,
-  CopyAnnouncementsResponseDto,
-  CopyAnnouncementsResultDto,
   CreateAnnouncementsDto,
   CreateAnnouncementsReqDto,
   CreateAnnouncementsResponseDto,
@@ -76,16 +73,6 @@ export class AnnouncementsController extends BaseController {
       const reqDto = new PublishAnnouncementsReqDto(this.getAnnouncementsGuid(req), this.getCurrentUserId(req)!);
       const result = await this._service.publish(reqDto);
       res.status(200).json(new PublishAnnouncementsResponseDto(result));
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  public copy = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const reqDto = new CopyAnnouncementsReqDto(this.getAnnouncementsGuid(req), this.getCurrentUserId(req)!);
-      const result = await this._service.copy(reqDto);
-      res.status(201).json(new CopyAnnouncementsResponseDto({ uuid: result?.id, success: true } satisfies CopyAnnouncementsResultDto));
     } catch (error) {
       next(error);
     }

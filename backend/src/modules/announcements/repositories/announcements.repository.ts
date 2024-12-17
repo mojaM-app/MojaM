@@ -211,25 +211,6 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
     return await this._dbContext.transaction(async transactionalEntityManager => {
       const announcementsRepository = transactionalEntityManager.getRepository(Announcement);
 
-      const currentPublishedAnnouncement = await announcementsRepository.findOne({
-        where: {
-          state: AnnouncementStateValue.PUBLISHED,
-        },
-        order: {
-          validFromDate: 'DESC',
-        } satisfies FindOptionsOrder<Announcement>,
-      });
-
-      await announcementsRepository.update(
-        {
-          // id: LessThanOrEqual(currentPublishedAnnouncement?.id ?? null),
-          state: AnnouncementStateValue.PUBLISHED,
-        } satisfies FindOptionsWhere<Announcement>,
-        {
-          state: AnnouncementStateValue.ARCHIVED,
-        } satisfies QueryDeepPartialEntity<Announcement>,
-      );
-
       await announcementsRepository.update(
         {
           id: announcements.id,
