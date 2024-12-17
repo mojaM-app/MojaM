@@ -38,7 +38,7 @@ export class AnnouncementsListController extends BaseController {
 
   private getSortData(req: IRequestWithIdentity): ISortData {
     return {
-      column: req?.query?.column?.toString() ?? AnnouncementListViewColumns.validFromDate!,
+      column: req?.query?.column?.toString() ?? AnnouncementListViewColumns.validFromDate,
       direction: req?.query?.direction?.toString() ?? 'asc',
     } satisfies ISortData;
   }
