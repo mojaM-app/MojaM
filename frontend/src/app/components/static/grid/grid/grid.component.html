@@ -59,7 +59,7 @@
               <mat-menu #rowMenu="matMenu">
                 <ng-template matMenuContent let-element="element">
                   @for (menuItem of menuItems(); track menuItem) {
-                    <button mat-menu-item (click)="menuItem?.action(); $event.preventDefault()">
+                    <button mat-menu-item (click)="menuItemClick($event, menuItem)">
                       @if (menuItem.icon) {
                         <mat-icon matListItemIcon>{{ menuItem.icon }}</mat-icon>
                       }

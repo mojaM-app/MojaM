@@ -140,13 +140,7 @@ export class GridComponent<TGridItemDto, TGridData extends IGridData<TGridItemDt
         data: this._gridService.getContextMenuItems(row),
       })
       .then((result?: BottomSheetActionResult) => {
-        switch (result) {
-          case BottomSheetActionResult.REFRESH_GRID:
-            this.refreshDataSource();
-            break;
-          default:
-            break;
-        }
+        this.handleMenuItemClickResult(result);
       });
   }
 
@@ -155,11 +149,22 @@ export class GridComponent<TGridItemDto, TGridData extends IGridData<TGridItemDt
   }
 
   public menuItemClick(event: MouseEvent, menuItem: IMenuItem): void {
-    let result = undefined;
     if (menuItem.action) {
-      result = menuItem.action();
+      menuItem.action().then((result?: BottomSheetActionResult) => {
+        this.handleMenuItemClickResult(result);
+      });
     }
     event.preventDefault();
+  }
+
+  private handleMenuItemClickResult(result?: BottomSheetActionResult): void {
+    switch (result) {
+      case BottomSheetActionResult.REFRESH_GRID:
+        this.refreshDataSource();
+        break;
+      default:
+        break;
+    }
   }
 
   private refreshVisibleColumns(): void {
