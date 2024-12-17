@@ -21,6 +21,7 @@ export abstract class AnnouncementItemBase {
   public content: WritableSignal<string> = signal('');
 
   public deleteItem = output<number>();
+  public moveItem = output<{ index: number; direction: 'up' | 'down' }>();
 
   protected constructor(protected _dialogService: DialogService) {
     effect(
@@ -63,6 +64,14 @@ export abstract class AnnouncementItemBase {
           this.deleteItem.emit(this.index());
         }
       });
+  }
+
+  public moveItemUp(): void {
+    this.moveItem.emit({ index: this.index(), direction: 'up' });
+  }
+
+  public moveItemDown(): void {
+    this.moveItem.emit({ index: this.index(), direction: 'down' });
   }
 
   protected setNewContent(content: string): void {

@@ -104,6 +104,17 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
     items.removeAt(index);
   }
 
+  public moveItem({ index, direction }: { index: number; direction: 'up' | 'down' }): void {
+    const items = this.array(this.formControlNames.items);
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= items.length) {
+      return;
+    }
+    const item = items.at(index);
+    items.removeAt(index);
+    items.insert(newIndex, item);
+  }
+
   public containsValidData(): boolean {
     const items = this.array(this.formControlNames.items);
 

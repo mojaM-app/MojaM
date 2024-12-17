@@ -31,15 +31,15 @@
       <div class="options-panel">
         <div class="buttons-container px-md-4 px-3">
           <div class="col text-start">
-            <button mat-icon-button>
+            <button mat-icon-button (click)="moveItemUp()">
               <mat-icon>arrow_upward</mat-icon>
             </button>
-            <button mat-icon-button>
+            <button mat-icon-button (click)="moveItemDown()">
               <mat-icon>arrow_downward</mat-icon>
             </button>
           </div>
           <div class="col text-center">
-            <button mat-icon-button class="me-2" (click)="editItem()">
+            <button mat-icon-button (click)="editItem()">
               <mat-icon>edit</mat-icon>
             </button>
             <button mat-icon-button (click)="confirmDeleteItem()">
