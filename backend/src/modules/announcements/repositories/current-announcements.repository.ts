@@ -20,7 +20,7 @@ export class CurrentAnnouncementsRepository extends BaseAnnouncementsRepository 
       order: {
         validFromDate: 'DESC',
         items: {
-          createdAt: 'ASC',
+          order: 'ASC',
         },
       } satisfies FindOptionsOrder<Announcement>,
       relations: {

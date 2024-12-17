@@ -10,7 +10,7 @@ import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity
 import { CreateAnnouncementsReqDto } from '../dtos/create-announcements.dto';
 import { DeleteAnnouncementsReqDto } from '../dtos/delete-announcements.dto';
 import { PublishAnnouncementsReqDto } from '../dtos/publish-announcements.dto';
-import { UpdateAnnouncementsDto, UpdateAnnouncementsReqDto } from '../dtos/update-announcements.dto';
+import { UpdateAnnouncementItemDto, UpdateAnnouncementsDto, UpdateAnnouncementsReqDto } from '../dtos/update-announcements.dto';
 import { AnnouncementItem } from '../entities/announcement-item.entity';
 import { Announcement } from '../entities/announcement.entity';
 import { AnnouncementStateValue } from '../enums/announcement-state.enum';
@@ -43,10 +43,12 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
 
       const items = reqDto.announcements.items ?? [];
 
+      let order = 1;
       for await (const item of items) {
         const announcementItem = await announcementItemsRepository.save({
           announcement,
           content: item.content,
+          order: order++,
           createdBy: { id: reqDto.currentUserId! } satisfies IUserId,
         } satisfies ICreateAnnouncementItem);
 
@@ -104,32 +106,36 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
             },
             id: true,
             content: true,
+            order: true,
           } satisfies FindOptionsSelect<AnnouncementItem>,
         } satisfies FindManyOptions<AnnouncementItem>);
 
-        for await (const item of reqDto.announcements.items ?? []) {
-          const existingItem = announcementItems.find(x => x.id === item.id);
+        let order = 1;
+        for await (const itemDto of reqDto.announcements.items ?? []) {
+          const existingItem = announcementItems.find(x => x.id === itemDto.id);
 
           if (existingItem === undefined) {
             await announcementItemsRepository.save({
               announcement: { id: id! } satisfies IAnnouncementId,
-              content: item.content,
+              content: itemDto.content,
               createdBy: { id: reqDto.currentUserId! } satisfies IUserId,
+              order,
             } satisfies ICreateAnnouncementItem);
-            continue;
           } else {
-            if ((existingItem.content ?? null) !== (item.content ?? null)) {
+            if (this.checkIfUpdateAnnouncementItem(existingItem, itemDto, order)) {
               await announcementItemsRepository.update(
                 {
                   id: existingItem.id,
                 } satisfies FindOptionsWhere<AnnouncementItem>,
                 {
-                  content: item.content,
+                  content: itemDto.content,
                   updatedBy: { id: reqDto.currentUserId! } satisfies IUserId,
+                  order,
                 } satisfies QueryDeepPartialEntity<AnnouncementItem>,
               );
             }
           }
+          order++;
         }
 
         for await (const item of announcementItems) {
@@ -183,7 +189,7 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
       } satisfies FindOptionsRelations<Announcement>,
       order: {
         items: {
-          createdAt: 'ASC',
+          order: 'ASC',
         },
       } satisfies FindOptionsOrder<Announcement>,
     });
@@ -247,5 +253,9 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
     }
 
     return wasChanged ? result : null;
+  }
+
+  public checkIfUpdateAnnouncementItem(announcementItemFromDb: AnnouncementItem, dto: UpdateAnnouncementItemDto, order: number): boolean {
+    return (announcementItemFromDb.content ?? null) !== (dto.content ?? null) || (announcementItemFromDb.order ?? null) !== order;
   }
 }

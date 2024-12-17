@@ -23,6 +23,13 @@ export class AnnouncementItem implements ICreateAnnouncementItem, IUpdateAnnounc
   })
   public content: string;
 
+  @Column({
+    name: 'Order',
+    type: 'int',
+    nullable: false,
+  })
+  public order: number;
+
   @CreateDateColumn({
     name: 'CreatedAt',
     precision: 3,

@@ -5,6 +5,7 @@ export interface ICreateAnnouncementItem {
   announcement: IAnnouncementId;
   content: string;
   createdBy: IUserId;
+  order: number;
 }
 
 export interface ICreateAnnouncement {
