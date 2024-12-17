@@ -41,18 +41,36 @@
             &nbsp;
           </th>
           <td mat-cell *matCellDef="let element">
-            <button
-              mat-icon-button
-              [attr.aria-label]="'Grid/ActionsRowAriaLabel' | gmessage"
-              (click)="
-                isMobile ? showBottomSheet(element) : showRowMenu(element); $event.stopPropagation()
-              ">
-              @if (expandedElement === element) {
+            @if (isMobile) {
+              <button
+                mat-icon-button
+                [attr.aria-label]="'Grid/ActionsRowAriaLabel' | gmessage"
+                (click)="showBottomSheet(element); $event.stopPropagation()">
                 <mat-icon>more_vert</mat-icon>
-              } @else {
+              </button>
+            } @else {
+              <button
+                mat-icon-button
+                [attr.aria-label]="'Grid/ActionsRowAriaLabel' | gmessage"
+                [matMenuTriggerFor]="rowMenu"
+                (click)="refreshMenuItems(element)">
                 <mat-icon>more_vert</mat-icon>
-              }
-            </button>
+              </button>
+              <mat-menu #rowMenu="matMenu">
+                <ng-template matMenuContent let-element="element">
+                  @for (menuItem of menuItems(); track menuItem) {
+                    <button mat-menu-item (click)="menuItem?.action(); $event.preventDefault()">
+                      @if (menuItem.icon) {
+                        <mat-icon matListItemIcon>{{ menuItem.icon }}</mat-icon>
+                      }
+                      @if (menuItem.title) {
+                        <span matListItemTitle>{{ menuItem.title }}</span>
+                      }
+                    </button>
+                  }
+                </ng-template>
+              </mat-menu>
+            }
           </td>
         </ng-container>
       } @else {

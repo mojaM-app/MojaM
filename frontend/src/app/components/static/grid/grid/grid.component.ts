@@ -17,6 +17,7 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatRippleModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSort, MatSortModule, SortDirection } from '@angular/material/sort';
@@ -24,6 +25,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { map, merge, startWith, switchMap } from 'rxjs';
 import { IS_MOBILE } from 'src/app/app.config';
 import { IGridData } from 'src/interfaces/common/grid.data';
+import { IMenuItem } from 'src/interfaces/menu/menu-item';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { BrowserWindowService } from 'src/services/browser/browser-window.service';
@@ -42,6 +44,7 @@ import { ColumnType, IGridColumn, IGridService } from './grid-service.interface'
     MatProgressSpinnerModule,
     MatIconModule,
     MatButtonModule,
+    MatMenuModule,
     MatRippleModule,
     PipesModule,
   ],
@@ -75,6 +78,7 @@ export class GridComponent<TGridItemDto, TGridData extends IGridData<TGridItemDt
   public readonly visibleColumns: WritableSignal<IGridColumn[]> = signal([]);
   public readonly visibleColumnNames: WritableSignal<string[]> = signal([]);
   public readonly showExpandableColumn: WritableSignal<boolean> = signal(false);
+  public readonly menuItems: WritableSignal<IMenuItem[]> = signal([]);
 
   public readonly pageSizeOptions: readonly number[] = [10, 25, 50, 100];
   public readonly pageSize: number = 10;
@@ -130,10 +134,6 @@ export class GridComponent<TGridItemDto, TGridData extends IGridData<TGridItemDt
     this.refreshDataSource();
   }
 
-  public showRowMenu(row: TGridItemDto): void {
-    console.log('showRowMenu', row);
-  }
-
   public showBottomSheet(row: TGridItemDto): void {
     this._bottomSheetService
       .open({
@@ -148,6 +148,18 @@ export class GridComponent<TGridItemDto, TGridData extends IGridData<TGridItemDt
             break;
         }
       });
+  }
+
+  public refreshMenuItems(row: TGridItemDto): void {
+    this.menuItems.set(this._gridService.getContextMenuItems(row).reverse());
+  }
+
+  public menuItemClick(event: MouseEvent, menuItem: IMenuItem): void {
+    let result = undefined;
+    if (menuItem.action) {
+      result = menuItem.action();
+    }
+    event.preventDefault();
   }
 
   private refreshVisibleColumns(): void {
