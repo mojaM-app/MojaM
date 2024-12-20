@@ -33,5 +33,6 @@ export const errorKeys = {
     Item_Content_Is_Required: 'Announcements_Item_Content_Is_Required',
     Item_Content_Too_Long: 'Announcements_Item_Content_Too_Long',
     Announcements_Without_ValidFromDate_Can_Not_Be_Published: 'Announcements_Without_ValidFromDate_Can_Not_Be_Published',
+    Cannot_Save_Published_Announcements_Without_ValidFromDate: 'Cannot_Save_Published_Announcements_Without_ValidFromDate',
   },
 };

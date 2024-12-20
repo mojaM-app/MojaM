@@ -226,7 +226,9 @@
     "Announcements_With_Given_ValidFromDate_Already_Exists": "Istnieją już ogłoszenia z wprowadzoną datą rozpoczęcia obowiązywania.",
     "Announcements_Published_Announcements_Cant_Be_Deleted": "Nie można usunąć opublikowanych ogłoszeń. Można przenieść je do archiwum.",
     "Announcements_Archived_Announcements_Cant_Be_Deleted": "Nie można usunąć zarchiwizowanych ogłoszeń.",
-    "Announcements_Archived_Announcements_Cant_Be_Edited": "Nie można edytować zarchiwizowanych ogłoszeń."
+    "Announcements_Archived_Announcements_Cant_Be_Edited": "Nie można edytować zarchiwizowanych ogłoszeń.",
+    "Announcements_Without_ValidFromDate_Can_Not_Be_Published": "Nie można opublikować ogłoszeń bez daty rozpoczęcia obowiązywania.",
+    "Cannot_Save_Published_Announcements_Without_ValidFromDate": "Nie można zapisać opublikowanych ogłoszeń bez daty rozpoczęcia obowiązywania."
   },
   "Grid": {
     "NoColumns": "Brak kolumn",

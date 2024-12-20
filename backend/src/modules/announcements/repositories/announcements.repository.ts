@@ -81,6 +81,13 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
         });
       }
 
+      if (announcements!.state === AnnouncementStateValue.PUBLISHED && (reqDto.announcements.validFromDate ?? null) === null) {
+        throw new TranslatableHttpException(
+          StatusCode.ClientErrorBadRequest,
+          errorKeys.announcements.Cannot_Save_Published_Announcements_Without_ValidFromDate,
+        );
+      }
+
       const updateAnnouncementModel = this.getUpdateAnnouncementModel(announcements!, reqDto.announcements);
       if (updateAnnouncementModel !== null) {
         await announcementsRepository.update(
