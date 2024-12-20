@@ -127,7 +127,7 @@ export class RequestBuilder {
   // }
 
   private handleError(error: any): Observable<never> {
-    if ('error' in error && 'data' in error.error) {
+    if (error && 'error' in error && 'data' in error.error) {
       const data = error.error.data;
       if ('message' in data) {
         data.errorMessage = this._translationService.getError(data.message, data?.args ?? []);
@@ -147,7 +147,7 @@ export class RequestBuilder {
       });
     }
 
-    if (error.error instanceof ErrorEvent) {
+    if (error?.error instanceof ErrorEvent) {
       return throwError(() => {
         return { ...error.error, status: error.status };
       });

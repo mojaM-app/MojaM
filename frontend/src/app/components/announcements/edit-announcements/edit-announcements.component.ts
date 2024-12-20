@@ -3,11 +3,9 @@ import { ChangeDetectionStrategy, Component, model, OnInit, viewChild } from '@a
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IResponseError } from 'src/interfaces/errors/response.error';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthService } from 'src/services/auth/auth.service';
-import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { AnnouncementsFormComponent } from '../announcements-form/announcements-form.component';
 import { AnnouncementsListMenu } from '../announcements.menu';
 import { IAnnouncements } from '../interfaces/announcements';
@@ -31,8 +29,7 @@ export class EditAnnouncementsComponent extends WithUnsubscribe() implements OnI
     authService: AuthService,
     private _router: Router,
     private _route: ActivatedRoute,
-    private _announcementsService: AnnouncementsService,
-    private _snackBarService: SnackBarService
+    private _announcementsService: AnnouncementsService
   ) {
     super();
 
@@ -66,17 +63,8 @@ export class EditAnnouncementsComponent extends WithUnsubscribe() implements OnI
     }
 
     const dto = new EditAnnouncementsDto(this.announcements()!.id!, form.controls);
-    this._announcementsService.update(dto).subscribe({
-      next: () => {
-        this.navigateToAnnouncementsList();
-      },
-      error: (error: unknown) => {
-        if ((error as IResponseError)?.errorMessage) {
-          this._snackBarService.showError((error as IResponseError).errorMessage);
-        } else {
-          throw error;
-        }
-      },
+    this._announcementsService.update(dto).subscribe(() => {
+      this.navigateToAnnouncementsList();
     });
   }
 
