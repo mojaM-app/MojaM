@@ -240,3 +240,52 @@
     border: 1px solid #ccc;
   }
 }
+
+.ql-editor-preview {
+  p {
+    margin: 0;
+    padding: 0;
+    line-height: normal;
+    font-size: 1rem;
+
+    &:after {
+      content: '';
+      display: inline-block;
+    }
+
+    .ql-size-small {
+      font-size: 0.75rem;
+    }
+
+    .ql-size-large {
+      font-size: 1.5rem;
+    }
+
+    .ql-size-huge {
+      font-size: 2.5rem;
+    }
+  }
+
+  pre {
+    margin: 0.25rem 0;
+  }
+
+  &.ql-blank::before {
+    color: var(--mat-app-text-color);
+    opacity: 0.4;
+  }
+
+  &.ql-blank:focus::before {
+    content: '';
+  }
+
+  ol,
+  ul {
+    margin-bottom: 0;
+  }
+
+  li {
+    list-style-type: unset;
+    padding-left: 0.25rem;
+  }
+}

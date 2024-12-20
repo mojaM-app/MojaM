@@ -11,9 +11,9 @@
     (doubleTap)="editItem()"
     (swipeNext)="showOptionsPanel()"
     (swipePrev)="showOptionsPanel()">
-    <div class="w-100 py-md-3 py-4">
+    <div class="w-100 pt-md-3 pb-2 pt-4">
       @if (content().length > 0) {
-        <div class="w-100 announcement-item-content-container" [innerHTML]="content()"></div>
+        <app-wysiwyg-preview [content]="content()"></app-wysiwyg-preview>
       } @else {
         <div class="w-100 text-center">
           <span

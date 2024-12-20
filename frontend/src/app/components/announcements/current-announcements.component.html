@@ -40,11 +40,9 @@
           </div>
           @for (item of announcements()!.items; track item; let i = $index) {
             <div class="alert alert-light" role="alert">
-              <div
-                class="w-100 announcement-item-content-container text-justify"
-                [innerHTML]="item.content"></div>
+              <app-wysiwyg-preview [content]="item.content"></app-wysiwyg-preview>
               <div class="row lh-1">
-                <div class="col pt-1 opacity-25">
+                <div class="col mt-2 opacity-50">
                   <mat-icon class="fs-8 align-middle">person</mat-icon>
                   <span class="fs-8"
                     >{{ 'Announcements/CreatedBy' | gmessage }}

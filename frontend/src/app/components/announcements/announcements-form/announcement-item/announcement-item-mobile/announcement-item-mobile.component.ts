@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogConfig } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { WysiwygPreviewComponent } from 'src/app/components/static/wysiwyg-editor/wysiwyg-preview/wysiwyg-preview.component';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { DialogService } from 'src/services/dialog/dialog.service';
@@ -19,6 +20,7 @@ import { AnnouncementItemBase } from '../announcement-item.base';
     FormsModule,
     MatButtonModule,
     MatIconModule,
+    WysiwygPreviewComponent,
   ],
   templateUrl: './announcement-item-mobile.component.html',
   styleUrl: './announcement-item-mobile.component.scss',
