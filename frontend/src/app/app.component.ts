@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   Inject,
   OnInit,
   signal,
@@ -91,6 +92,13 @@ export class AppComponent extends WithUnsubscribe() implements OnInit {
           this.footerShouldBeVisible.set(!(routeData?.hideFooter ?? !isMobile));
         })
     );
+
+    effect(() => {
+      document.documentElement.style.setProperty(
+        '--footer-is-visible',
+        this.footerShouldBeVisible() ? '1' : '0'
+      );
+    });
   }
 
   public ngOnInit(): void {
