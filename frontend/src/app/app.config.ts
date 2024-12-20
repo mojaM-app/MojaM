@@ -22,6 +22,9 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideRouter } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideQuillConfig } from 'ngx-quill/config';
+import Quill from 'quill';
+import MagicUrl from 'quill-magic-url';
+import QuillMention from 'quill-mention/autoregister';
 import { GlobalErrorHandler } from 'src/core/global-error-handler';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { PipesModule } from 'src/pipes/pipes.module';
@@ -34,6 +37,10 @@ import { TranslationService } from 'src/services/translate/translation.service';
 import { routes } from './app.routes';
 
 export const IS_MOBILE = new InjectionToken<boolean>('isMobile');
+
+const q = Quill;
+q.register({ 'modules/mention': QuillMention }, true);
+q.register('modules/magicUrl', MagicUrl);
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -101,7 +108,7 @@ export const appConfig: ApplicationConfig = {
         syntax: false,
         toolbar: [
           ['bold', 'italic', 'underline', 'strike'], // toggled buttons
-          //['blockquote', 'code-block'],
+          ['code-block'],
 
           [{ list: 'ordered' }, { list: 'bullet' }],
           //[{ script: 'sub' }, { script: 'super' }], // superscript/subscript
@@ -110,7 +117,7 @@ export const appConfig: ApplicationConfig = {
           [{ size: ['small', false, 'large', 'huge'] }], // custom dropdown
           //[{ header: [1, 2, 3, 4, 5, 6, false] }],
 
-          [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+          //[{ color: [] }, { background: [] }], // dropdown with defaults from theme
           //[{ 'font': [] }],
           [{ align: [] }],
 
@@ -126,6 +133,15 @@ export const appConfig: ApplicationConfig = {
                   if (op.insert && typeof op.insert === 'string') {
                     ops.push({
                       insert: op.insert,
+                      attributes: {
+                        link: op.attributes?.link,
+                        bold: op.attributes?.bold,
+                        italic: op.attributes?.italic,
+                        underline: op.attributes?.underline,
+                        strike: op.attributes?.strike,
+                        size: op.attributes?.size,
+                        align: op.attributes?.align,
+                      },
                     });
                   }
                 });
@@ -135,6 +151,7 @@ export const appConfig: ApplicationConfig = {
             ],
           ],
         },
+        magicUrl: true,
       },
     }),
     provideServiceWorker('ngsw-worker.js', {
