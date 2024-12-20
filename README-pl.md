@@ -66,6 +66,10 @@ LOG_DIR = ../logs
 # CORS
 ORIGIN = *
 CREDENTIALS = true
+
+# ADMIN USER CREDENTIALS
+ADMIN_EMAIL =
+ADMIN_PASSWORD =
 ```
 ### Domyślna konfiguracja bazy danych
 ```ts

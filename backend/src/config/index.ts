@@ -50,4 +50,7 @@ export const {
   LOG_DIR,
 
   ORIGIN,
+
+  ADMIN_EMAIL,
+  ADMIN_PASSWORD,
 } = process.env;

@@ -1,3 +1,4 @@
+import { ADMIN_EMAIL, ADMIN_PASSWORD } from '@config';
 import './date.extensions';
 import { getDateNow } from './date.utils';
 
@@ -45,8 +46,8 @@ const generateRandomNumber = (length: number = 9): string => {
 };
 
 const generateRandomInteger = (min: number, max: number): number => {
-  return Math.floor(min + Math.random() * (max - min + 1))
-}
+  return Math.floor(min + Math.random() * (max - min + 1));
+};
 
 const generateRandomDate = (): Date => {
   const day = generateRandomInteger(-30, 30);
@@ -56,10 +57,18 @@ const generateRandomDate = (): Date => {
 const getAdminLoginData = (): { uuid: string; email: string; phone: string; password: string } => {
   return {
     uuid: '2eaa394a-649d-44c1-b797-4a9e4ed2f836',
-    email: 'admin@domain.com',
+    email: ADMIN_EMAIL!,
     phone: '123456789',
-    password: 'P@ssWord!1',
+    password: ADMIN_PASSWORD!,
   };
 };
 
-export { generateRandomDate, generateRandomEmail, generateRandomInteger, generateRandomNumber, generateRandomPassword, generateRandomString, getAdminLoginData };
+export {
+  generateRandomDate,
+  generateRandomEmail,
+  generateRandomInteger,
+  generateRandomNumber,
+  generateRandomPassword,
+  generateRandomString,
+  getAdminLoginData,
+};
