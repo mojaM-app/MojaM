@@ -8,7 +8,9 @@ users;
 
 DROP VIEW IF EXISTS
 vusers,
-vannouncements;
+vUsers,
+vannouncements,
+vAnnouncements;
 
 DROP TABLE IF EXISTS _prisma_migrations,
 typeorm_metadata,
