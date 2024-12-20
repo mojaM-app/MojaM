@@ -56,6 +56,11 @@ const routes: Routes = [
       import('./announcements-list/announcements-list.component').then(
         m => m.AnnouncementsListComponent
       ),
+    canActivate: [PermissionGuard],
+    data: {
+      checkSession: true,
+      permissions: [SystemPermissionValue.PreviewAnnouncementsList],
+    } satisfies IPermissionRouteData,
   },
   {
     path: AddAnnouncementsMenu.Route + '/:id',
