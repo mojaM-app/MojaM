@@ -16,16 +16,16 @@ export class EditAnnouncementsDto extends AnnouncementsDto {
     this.items = [];
 
     if (formControls) {
-      this.validFromDate = formControls.validFromDate?.value ?? undefined;
+      this.validFromDate = formControls.validFromDate?.value ?? null;
       if (this.validFromDate) {
         this.validFromDate = DateUtils.toUtcDate(this.validFromDate);
       }
 
       const items = formControls.items as any as FormArray;
       items?.controls?.forEach((item: any) => {
-        this.items?.push({
-          id: item.controls.id.value ?? undefined,
-          content: item.controls.content.value ?? undefined,
+        this.items!.push({
+          id: item.controls.id?.value ?? undefined,
+          content: item.controls.content?.value ?? null,
         } satisfies AnnouncementItemDto);
       });
     }
