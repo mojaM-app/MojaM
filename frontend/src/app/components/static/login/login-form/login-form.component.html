@@ -81,10 +81,11 @@
           <button
             mat-icon-button
             matSuffix
+            tabindex="-1"
             (click)="togglePasswordVisibility($event)"
             [attr.aria-label]="'Login/HidePasswordAriaLabel' | gmessage"
             [attr.aria-pressed]="hidePassword()">
-            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
           </button>
         </mat-form-field>
       </div>

@@ -205,7 +205,12 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
   }
 
   public togglePasswordVisibility(event: MouseEvent): void {
-    this.hidePassword.set(!this.hidePassword());
+    if (
+      event instanceof PointerEvent &&
+      (event.pointerType === 'mouse' || event.pointerType === 'touch')
+    ) {
+      this.hidePassword.set(!this.hidePassword());
+    }
     event.stopPropagation();
   }
 
