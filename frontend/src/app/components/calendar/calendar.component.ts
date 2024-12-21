@@ -99,6 +99,7 @@ export class CalendarComponent {
       data: {
         event: event,
       },
+      autoFocus: false,
     });
   }
 
