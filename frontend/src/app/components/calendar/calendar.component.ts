@@ -54,9 +54,9 @@ export class CalendarComponent {
   public events = signal<CalendarEvent[]>([]);
   public locale = signal<string>(CultureService.DefaultCulture);
 
-  private calendarMonth = viewChild(CalendarMonthViewComponent);
-  private calendarWeek = viewChild(CalendarWeekViewComponent);
-  private calendarDay = viewChild(CalendarDayViewComponent);
+  private _calendarMonth = viewChild(CalendarMonthViewComponent);
+  private _calendarWeek = viewChild(CalendarWeekViewComponent);
+  private _calendarDay = viewChild(CalendarDayViewComponent);
 
   public constructor(
     @Inject(IS_MOBILE) public isMobile: boolean,
@@ -69,7 +69,7 @@ export class CalendarComponent {
 
     effect(() => {
       if (
-        (this.calendarMonth() || this.calendarWeek() || this.calendarDay()) &&
+        (this._calendarMonth() || this._calendarWeek() || this._calendarDay()) &&
         this.viewDate() &&
         this.view()
       ) {
@@ -125,7 +125,7 @@ export class CalendarComponent {
   }
 
   private onViewChanged(): void {
-    const component = this.calendarMonth() || this.calendarWeek() || this.calendarDay();
+    const component = this._calendarMonth() || this._calendarWeek() || this._calendarDay();
     const viewDate = this.viewDate();
     switch (this.view()) {
       case CalendarView.Month:
