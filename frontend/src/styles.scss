@@ -172,6 +172,11 @@ body {
       }
     }
 
+    .mat-mdc-raised-button {
+      --mdc-protected-button-container-elevation-shadow: 0px 2px 1px -1px rgba(128, 128, 128, 0.2),
+        0px 1px 1px 0px rgba(128, 128, 128, 0.14), 0px 1px 3px 0px rgba(128, 128, 128, 0.12);
+    }
+
     .mat-mdc-table {
       .mat-mdc-header-row {
         background-color: mat.get-theme-color($dark-theme, secondary-container);
