@@ -8,7 +8,9 @@
     <main>
       <div class="card-body">
         @if (announcements()) {
-          <div class="row mb-3">
+          <div
+            class="row"
+            [ngClass]="{ 'mb-3': showButtonAddAnnouncement() || showButtonGoToAnnouncementList() }">
             @if (showButtonAddAnnouncement()) {
               <div class="col-4 col-sm-5 text-center">
                 <button mat-raised-button [matMenuTriggerFor]="addMenu">
