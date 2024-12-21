@@ -39,6 +39,12 @@ export class CurrentAnnouncementsService extends BaseService {
               resp.currentAnnouncements.items?.forEach(item => {
                 item.createdAt = new Date(item.createdAt);
                 item.updatedAt = new Date(item.updatedAt);
+                item.getAuthorName = (): string => {
+                  return item.updatedBy ?? item.createdBy ?? '';
+                };
+                item.getCreationDateTime = (): Date => {
+                  return item.updatedAt ?? item.createdAt;
+                };
               });
             }
           }

@@ -47,9 +47,12 @@
                 <div class="col mt-2 opacity-50">
                   <mat-icon class="fs-8 align-middle">person</mat-icon>
                   <span class="fs-8"
-                    >{{ 'Announcements/CreatedBy' | gmessage }}
-                    {{ item.updatedBy ?? item.createdBy }},{{ item.updatedAt | gdatetime }}</span
-                  >
+                    >{{ 'Announcements/CreatedBy' | gmessage }} {{ item.getAuthorName() }}
+                  </span>
+                  <mat-icon class="fs-8 align-middle">calendar_month</mat-icon>
+                  <span class="fs-8">{{ item.getCreationDateTime() | gdate }} </span>
+                  <mat-icon class="fs-8 align-middle">schedule</mat-icon>
+                  <span class="fs-8">{{ item.getCreationDateTime() | gtime }}</span>
                 </div>
               </div>
             </div>
