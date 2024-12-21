@@ -2,6 +2,10 @@
   <app-wysiwyg-editor [(content)]="content"></app-wysiwyg-editor>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button mat-button [mat-dialog-close]="undefined">{{ 'Shared/BtnCancel' | gmessage }}</button>
-  <button mat-button [mat-dialog-close]="content()">{{ 'Shared/BtnSave' | gmessage }}</button>
+  <button mat-raised-button [mat-dialog-close]="undefined" type="button">
+    {{ 'Shared/BtnCancel' | gmessage }}
+  </button>
+  <button mat-raised-button [mat-dialog-close]="content()" type="submit">
+    {{ 'Shared/BtnOk' | gmessage }}
+  </button>
 </mat-dialog-actions>
