@@ -19,7 +19,7 @@ import { DialogService } from 'src/services/dialog/dialog.service';
 import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { CultureService } from 'src/services/translate/culture.service';
 import { TranslationService } from 'src/services/translate/translation.service';
-import { BottomSheetActionResult } from '../../static/bottom-sheet/bottom-sheet.enum';
+import { MenuItemClickResult } from '../../../../interfaces/menu/menu.enum';
 import { BaseGridService } from '../../static/grid/grid/services/base-grid.service';
 import { AnnouncementStateValue } from '../announcement-state.enum';
 import { AddAnnouncementsMenu, EditAnnouncementsMenu } from '../announcements.menu';
@@ -180,15 +180,15 @@ export class AnnouncementsGridService
 
   private async handleCopy(
     announcements: IAnnouncementsGridItemDto
-  ): Promise<BottomSheetActionResult | undefined> {
+  ): Promise<MenuItemClickResult | undefined> {
     return this._router
       .navigateByUrl(AddAnnouncementsMenu.Path + '/' + announcements.id)
-      .then(() => BottomSheetActionResult.REDIRECT_TO_URL);
+      .then(() => MenuItemClickResult.REDIRECT_TO_URL);
   }
 
   private async handlePublish(
     announcements: IAnnouncementsGridItemDto
-  ): Promise<BottomSheetActionResult | undefined> {
+  ): Promise<MenuItemClickResult | undefined> {
     const confirmed = await this._dialogService
       .confirm({
         message: {
@@ -210,13 +210,13 @@ export class AnnouncementsGridService
     return firstValueFrom(
       this._listService
         .publish(announcements.id)
-        .pipe(map((result: boolean) => (result ? BottomSheetActionResult.REFRESH_GRID : undefined)))
+        .pipe(map((result: boolean) => (result ? MenuItemClickResult.REFRESH_GRID : undefined)))
     );
   }
 
   private async handleEdit(
     announcements: IAnnouncementsGridItemDto
-  ): Promise<BottomSheetActionResult | undefined> {
+  ): Promise<MenuItemClickResult | undefined> {
     if (announcements.state === AnnouncementStateValue.ARCHIVED) {
       this._snackBarService.translateAndShowError(
         'Errors/Announcements_Archived_Announcements_Cant_Be_Edited'
@@ -226,12 +226,12 @@ export class AnnouncementsGridService
 
     return this._router
       .navigateByUrl(EditAnnouncementsMenu.Path + '/' + announcements.id)
-      .then(() => BottomSheetActionResult.REDIRECT_TO_URL);
+      .then(() => MenuItemClickResult.REDIRECT_TO_URL);
   }
 
   private async handleDelete(
     announcements: IAnnouncementsGridItemDto
-  ): Promise<BottomSheetActionResult | undefined> {
+  ): Promise<MenuItemClickResult | undefined> {
     const confirmed = await this._dialogService
       .confirm({
         message: {
@@ -253,7 +253,7 @@ export class AnnouncementsGridService
     return firstValueFrom(
       this._listService
         .delete(announcements.id)
-        .pipe(map((result: boolean) => (result ? BottomSheetActionResult.REFRESH_GRID : undefined)))
+        .pipe(map((result: boolean) => (result ? MenuItemClickResult.REFRESH_GRID : undefined)))
     );
   }
 }

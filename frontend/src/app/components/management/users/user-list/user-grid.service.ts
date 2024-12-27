@@ -14,11 +14,13 @@ import {
 import { SystemPermissionValue } from 'src/core/system-permission.enum';
 import { IGridData } from 'src/interfaces/common/grid.data';
 import { IMenuItem } from 'src/interfaces/menu/menu-item';
+import { MenuItemClickResult } from 'src/interfaces/menu/menu.enum';
 import { PermissionService } from 'src/services/auth/permission.service';
 import { DialogService } from 'src/services/dialog/dialog.service';
 import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { CultureService } from 'src/services/translate/culture.service';
 import { TranslationService } from 'src/services/translate/translation.service';
+import { ManagementMenuEditUser } from '../../management.menu';
 import { UserListColumns } from './user-list.columns';
 
 @Injectable({
@@ -132,7 +134,30 @@ export class UserGridService
     return 'asc';
   }
 
-  public getContextMenuItems(item: IUserGridItemDto): IMenuItem[] {
-    throw new Error('Method not implemented.');
+  public getContextMenuItems(user: IUserGridItemDto): IMenuItem[] {
+    const result: IMenuItem[] = [];
+
+    if (this._permissionService.hasPermission(SystemPermissionValue.EditUserProfile)) {
+      result.push({
+        title: this._translationService.get('Management/UserList/ContextMenu/Edit'),
+        icon: 'edit',
+        action: async () => this.handleEdit(user),
+      });
+    }
+
+    return result;
+  }
+
+  private async handleEdit(user: IUserGridItemDto): Promise<MenuItemClickResult | undefined> {
+    // if (announcements.state === AnnouncementStateValue.ARCHIVED) {
+    //   this._snackBarService.translateAndShowError(
+    //     'Errors/Announcements_Archived_Announcements_Cant_Be_Edited'
+    //   );
+    //   return;
+    // }
+
+    return this._router
+      .navigateByUrl(ManagementMenuEditUser.Path + '/' + user.id)
+      .then(() => MenuItemClickResult.REDIRECT_TO_URL);
   }
 }

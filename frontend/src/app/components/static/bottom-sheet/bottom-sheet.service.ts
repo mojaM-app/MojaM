@@ -3,8 +3,8 @@ import { inject, Injectable } from '@angular/core';
 import { MatBottomSheet, MatBottomSheetConfig } from '@angular/material/bottom-sheet';
 import { Guid } from 'guid-typescript';
 import { firstValueFrom, map, tap } from 'rxjs';
+import { MenuItemClickResult } from '../../../../interfaces/menu/menu.enum';
 import { BottomSheetComponent } from './bottom-sheet.component';
-import { BottomSheetActionResult } from './bottom-sheet.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +14,7 @@ export class BottomSheetService {
 
   public constructor(private _location: Location) {}
 
-  public open(config: MatBottomSheetConfig): Promise<BottomSheetActionResult | undefined> {
+  public open(config: MatBottomSheetConfig): Promise<MenuItemClickResult | undefined> {
     const currentUrl = this._location.path();
     const newPath = currentUrl + `/menu/${Guid.raw()}`;
 

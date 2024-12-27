@@ -194,6 +194,9 @@
         "Phone": "Telefon",
         "IsActive": "Aktywny",
         "IsLockedOut": "Zablokowany"
+      },
+      "ContextMenu": {
+        "Edit": "Edytuj"
       }
     },
     "UserDetails": {

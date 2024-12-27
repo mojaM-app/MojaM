@@ -29,7 +29,7 @@ import { IMenuItem } from 'src/interfaces/menu/menu-item';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { BrowserWindowService } from 'src/services/browser/browser-window.service';
-import { BottomSheetActionResult } from '../../bottom-sheet/bottom-sheet.enum';
+import { MenuItemClickResult } from '../../../../../interfaces/menu/menu.enum';
 import { BottomSheetService } from '../../bottom-sheet/bottom-sheet.service';
 import { DetailsDirective } from '../directive/details.directive';
 import { IDetailsDirectiveContext } from '../interfaces/details.interfaces';
@@ -141,7 +141,7 @@ export class GridComponent<TGridItemDto, TGridData extends IGridData<TGridItemDt
       .open({
         data: this._gridService.getContextMenuItems(row),
       })
-      .then((result?: BottomSheetActionResult) => {
+      .then((result?: MenuItemClickResult) => {
         this.handleMenuItemClickResult(result);
       });
   }
@@ -152,7 +152,7 @@ export class GridComponent<TGridItemDto, TGridData extends IGridData<TGridItemDt
 
   public menuItemClick(event: MouseEvent, menuItem: IMenuItem): void {
     if (menuItem.action) {
-      menuItem.action().then((result?: BottomSheetActionResult) => {
+      menuItem.action().then((result?: MenuItemClickResult) => {
         this.handleMenuItemClickResult(result);
       });
     }
@@ -168,9 +168,9 @@ export class GridComponent<TGridItemDto, TGridData extends IGridData<TGridItemDt
     return this.expandedElement === row;
   }
 
-  private handleMenuItemClickResult(result?: BottomSheetActionResult): void {
+  private handleMenuItemClickResult(result?: MenuItemClickResult): void {
     switch (result) {
-      case BottomSheetActionResult.REFRESH_GRID:
+      case MenuItemClickResult.REFRESH_GRID:
         this.refreshDataSource();
         break;
       default:
