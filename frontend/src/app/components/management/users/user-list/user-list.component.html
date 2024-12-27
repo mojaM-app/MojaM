@@ -8,13 +8,13 @@
     <main>
       <div class="card-body p-0">
         <div class="content-container">
-          <app-grid [itemTemplate]="details"></app-grid>
+          <app-grid>
+            <ng-template gridDetails let-element let-isExpanded="isExpanded">
+              <app-user-details [userId]="element.id" [isExpanded]="isExpanded"> </app-user-details>
+            </ng-template>
+          </app-grid>
         </div>
       </div>
     </main>
   </div>
 </div>
-
-<ng-template #details let-element>
-  <app-user-details [user]="element"> </app-user-details>
-</ng-template>

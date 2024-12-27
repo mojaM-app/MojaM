@@ -1,4 +1,4 @@
-import { IGridData } from '../common/grid.data';
+import { IGridData } from '../../../../../../interfaces/common/grid.data';
 
 export interface IUserGridItemColumns {
   id: string;
@@ -6,13 +6,13 @@ export interface IUserGridItemColumns {
   phone: string;
   firstName?: string;
   lastName?: string;
+  isLockedOut: boolean;
+  isActive: boolean;
 }
 
 export interface IUserGridItemDto extends IUserGridItemColumns {
   joiningDate?: Date;
   lastLoginAt?: Date;
-  isActive: boolean;
-  isLockedOut: boolean;
   rolesCount: number;
 }
 

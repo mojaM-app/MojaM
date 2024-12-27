@@ -5,10 +5,10 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  ContentChild,
   CreateEffectOptions,
   effect,
   Inject,
-  Input,
   signal,
   TemplateRef,
   viewChild,
@@ -31,7 +31,9 @@ import { PipesModule } from 'src/pipes/pipes.module';
 import { BrowserWindowService } from 'src/services/browser/browser-window.service';
 import { BottomSheetActionResult } from '../../bottom-sheet/bottom-sheet.enum';
 import { BottomSheetService } from '../../bottom-sheet/bottom-sheet.service';
-import { ColumnType, IGridColumn, IGridService } from './grid-service.interface';
+import { DetailsDirective } from '../directive/details.directive';
+import { IDetailsDirectiveContext } from '../interfaces/details.interfaces';
+import { ColumnType, IGridColumn, IGridService } from './services/grid-service.interface';
 
 @Component({
   selector: 'app-grid',
@@ -63,8 +65,8 @@ export class GridComponent<TGridItemDto, TGridData extends IGridData<TGridItemDt
   extends WithUnsubscribe()
   implements AfterViewInit
 {
-  @Input()
-  public itemTemplate: TemplateRef<any> | undefined;
+  @ContentChild(DetailsDirective<TGridItemDto>, { read: TemplateRef })
+  public itemTemplate: TemplateRef<IDetailsDirectiveContext<TGridItemDto>> | undefined;
 
   public ColumnType = ColumnType;
   public expandedElement: TGridItemDto | null = null;
@@ -157,6 +159,15 @@ export class GridComponent<TGridItemDto, TGridData extends IGridData<TGridItemDt
     event.preventDefault();
   }
 
+  public expandDetails(row: TGridItemDto, event: any): void {
+    this.expandedElement = this.isExpanded(row) ? null : row;
+    event.stopPropagation();
+  }
+
+  public isExpanded(row: TGridItemDto): boolean {
+    return this.expandedElement === row;
+  }
+
   private handleMenuItemClickResult(result?: BottomSheetActionResult): void {
     switch (result) {
       case BottomSheetActionResult.REFRESH_GRID:
@@ -169,13 +180,29 @@ export class GridComponent<TGridItemDto, TGridData extends IGridData<TGridItemDt
 
   private refreshVisibleColumns(): void {
     const columns = this.columns();
-    this.visibleColumns.set(
-      columns.filter(column =>
-        (column.mediaMinWidth ?? 0) > 0
-          ? this._mediaMatcher.matchMedia(`(min-width: ${column.mediaMinWidth}px)`).matches
-          : true
-      )
+
+    let visibleColumns = columns.filter(column =>
+      (column.mediaMinWidth ?? 0) > 0
+        ? this._mediaMatcher.matchMedia(`(min-width: ${column.mediaMinWidth}px)`).matches
+        : true
     );
+
+    const expandColumn = visibleColumns.find(column => column.isExpandable);
+    const actionsColumn = visibleColumns.find(column => column.isActions);
+
+    if (expandColumn && actionsColumn) {
+      visibleColumns = visibleColumns.filter(
+        column => column !== actionsColumn && column !== expandColumn
+      );
+
+      visibleColumns.push({
+        propertyName: expandColumn.propertyName,
+        isActions: true,
+        isExpandable: true,
+      });
+    }
+
+    this.visibleColumns.set(visibleColumns);
   }
 
   private refreshDataSource(): void {

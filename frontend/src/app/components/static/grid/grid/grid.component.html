@@ -9,38 +9,60 @@
     multiTemplateDataRows>
     @for (column of visibleColumns(); track column) {
       @if (column.isExpandable) {
-        <ng-container [matColumnDef]="column.propertyName">
+        <ng-container [matColumnDef]="column.propertyName" stickyEnd>
           <th
             mat-header-cell
             *matHeaderCellDef
-            [attr.aria-label]="'Grid/ExpandRowAriaLabel' | gmessage">
+            [attr.aria-label]="'Grid/ExpandRowAriaLabel' | gmessage"
+            [ngClass]="{ 'col-expandable': column.isExpandable, 'col-actions': column.isActions }">
             &nbsp;
           </th>
-          <td mat-cell *matCellDef="let element">
+          <td
+            mat-cell
+            *matCellDef="let element"
+            [ngClass]="{ 'col-expandable': column.isExpandable, 'col-actions': column.isActions }">
             <button
               mat-icon-button
               [attr.aria-label]="'Grid/ExpandBtnAriaLabel' | gmessage"
               (click)="
-                expandedElement = expandedElement === element ? null : element;
-                $event.stopPropagation()
+                expandedElement = isExpanded(element) ? null : element; $event.stopPropagation()
               ">
-              @if (expandedElement === element) {
+              @if (isExpanded(element)) {
                 <mat-icon>keyboard_arrow_up</mat-icon>
               } @else {
                 <mat-icon>keyboard_arrow_down</mat-icon>
               }
             </button>
+            @if (column.isActions) {
+              @if (isMobile) {
+                <button
+                  mat-icon-button
+                  [attr.aria-label]="'Grid/ActionsRowAriaLabel' | gmessage"
+                  (click)="showBottomSheet(element); $event.stopPropagation()">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+              } @else {
+                <button
+                  mat-icon-button
+                  [attr.aria-label]="'Grid/ActionsRowAriaLabel' | gmessage"
+                  [matMenuTriggerFor]="rowMenu"
+                  (click)="refreshMenuItems(element)">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+              }
+            }
           </td>
         </ng-container>
-      } @else if (column.isActions) {
+      } @else if (column.isActions && !column.isExpandable) {
         <ng-container [matColumnDef]="column.propertyName" stickyEnd>
           <th
             mat-header-cell
             *matHeaderCellDef
-            [attr.aria-label]="'Grid/ActionsRowAriaLabel' | gmessage">
+            [attr.aria-label]="'Grid/ActionsRowAriaLabel' | gmessage"
+            [ngClass]="{ 'col-actions': column.isActions }">
             &nbsp;
           </th>
-          <td mat-cell *matCellDef="let element">
+          <td mat-cell *matCellDef="let element" [ngClass]="{ 'col-actions': column.isActions }">
             @if (isMobile) {
               <button
                 mat-icon-button
@@ -56,20 +78,6 @@
                 (click)="refreshMenuItems(element)">
                 <mat-icon>more_vert</mat-icon>
               </button>
-              <mat-menu #rowMenu="matMenu">
-                <ng-template matMenuContent let-element="element">
-                  @for (menuItem of menuItems(); track menuItem) {
-                    <button mat-menu-item (click)="menuItemClick($event, menuItem)">
-                      @if (menuItem.icon) {
-                        <mat-icon matListItemIcon>{{ menuItem.icon }}</mat-icon>
-                      }
-                      @if (menuItem.title) {
-                        <span matListItemTitle>{{ menuItem.title }}</span>
-                      }
-                    </button>
-                  }
-                </ng-template>
-              </mat-menu>
             }
           </td>
         </ng-container>
@@ -78,7 +86,12 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header>
             {{ column.title }}
           </th>
-          <td mat-cell *matCellDef="let row" [class]="column.cssClass">
+          <td
+            mat-cell
+            *matCellDef="let row"
+            [class]="
+              column?.calcColumnCssClass ? column?.calcColumnCssClass(row[column.propertyName]) : ''
+            ">
             @switch (column.type) {
               @case (ColumnType.Date) {
                 {{ row[column.propertyName] | gdate }}
@@ -94,6 +107,9 @@
               }
               @case (ColumnType.Time) {
                 {{ row[column.propertyName] | gtime }}
+              }
+              @case (ColumnType.MatIcon) {
+                <mat-icon>{{ column?.transform(row[column.propertyName]) }}</mat-icon>
               }
               @default {
                 @if (column.transform) {
@@ -115,12 +131,14 @@
         <td mat-cell *matCellDef="let element" [attr.colspan]="visibleColumnNames().length">
           <div
             class="element-details"
-            [@detailExpand]="element === expandedElement ? 'expanded' : 'collapsed'">
+            [@detailExpand]="isExpanded(element) ? 'expanded' : 'collapsed'">
             @if (itemTemplate) {
               <ng-container
                 [ngTemplateOutlet]="itemTemplate"
-                [ngTemplateOutletContext]="{ $implicit: element }">
+                [ngTemplateOutletContext]="{ $implicit: element, isExpanded: isExpanded(element) }">
               </ng-container>
+            } @else {
+              <span>no details template</span>
             }
           </div>
         </td>
@@ -133,6 +151,7 @@
       *matRowDef="let row; let even = even; let odd = odd; columns: visibleColumnNames()"
       class="item-row"
       [ngClass]="{ 'odd-row': odd, 'even-row': even }"></tr>
+
     @if (showExpandableColumn()) {
       <tr mat-row *matRowDef="let row; columns: ['itemDetails']" class="item-details-row"></tr>
     }
@@ -154,3 +173,18 @@
   [showFirstLastButtons]="true"
   [hidePageSize]="true"
   [attr.aria-label]="'Paginator/AriaLabel' | gmessage"></mat-paginator>
+
+<mat-menu #rowMenu="matMenu">
+  <ng-template matMenuContent let-element="element">
+    @for (menuItem of menuItems(); track menuItem) {
+      <button mat-menu-item (click)="menuItemClick($event, menuItem)">
+        @if (menuItem.icon) {
+          <mat-icon matListItemIcon>{{ menuItem.icon }}</mat-icon>
+        }
+        @if (menuItem.title) {
+          <span matListItemTitle>{{ menuItem.title }}</span>
+        }
+      </button>
+    }
+  </ng-template>
+</mat-menu>

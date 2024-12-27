@@ -7,6 +7,13 @@
         .table-container {
           overflow: auto;
 
+          tr,
+          th {
+            &.col-expandable.col-actions {
+              min-width: 7rem;
+            }
+          }
+
           tr.item-row {
             td {
               border-bottom: 0;
@@ -15,6 +22,10 @@
 
           tr.item-details-row {
             height: 0;
+          }
+
+          td.mat-column-itemDetails {
+            padding: 0;
           }
         }
       }

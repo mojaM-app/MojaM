@@ -16,7 +16,9 @@
     "BtnNo": "Nie",
     "BtnAdd": "Dodaj",
     "BtnPublish": "Opublikuj",
-    "Location": "Lokalizacja"
+    "Location": "Lokalizacja",
+    "Yes": "Tak",
+    "No": "Nie"
   },
   "Header": {
     "Menu": {
@@ -111,7 +113,7 @@
         "ItemsCount": "Ilość ogłoszeń"
       },
       "ContextMenu": {
-        "Copy": "Utworz nowe na bazie",
+        "Copy": "Utworz kopię",
         "Edit": "Edytuj",
         "Publish": "Opublikuj",
         "Archive": "Zarchiwizuj",
@@ -189,8 +191,18 @@
         "FirstName": "Imię",
         "LastName": "Nazwisko",
         "Email": "E-mail",
-        "Phone": "Telefon"
+        "Phone": "Telefon",
+        "IsActive": "Aktywny",
+        "IsLockedOut": "Zablokowany"
       }
+    },
+    "UserDetails": {
+      "Email": "E-mail",
+      "Phone": "Telefon",
+      "IsActive": "Aktywny",
+      "IsLockedOut": "Zablokowany",
+      "JoiningDate": "Data dołączenia",
+      "NotAvailable": "(brak danych)"
     }
   },
   "Error404": {

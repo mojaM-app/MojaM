@@ -1,4 +1,4 @@
-import { IUserGridItemColumns } from 'src/interfaces/users/user-list.interfaces';
+import { IUserGridItemColumns } from 'src/app/components/management/users/user-list/interfaces/user-list.interfaces';
 
 export const UserListColumns: { [K in keyof IUserGridItemColumns]: string } = {
   id: 'id',
@@ -6,4 +6,6 @@ export const UserListColumns: { [K in keyof IUserGridItemColumns]: string } = {
   lastName: 'lastName',
   email: 'email',
   phone: 'phone',
+  isActive: 'isActive',
+  isLockedOut: 'isLockedOut',
 } as const;

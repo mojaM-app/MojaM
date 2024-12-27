@@ -4,16 +4,12 @@ import { UserActivatedEvent } from '../events/user-activated-event';
 import { UserCreatedEvent } from '../events/user-created-event';
 import { UserDeactivatedEvent } from '../events/user-deactivated-event';
 import { UserDeletedEvent } from '../events/user-deleted-event';
+import { UserDetailsRetrievedEvent } from './user-details-retrieved-event';
 import { UserListRetrievedEvent } from './user-list-retrieved-event';
 import { UserProfileRetrievedEvent } from './user-profile-retrieved-event';
 
 @EventSubscriber()
 export class UserEventSubscriber {
-  @On(events.users.userProfileRetrieved)
-  public onUserProfileRetrieved(data: UserProfileRetrievedEvent): void {
-    console.log(`User ${data?.user?.email} (phone: ${data?.user?.phone}) retrieved!`);
-  }
-
   @On(events.users.userCreated)
   public onUserCreated(data: UserCreatedEvent): void {
     console.log(`User ${data?.user?.email} (phone: ${data?.user?.phone}) created!`);
@@ -48,5 +44,13 @@ export class UserListEventSubscriber {
   @On(events.users.userListRetrieved)
   public onUserListRetrieved(data: UserListRetrievedEvent): void {
     console.log(`User list retrieved by user with ID: ${data?.currentUserId}`);
+  }
+}
+
+@EventSubscriber()
+export class UserDetailsEventSubscriber {
+  @On(events.users.userDetailsRetrieved)
+  public onUserDetailsRetrieved(data: UserDetailsRetrievedEvent): void {
+    console.log(`User ${data?.user?.email} (phone: ${data?.user?.phone}) retrieved!`);
   }
 }

@@ -1,7 +1,7 @@
 import { events } from '@events';
 import { IGridPageResponseDto } from '@interfaces';
 import { BaseService } from '@modules/common';
-import { GetUserListReqDto, UserListRepository, UserListRetrievedEvent, UsersGridPageDto, vUserToIUserGridItemDto } from '@modules/users';
+import { GetUserListReqDto, IUserGridItemDto, UserListRepository, UserListRetrievedEvent, UsersGridPageDto } from '@modules/users';
 import { Container, Service } from 'typedi';
 import { vUser } from '../entities/vUser.entity';
 
@@ -20,8 +20,23 @@ export class UserListService extends BaseService {
     this._eventDispatcher.dispatch(events.users.userListRetrieved, new UserListRetrievedEvent(reqDto.currentUserId));
 
     return {
-      items: recordsWithTotal.items.map(user => vUserToIUserGridItemDto(user)),
+      items: recordsWithTotal.items.map(user => this.vUserToIUserGridItemDto(user)),
       totalCount: recordsWithTotal.totalCount,
     } satisfies UsersGridPageDto;
+  }
+
+  private vUserToIUserGridItemDto(user: vUser): IUserGridItemDto {
+    return {
+      id: user.id,
+      email: user.email,
+      phone: user.phone,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      joiningDate: user.joiningDate,
+      lastLoginAt: user.lastLoginAt,
+      isActive: user.isActive,
+      isLockedOut: user.isLockedOut,
+      rolesCount: user.rolesCount,
+    } satisfies IUserGridItemDto;
   }
 }

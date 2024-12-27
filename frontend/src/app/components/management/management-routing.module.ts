@@ -6,7 +6,6 @@ import { PermissionGuard } from 'src/services/auth/permission.guard';
 import { ManagementMenuUserList } from './management.menu';
 
 const routes: Routes = [
-  { path: '**', redirectTo: ManagementMenuUserList.Route, pathMatch: 'full' },
   {
     path: ManagementMenuUserList.Route,
     loadComponent: () =>
@@ -17,6 +16,7 @@ const routes: Routes = [
       permissions: [SystemPermissionValue.PreviewUserList],
     } satisfies IPermissionRouteData,
   },
+  { path: '**', redirectTo: ManagementMenuUserList.Route, pathMatch: 'full' },
 ];
 
 @NgModule({

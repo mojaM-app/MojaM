@@ -60,6 +60,11 @@ export class BaseService {
       path: 'user-list',
       get: (): string => `${environment.backendUrl}/${this.API_ROUTES.userList.path}`,
     },
+    userDetails: {
+      path: 'user-details',
+      get: (uuid: string): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.userDetails.path}/${uuid}`,
+    },
   };
 
   protected toDateTime(date: string | null | undefined | Date): Date | undefined {

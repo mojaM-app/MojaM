@@ -32,7 +32,7 @@ export class PermissionGuard {
 
     // when no permissions explicitly set for this route, check for parents permissions
     const permissions = route.data?.['permissions'] || this.getParentPermissions(route);
-    if (!permissions?.length) {
+    if (!(permissions?.length > 0)) {
       return true;
     }
 

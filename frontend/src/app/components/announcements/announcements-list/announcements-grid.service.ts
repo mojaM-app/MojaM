@@ -9,7 +9,7 @@ import {
   ColumnType,
   IGridColumn,
   IGridService,
-} from 'src/app/components/static/grid/grid/grid-service.interface';
+} from 'src/app/components/static/grid/grid/services/grid-service.interface';
 import { SystemPermissionValue } from 'src/core/system-permission.enum';
 import { IDialogSettings } from 'src/interfaces/common/dialog.settings';
 import { IGridData } from 'src/interfaces/common/grid.data';
@@ -20,7 +20,7 @@ import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { CultureService } from 'src/services/translate/culture.service';
 import { TranslationService } from 'src/services/translate/translation.service';
 import { BottomSheetActionResult } from '../../static/bottom-sheet/bottom-sheet.enum';
-import { BaseGridService } from '../../static/grid/grid/base-grid.service';
+import { BaseGridService } from '../../static/grid/grid/services/base-grid.service';
 import { AnnouncementStateValue } from '../announcement-state.enum';
 import { AddAnnouncementsMenu, EditAnnouncementsMenu } from '../announcements.menu';
 import { AnnouncementsListColumns } from './announcements-list.columns';
@@ -50,7 +50,6 @@ export class AnnouncementsGridService
       cultureService
     );
   }
-
   public getData(
     sortColumn: string,
     sortDirection: SortDirection,
@@ -70,7 +69,7 @@ export class AnnouncementsGridService
       {
         propertyName: AnnouncementsListColumns.state,
         title: this._translationService.get('Announcements/List/GridColumns/State'),
-        cssClass: 'text-center',
+        calcColumnCssClass: (): string => 'text-center',
         transform: (value: string): string =>
           this._translationService.get(`Announcements/State/${value}`),
       },
@@ -107,7 +106,7 @@ export class AnnouncementsGridService
         title: this._translationService.get('Announcements/List/GridColumns/ItemsCount'),
         type: ColumnType.Number,
         mediaMinWidth: 650,
-        cssClass: 'text-center',
+        calcColumnCssClass: (): string => 'text-center',
       },
     ];
 

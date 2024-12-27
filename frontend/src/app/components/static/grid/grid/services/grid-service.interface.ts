@@ -14,6 +14,7 @@ export enum ColumnType {
   DateTime,
   Number,
   Time,
+  MatIcon,
 }
 
 export interface IGridExpandableColumn {
@@ -28,7 +29,7 @@ export interface IGridColumn extends IGridExpandableColumn, IGridActionsColumn {
   propertyName: string;
   title?: string;
   type?: ColumnType;
-  cssClass?: string;
+  calcColumnCssClass?: (value: any) => string;
   mediaMinWidth?: number;
   transform?: (value: any) => string;
 }

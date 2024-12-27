@@ -1,14 +1,40 @@
-<div class="container">
-  @if (user()) {
+@if (userDetails()) {
+  <div class="container-fluid py-2">
     <div class="row">
-      <div class="col">joiningDate</div>
-      <div class="col">
-        @if (user()!.joiningDate !== undefined) {
-          {{ user()!.joiningDate! | gdate }}
-        } @else {
-          {{ 'Management/UserDetails/NotAvailable' | gmessage }}
-        }
+      <div class="col-12 col-md-6">
+        <table class="table-sm m-0 table p-0">
+          <tr>
+            <td class="text-end">{{ 'Management/UserDetails/Email' | gmessage }}&nbsp;</td>
+            <td width="100%">
+              {{ userDetails()!.email }}
+            </td>
+          </tr>
+          <tr>
+            <td class="text-end">{{ 'Management/UserDetails/Phone' | gmessage }}&nbsp;</td>
+            <td>{{ userDetails()!.phone }}</td>
+          </tr>
+          <tr>
+            <td class="text-end">{{ 'Management/UserDetails/IsLockedOut' | gmessage }}&nbsp;</td>
+            <td>{{ userDetails()!.isLockedOut | yesNo }}</td>
+          </tr>
+          <tr>
+            <td class="text-end">{{ 'Management/UserDetails/IsActive' | gmessage }}&nbsp;</td>
+            <td>{{ userDetails()!.isActive | yesNo }}</td>
+          </tr>
+
+          <tr>
+            <td class="text-end">{{ 'Management/UserDetails/JoiningDate' | gmessage }}&nbsp;</td>
+            <td>
+              @if (userDetails()!.joiningDate) {
+                {{ userDetails()!.joiningDate! | gdate }}
+              } @else {
+                {{ 'Management/UserDetails/NotAvailable' | gmessage }}
+              }
+            </td>
+          </tr>
+        </table>
       </div>
+      <div class="col-12 col-md-6"></div>
     </div>
-  }
-</div>
+  </div>
+}

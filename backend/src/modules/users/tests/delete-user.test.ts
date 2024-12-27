@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
-import { generateValidAnnouncements } from '@/modules/announcements/tests/announcements-tests.helpers';
 import { relatedDataNames } from '@db';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { AnnouncementsRout, CreateAnnouncementsResponseDto, GetAnnouncementsResponseDto, UpdateAnnouncementsDto } from '@modules/announcements';
+import { generateValidAnnouncements } from '@modules/announcements/tests/announcements-tests.helpers';
 import { AuthRoute, LoginDto, UserTryingToLogInDto } from '@modules/auth';
 import { AddPermissionsResponseDto, PermissionsRoute, SystemPermission } from '@modules/permissions';
 import { CreateUserResponseDto, DeleteUserResponseDto, UserDeletedEvent, UserRoute } from '@modules/users';
