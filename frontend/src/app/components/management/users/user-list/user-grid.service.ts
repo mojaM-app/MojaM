@@ -149,13 +149,6 @@ export class UserGridService
   }
 
   private async handleEdit(user: IUserGridItemDto): Promise<MenuItemClickResult | undefined> {
-    // if (announcements.state === AnnouncementStateValue.ARCHIVED) {
-    //   this._snackBarService.translateAndShowError(
-    //     'Errors/Announcements_Archived_Announcements_Cant_Be_Edited'
-    //   );
-    //   return;
-    // }
-
     return this._router
       .navigateByUrl(ManagementMenuEditUser.Path + '/' + user.id)
       .then(() => MenuItemClickResult.REDIRECT_TO_URL);
