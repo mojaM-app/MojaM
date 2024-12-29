@@ -15,6 +15,7 @@ import {
 import { isGuid } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
+import { GetUserReqDto, GetUserResponseDto } from '../dtos/get-user.dto';
 
 export class UserController extends BaseController {
   private readonly _service: UsersService;
@@ -23,6 +24,16 @@ export class UserController extends BaseController {
     super();
     this._service = Container.get(UsersService);
   }
+
+  public get = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const reqDto = new GetUserReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
+      const result = await this._service.get(reqDto);
+      res.status(200).json(new GetUserResponseDto(result));
+    } catch (error) {
+      next(error);
+    }
+  };
 
   public create = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {

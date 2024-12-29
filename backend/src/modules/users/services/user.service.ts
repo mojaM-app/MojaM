@@ -15,10 +15,14 @@ import {
   UserDeactivatedEvent,
   UserDeletedEvent,
   UserRepository,
+  UserRetrievedEvent,
 } from '@modules/users';
 import { isNullOrUndefined } from '@utils';
 import StatusCode from 'status-code-enum';
 import { Container, Service } from 'typedi';
+import { GetUserReqDto } from '../dtos/get-user.dto';
+import { User } from '../entities/user.entity';
+import { IGetUserDto } from '../interfaces/get-user.interfaces';
 
 @Service()
 export class UsersService extends BaseService {
@@ -29,6 +33,20 @@ export class UsersService extends BaseService {
     super();
     this._userRepository = Container.get(UserRepository);
     this._resetPasswordTokensRepository = Container.get(ResetPasswordTokensRepository);
+  }
+
+  public async get(reqDto: GetUserReqDto): Promise<IGetUserDto | null> {
+    const user = await this._userRepository.getByUuid(reqDto.userGuid);
+
+    if (isNullOrUndefined(user)) {
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.User_Does_Not_Exist, { id: reqDto.userGuid });
+    }
+
+    const userDto = this.userToIGetUserDto(user!);
+
+    this._eventDispatcher.dispatch(events.users.userRetrieved, new UserRetrievedEvent(userDto, reqDto.currentUserId));
+
+    return userDto;
   }
 
   public async create(reqDto: CreateUserReqDto): Promise<IUserDto> {
@@ -121,5 +139,16 @@ export class UsersService extends BaseService {
     this._eventDispatcher.dispatch(events.users.userDeactivated, new UserDeactivatedEvent(userToIUser(deactivatedUser!), reqDto.currentUserId));
 
     return !deactivatedUser!.isActive;
+  }
+
+  private userToIGetUserDto(user: User): IGetUserDto {
+    return {
+      id: user.uuid,
+      email: user.email,
+      phone: user.phone,
+      firstName: user.firstName ?? null,
+      lastName: user.lastName ?? null,
+      joiningDate: user.joiningDate ?? null,
+    };
   }
 }

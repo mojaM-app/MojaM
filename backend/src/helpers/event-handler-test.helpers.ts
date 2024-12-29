@@ -25,6 +25,7 @@ import {
   UserDetailsRetrievedEvent,
   UserListRetrievedEvent,
   UserProfileRetrievedEvent,
+  UserRetrievedEvent,
 } from '@modules/users';
 import { EventDispatcher } from 'event-dispatch';
 
@@ -40,6 +41,7 @@ const testEventHandlers: {
   onUserProfileRetrieved: (data: any) => void;
   onUserListRetrieved: (data: any) => void;
   onUserDetailsRetrieved: (data: any) => void;
+  onUserRetrieved: (data: any) => void;
   onUserDeleted: (data: any) => void;
   onUserActivated: (data: any) => void;
   onUserDeactivated: (data: any) => void;
@@ -63,6 +65,7 @@ const testEventHandlers: {
   onUserProfileRetrieved: jest.fn((data: UserProfileRetrievedEvent) => {}),
   onUserListRetrieved: jest.fn((data: UserListRetrievedEvent) => {}),
   onUserDetailsRetrieved: jest.fn((data: UserDetailsRetrievedEvent) => {}),
+  onUserRetrieved: jest.fn((data: UserRetrievedEvent) => {}),
   onUserDeleted: jest.fn((data: UserDeletedEvent) => {}),
   onUserActivated: jest.fn((data: UserActivatedEvent) => {}),
   onUserDeactivated: jest.fn((data: UserDeactivatedEvent) => {}),
