@@ -61,7 +61,7 @@ describe('Cache user data tests', () => {
               return {
                 select: () => {
                   return {
-                    getMany: () => [{ _is_from_mock_: true, userId: 1, systemPermission: SystemPermission.PreviewUserProfile }],
+                    getMany: () => [{ _is_from_mock_: true, userId: 1, systemPermission: SystemPermission.PreviewUserDetails }],
                   };
                 },
               };
@@ -85,7 +85,10 @@ describe('Cache user data tests', () => {
   });
 
   it('Should store userId', async () => {
-    let response = await request(app.getServer()).get(`${userProfileRoute.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);
+    let response = await request(app.getServer())
+      .get(`${userProfileRoute.path}/${adminUuid}`)
+      .send()
+      .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(response.statusCode).toBe(200);
 
     response = await request(app.getServer()).get(`${userProfileRoute.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);

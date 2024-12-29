@@ -53,12 +53,12 @@ export class Identity {
     return this.hasPermission(SystemPermission.PreviewUserList);
   }
 
-  public hasPermissionToPreviewUserProfile(): boolean {
-    return this.hasPermission(SystemPermission.PreviewUserProfile);
+  public hasPermissionToPreviewUserDetails(): boolean {
+    return this.hasPermission(SystemPermission.PreviewUserDetails);
   }
 
-  public hasPermissionToEditUserProfile(): boolean {
-    return this.hasPermission(SystemPermission.EditUserProfile);
+  public hasPermissionToEditUser(): boolean {
+    return this.hasPermission(SystemPermission.EditUser);
   }
 
   public hasPermissionToAddUser(): boolean {

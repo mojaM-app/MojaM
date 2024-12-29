@@ -60,7 +60,7 @@ describe('POST /login', () => {
       const next: NextFunction = jest.fn();
       await setIdentity(req as any, {} as any, next);
       expect((req as unknown as IRequestWithIdentity).identity.userUuid).toEqual(userLoggedIn.id);
-      expect((req as unknown as IRequestWithIdentity).identity.hasPermissionToEditUserProfile()).toBeTruthy();
+      expect((req as unknown as IRequestWithIdentity).identity.hasPermissionToEditUser()).toBeTruthy();
       expect(next).toHaveBeenCalled();
 
       const token = decode(userLoggedIn.accessToken, { json: true });
@@ -76,7 +76,9 @@ describe('POST /login', () => {
 
       // checking events running via eventDispatcher
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(new UserLoggedInEvent(userToIUser({ ...userLoggedIn, uuid: userLoggedIn.id } as any)));
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(
+        new UserLoggedInEvent(userToIUser({ ...userLoggedIn, uuid: userLoggedIn.id } as any)),
+      );
 
       Object.entries(testEventHandlers)
         .filter(([, eventHandler]) => ![testEventHandlers.onUserLoggedIn].includes(eventHandler))
@@ -108,7 +110,7 @@ describe('POST /login', () => {
       const next: NextFunction = jest.fn();
       await setIdentity(req as any, {} as any, next);
       expect((req as unknown as IRequestWithIdentity).identity.userUuid).toEqual(userLoggedIn.id);
-      expect((req as unknown as IRequestWithIdentity).identity.hasPermissionToEditUserProfile()).toBeTruthy();
+      expect((req as unknown as IRequestWithIdentity).identity.hasPermissionToEditUser()).toBeTruthy();
       expect(next).toHaveBeenCalled();
 
       const token = decode(userLoggedIn.accessToken, { json: true });
@@ -124,7 +126,9 @@ describe('POST /login', () => {
 
       // checking events running via eventDispatcher
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(new UserLoggedInEvent(userToIUser({ ...userLoggedIn, uuid: userLoggedIn.id } as any)));
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(
+        new UserLoggedInEvent(userToIUser({ ...userLoggedIn, uuid: userLoggedIn.id } as any)),
+      );
 
       Object.entries(testEventHandlers)
         .filter(([, eventHandler]) => ![testEventHandlers.onUserLoggedIn].includes(eventHandler))

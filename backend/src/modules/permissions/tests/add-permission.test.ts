@@ -6,7 +6,7 @@ import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-han
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { AddPermissionsResponseDto, PermissionAddedEvent, PermissionsRoute, SystemPermission } from '@modules/permissions';
-import { CreateUserResponseDto, DeleteUserResponseDto, IUserDto, UserProfileRoute, UserRoute } from '@modules/users';
+import { CreateUserResponseDto, DeleteUserResponseDto, IUserDto, UserRoute } from '@modules/users';
 import { isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
@@ -15,14 +15,13 @@ import request from 'supertest';
 
 describe('POST /permissions', () => {
   const userRoute = new UserRoute();
-  const userProfileRoute = new UserProfileRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App();
   let adminAccessToken: string | undefined;
   let userLoggedIn: IUserDto;
 
   beforeAll(async () => {
-    await app.initialize([userRoute, userProfileRoute, permissionsRoute]);
+    await app.initialize([userRoute, permissionsRoute]);
     const { email: login, password } = getAdminLoginData();
 
     const loginResult = await loginAs(app, { email: login, password } satisfies LoginDto);
@@ -98,10 +97,7 @@ describe('POST /permissions', () => {
 
     it('POST should respond with a status code of 400 when permission not exist', async () => {
       const newUser = generateValidUser();
-      const createUserResponse = await request(app.getServer())
-        .post(userRoute.path)
-        .send(newUser)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
