@@ -19,6 +19,7 @@ export class UserRoute implements IRoutes {
   }
 
   private initializeRoutes(): void {
+    this.router.get(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity, this.checkGetPermission], this._controller.get);
     this.router.post(`${this.path}`, [validateData(CreateUserDto), setIdentity, this.checkCreatePermission], this._controller.create);
     this.router.post(
       `${this.path}/:id(${REGEX_GUID_PATTERN})/${this.deactivatePath}`,
@@ -38,6 +39,16 @@ export class UserRoute implements IRoutes {
     if (!req.identity?.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToAddUser()) {
+      next(new ForbiddenException());
+    } else {
+      next();
+    }
+  };
+
+  private readonly checkGetPermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+    if (!req.identity?.isAuthenticated()) {
+      next(new UnauthorizedException());
+    } else if (!req.identity.hasPermissionToEditUser()) {
       next(new ForbiddenException());
     } else {
       next();
