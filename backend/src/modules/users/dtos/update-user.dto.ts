@@ -1,7 +1,7 @@
 import { events } from '@events';
 import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
-import { IUserDto } from '../interfaces/get-user.interfaces';
+import { IUserDto } from '../interfaces/IUser.dto';
 import { TUpdateUser } from '../interfaces/update-user.interfaces';
 
 export class UpdateUserReqDto extends BaseReqDto {

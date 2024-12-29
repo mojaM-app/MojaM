@@ -16,7 +16,7 @@ import {
   ValidationArguments,
   ValidationOptions,
 } from 'class-validator';
-import { IUserDto } from '../interfaces/get-user.interfaces';
+import { IUserDto } from '../interfaces/IUser.dto';
 
 export function IsPasswordEmptyOrValid(validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string) {
@@ -32,8 +32,7 @@ export function IsPasswordEmptyOrValid(validationOptions?: ValidationOptions) {
             return true;
           }
 
-          return maxLength(value, VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH) &&
-              isStrongPassword(value, VALIDATOR_SETTINGS.STRONG_PASSWORD_OPTIONS);
+          return maxLength(value, VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH) && isStrongPassword(value, VALIDATOR_SETTINGS.STRONG_PASSWORD_OPTIONS);
         },
       },
     });

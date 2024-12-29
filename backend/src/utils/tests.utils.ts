@@ -1,4 +1,4 @@
-import { ADMIN_EMAIL, ADMIN_PASSWORD } from '@config';
+import { ADMIN_EMAIL, ADMIN_PASSWORD } from '../config';
 import './date.extensions';
 import { getDateNow } from './date.utils';
 

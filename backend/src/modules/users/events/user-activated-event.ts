@@ -1,5 +1,5 @@
 import { Event } from '@events';
-import { IUserDto } from '../interfaces/get-user.interfaces';
+import { IUserDto } from '../interfaces/IUser.dto';
 
 export class UserActivatedEvent extends Event {
   public readonly user: IUserDto;

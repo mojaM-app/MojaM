@@ -22,7 +22,7 @@ export class UserDetailsRoute implements IRoutes {
   private readonly checkPreviewPermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     if (!req.identity?.isAuthenticated()) {
       next(new UnauthorizedException());
-    } else if (!req.identity.hasPermissionToPreviewUserList()) {
+    } else if (!req.identity.hasPermissionToPreviewUserDetails()) {
       next(new ForbiddenException());
     } else {
       next();
