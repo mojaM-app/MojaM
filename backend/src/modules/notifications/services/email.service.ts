@@ -1,6 +1,5 @@
 /* eslint-disable n/no-callback-literal */
 import { NOTIFICATIONS_EMAIL, REQ_RESET_PASSWORD_TITLE, SMTP_SERVICE_HOST, SMTP_SERVICE_PORT, SMTP_USER_NAME, SMTP_USER_PASSWORD } from '@config';
-import { IUserProfileDto } from '@modules/users';
 import { toNumber } from '@utils';
 import { readFileSync } from 'fs';
 import { compile } from 'handlebars';
@@ -15,7 +14,7 @@ import { Service } from 'typedi';
 export class EmailService {
   private readonly language: string = 'pl';
 
-  public async sendEmailResetPassword(user: IUserProfileDto, link: string): Promise<boolean> {
+  public async sendEmailResetPassword(user: { firstName: string; lastName: string; email: string }, link: string): Promise<boolean> {
     return await new Promise((resolve, reject) => {
       try {
         const templatePath = join(__dirname, `./../email.templates/requestResetPassword.${this.language}.handlebars`);
@@ -24,7 +23,7 @@ export class EmailService {
 
         const compiledTemplate = compile(source);
 
-        const payload = {
+        const templateVariables = {
           link,
           name: user.firstName + ' ' + user.lastName,
         };
@@ -34,7 +33,7 @@ export class EmailService {
             from: NOTIFICATIONS_EMAIL,
             to: user.email,
             subject: REQ_RESET_PASSWORD_TITLE,
-            html: compiledTemplate(payload),
+            html: compiledTemplate(templateVariables),
           };
         };
 

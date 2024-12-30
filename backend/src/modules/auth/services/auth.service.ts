@@ -32,7 +32,7 @@ import {
   getTokenAudience,
   getTokenIssuer,
 } from '@modules/auth/middlewares/set-identity.middleware';
-import { BaseService, userToIUser, userToIUserProfile } from '@modules/common';
+import { BaseService, userToIUser } from '@modules/common';
 import { EmailService } from '@modules/notifications';
 import { PermissionsRepository, SystemPermission } from '@modules/permissions';
 import { UserRepository } from '@modules/users';
@@ -117,7 +117,14 @@ export class AuthService extends BaseService {
     const url = CLIENT_APP_URL!.endsWith('/') ? CLIENT_APP_URL!.slice(0, -1) : CLIENT_APP_URL;
     const link = `${url}/${AuthRoute.resetPassword}/${user.uuid}/${resetPasswordToken.token}`;
 
-    return await this._emailService.sendEmailResetPassword(userToIUserProfile(user), link);
+    return await this._emailService.sendEmailResetPassword(
+      {
+        firstName: user.firstName ?? '',
+        lastName: user.lastName ?? '',
+        email: user.email,
+      },
+      link,
+    );
   }
 
   public async checkResetPasswordToken(data: CheckResetPasswordTokenReqDto): Promise<CheckResetPasswordTokenResultDto> {

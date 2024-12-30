@@ -15,7 +15,7 @@ import {
 } from '@modules/auth';
 import { EmailService } from '@modules/notifications';
 import { PermissionsRoute } from '@modules/permissions';
-import { CreateUserResponseDto, IUserDto, IUserProfileDto, UserRoute } from '@modules/users';
+import { CreateUserResponseDto, IUserDetailsDto, IUserDto, UserRoute } from '@modules/users';
 import { generateRandomEmail, getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import nodemailer from 'nodemailer';
@@ -438,10 +438,10 @@ describe('POST /auth/request-reset-password', () => {
 
     it('when exist only one user with given e-mail and user password is set', async () => {
       const emailService = new EmailService();
-      const original: (user: IUserProfileDto, link: string) => Promise<boolean> = emailService.sendEmailResetPassword.bind(emailService);
+      const original: (user: IUserDetailsDto, link: string) => Promise<boolean> = emailService.sendEmailResetPassword.bind(emailService);
 
       let url: string | undefined;
-      const mockSendEmailResetPassword: any = jest.fn().mockImplementation(async (user: IUserProfileDto, link: string) => {
+      const mockSendEmailResetPassword: any = jest.fn().mockImplementation(async (user: IUserDetailsDto, link: string) => {
         url = link;
         return await original(user, link);
       });
