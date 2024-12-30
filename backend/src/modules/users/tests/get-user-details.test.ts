@@ -7,28 +7,29 @@ import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-han
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
-import { CreateUserResponseDto, DeleteUserResponseDto, UserRoute } from '@modules/users';
-import { isNumber } from '@utils';
+import {
+  CreateUserResponseDto,
+  DeleteUserResponseDto,
+  GetUserDetailsResponseDto,
+  UserDetailsRetrievedEvent,
+  UserDetailsRoute,
+  UserRoute,
+} from '@modules/users';
+import { isGuid, isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
+import { Guid } from 'guid-typescript';
 import request from 'supertest';
-import { CreateAnnouncementsResponseDto } from '../dtos/create-announcements.dto';
-import { GetAnnouncementListResponseDto } from '../dtos/get-announcement-list.dto';
-import { AnnouncementsListRetrievedEvent } from '../events/announcements-list-retrieved-event';
-import { AnnouncementsListRoute } from '../routes/announcements-list.routes';
-import { AnnouncementsRout } from '../routes/announcements.routes';
-import { generateValidAnnouncements } from './announcements-tests.helpers';
 
-describe('GET/announcements-list', () => {
-  const announcementRoute = new AnnouncementsRout();
+describe('GET/user/:id', () => {
+  const userDetailsRoute = new UserDetailsRoute();
   const userRoute = new UserRoute();
-  const announcementsListRoute = new AnnouncementsListRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App();
   let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
-    await app.initialize([userRoute, announcementsListRoute, announcementRoute, permissionsRoute]);
+    await app.initialize([userDetailsRoute, userRoute, permissionsRoute]);
     const { email: login, password } = getAdminLoginData();
 
     adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
@@ -43,38 +44,35 @@ describe('GET/announcements-list', () => {
     });
 
     test('when data are valid and user has permission', async () => {
-      const newAnnouncements = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app.getServer())
-        .post(announcementRoute.path)
-        .send(newAnnouncements)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(createAnnouncementsResponse.statusCode).toBe(201);
-      let body = createAnnouncementsResponse.body;
-      const { data: announcementsId, message: createMessage }: CreateAnnouncementsResponseDto = body;
-      expect(createMessage).toBe(events.announcements.announcementsCreated);
-      expect(announcementsId).toBeDefined();
+      const newUser = generateValidUser();
+      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(201);
+      const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
+      expect(newUserDto?.id).toBeDefined();
+      expect(createMessage).toBe(events.users.userCreated);
 
-      const getAnnouncementsListResponse = await request(app.getServer())
-        .get(announcementsListRoute.path)
+      const getUserDetailsResponse = await request(app.getServer())
+        .get(userDetailsRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(getAnnouncementsListResponse.statusCode).toBe(200);
-      expect(getAnnouncementsListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = getAnnouncementsListResponse.body;
+      expect(getUserDetailsResponse.statusCode).toBe(200);
+      expect(getUserDetailsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = getUserDetailsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: gridPage, message: getUserListMessage }: GetAnnouncementListResponseDto = body;
-      expect(getUserListMessage).toBe(events.announcements.announcementsListRetrieved);
-      expect(gridPage).toBeDefined();
-      expect(typeof gridPage).toBe('object');
-      expect(gridPage.totalCount).toBeDefined();
-      expect(typeof gridPage.totalCount).toBe('number');
-      expect(gridPage.totalCount).toBeGreaterThan(0);
-      expect(gridPage.items).toBeDefined();
-      expect(Array.isArray(gridPage.items)).toBe(true);
-      expect(gridPage.items.length).toBeGreaterThan(0);
+      const { data: userDetails, message: getMessage }: GetUserDetailsResponseDto = body;
+      expect(getMessage).toBe(events.users.userDetailsRetrieved);
+      expect(userDetails).toBeDefined();
+      expect(userDetails!.id).toBeDefined();
+      expect(isGuid(userDetails!.id)).toBe(true);
+      expect(userDetails!.id).toBe(newUserDto.id);
+      expect(userDetails?.email).toBeDefined();
+      expect(userDetails!.email).toBe(newUserDto.email);
+      expect(userDetails?.phone).toBeDefined();
+      expect(userDetails!.phone).toBe(newUserDto.phone);
+      expect(userDetails!.hasOwnProperty('uuid')).toBe(false);
 
       const deleteResponse = await request(app.getServer())
-        .delete(announcementRoute.path + '/' + announcementsId)
+        .delete(userRoute.path + '/' + userDetails!.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -83,19 +81,15 @@ describe('GET/announcements-list', () => {
       Object.entries(testEventHandlers)
         .filter(
           ([, eventHandler]) =>
-            ![
-              testEventHandlers.onAnnouncementsCreated,
-              testEventHandlers.onAnnouncementsListRetrieved,
-              testEventHandlers.onAnnouncementsDeleted,
-            ].includes(eventHandler),
+            ![testEventHandlers.onUserCreated, testEventHandlers.onUserDetailsRetrieved, testEventHandlers.onUserDeleted].includes(eventHandler),
         )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
-      expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onAnnouncementsListRetrieved).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onAnnouncementsListRetrieved).toHaveBeenCalledWith(new AnnouncementsListRetrievedEvent(1));
-      expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserDetailsRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserDetailsRetrieved).toHaveBeenCalledWith(new UserDetailsRetrievedEvent(userDetails!, 1));
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -105,9 +99,12 @@ describe('GET/announcements-list', () => {
     });
 
     test('when token is not set', async () => {
-      const getAnnouncementsListResponse = await request(app.getServer()).get(announcementsListRoute.path).send();
-      expect(getAnnouncementsListResponse.statusCode).toBe(401);
-      const body = getAnnouncementsListResponse.body;
+      const userId: string = Guid.EMPTY;
+      const getUserDetailsResponse = await request(app.getServer())
+        .get(userDetailsRoute.path + '/' + userId)
+        .send();
+      expect(getUserDetailsResponse.statusCode).toBe(401);
+      const body = getUserDetailsResponse.body;
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
 
@@ -139,13 +136,13 @@ describe('GET/announcements-list', () => {
 
       const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
 
-      const getAnnouncementsListResponse = await request(app.getServer())
-        .get(announcementsListRoute.path)
+      const getUserDetailsResponse = await request(app.getServer())
+        .get(userDetailsRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
-      expect(getAnnouncementsListResponse.statusCode).toBe(403);
-      expect(getAnnouncementsListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = getAnnouncementsListResponse.body;
+      expect(getUserDetailsResponse.statusCode).toBe(403);
+      expect(getUserDetailsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = getUserDetailsResponse.body;
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
@@ -177,11 +174,11 @@ describe('GET/announcements-list', () => {
       expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
       expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
-      expect(testEventHandlers.onAnnouncementsListRetrieved).not.toHaveBeenCalled();
+      expect(testEventHandlers.onUserDetailsRetrieved).not.toHaveBeenCalled();
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
     });
 
-    test('when user have all permissions expect PreviewAnnouncementsList', async () => {
+    test('when user have all permissions expect PreviewUserDetails', async () => {
       const requestData = generateValidUser();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -205,7 +202,7 @@ describe('GET/announcements-list', () => {
       systemPermissions.forEach(async permission => {
         if (isNumber(permission)) {
           const value = permission as number;
-          if (value !== SystemPermission.PreviewAnnouncementsList) {
+          if (value !== SystemPermission.PreviewUserDetails) {
             const path = permissionsRoute.path + '/' + newUserDto.id + '/' + permission.toString();
             const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
@@ -215,13 +212,13 @@ describe('GET/announcements-list', () => {
 
       const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
 
-      const getAnnouncementsListResponse = await request(app.getServer())
-        .get(announcementsListRoute.path)
+      const getUserDetailsResponse = await request(app.getServer())
+        .get(userDetailsRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
-      expect(getAnnouncementsListResponse.statusCode).toBe(403);
-      expect(getAnnouncementsListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = getAnnouncementsListResponse.body;
+      expect(getUserDetailsResponse.statusCode).toBe(403);
+      expect(getUserDetailsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = getUserDetailsResponse.body;
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
@@ -254,9 +251,60 @@ describe('GET/announcements-list', () => {
       expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
       expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
-      expect(testEventHandlers.onAnnouncementsListRetrieved).not.toHaveBeenCalled();
+      expect(testEventHandlers.onUserDetailsRetrieved).not.toHaveBeenCalled();
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
       expect(testEventHandlers.onPermissionAdded).toHaveBeenCalled();
+    });
+  });
+
+  describe('GET should respond with a status code of 400', () => {
+    beforeEach(async () => {
+      jest.resetAllMocks();
+    });
+
+    test('GET should respond with a status code of 400 when user not exist', async () => {
+      const userId: string = Guid.EMPTY;
+      const getUserDetailsResponse = await request(app.getServer())
+        .get(userDetailsRoute.path + '/' + userId)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(getUserDetailsResponse.statusCode).toBe(400);
+      expect(getUserDetailsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = getUserDetailsResponse.body;
+      expect(typeof body).toBe('object');
+      const data = body.data;
+      const { message: getMessage, args: getArgs } = data;
+      expect(getMessage).toBe(errorKeys.users.User_Does_Not_Exist);
+      expect(getArgs).toEqual({ id: userId });
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('GET should respond with a status code of 404', () => {
+    beforeEach(async () => {
+      jest.resetAllMocks();
+    });
+
+    test('GET should respond with a status code of 404 when user Id is not GUID', async () => {
+      const getUserDetailsResponse = await request(app.getServer())
+        .get(userDetailsRoute.path + '/invalid-guid')
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(getUserDetailsResponse.statusCode).toBe(404);
+      expect(getUserDetailsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = getUserDetailsResponse.body;
+      expect(typeof body).toBe('object');
+      const { message: deleteMessage }: { message: string } = body;
+      expect(deleteMessage).toBe(errorKeys.general.Resource_Does_Not_Exist);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
     });
   });
 
@@ -266,12 +314,13 @@ describe('GET/announcements-list', () => {
     });
 
     test('when token is invalid', async () => {
-      const getListResponse = await request(app.getServer())
-        .get(announcementsListRoute.path)
+      const userId: string = Guid.EMPTY;
+      const getUserDetailsResponse = await request(app.getServer())
+        .get(userDetailsRoute.path + '/' + userId)
         .send()
         .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
-      expect(getListResponse.statusCode).toBe(401);
-      const body = getListResponse.body;
+      expect(getUserDetailsResponse.statusCode).toBe(401);
+      const body = getUserDetailsResponse.body;
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
 

@@ -59,17 +59,11 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
     });
   }
 
-  public async update(reqDto: UpdateAnnouncementsReqDto): Promise<Announcement> {
+  public async update(reqDto: UpdateAnnouncementsReqDto): Promise<number> {
     const id = await this.getIdByUuid(reqDto.announcementsId);
 
     await this._dbContext.transaction(async transactionalEntityManager => {
       const announcementsRepository = transactionalEntityManager.getRepository(Announcement);
-
-      if (isNullOrUndefined(id)) {
-        throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcements_Does_Not_Exist, {
-          id: reqDto.announcementsId,
-        });
-      }
 
       const announcements = await announcementsRepository.findOne({
         where: { id },
@@ -155,8 +149,7 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
       }
     });
 
-    const result = await this.get(id!);
-    return result!;
+    return id!;
   }
 
   public async checkIfExistWithDate(validFromDate: Date | null | undefined, skippedAnnouncementUuid?: string): Promise<boolean> {
@@ -211,6 +204,8 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
 
     await this._dbContext.announcements.delete({ id: announcements.id });
 
+    await this._cacheService.removeIdFromCacheAsync(announcements.uuid);
+
     return true;
   }
 
@@ -245,7 +240,7 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
     return await this._dbContext.announcements.count();
   }
 
-  public getUpdateAnnouncementModel(announcementFromDb: Announcement, dto: UpdateAnnouncementsDto): QueryDeepPartialEntity<Announcement> | null {
+  private getUpdateAnnouncementModel(announcementFromDb: Announcement, dto: UpdateAnnouncementsDto): QueryDeepPartialEntity<Announcement> | null {
     const result: QueryDeepPartialEntity<Announcement> = {};
 
     let wasChanged = false;
@@ -262,7 +257,7 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
     return wasChanged ? result : null;
   }
 
-  public checkIfUpdateAnnouncementItem(announcementItemFromDb: AnnouncementItem, dto: UpdateAnnouncementItemDto, order: number): boolean {
+  private checkIfUpdateAnnouncementItem(announcementItemFromDb: AnnouncementItem, dto: UpdateAnnouncementItemDto, order: number): boolean {
     return (announcementItemFromDb.content ?? null) !== (dto.content ?? null) || (announcementItemFromDb.order ?? null) !== order;
   }
 }

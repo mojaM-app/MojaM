@@ -1,6 +1,9 @@
-import { IUserProfileDto } from './get-user-profile.interfaces';
+import { IUserDto } from './IUser.dto';
 
-export interface IUserDetailsDto extends IUserProfileDto {
+export interface IUserDetailsDto extends IUserDto {
+  firstName: string | null;
+  lastName: string | null;
+  joiningDate: Date | null;
   lastLoginAt: Date | null;
   isActive: boolean;
   isLockedOut: boolean;

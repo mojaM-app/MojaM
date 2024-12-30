@@ -215,6 +215,43 @@ describe('POST /announcements/publish', () => {
       expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
     });
+
+    test('when try to publish announcements that not exists', async () => {
+      const requestData = generateValidAnnouncements();
+      const createAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createAnnouncementsResponse.statusCode).toBe(201);
+      expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = createAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
+      expect(announcementsId).toBeDefined();
+
+      const deleteAnnouncementsResponse = await request(app.getServer())
+        .delete(announcementRoute.path + '/' + announcementsId)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteAnnouncementsResponse.statusCode).toBe(200);
+
+      const publishAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path + '/' + announcementsId + '/' + announcementRoute.publishPath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(publishAnnouncementsResponse.statusCode).toBe(400);
+      const errors = (publishAnnouncementsResponse.body.data.message as string)?.split(',');
+      expect(errors.filter(x => x !== errorKeys.announcements.Announcements_Does_Not_Exist).length).toBe(0);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(([, eventHandler]) => ![testEventHandlers.onAnnouncementsCreated, testEventHandlers.onAnnouncementsDeleted].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('POST should respond with a status code of 403', () => {

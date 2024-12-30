@@ -2,23 +2,27 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
+import { errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
-import { loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import {
+  AnnouncementItemContentMaxLength,
   AnnouncementsRout,
   AnnouncementStateValue,
+  AnnouncementsTitleMaxLength,
   CreateAnnouncementsResponseDto,
   GetAnnouncementsResponseDto,
   UpdateAnnouncementsDto,
   UpdateAnnouncementsResponseDto,
 } from '@modules/announcements';
 import { LoginDto } from '@modules/auth';
-import { PermissionsRoute } from '@modules/permissions';
-import { UserRoute } from '@modules/users';
-import { isGuid } from '@utils';
+import { PermissionsRoute, SystemPermission } from '@modules/permissions';
+import { CreateUserResponseDto, UserRoute } from '@modules/users';
+import { isGuid, isNumber } from '@utils';
 import { generateRandomDate, getAdminLoginData } from '@utils/tests.utils';
 import { isDateString } from 'class-validator';
 import { EventDispatcher } from 'event-dispatch';
+import { Guid } from 'guid-typescript';
 import request from 'supertest';
 import { generateValidAnnouncements } from './announcements-tests.helpers';
 
@@ -68,8 +72,12 @@ describe('PUT /announcements', () => {
       expect(announcementsBeforeUpdate.createdAt).toBe(announcementsBeforeUpdate.updatedAt);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        items: [...announcementsBeforeUpdate.items, { id: '', content: 'new item' }],
+        setDefaultValues: () => {},
+        items: announcementsBeforeUpdate.items.map(item => {
+          return { id: item.id, content: item.content, setDefaultValues: () => {} };
+        }),
       };
+      updateAnnouncementsModel.items!.push({ id: '', content: 'new item', setDefaultValues: () => {} });
       expect(updateAnnouncementsModel.title).toBeUndefined();
       expect(updateAnnouncementsModel.validFromDate).toBeUndefined();
       announcementsBeforeUpdate.items.forEach((item, index) => {
@@ -183,7 +191,12 @@ describe('PUT /announcements', () => {
       expect(announcementsBeforeUpdate.createdAt).toBe(announcementsBeforeUpdate.updatedAt);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        items: announcementsBeforeUpdate.items.splice(-1).map((item, index) => ({ id: item.id, content: `${index + 1}_New_Content_${item.id}` })),
+        setDefaultValues: () => {},
+        items: announcementsBeforeUpdate.items.splice(-1).map((item, index) => ({
+          id: item.id,
+          content: `${index + 1}_New_Content_${item.id}`,
+          setDefaultValues: () => {},
+        })),
       };
       expect(updateAnnouncementsModel.title).toBeUndefined();
       expect(updateAnnouncementsModel.validFromDate).toBeUndefined();
@@ -298,7 +311,12 @@ describe('PUT /announcements', () => {
       expect(announcementsBeforeUpdate.createdAt).toBe(announcementsBeforeUpdate.updatedAt);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        items: announcementsBeforeUpdate.items.map((item, index) => ({ id: item.id, content: `${index + 1}_New_Content_${item.id}` })),
+        setDefaultValues: () => {},
+        items: announcementsBeforeUpdate.items.map((item, index) => ({
+          id: item.id,
+          content: `${index + 1}_New_Content_${item.id}`,
+          setDefaultValues: () => {},
+        })),
       };
       expect(updateAnnouncementsModel.title).toBeUndefined();
       expect(updateAnnouncementsModel.validFromDate).toBeUndefined();
@@ -410,6 +428,7 @@ describe('PUT /announcements', () => {
       expect(announcementsBeforeUpdate.createdAt).toBe(announcementsBeforeUpdate.updatedAt);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
+        setDefaultValues: () => {},
         title: 'New Title',
       };
       expect(requestData.title).not.toBe(updateAnnouncementsModel.title);
@@ -518,6 +537,7 @@ describe('PUT /announcements', () => {
       expect(announcementsBeforeUpdate.createdAt).toBe(announcementsBeforeUpdate.updatedAt);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
+        setDefaultValues: () => {},
         title: null,
       };
       expect(requestData.title).not.toBe(updateAnnouncementsModel.title);
@@ -625,6 +645,7 @@ describe('PUT /announcements', () => {
       expect(announcementsBeforeUpdate.createdAt).toBe(announcementsBeforeUpdate.updatedAt);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
+        setDefaultValues: () => {},
         validFromDate: generateRandomDate(),
       };
       expect(requestData.title).not.toBe(updateAnnouncementsModel.title);
@@ -733,6 +754,7 @@ describe('PUT /announcements', () => {
       expect(announcementsBeforeUpdate.createdAt).toBe(announcementsBeforeUpdate.updatedAt);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
+        setDefaultValues: () => {},
         validFromDate: null,
       };
       expect(requestData.title).not.toBe(updateAnnouncementsModel.title);
@@ -840,7 +862,9 @@ describe('PUT /announcements', () => {
       const { data: announcementsBeforeUpdate }: GetAnnouncementsResponseDto = body;
       expect(announcementsBeforeUpdate.createdAt).toBe(announcementsBeforeUpdate.updatedAt);
 
-      const updateAnnouncementsModel: UpdateAnnouncementsDto = {};
+      const updateAnnouncementsModel: UpdateAnnouncementsDto = {
+        setDefaultValues: () => {},
+      };
       expect(requestData.title).not.toBe(updateAnnouncementsModel.title);
       expect(requestData.validFromDate).not.toBe(updateAnnouncementsModel.validFromDate);
       const updateAnnouncementsResponse = await request(app.getServer())
@@ -947,6 +971,7 @@ describe('PUT /announcements', () => {
       expect(announcementsBeforeUpdate.createdAt).toBe(announcementsBeforeUpdate.updatedAt);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
+        setDefaultValues: () => {},
         title: undefined,
         validFromDate: undefined,
         items: undefined,
@@ -1034,380 +1059,633 @@ describe('PUT /announcements', () => {
     });
   });
 
-  // describe('PUT should respond with a status code of 400', () => {
-  //   beforeEach(async () => {
-  //     jest.resetAllMocks();
-  //   });
+  describe('PUT should respond with a status code of 400', () => {
+    beforeEach(async () => {
+      jest.resetAllMocks();
+    });
 
-  //   test('when title is too long', async () => {
-  //     const requestData = generateValidAnnouncements();
-  //     requestData.title = 'a'.repeat(AnnouncementsTitleMaxLength + 1);
+    test('when title is too long', async () => {
+      const requestData = generateValidAnnouncements();
+      const createAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createAnnouncementsResponse.statusCode).toBe(201);
+      expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = createAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
+      expect(announcementsId).toBeDefined();
 
-  //     const createAnnouncementsResponse = await request(app.getServer())
-  //       .post(announcementRoute.path)
-  //       .send(requestData)
-  //       .set('Authorization', `Bearer ${adminAccessToken}`);
-  //     expect(createAnnouncementsResponse.statusCode).toBe(400);
-  //     const errors = (createAnnouncementsResponse.body.data.message as string)?.split(',');
-  //     expect(errors.filter(x => x !== errorKeys.announcements.Title_Too_Long).length).toBe(0);
+      const updateAnnouncementsModel: UpdateAnnouncementsDto = {
+        title: 'a'.repeat(AnnouncementsTitleMaxLength + 1),
+        setDefaultValues: () => {},
+      };
+      const updateAnnouncementsResponse = await request(app.getServer())
+        .put(announcementRoute.path + '/' + announcementsId)
+        .send(updateAnnouncementsModel)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(updateAnnouncementsResponse.statusCode).toBe(400);
+      const errors = (updateAnnouncementsResponse.body.data.message as string)?.split(',');
+      expect(errors.filter(x => x !== errorKeys.announcements.Title_Too_Long).length).toBe(0);
 
-  //     // checking events running via eventDispatcher
-  //     Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-  //       expect(eventHandler).not.toHaveBeenCalled();
-  //     });
-  //   });
+      // cleanup
+      const deleteAnnouncementsResponse = await request(app.getServer())
+        .delete(announcementRoute.path + '/' + announcementsId)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
-  //   test('when item content is too long', async () => {
-  //     const requestData = generateValidAnnouncements();
-  //     requestData.items![0].content = 'a'.repeat(AnnouncementItemContentMaxLength + 1);
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(([, eventHandler]) => ![testEventHandlers.onAnnouncementsCreated, testEventHandlers.onAnnouncementsDeleted].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
+    });
 
-  //     const createAnnouncementsResponse = await request(app.getServer())
-  //       .post(announcementRoute.path)
-  //       .send(requestData)
-  //       .set('Authorization', `Bearer ${adminAccessToken}`);
-  //     expect(createAnnouncementsResponse.statusCode).toBe(400);
-  //     const errors = (createAnnouncementsResponse.body.data.message as string)?.split(',');
-  //     expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Too_Long).length).toBe(0);
+    test('when item content is too long', async () => {
+      const requestData = generateValidAnnouncements();
+      const createAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createAnnouncementsResponse.statusCode).toBe(201);
+      expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = createAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
+      expect(announcementsId).toBeDefined();
 
-  //     // checking events running via eventDispatcher
-  //     Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-  //       expect(eventHandler).not.toHaveBeenCalled();
-  //     });
-  //   });
+      const updateAnnouncementsModel: UpdateAnnouncementsDto = {
+        setDefaultValues: () => {},
+        items: [
+          {
+            content: 'a'.repeat(AnnouncementItemContentMaxLength + 1),
+            setDefaultValues: () => {},
+          },
+        ],
+      };
 
-  //   test('when item content is empty', async () => {
-  //     const requestData = generateValidAnnouncements();
-  //     requestData.items![0].content = '';
+      const updateAnnouncementsResponse = await request(app.getServer())
+        .put(announcementRoute.path + '/' + announcementsId)
+        .send(updateAnnouncementsModel)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(updateAnnouncementsResponse.statusCode).toBe(400);
+      const errors = (updateAnnouncementsResponse.body.data.message as string)?.split(',');
+      expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Too_Long).length).toBe(0);
 
-  //     const createAnnouncementsResponse = await request(app.getServer())
-  //       .post(announcementRoute.path)
-  //       .send(requestData)
-  //       .set('Authorization', `Bearer ${adminAccessToken}`);
-  //     expect(createAnnouncementsResponse.statusCode).toBe(400);
-  //     const errors = (createAnnouncementsResponse.body.data.message as string)?.split(',');
-  //     expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Is_Required).length).toBe(0);
+      // cleanup
+      const deleteAnnouncementsResponse = await request(app.getServer())
+        .delete(announcementRoute.path + '/' + announcementsId)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
-  //     // checking events running via eventDispatcher
-  //     Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-  //       expect(eventHandler).not.toHaveBeenCalled();
-  //     });
-  //   });
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(([, eventHandler]) => ![testEventHandlers.onAnnouncementsCreated, testEventHandlers.onAnnouncementsDeleted].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
+    });
 
-  //   test('when item content is null', async () => {
-  //     const requestData = generateValidAnnouncements();
-  //     requestData.items![0].content = null as any;
+    test('when item content is empty', async () => {
+      const requestData = generateValidAnnouncements();
+      const createAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createAnnouncementsResponse.statusCode).toBe(201);
+      expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = createAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
+      expect(announcementsId).toBeDefined();
 
-  //     const createAnnouncementsResponse = await request(app.getServer())
-  //       .post(announcementRoute.path)
-  //       .send(requestData)
-  //       .set('Authorization', `Bearer ${adminAccessToken}`);
-  //     expect(createAnnouncementsResponse.statusCode).toBe(400);
-  //     const errors = (createAnnouncementsResponse.body.data.message as string)?.split(',');
-  //     expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Is_Required).length).toBe(0);
+      const updateAnnouncementsModel: UpdateAnnouncementsDto = {
+        setDefaultValues: () => {},
+        items: [
+          {
+            content: '',
+            setDefaultValues: () => {},
+          },
+        ],
+      };
 
-  //     // checking events running via eventDispatcher
-  //     Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-  //       expect(eventHandler).not.toHaveBeenCalled();
-  //     });
-  //   });
+      const updateAnnouncementsResponse = await request(app.getServer())
+        .put(announcementRoute.path + '/' + announcementsId)
+        .send(updateAnnouncementsModel)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(updateAnnouncementsResponse.statusCode).toBe(400);
+      const errors = (updateAnnouncementsResponse.body.data.message as string)?.split(',');
+      expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Is_Required).length).toBe(0);
 
-  //   test('when item content is undefined', async () => {
-  //     const requestData = generateValidAnnouncements();
-  //     requestData.items![0].content = undefined as any;
+      // cleanup
+      const deleteAnnouncementsResponse = await request(app.getServer())
+        .delete(announcementRoute.path + '/' + announcementsId)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
-  //     const createAnnouncementsResponse = await request(app.getServer())
-  //       .post(announcementRoute.path)
-  //       .send(requestData)
-  //       .set('Authorization', `Bearer ${adminAccessToken}`);
-  //     expect(createAnnouncementsResponse.statusCode).toBe(400);
-  //     const errors = (createAnnouncementsResponse.body.data.message as string)?.split(',');
-  //     expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Is_Required).length).toBe(0);
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(([, eventHandler]) => ![testEventHandlers.onAnnouncementsCreated, testEventHandlers.onAnnouncementsDeleted].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
+    });
 
-  //     // checking events running via eventDispatcher
-  //     Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-  //       expect(eventHandler).not.toHaveBeenCalled();
-  //     });
-  //   });
-  // });
+    test('when item content is null', async () => {
+      const requestData = generateValidAnnouncements();
+      const createAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createAnnouncementsResponse.statusCode).toBe(201);
+      expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = createAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
+      expect(announcementsId).toBeDefined();
 
-  // describe.each([
-  //   new Date('2024-03-24'),
-  //   new Date('2024-03-25'),
-  //   new Date('2024-03-26'),
-  //   new Date('2024-03-27'),
+      const updateAnnouncementsModel: UpdateAnnouncementsDto = {
+        setDefaultValues: () => {},
+        items: [
+          {
+            content: null as any,
+            setDefaultValues: () => {},
+          },
+        ],
+      };
 
-  //   new Date('2024-10-25'),
-  //   new Date('2024-10-26'),
-  //   new Date('2024-10-27'),
-  //   new Date('2024-10-28'),
-  // ])('PUT should respond with a status code of 400 for date %o', date => {
-  //   beforeEach(async () => {
-  //     jest.resetAllMocks();
-  //   });
+      const updateAnnouncementsResponse = await request(app.getServer())
+        .put(announcementRoute.path + '/' + announcementsId)
+        .send(updateAnnouncementsModel)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(updateAnnouncementsResponse.statusCode).toBe(400);
+      const errors = (updateAnnouncementsResponse.body.data.message as string)?.split(',');
+      expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Is_Required).length).toBe(0);
 
-  //   test('when creating many unpublished announcement with same validFromDate', async () => {
-  //     const requestData = generateValidAnnouncements();
-  //     requestData.validFromDate = date;
+      // cleanup
+      const deleteAnnouncementsResponse = await request(app.getServer())
+        .delete(announcementRoute.path + '/' + announcementsId)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
-  //     let createAnnouncementsResponse = await request(app.getServer())
-  //       .post(announcementRoute.path)
-  //       .send(requestData)
-  //       .set('Authorization', `Bearer ${adminAccessToken}`);
-  //     expect(createAnnouncementsResponse.statusCode).toBe(201);
-  //     expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-  //     const body = createAnnouncementsResponse.body;
-  //     expect(typeof body).toBe('object');
-  //     const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
-  //     expect(announcementsId).toBeDefined();
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(([, eventHandler]) => ![testEventHandlers.onAnnouncementsCreated, testEventHandlers.onAnnouncementsDeleted].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
+    });
 
-  //     createAnnouncementsResponse = await request(app.getServer())
-  //       .post(announcementRoute.path)
-  //       .send(requestData)
-  //       .set('Authorization', `Bearer ${adminAccessToken}`);
-  //     expect(createAnnouncementsResponse.statusCode).toBe(400);
-  //     const errors = (createAnnouncementsResponse.body.data.message as string)?.split(',');
-  //     expect(errors.filter(x => x !== errorKeys.announcements.Announcements_With_Given_ValidFromDate_Already_Exists).length).toBe(0);
+    test('when item content is undefined', async () => {
+      const requestData = generateValidAnnouncements();
+      const createAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createAnnouncementsResponse.statusCode).toBe(201);
+      expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = createAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
+      expect(announcementsId).toBeDefined();
 
-  //     // cleanup
-  //     const deleteAnnouncementsResponse = await request(app.getServer())
-  //       .delete(announcementRoute.path + '/' + announcementsId)
-  //       .send()
-  //       .set('Authorization', `Bearer ${adminAccessToken}`);
-  //     expect(deleteAnnouncementsResponse.statusCode).toBe(200);
+      const updateAnnouncementsModel: UpdateAnnouncementsDto = {
+        setDefaultValues: () => {},
+        items: [
+          {
+            content: undefined as any,
+            setDefaultValues: () => {},
+          },
+        ],
+      };
 
-  //     // checking events running via eventDispatcher
-  //     Object.entries(testEventHandlers)
-  //       .filter(([, eventHandler]) => ![testEventHandlers.onAnnouncementsCreated, testEventHandlers.onAnnouncementsDeleted].includes(eventHandler))
-  //       .forEach(([, eventHandler]) => {
-  //         expect(eventHandler).not.toHaveBeenCalled();
-  //       });
-  //     expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
-  //     expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
-  //   });
-  // });
+      const updateAnnouncementsResponse = await request(app.getServer())
+        .put(announcementRoute.path + '/' + announcementsId)
+        .send(updateAnnouncementsModel)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(updateAnnouncementsResponse.statusCode).toBe(400);
+      const errors = (updateAnnouncementsResponse.body.data.message as string)?.split(',');
+      expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Is_Required).length).toBe(0);
 
-  // describe('PUT should respond with a status code of 403', () => {
-  //   beforeEach(async () => {
-  //     jest.resetAllMocks();
-  //   });
+      // cleanup
+      const deleteAnnouncementsResponse = await request(app.getServer())
+        .delete(announcementRoute.path + '/' + announcementsId)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
-  //   test('when token is not set', async () => {
-  //     const data = generateValidAnnouncements();
-  //     const createAnnouncementsResponse = await request(app.getServer()).post(announcementRoute.path).send(data);
-  //     expect(createAnnouncementsResponse.statusCode).toBe(401);
-  //     const body = createAnnouncementsResponse.body;
-  //     expect(typeof body).toBe('object');
-  //     expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(([, eventHandler]) => ![testEventHandlers.onAnnouncementsCreated, testEventHandlers.onAnnouncementsDeleted].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
+    });
 
-  //     // checking events running via eventDispatcher
-  //     Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-  //       expect(eventHandler).not.toHaveBeenCalled();
-  //     });
-  //   });
+    test('when validFromDate is the same as another announcements validFromDate', async () => {
+      let requestData = generateValidAnnouncements();
+      const d1 = requestData.validFromDate;
+      let createAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createAnnouncementsResponse.statusCode).toBe(201);
+      expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      let body = createAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: announcements1Id }: CreateAnnouncementsResponseDto = body;
+      expect(announcements1Id).toBeDefined();
 
-  //   test('when user has no permission', async () => {
-  //     const userData = generateValidUser();
-  //     const newUserResponse = await request(app.getServer()).post(userRoute.path).send(userData).set('Authorization', `Bearer ${adminAccessToken}`);
-  //     expect(newUserResponse.statusCode).toBe(201);
-  //     let body = newUserResponse.body;
-  //     expect(typeof body).toBe('object');
-  //     const { data: user, message: createMessage }: CreateUserResponseDto = body;
-  //     expect(user?.id).toBeDefined();
-  //     expect(user?.email).toBeDefined();
-  //     expect(createMessage).toBe(events.users.userCreated);
+      requestData = generateValidAnnouncements();
+      createAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createAnnouncementsResponse.statusCode).toBe(201);
+      expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = createAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: announcements2Id }: CreateAnnouncementsResponseDto = body;
+      expect(announcements2Id).toBeDefined();
 
-  //     const activateNewUserResponse = await request(app.getServer())
-  //       .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
-  //       .send()
-  //       .set('Authorization', `Bearer ${adminAccessToken}`);
-  //     expect(activateNewUserResponse.statusCode).toBe(200);
+      const updateAnnouncementsModel: UpdateAnnouncementsDto = {
+        setDefaultValues: () => {},
+        validFromDate: d1,
+      };
+      expect(requestData.title).not.toBe(updateAnnouncementsModel.title);
+      expect(requestData.validFromDate).not.toBe(updateAnnouncementsModel.validFromDate);
+      expect(updateAnnouncementsModel.validFromDate).toBe(d1);
+      const updateAnnouncementsResponse = await request(app.getServer())
+        .put(announcementRoute.path + '/' + announcements2Id)
+        .send(updateAnnouncementsModel)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(updateAnnouncementsResponse.statusCode).toBe(400);
+      const errors = (updateAnnouncementsResponse.body.data.message as string)?.split(',');
+      expect(errors.filter(x => x !== errorKeys.announcements.Announcements_With_Given_ValidFromDate_Already_Exists).length).toBe(0);
 
-  //     const newUserAccessToken = (await loginAs(app, { email: userData.email, password: userData.password } satisfies LoginDto))?.accessToken;
+      // cleanup
+      let deleteAnnouncementsResponse = await request(app.getServer())
+        .delete(announcementRoute.path + '/' + announcements1Id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
-  //     const createAnnouncementsResponse = await request(app.getServer())
-  //       .post(announcementRoute.path)
-  //       .send(generateValidAnnouncements())
-  //       .set('Authorization', `Bearer ${newUserAccessToken}`);
-  //     expect(createAnnouncementsResponse.statusCode).toBe(403);
-  //     expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-  //     body = createAnnouncementsResponse.body;
-  //     expect(typeof body).toBe('object');
-  //     expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
+      deleteAnnouncementsResponse = await request(app.getServer())
+        .delete(announcementRoute.path + '/' + announcements2Id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
-  //     const deleteUserResponse = await request(app.getServer())
-  //       .delete(userRoute.path + '/' + user.id)
-  //       .send()
-  //       .set('Authorization', `Bearer ${adminAccessToken}`);
-  //     expect(deleteUserResponse.statusCode).toBe(200);
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(([, eventHandler]) => ![testEventHandlers.onAnnouncementsCreated, testEventHandlers.onAnnouncementsDeleted].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(2);
+      expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(2);
+    });
 
-  //     // checking events running via eventDispatcher
-  //     Object.entries(testEventHandlers)
-  //       .filter(
-  //         ([, eventHandler]) =>
-  //           ![
-  //             testEventHandlers.onUserCreated,
-  //             testEventHandlers.onUserActivated,
-  //             testEventHandlers.onUserLoggedIn,
-  //             testEventHandlers.onUserDeleted,
-  //           ].includes(eventHandler),
-  //       )
-  //       .forEach(([, eventHandler]) => {
-  //         expect(eventHandler).not.toHaveBeenCalled();
-  //       });
-  //     expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
-  //     expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
-  //     expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
-  //     expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
-  //   });
+    test('when update announcements that not exists', async () => {
+      const requestData = generateValidAnnouncements();
+      const createAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createAnnouncementsResponse.statusCode).toBe(201);
+      expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = createAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
+      expect(announcementsId).toBeDefined();
 
-  //   test('when user have all permissions expect AddAnnouncements', async () => {
-  //     const userData = generateValidUser();
-  //     const newUserResponse = await request(app.getServer()).post(userRoute.path).send(userData).set('Authorization', `Bearer ${adminAccessToken}`);
-  //     expect(newUserResponse.statusCode).toBe(201);
-  //     let body = newUserResponse.body;
-  //     expect(typeof body).toBe('object');
-  //     const { data: user, message: createMessage }: CreateUserResponseDto = body;
-  //     expect(user?.id).toBeDefined();
-  //     expect(user?.email).toBeDefined();
-  //     expect(createMessage).toBe(events.users.userCreated);
+      const deleteAnnouncementsResponse = await request(app.getServer())
+        .delete(announcementRoute.path + '/' + announcementsId)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
-  //     const activateNewUserResponse = await request(app.getServer())
-  //       .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
-  //       .send()
-  //       .set('Authorization', `Bearer ${adminAccessToken}`);
-  //     expect(activateNewUserResponse.statusCode).toBe(200);
+      const updateAnnouncementsModel: UpdateAnnouncementsDto = {
+        setDefaultValues: () => {},
+        validFromDate: generateRandomDate(),
+      };
+      expect(requestData.validFromDate).not.toBe(updateAnnouncementsModel.validFromDate);
+      const updateAnnouncementsResponse = await request(app.getServer())
+        .put(announcementRoute.path + '/' + announcementsId)
+        .send(updateAnnouncementsModel)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(updateAnnouncementsResponse.statusCode).toBe(400);
+      const errors = (updateAnnouncementsResponse.body.data.message as string)?.split(',');
+      expect(errors.filter(x => x !== errorKeys.announcements.Announcements_Does_Not_Exist).length).toBe(0);
 
-  //     const systemPermissions = Object.values(SystemPermission);
-  //     systemPermissions.forEach(async permission => {
-  //       if (isNumber(permission)) {
-  //         const value = permission as number;
-  //         if (value !== SystemPermission.AddAnnouncements) {
-  //           const path = permissionsRoute.path + '/' + user.id + '/' + permission.toString();
-  //           const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
-  //           expect(addPermissionResponse.statusCode).toBe(201);
-  //         }
-  //       }
-  //     });
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(([, eventHandler]) => ![testEventHandlers.onAnnouncementsCreated, testEventHandlers.onAnnouncementsDeleted].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
+    });
 
-  //     const newUserAccessToken = (await loginAs(app, { email: userData.email, password: userData.password } satisfies LoginDto))?.accessToken;
+    test('when try to remove validFromDate at published announcements', async () => {
+      const requestData = generateValidAnnouncements();
+      const createAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createAnnouncementsResponse.statusCode).toBe(201);
+      expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = createAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
+      expect(announcementsId).toBeDefined();
 
-  //     const createAnnouncementsResponse = await request(app.getServer())
-  //       .post(announcementRoute.path)
-  //       .send(generateValidAnnouncements())
-  //       .set('Authorization', `Bearer ${newUserAccessToken}`);
-  //     expect(createAnnouncementsResponse.statusCode).toBe(403);
-  //     expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-  //     body = createAnnouncementsResponse.body;
-  //     expect(typeof body).toBe('object');
-  //     expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
+      const publishAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path + '/' + announcementsId + '/' + announcementRoute.publishPath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(publishAnnouncementsResponse.statusCode).toBe(200);
 
-  //     const deleteUserResponse = await request(app.getServer())
-  //       .delete(userRoute.path + '/' + user.id)
-  //       .send()
-  //       .set('Authorization', `Bearer ${adminAccessToken}`);
-  //     expect(deleteUserResponse.statusCode).toBe(200);
+      const updateAnnouncementsModel: UpdateAnnouncementsDto = {
+        setDefaultValues: () => {},
+        validFromDate: null,
+      };
+      expect(requestData.validFromDate).not.toBe(updateAnnouncementsModel.validFromDate);
+      const updateAnnouncementsResponse = await request(app.getServer())
+        .put(announcementRoute.path + '/' + announcementsId)
+        .send(updateAnnouncementsModel)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(updateAnnouncementsResponse.statusCode).toBe(400);
+      const errors = (updateAnnouncementsResponse.body.data.message as string)?.split(',');
+      expect(errors.filter(x => x !== errorKeys.announcements.Cannot_Save_Published_Announcements_Without_ValidFromDate).length).toBe(0);
 
-  //     // checking events running via eventDispatcher
-  //     Object.entries(testEventHandlers)
-  //       .filter(
-  //         ([, eventHandler]) =>
-  //           ![
-  //             testEventHandlers.onUserCreated,
-  //             testEventHandlers.onUserActivated,
-  //             testEventHandlers.onUserLoggedIn,
-  //             testEventHandlers.onUserDeleted,
-  //             testEventHandlers.onPermissionAdded,
-  //           ].includes(eventHandler),
-  //       )
-  //       .forEach(([, eventHandler]) => {
-  //         expect(eventHandler).not.toHaveBeenCalled();
-  //       });
-  //     expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
-  //     expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
-  //     expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
-  //     expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
-  //     expect(testEventHandlers.onPermissionAdded).toHaveBeenCalled();
-  //   });
-  // });
+      // cleanup
+      const deleteAnnouncementsResponse = await request(app.getServer())
+        .delete(announcementRoute.path + '/' + announcementsId)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
-  // describe('PUT should respond with a status code of 401', () => {
-  //   beforeEach(async () => {
-  //     jest.resetAllMocks();
-  //   });
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onAnnouncementsCreated,
+              testEventHandlers.onAnnouncementsPublished,
+              testEventHandlers.onAnnouncementsDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onAnnouncementsPublished).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
+    });
+  });
 
-  //   test('when token is invalid', async () => {
-  //     const requestData = generateValidAnnouncements();
-  //     const response = await request(app.getServer())
-  //       .post(announcementRoute.path)
-  //       .send(requestData)
-  //       .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
-  //     expect(response.statusCode).toBe(401);
-  //     const body = response.body;
-  //     expect(typeof body).toBe('object');
-  //     expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+  describe('PUT should respond with a status code of 403', () => {
+    beforeEach(async () => {
+      jest.resetAllMocks();
+    });
 
-  //     // checking events running via eventDispatcher
-  //     Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-  //       expect(eventHandler).not.toHaveBeenCalled();
-  //     });
-  //   });
+    test('when token is not set', async () => {
+      const data = generateValidAnnouncements();
+      const updateAnnouncementsResponse = await request(app.getServer())
+        .put(announcementRoute.path + '/' + Guid.EMPTY)
+        .send(data);
+      expect(updateAnnouncementsResponse.statusCode).toBe(401);
+      const body = updateAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
 
-  //   test('when try to use token from user that not exists', async () => {
-  //     const userBob = generateValidUser();
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
 
-  //     const createBobResponse = await request(app.getServer()).post(userRoute.path).send(userBob).set('Authorization', `Bearer ${adminAccessToken}`);
-  //     expect(createBobResponse.statusCode).toBe(201);
-  //     const { data: bobDto, message: bobCreateMessage }: CreateUserResponseDto = createBobResponse.body;
-  //     expect(bobDto?.id).toBeDefined();
-  //     expect(bobCreateMessage).toBe(events.users.userCreated);
+    test('when user has no permission', async () => {
+      const userData = generateValidUser();
+      const newUserResponse = await request(app.getServer()).post(userRoute.path).send(userData).set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(newUserResponse.statusCode).toBe(201);
+      let body = newUserResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: user, message: createMessage }: CreateUserResponseDto = body;
+      expect(user?.id).toBeDefined();
+      expect(user?.email).toBeDefined();
+      expect(createMessage).toBe(events.users.userCreated);
 
-  //     const activateBobResponse = await request(app.getServer())
-  //       .post(userRoute.path + '/' + bobDto.id + '/' + userRoute.activatePath)
-  //       .send()
-  //       .set('Authorization', `Bearer ${adminAccessToken}`);
-  //     expect(activateBobResponse.statusCode).toBe(200);
+      const activateNewUserResponse = await request(app.getServer())
+        .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateNewUserResponse.statusCode).toBe(200);
 
-  //     const bobAccessToken = (await loginAs(app, { email: bobDto.email, password: userBob.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: userData.email, password: userData.password } satisfies LoginDto))?.accessToken;
 
-  //     const deleteBobResponse = await request(app.getServer())
-  //       .delete(userRoute.path + '/' + bobDto.id)
-  //       .send()
-  //       .set('Authorization', `Bearer ${adminAccessToken}`);
-  //     expect(deleteBobResponse.statusCode).toBe(200);
+      const updateAnnouncementsResponse = await request(app.getServer())
+        .put(announcementRoute.path + '/' + Guid.EMPTY)
+        .send(generateValidAnnouncements())
+        .set('Authorization', `Bearer ${newUserAccessToken}`);
+      expect(updateAnnouncementsResponse.statusCode).toBe(403);
+      expect(updateAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = updateAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
-  //     const createAnnouncementsUsingBobAccessTokenResponse = await request(app.getServer())
-  //       .post(announcementRoute.path)
-  //       .send(generateValidAnnouncements())
-  //       .set('Authorization', `Bearer ${bobAccessToken}`);
-  //     expect(createAnnouncementsUsingBobAccessTokenResponse.statusCode).toBe(401);
-  //     expect(createAnnouncementsUsingBobAccessTokenResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-  //     const body = createAnnouncementsUsingBobAccessTokenResponse.body;
-  //     expect(typeof body).toBe('object');
-  //     const data = body.data;
-  //     const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
-  //     expect(loginMessage).toBe(errorKeys.login.Wrong_Authentication_Token);
-  //     expect(loginArgs).toBeUndefined();
+      const deleteUserResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + user.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteUserResponse.statusCode).toBe(200);
 
-  //     // checking events running via eventDispatcher
-  //     Object.entries(testEventHandlers)
-  //       .filter(
-  //         ([, eventHandler]) =>
-  //           ![
-  //             testEventHandlers.onUserCreated,
-  //             testEventHandlers.onUserActivated,
-  //             testEventHandlers.onUserLoggedIn,
-  //             testEventHandlers.onUserDeleted,
-  //           ].includes(eventHandler),
-  //       )
-  //       .forEach(([, eventHandler]) => {
-  //         expect(eventHandler).not.toHaveBeenCalled();
-  //       });
-  //     expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
-  //     expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
-  //     expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
-  //     expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
-  //   });
-  // });
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onUserLoggedIn,
+              testEventHandlers.onUserDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
+    });
+
+    test('when user have all permissions expect EditAnnouncements', async () => {
+      const userData = generateValidUser();
+      const newUserResponse = await request(app.getServer()).post(userRoute.path).send(userData).set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(newUserResponse.statusCode).toBe(201);
+      let body = newUserResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: user, message: createMessage }: CreateUserResponseDto = body;
+      expect(user?.id).toBeDefined();
+      expect(user?.email).toBeDefined();
+      expect(createMessage).toBe(events.users.userCreated);
+
+      const activateNewUserResponse = await request(app.getServer())
+        .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateNewUserResponse.statusCode).toBe(200);
+
+      const systemPermissions = Object.values(SystemPermission);
+      systemPermissions.forEach(async permission => {
+        if (isNumber(permission)) {
+          const value = permission as number;
+          if (value !== SystemPermission.EditAnnouncements) {
+            const path = permissionsRoute.path + '/' + user.id + '/' + permission.toString();
+            const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+            expect(addPermissionResponse.statusCode).toBe(201);
+          }
+        }
+      });
+
+      const newUserAccessToken = (await loginAs(app, { email: userData.email, password: userData.password } satisfies LoginDto))?.accessToken;
+
+      const updateAnnouncementsResponse = await request(app.getServer())
+        .put(announcementRoute.path + '/' + Guid.EMPTY)
+        .send(generateValidAnnouncements())
+        .set('Authorization', `Bearer ${newUserAccessToken}`);
+      expect(updateAnnouncementsResponse.statusCode).toBe(403);
+      expect(updateAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = updateAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
+
+      const deleteUserResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + user.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteUserResponse.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onUserLoggedIn,
+              testEventHandlers.onUserDeleted,
+              testEventHandlers.onPermissionAdded,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
+      expect(testEventHandlers.onPermissionAdded).toHaveBeenCalled();
+    });
+  });
+
+  describe('PUT should respond with a status code of 401', () => {
+    beforeEach(async () => {
+      jest.resetAllMocks();
+    });
+
+    test('when token is invalid', async () => {
+      const requestData = generateValidAnnouncements();
+      const response = await request(app.getServer())
+        .put(announcementRoute.path + '/' + Guid.EMPTY)
+        .send(requestData)
+        .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
+      expect(response.statusCode).toBe(401);
+      const body = response.body;
+      expect(typeof body).toBe('object');
+      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when try to use token from user that not exists', async () => {
+      const userBob = generateValidUser();
+
+      const createBobResponse = await request(app.getServer()).post(userRoute.path).send(userBob).set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createBobResponse.statusCode).toBe(201);
+      const { data: bobDto, message: bobCreateMessage }: CreateUserResponseDto = createBobResponse.body;
+      expect(bobDto?.id).toBeDefined();
+      expect(bobCreateMessage).toBe(events.users.userCreated);
+
+      const activateBobResponse = await request(app.getServer())
+        .post(userRoute.path + '/' + bobDto.id + '/' + userRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateBobResponse.statusCode).toBe(200);
+
+      const bobAccessToken = (await loginAs(app, { email: bobDto.email, password: userBob.password } satisfies LoginDto))?.accessToken;
+
+      const deleteBobResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + bobDto.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteBobResponse.statusCode).toBe(200);
+
+      const updateAnnouncementsUsingBobAccessTokenResponse = await request(app.getServer())
+        .put(announcementRoute.path + '/' + Guid.EMPTY)
+        .send(generateValidAnnouncements())
+        .set('Authorization', `Bearer ${bobAccessToken}`);
+      expect(updateAnnouncementsUsingBobAccessTokenResponse.statusCode).toBe(401);
+      expect(updateAnnouncementsUsingBobAccessTokenResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = updateAnnouncementsUsingBobAccessTokenResponse.body;
+      expect(typeof body).toBe('object');
+      const data = body.data;
+      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      expect(loginMessage).toBe(errorKeys.login.Wrong_Authentication_Token);
+      expect(loginArgs).toBeUndefined();
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onUserLoggedIn,
+              testEventHandlers.onUserDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
+    });
+  });
 
   afterAll(async () => {
     await app.closeDbConnection();

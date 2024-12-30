@@ -55,15 +55,13 @@ export class AnnouncementsService extends BaseService {
 
     const announcementsModel = reqDto.announcements;
 
-    if (isDate(announcementsModel.validFromDate)) {
-      const existAnnouncementWithSameDate = await this._announcementsRepository.checkIfExistWithDate(announcementsModel.validFromDate);
-      if (existAnnouncementWithSameDate) {
-        throw new TranslatableHttpException(
-          StatusCode.ClientErrorBadRequest,
-          errorKeys.announcements.Announcements_With_Given_ValidFromDate_Already_Exists,
-          { validFromDate: reqDto.announcements.validFromDate },
-        );
-      }
+    const existAnnouncementWithSameDate = await this._announcementsRepository.checkIfExistWithDate(announcementsModel.validFromDate);
+    if (existAnnouncementWithSameDate) {
+      throw new TranslatableHttpException(
+        StatusCode.ClientErrorBadRequest,
+        errorKeys.announcements.Announcements_With_Given_ValidFromDate_Already_Exists,
+        { validFromDate: reqDto.announcements.validFromDate },
+      );
     }
 
     const { id: announcementsId } = await this._announcementsRepository.create(reqDto);
@@ -96,7 +94,7 @@ export class AnnouncementsService extends BaseService {
       }
     }
 
-    const { id: announcementsId } = await this._announcementsRepository.update(reqDto);
+    const announcementsId = await this._announcementsRepository.update(reqDto);
     const announcements = await this._announcementsRepository.get(announcementsId);
     const dto = this.announcementToIAnnouncements(announcements!);
 

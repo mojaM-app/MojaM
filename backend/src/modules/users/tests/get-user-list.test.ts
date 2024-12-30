@@ -50,10 +50,10 @@ describe('GET/user-list', () => {
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const getUserListResponse = await request(app.getServer()).get(userListRoute.path).send().set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(getUserListResponse.statusCode).toBe(200);
-      expect(getUserListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      const body = getUserListResponse.body;
+      const getListResponse = await request(app.getServer()).get(userListRoute.path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(getListResponse.statusCode).toBe(200);
+      expect(getListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = getListResponse.body;
       expect(typeof body).toBe('object');
       const { data: gridPage, message: getUserListMessage }: GetUserListResponseDto = body;
       expect(getUserListMessage).toBe(events.users.userListRetrieved);
@@ -94,9 +94,9 @@ describe('GET/user-list', () => {
     });
 
     test('when token is not set', async () => {
-      const getUserListResponse = await request(app.getServer()).get(userListRoute.path).send();
-      expect(getUserListResponse.statusCode).toBe(401);
-      const body = getUserListResponse.body;
+      const getListResponse = await request(app.getServer()).get(userListRoute.path).send();
+      expect(getListResponse.statusCode).toBe(401);
+      const body = getListResponse.body;
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
 
@@ -128,10 +128,10 @@ describe('GET/user-list', () => {
 
       const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
 
-      const getUserListResponse = await request(app.getServer()).get(userListRoute.path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
-      expect(getUserListResponse.statusCode).toBe(403);
-      expect(getUserListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = getUserListResponse.body;
+      const getListResponse = await request(app.getServer()).get(userListRoute.path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
+      expect(getListResponse.statusCode).toBe(403);
+      expect(getListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = getListResponse.body;
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
@@ -201,10 +201,10 @@ describe('GET/user-list', () => {
 
       const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
 
-      const getUserListResponse = await request(app.getServer()).get(userListRoute.path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
-      expect(getUserListResponse.statusCode).toBe(403);
-      expect(getUserListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = getUserListResponse.body;
+      const getListResponse = await request(app.getServer()).get(userListRoute.path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
+      expect(getListResponse.statusCode).toBe(403);
+      expect(getListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = getListResponse.body;
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
@@ -249,12 +249,12 @@ describe('GET/user-list', () => {
     });
 
     test('when token is invalid', async () => {
-      const getUserListResponse = await request(app.getServer())
+      const getListResponse = await request(app.getServer())
         .get(userListRoute.path)
         .send()
         .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
-      expect(getUserListResponse.statusCode).toBe(401);
-      const body = getUserListResponse.body;
+      expect(getListResponse.statusCode).toBe(401);
+      const body = getListResponse.body;
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
 

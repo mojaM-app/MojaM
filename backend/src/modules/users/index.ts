@@ -2,7 +2,7 @@ export { UserDetailsController } from './controllers/user-details.controller';
 export { UserListController } from './controllers/user-list.controller';
 export { UserController } from './controllers/user.controller';
 
-export { UserDetailsEventSubscriber, UserEventSubscriber, UserListEventSubscriber, UserProfileEventSubscriber } from './events/event.subscriber';
+export { UserDetailsEventSubscriber, UserEventSubscriber, UserListEventSubscriber } from './events/event.subscriber';
 
 export { ActivateUserReqDto, ActivateUserResponseDto } from './dtos/activate-user.dto';
 export { CreateUserDto, CreateUserReqDto, CreateUserResponseDto } from './dtos/create-user.dto';

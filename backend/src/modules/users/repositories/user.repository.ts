@@ -3,7 +3,7 @@ import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import { CryptoService, PasswordService } from '@modules/auth';
 import { ActivateUserReqDto, CreateUserDto, CreateUserReqDto, DeactivateUserReqDto, DeleteUserReqDto, UpdateUserReqDto } from '@modules/users';
-import { getDateTimeNow, isNullOrEmptyString, isNullOrUndefined } from '@utils';
+import { getDateTimeNow, isNullOrEmptyString } from '@utils';
 import StatusCode from 'status-code-enum';
 import Container, { Service } from 'typedi';
 import { User } from '../entities/user.entity';
@@ -116,6 +116,8 @@ export class UserRepository extends BaseUserRepository {
 
     await this._dbContext.users.delete({ id: user.id });
 
+    await this._cacheService.removeIdFromCacheAsync(user.uuid);
+
     return true;
   }
 
@@ -152,15 +154,11 @@ export class UserRepository extends BaseUserRepository {
       currentUserId: undefined,
     } satisfies UpdateUserReqDto;
 
-    if (isNullOrUndefined(reqDto.userData.failedLoginAttempts)) {
-      reqDto.userData.failedLoginAttempts = 0;
-    }
-
     reqDto.userData.failedLoginAttempts++;
 
-    await this.update(reqDto);
+    const user = await this.update(reqDto);
 
-    return reqDto.userData.failedLoginAttempts;
+    return user?.failedLoginAttempts ?? 0;
   }
 
   public async lockOut(userId: number): Promise<boolean> {

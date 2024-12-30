@@ -15,5 +15,12 @@ module.exports = {
   maxConcurrency: 1,
   openHandlesTimeout: 0,
   testTimeout: 30_000,
-  coveragePathIgnorePatterns: ['<rootDir>/src/dataBase/pascal-naming.strategy.ts', '<rootDir>/src/dataBase/migrations/'],
+  coveragePathIgnorePatterns: [
+    '<rootDir>/src/dataBase/pascal-naming.strategy.ts',
+    '<rootDir>/src/dataBase/migrations/',
+    '<rootDir>/src/utils/tests.utils.ts',
+    '<rootDir>/src/helpers/user-tests.helpers.ts',
+    '<rootDir>/src/helpers/event-handler-test.helpers.ts',
+    '<rootDir>/src/modules/announcements/tests/announcements-tests.helpers.ts',
+  ],
 };

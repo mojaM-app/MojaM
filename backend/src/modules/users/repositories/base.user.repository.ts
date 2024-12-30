@@ -5,7 +5,7 @@ import { User } from '../entities/user.entity';
 import { UserCacheService } from '../services/user-cache.service';
 
 export abstract class BaseUserRepository extends BaseRepository {
-  private readonly _cacheService: UserCacheService;
+  protected readonly _cacheService: UserCacheService;
 
   public constructor() {
     super();

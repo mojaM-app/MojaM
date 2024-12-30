@@ -1,3 +1,4 @@
+/* eslint-disable no-new-wrappers */
 import { arraysEquals, isArray } from './arrays.utils';
 
 describe('arrays.utils', () => {
@@ -15,6 +16,7 @@ describe('arrays.utils', () => {
       expect(arraysEquals([0], [0])).toBe(true);
       expect(arraysEquals([[]], [[]])).toBe(true);
       expect(arraysEquals([null], [null])).toBe(true);
+      expect(arraysEquals([new String('test')], [new String('test')])).toBe(true);
       expect(arraysEquals([{}], [{}])).toBe(true);
       expect(arraysEquals([{ a: 1 }], [{ a: 1 }])).toBe(true);
       expect(arraysEquals([{ a: 1, b: {} }], [{ a: 1, b: {} }])).toBe(true);
@@ -24,28 +26,28 @@ describe('arrays.utils', () => {
           [
             function () {
               return 1;
-            }
+            },
           ],
           [
             function () {
               return 1;
-            }
-          ]
-        )
+            },
+          ],
+        ),
       ).toBe(true);
       expect(
         arraysEquals(
           [
             () => {
               return 1;
-            }
+            },
           ],
           [
             () => {
               return 1;
-            }
-          ]
-        )
+            },
+          ],
+        ),
       ).toBe(true);
     });
     it('Check if arrays are NOT equal', () => {
@@ -83,38 +85,38 @@ describe('arrays.utils', () => {
           [
             function () {
               return 1;
-            }
+            },
           ],
-          [function () {}]
-        )
+          [function () {}],
+        ),
       ).toBe(false);
       expect(
         arraysEquals(
           [
             function () {
               return 1;
-            }
+            },
           ],
           [
             function () {
               return 2;
-            }
-          ]
-        )
+            },
+          ],
+        ),
       ).toBe(false);
       expect(
         arraysEquals(
           [
             function () {
               return 1;
-            }
+            },
           ],
           [
             () => {
               return 1;
-            }
-          ]
-        )
+            },
+          ],
+        ),
       ).toBe(false);
       expect(
         arraysEquals(
@@ -122,14 +124,14 @@ describe('arrays.utils', () => {
             function () {
               const x = 1;
               return x;
-            }
+            },
           ],
           [
             function () {
               return 1;
-            }
-          ]
-        )
+            },
+          ],
+        ),
       ).toBe(false);
     });
   });

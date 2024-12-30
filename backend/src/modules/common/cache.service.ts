@@ -28,6 +28,15 @@ export abstract class CacheService<TEntity extends IHasGuidId> {
     await this.saveDataInCache(cacheKey, entity!.id, { isCachedForever: true });
   }
 
+  public async removeIdFromCacheAsync(guidId: string | null | undefined): Promise<void> {
+    if (!isGuid(guidId)) {
+      return;
+    }
+
+    const cacheKey = this.getIdCacheKey(guidId!);
+    await this.saveDataInCache(cacheKey, undefined, {});
+  }
+
   protected abstract getEntityType(): string;
 
   private getIdCacheKey(guidId: string): string {

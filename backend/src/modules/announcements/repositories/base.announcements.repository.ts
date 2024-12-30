@@ -5,7 +5,7 @@ import { Announcement } from '../entities/announcement.entity';
 import { AnnouncementsCacheService } from '../services/announcements-cache.service';
 
 export abstract class BaseAnnouncementsRepository extends BaseRepository {
-  private readonly _cacheService: AnnouncementsCacheService;
+  protected readonly _cacheService: AnnouncementsCacheService;
 
   public constructor() {
     super();

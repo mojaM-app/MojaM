@@ -40,7 +40,7 @@ describe('DELETE /user', () => {
     beforeEach(async () => {
       jest.resetAllMocks();
 
-      mockSendMail = jest.fn().mockImplementation((mailoptions: any, callback: (error: any, info: any) => void) => {
+      mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
         callback(null, null);
       });
 
@@ -801,8 +801,14 @@ describe('DELETE /user', () => {
         ?.accessToken;
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        items: [...announcementsBeforeUpdate.items, { id: '', content: 'new item' }],
+        setDefaultValues: () => {},
+        items: announcementsBeforeUpdate.items.map(item => ({
+          id: item.id,
+          content: item.content,
+          setDefaultValues: () => {},
+        })),
       };
+      updateAnnouncementsModel.items?.push({ id: '', content: 'new item', setDefaultValues: () => {} });
       const updateAnnouncementsResponse = await request(app.getServer())
         .put(announcementRoute.path + '/' + announcementsId)
         .send(updateAnnouncementsModel)
@@ -917,9 +923,11 @@ describe('DELETE /user', () => {
         ?.accessToken;
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
+        setDefaultValues: () => {},
         items: announcementsBeforeUpdate.items.map((item, index) => ({
           id: item.id,
           content: `${index + 1}_New_Content_${item.id}`,
+          setDefaultValues: () => {},
         })),
       };
       const updateAnnouncementsResponse = await request(app.getServer())

@@ -4,13 +4,9 @@ import { plainToInstance } from 'class-transformer';
 import { validateOrReject, ValidationError } from 'class-validator';
 import { NextFunction, Request, Response } from 'express';
 
-export const getErrorConstraints = (error: ValidationError): string[] => {
-  if (error === undefined || error === null) {
-    return [];
-  }
-
+const getErrorConstraints = (error: ValidationError): string[] => {
   const constraints: string[] = [];
-  if (error.constraints !== undefined && error.constraints !== null) {
+  if (error?.constraints !== undefined && error.constraints !== null) {
     constraints.push(...Object.values(error.constraints));
   }
 

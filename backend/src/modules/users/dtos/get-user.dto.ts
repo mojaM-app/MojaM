@@ -18,6 +18,6 @@ export class GetUserResponseDto implements IResponse<IGetUserDto | null> {
 
   public constructor(data: IGetUserDto | null) {
     this.data = data;
-    this.message = events.users.userDetailsRetrieved;
+    this.message = events.users.userRetrieved;
   }
 }
