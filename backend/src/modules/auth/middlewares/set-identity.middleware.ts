@@ -65,13 +65,19 @@ export const getTokenIssuer = (): string => {
 };
 
 export const getRefreshTokenExpiration = (): string => {
-  const defaultRefreshTokenExpiration = '1d';
+  const defaultRefreshTokenExpiration: string = '1d';
 
   if (isNullOrEmptyString(REFRESH_TOKEN_EXPIRE_IN)) {
     return defaultRefreshTokenExpiration;
   }
 
   return REFRESH_TOKEN_EXPIRE_IN ?? defaultRefreshTokenExpiration;
+};
+
+export const getAccessTokenExpiration = (): string => {
+  const defaultAccessTokenExpiration: string = '10m';
+
+  return defaultAccessTokenExpiration;
 };
 
 export const ACCESS_TOKEN_ALGORITHM = 'HS256';

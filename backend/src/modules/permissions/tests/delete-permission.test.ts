@@ -29,9 +29,9 @@ describe('DELETE /permissions', () => {
 
   beforeAll(async () => {
     await app.initialize([userRoute, userDetailsRoute, permissionsRoute]);
-    const { email: login, password } = getAdminLoginData();
+    const { email, password } = getAdminLoginData();
 
-    const loginResult = await loginAs(app, { email: login, password } satisfies LoginDto);
+    const loginResult = await loginAs(app, { email, password } satisfies LoginDto);
     adminAccessToken = loginResult?.accessToken;
     userLoggedIn = loginResult!;
 

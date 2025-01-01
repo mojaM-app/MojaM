@@ -35,9 +35,9 @@ describe('PUT /announcements', () => {
   let adminAccessToken: string | undefined;
   beforeAll(async () => {
     await app.initialize([userRoute, permissionsRoute, announcementRoute]);
-    const { email: login, password } = getAdminLoginData();
+    const { email, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);

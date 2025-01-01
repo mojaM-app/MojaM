@@ -10,6 +10,8 @@ export { DeactivateUserReqDto, DeactivateUserResponseDto } from './dtos/deactiva
 export { DeleteUserReqDto, DeleteUserResponseDto } from './dtos/delete-user.dto';
 export { GetUserDetailsReqDto, GetUserDetailsResponseDto } from './dtos/get-user-details.dto';
 export { GetUserListReqDto, GetUserListResponseDto, type IUserGridItemDto, type UsersGridPageDto } from './dtos/get-user-list.dto';
+export { LockUserReqDto, LockUserResponseDto } from './dtos/lock-user.dto';
+export { UnlockUserReqDto, UnlockUserResponseDto } from './dtos/unlock-user.dto';
 export { UpdateUserReqDto, UpdateUserResponseDto } from './dtos/update-user.dto';
 export { type IUserDetailsDto } from './interfaces/get-user-details.interfaces';
 export { type IUserDto } from './interfaces/IUser.dto';
@@ -21,6 +23,7 @@ export { UserDeletedEvent } from './events/user-deleted-event';
 export { UserDetailsRetrievedEvent } from './events/user-details-retrieved-event';
 export { UserListRetrievedEvent } from './events/user-list-retrieved-event';
 export { UserRetrievedEvent } from './events/user-retrieved-event';
+export { UserUnlockedEvent } from './events/user-unlocked-event';
 
 export { vUserRepository } from './repositories/user-details.repository';
 export { UserListRepository } from './repositories/user-list.repository';

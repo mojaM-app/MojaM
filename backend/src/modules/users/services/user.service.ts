@@ -10,12 +10,14 @@ import {
   DeactivateUserReqDto,
   DeleteUserReqDto,
   IUserDto,
+  UnlockUserReqDto,
   UserActivatedEvent,
   UserCreatedEvent,
   UserDeactivatedEvent,
   UserDeletedEvent,
   UserRepository,
   UserRetrievedEvent,
+  UserUnlockedEvent,
 } from '@modules/users';
 import { isNullOrUndefined } from '@utils';
 import StatusCode from 'status-code-enum';
@@ -139,6 +141,24 @@ export class UsersService extends BaseService {
     this._eventDispatcher.dispatch(events.users.userDeactivated, new UserDeactivatedEvent(userToIUser(deactivatedUser!), reqDto.currentUserId));
 
     return !deactivatedUser!.isActive;
+  }
+
+  public async unlock(reqDto: UnlockUserReqDto): Promise<boolean> {
+    const user = await this._userRepository.getByUuid(reqDto.userGuid);
+
+    if (isNullOrUndefined(user)) {
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.User_Does_Not_Exist, { id: reqDto.userGuid });
+    }
+
+    if (!user!.isLockedOut) {
+      return true;
+    }
+
+    const unlockedUser = await this._userRepository.unlock(user!.id, reqDto);
+
+    this._eventDispatcher.dispatch(events.users.userUnlocked, new UserUnlockedEvent(userToIUser(unlockedUser!), reqDto.currentUserId));
+
+    return !unlockedUser!.isLockedOut;
   }
 
   private userToIGetUserDto(user: User): IGetUserDto {

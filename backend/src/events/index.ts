@@ -38,6 +38,7 @@ export const events = {
     lockedUserTriesToLogIn: 'lockedUserTriesToLogIn',
     failedLoginAttempt: 'onFailedLoginAttempt',
     userLockedOut: 'onUserLockedOut',
+    userUnlocked: 'onUserUnlocked',
     userListRetrieved: 'onUserListRetrieved',
     userDetailsRetrieved: 'onUserDetailsRetrieved',
     userRetrieved: 'onUserRetrieved',

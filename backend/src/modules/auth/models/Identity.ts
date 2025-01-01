@@ -77,6 +77,10 @@ export class Identity {
     return this.hasPermission(SystemPermission.DeleteUser);
   }
 
+  public hasPermissionToUnlockUser(): boolean {
+    return this.hasPermission(SystemPermission.UnlockUser);
+  }
+
   public hasPermissionToAddPermission(): boolean {
     return this.hasPermission(SystemPermission.AddPermission);
   }

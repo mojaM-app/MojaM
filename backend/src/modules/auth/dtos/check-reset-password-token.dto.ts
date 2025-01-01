@@ -18,7 +18,7 @@ export interface CheckResetPasswordTokenResultDto {
 export class CheckResetPasswordTokenResponseDto implements IResponse<CheckResetPasswordTokenResultDto> {
   public readonly data: CheckResetPasswordTokenResultDto;
 
-  public constructor(newAccessToken: CheckResetPasswordTokenResultDto) {
-    this.data = newAccessToken;
+  public constructor(result: CheckResetPasswordTokenResultDto) {
+    this.data = result;
   }
 }

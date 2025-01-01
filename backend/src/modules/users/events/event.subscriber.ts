@@ -7,6 +7,7 @@ import { UserDeletedEvent } from '../events/user-deleted-event';
 import { UserDetailsRetrievedEvent } from './user-details-retrieved-event';
 import { UserListRetrievedEvent } from './user-list-retrieved-event';
 import { UserRetrievedEvent } from './user-retrieved-event';
+import { UserUnlockedEvent } from './user-unlocked-event';
 
 @EventSubscriber()
 export class UserEventSubscriber {
@@ -33,6 +34,11 @@ export class UserEventSubscriber {
   @On(events.users.userDeactivated)
   public onUserDeactivated(data: UserDeactivatedEvent): void {
     console.log(`User ${data?.user?.email} (phone: ${data?.user?.phone}) deactivated!`);
+  }
+
+  @On(events.users.userUnlocked)
+  public onUserUnlocked(data: UserUnlockedEvent): void {
+    console.log(`User ${data?.user?.email} (phone: ${data?.user?.phone}) unlocked!`);
   }
 }
 

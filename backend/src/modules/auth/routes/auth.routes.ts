@@ -10,7 +10,7 @@ export class AuthRoute implements IRoutes {
   public loginPath = '/login';
   public getUserInfoBeforeLogInPath = `${this.path}/get-user-info-before-log-in`;
   public requestResetPasswordPath = `${this.path}/request-reset-password`;
-  public checkResetPasswordTokenPath = `${this.path}/check-reset-password-token/:userId(${REGEX_GUID_PATTERN})/:token`;
+  public checkResetPasswordTokenPath = `${this.path}/check-reset-password-token`;
   public resetPasswordPath = `${this.path}/reset-password`;
   public refreshTokenPath = `${this.path}/refresh-token`;
   public router = express.Router();
@@ -26,7 +26,7 @@ export class AuthRoute implements IRoutes {
     this.router.post(this.loginPath, [validateData(LoginDto)], this._authController.logIn);
     this.router.post(this.getUserInfoBeforeLogInPath, [validateData(UserTryingToLogInDto)], this._authController.getUserInfoBeforeLogIn);
     this.router.post(this.requestResetPasswordPath, [validateData(UserTryingToLogInDto)], this._authController.requestResetPassword);
-    this.router.post(this.checkResetPasswordTokenPath, this._authController.checkResetPasswordToken);
+    this.router.post(this.checkResetPasswordTokenPath + `/:userId(${REGEX_GUID_PATTERN})/:token`, this._authController.checkResetPasswordToken);
     this.router.post(this.resetPasswordPath, [validateData(ResetPasswordDto)], this._authController.resetPassword);
     this.router.post(this.refreshTokenPath, [validateData(RefreshTokenDto)], this._authController.refreshAccessToken);
     // this.router.post(`${this.path}logout`, verifyToken, this._authController.logOut);

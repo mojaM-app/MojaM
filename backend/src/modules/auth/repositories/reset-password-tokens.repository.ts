@@ -1,7 +1,8 @@
 import { RESET_PASSWORD_TOKEN_EXPIRE_IN } from '@config';
 import { CryptoService } from '@modules/auth';
 import { BaseRepository } from '@modules/common';
-import { getDateTimeNow, isNullOrUndefined, toNumber } from '@utils';
+import { getDateTimeNow, isNullOrUndefined } from '@utils';
+import ms from 'ms';
 import Container, { Service } from 'typedi';
 import { UserResetPasswordToken } from '../entities/user-reset-password-tokens.entity';
 import { ICreateResetPasswordToken } from '../interfaces/create-reset-password-token.interfaces';
@@ -26,8 +27,9 @@ export class ResetPasswordTokensRepository extends BaseRepository {
       return true;
     }
 
-    const expirationPeriod = toNumber(RESET_PASSWORD_TOKEN_EXPIRE_IN)! * 60 * 1000;
-    return getDateTimeNow().getTime() > (token!.createdAt.getTime() + expirationPeriod);
+    const expirationPeriod: number = ms(RESET_PASSWORD_TOKEN_EXPIRE_IN!);
+    const actualDate: number = getDateTimeNow().getTime();
+    return actualDate > token!.createdAt.getTime() + expirationPeriod;
   }
 
   public async createToken(userId: number, token: string): Promise<UserResetPasswordToken> {
@@ -38,9 +40,7 @@ export class ResetPasswordTokensRepository extends BaseRepository {
   }
 
   public async deleteTokens(userId: number): Promise<boolean> {
-    const queryBuilder = this._dbContext.userResetPasswordTokens
-      .createQueryBuilder()
-      .where('UserId = :userId', { userId });
+    const queryBuilder = this._dbContext.userResetPasswordTokens.createQueryBuilder().where('UserId = :userId', { userId });
 
     const count = await queryBuilder.getCount();
 

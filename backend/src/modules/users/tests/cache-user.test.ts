@@ -78,8 +78,8 @@ describe('Cache user data tests', () => {
     userRoute = new UserRoute();
     app = new App();
     await app.initialize([userRoute]);
-    const { email: login, password } = getAdminLoginData();
-    const adminLoginResult = await loginAs(app, { email: login, password } satisfies LoginDto);
+    const { email, password } = getAdminLoginData();
+    const adminLoginResult = await loginAs(app, { email, password } satisfies LoginDto);
     adminAccessToken = adminLoginResult?.accessToken;
     adminUuid = adminLoginResult?.id;
   });

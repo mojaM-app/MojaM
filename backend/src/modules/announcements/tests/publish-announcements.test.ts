@@ -32,9 +32,9 @@ describe('POST /announcements/publish', () => {
   let adminAccessToken: string | undefined;
   beforeAll(async () => {
     await app.initialize([userRoute, permissionsRoute, announcementRoute]);
-    const { email: login, password } = getAdminLoginData();
+    const { email, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -127,6 +127,68 @@ describe('POST /announcements/publish', () => {
       expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onAnnouncementsPublished).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onAnnouncementsRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('publish published announcement', async () => {
+      const requestData = generateValidAnnouncements();
+      const createAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createAnnouncementsResponse.statusCode).toBe(201);
+      expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      let body = createAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: announcementsId, message: createMessage }: CreateAnnouncementsResponseDto = body;
+      expect(announcementsId).toBeDefined();
+      expect(createMessage).toBe(events.announcements.announcementsCreated);
+
+      let publishAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path + '/' + announcementsId + '/' + announcementRoute.publishPath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(publishAnnouncementsResponse.statusCode).toBe(200);
+      body = publishAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: publish1AnnouncementsResult, message: publish1Message }: PublishAnnouncementsResponseDto = body;
+      expect(publish1AnnouncementsResult).toBe(true);
+      expect(publish1Message).toBe(events.announcements.announcementsPublished);
+
+      publishAnnouncementsResponse = await request(app.getServer())
+        .post(announcementRoute.path + '/' + announcementsId + '/' + announcementRoute.publishPath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(publishAnnouncementsResponse.statusCode).toBe(200);
+      body = publishAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: publish2AnnouncementsResult, message: publish2Message }: PublishAnnouncementsResponseDto = body;
+      expect(publish2AnnouncementsResult).toBe(true);
+      expect(publish2Message).toBe(events.announcements.announcementsPublished);
+
+      // cleanup
+      const deleteAnnouncementsResponse = await request(app.getServer())
+        .delete(announcementRoute.path + '/' + announcementsId)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteAnnouncementsResponse.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onAnnouncementsCreated,
+              testEventHandlers.onAnnouncementsPublished,
+              testEventHandlers.onAnnouncementsRetrieved,
+              testEventHandlers.onAnnouncementsDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onAnnouncementsPublished).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
     });
   });

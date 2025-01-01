@@ -30,9 +30,9 @@ describe('GET/user/:id', () => {
 
   beforeAll(async () => {
     await app.initialize([userDetailsRoute, userRoute, permissionsRoute]);
-    const { email: login, password } = getAdminLoginData();
+    const { email, password } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { email: login, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email, password } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);

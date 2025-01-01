@@ -2,7 +2,16 @@ import { relatedDataNames } from '@db';
 import { errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import { CryptoService, PasswordService } from '@modules/auth';
-import { ActivateUserReqDto, CreateUserDto, CreateUserReqDto, DeactivateUserReqDto, DeleteUserReqDto, UpdateUserReqDto } from '@modules/users';
+import {
+  ActivateUserReqDto,
+  CreateUserDto,
+  CreateUserReqDto,
+  DeactivateUserReqDto,
+  DeleteUserReqDto,
+  LockUserReqDto,
+  UnlockUserReqDto,
+  UpdateUserReqDto,
+} from '@modules/users';
 import { getDateTimeNow, isNullOrEmptyString } from '@utils';
 import StatusCode from 'status-code-enum';
 import Container, { Service } from 'typedi';
@@ -51,7 +60,7 @@ export class UserRepository extends BaseUserRepository {
 
   public async create(reqDto: CreateUserReqDto): Promise<User> {
     const userData: CreateUserDto = reqDto.userData;
-    if ((userData.password?.length ?? 0) > 0 && !this._passwordService.isPasswordValid(userData.password!)) {
+    if ((userData.password?.length ?? 0) > 0 && !this._passwordService.isPasswordValid(userData.password)) {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.Invalid_Password);
     }
 
@@ -121,25 +130,25 @@ export class UserRepository extends BaseUserRepository {
     return true;
   }
 
-  public async activate(userId: number, reqDto: ActivateUserReqDto): Promise<User | null> {
+  public async activate(userId: number, reqDto?: ActivateUserReqDto): Promise<User | null> {
     const updateReqDto = new UpdateUserReqDto(
       userId,
       {
         isActive: true,
       } satisfies IUpdateUser,
-      reqDto.currentUserId,
+      reqDto?.currentUserId,
     );
 
     return await this.update(updateReqDto);
   }
 
-  public async deactivate(userId: number, reqDto: DeactivateUserReqDto): Promise<User | null> {
+  public async deactivate(userId: number, reqDto?: DeactivateUserReqDto): Promise<User | null> {
     const updateReqDto = new UpdateUserReqDto(
       userId,
       {
         isActive: false,
       } satisfies IUpdateUser,
-      reqDto.currentUserId,
+      reqDto?.currentUserId,
     ) satisfies UpdateUserReqDto;
 
     return await this.update(updateReqDto);
@@ -161,18 +170,28 @@ export class UserRepository extends BaseUserRepository {
     return user?.failedLoginAttempts ?? 0;
   }
 
-  public async lockOut(userId: number): Promise<boolean> {
-    const reqDto = {
+  public async lockOut(userId: number, reqDto?: LockUserReqDto): Promise<User | null> {
+    const updateReqDto = {
       userId,
       userData: {
         isLockedOut: true,
       } satisfies IUpdateUser,
-      currentUserId: undefined,
+      currentUserId: reqDto?.currentUserId,
     } satisfies UpdateUserReqDto;
 
-    await this.update(reqDto);
+    return await this.update(updateReqDto);
+  }
 
-    return reqDto.userData.isLockedOut;
+  public async unlock(userId: number, reqDto?: UnlockUserReqDto): Promise<User | null> {
+    const updateReqDto = {
+      userId,
+      userData: {
+        isLockedOut: false,
+      } satisfies IUpdateUser,
+      currentUserId: reqDto?.currentUserId,
+    } satisfies UpdateUserReqDto;
+
+    return await this.update(updateReqDto);
   }
 
   public async updateAfterLogin(userId: number): Promise<void> {

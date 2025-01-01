@@ -48,7 +48,7 @@ SMTP_USER_PASSWORD =
 #NOTIFICATIONS
 NOTIFICATIONS_EMAIL =
 REQ_RESET_PASSWORD_TITLE = Prośba o zresetowanie hasła
-RESET_PASSWORD_TOKEN_EXPIRE_IN = 60 #time in minutes
+RESET_PASSWORD_TOKEN_EXPIRE_IN = 1h
 
 #GOOGLE API KEY
 #according to https://www.youtube.com/watch?v=zrLf4KMs71E

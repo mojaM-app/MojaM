@@ -10,6 +10,8 @@ import {
   DeactivateUserResponseDto,
   DeleteUserReqDto,
   DeleteUserResponseDto,
+  UnlockUserReqDto,
+  UnlockUserResponseDto,
   UsersService,
 } from '@modules/users';
 import { isGuid } from '@utils';
@@ -71,6 +73,16 @@ export class UserController extends BaseController {
       const reqDto = new DeactivateUserReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
       const result = await this._service.deactivate(reqDto);
       res.status(200).json(new DeactivateUserResponseDto(result));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public unlock = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const reqDto = new UnlockUserReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
+      const result = await this._service.unlock(reqDto);
+      res.status(200).json(new UnlockUserResponseDto(result));
     } catch (error) {
       next(error);
     }

@@ -17,22 +17,22 @@ export class LoginEventSubscriber {
 
   @On(events.users.inactiveUserTriesToLogIn)
   public inactiveUserTriesToLogIn(data: InactiveUserTriesToLogInEvent): void {
-    console.log(`User ${data?.user?.email} logged in!`);
+    console.log(`Inactive user ${data?.user?.email} tries to logIn!`);
   }
 
   @On(events.users.lockedUserTriesToLogIn)
   public lockedUserTriesToLogIn(data: LockedUserTriesToLogInEvent): void {
-    console.log(`User ${data?.user?.email} logged in!`);
+    console.log(`Locked user ${data?.user?.email} tries to logIn!`);
   }
 
   @On(events.users.failedLoginAttempt)
   public onFailedLoginAttempt(data: FailedLoginAttemptEvent): void {
-    console.log(`User ${data?.user?.email} logged in!`);
+    console.log(`User ${data?.user?.email} tries to logIn!`);
   }
 
   @On(events.users.userLockedOut)
   public onUserLockedOut(data: UserLockedOutEvent): void {
-    console.log(`User ${data?.user?.email} logged in!`);
+    console.log(`User ${data?.user?.email} is locked out!`);
   }
 
   @On(events.users.userRefreshedToken)

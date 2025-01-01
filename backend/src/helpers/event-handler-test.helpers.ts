@@ -25,6 +25,7 @@ import {
   UserDetailsRetrievedEvent,
   UserListRetrievedEvent,
   UserRetrievedEvent,
+  UserUnlockedEvent,
 } from '@modules/users';
 import { EventDispatcher } from 'event-dispatch';
 
@@ -36,6 +37,7 @@ const testEventHandlers: {
   onUserPasswordChanged: (data: any) => void;
   onFailedLoginAttempt: (data: any) => void;
   onUserLockedOut: (data: any) => void;
+  onUserUnlocked: (data: any) => void;
   onUserCreated: (data: any) => void;
   onUserListRetrieved: (data: any) => void;
   onUserDetailsRetrieved: (data: any) => void;
@@ -59,6 +61,7 @@ const testEventHandlers: {
   lockedUserTriesToLogIn: jest.fn((data: LockedUserTriesToLogInEvent) => {}),
   onFailedLoginAttempt: jest.fn((data: FailedLoginAttemptEvent) => {}),
   onUserLockedOut: jest.fn((data: UserLockedOutEvent) => {}),
+  onUserUnlocked: jest.fn((data: UserUnlockedEvent) => {}),
   onUserCreated: jest.fn((data: UserCreatedEvent) => {}),
   onUserListRetrieved: jest.fn((data: UserListRetrievedEvent) => {}),
   onUserDetailsRetrieved: jest.fn((data: UserDetailsRetrievedEvent) => {}),

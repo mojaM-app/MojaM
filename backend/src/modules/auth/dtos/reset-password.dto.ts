@@ -16,13 +16,23 @@ export class ResetPasswordDto {
   })
   public password: string | null | undefined;
 
-  @IsNotEmpty()
-  @IsString()
-  @IsUUID('all')
+  @IsNotEmpty({
+    message: errorKeys.users.Invalid_User_Id,
+  })
+  @IsString({
+    message: errorKeys.users.Invalid_User_Id,
+  })
+  @IsUUID('all', {
+    message: errorKeys.users.Invalid_User_Id,
+  })
   public userId: string | null | undefined;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({
+    message: errorKeys.login.Invalid_Reset_Password_Token,
+  })
+  @IsString({
+    message: errorKeys.login.Invalid_Reset_Password_Token,
+  })
   public token: string | null | undefined;
 }
 

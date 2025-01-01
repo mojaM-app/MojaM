@@ -1,4 +1,4 @@
-import { cleanEnv, email, num, port, str, url } from 'envalid';
+import { cleanEnv, email, port, str, url } from 'envalid';
 
 export const ValidateEnv = (): void => {
   cleanEnv(process.env, {
@@ -27,7 +27,7 @@ export const ValidateEnv = (): void => {
 
     NOTIFICATIONS_EMAIL: email(),
     REQ_RESET_PASSWORD_TITLE: str(),
-    RESET_PASSWORD_TOKEN_EXPIRE_IN: num(),
+    RESET_PASSWORD_TOKEN_EXPIRE_IN: str(),
 
     ADMIN_EMAIL: email(),
     ADMIN_PASSWORD: str(),

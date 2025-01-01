@@ -18,7 +18,7 @@ export class PasswordService {
     return this.hashPassword(salt, password) === hashedPassword;
   }
 
-  public isPasswordValid(password: string): boolean {
+  public isPasswordValid(password: string | undefined | null): boolean {
     if (isNullOrEmptyString(password)) {
       return false;
     }

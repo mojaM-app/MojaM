@@ -734,6 +734,7 @@ describe('POST /login', () => {
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onFailedLoginAttempt).toHaveBeenCalledTimes(USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS);
+      expect(testEventHandlers.onUserLockedOut).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.lockedUserTriesToLogIn).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
@@ -802,6 +803,7 @@ describe('POST /login', () => {
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onFailedLoginAttempt).toHaveBeenCalledTimes(USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS);
+      expect(testEventHandlers.onUserLockedOut).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.lockedUserTriesToLogIn).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserLockedOut).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);

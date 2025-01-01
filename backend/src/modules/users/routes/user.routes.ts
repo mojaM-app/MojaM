@@ -10,6 +10,7 @@ export class UserRoute implements IRoutes {
   public path = '/user';
   public deactivatePath = 'deactivate';
   public activatePath = 'activate';
+  public unlockPath = 'unlock';
   public router = express.Router();
   private readonly _controller: UserController;
 
@@ -30,6 +31,11 @@ export class UserRoute implements IRoutes {
       `${this.path}/:id(${REGEX_GUID_PATTERN})/${this.activatePath}`,
       [setIdentity, this.checkActivatePermission],
       this._controller.activate,
+    );
+    this.router.post(
+      `${this.path}/:id(${REGEX_GUID_PATTERN})/${this.unlockPath}`,
+      [setIdentity, this.checkUnlockPermission],
+      this._controller.unlock,
     );
     // this.router.put(`${this.path}/:id(${REGEX_INT_PATTERN)`, ValidationMiddleware(UpdateUserDto, true),verifyToken, this._userController.update);
     this.router.delete(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity, this.checkDeletePermission], this._controller.delete);
@@ -79,6 +85,16 @@ export class UserRoute implements IRoutes {
     if (!req.identity?.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToDeleteUser()) {
+      next(new ForbiddenException());
+    } else {
+      next();
+    }
+  };
+
+  private readonly checkUnlockPermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+    if (!req.identity?.isAuthenticated()) {
+      next(new UnauthorizedException());
+    } else if (!req.identity.hasPermissionToUnlockUser()) {
       next(new ForbiddenException());
     } else {
       next();

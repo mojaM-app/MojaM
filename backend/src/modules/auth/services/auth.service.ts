@@ -26,6 +26,7 @@ import {
 } from '@modules/auth';
 import {
   ACCESS_TOKEN_ALGORITHM,
+  getAccessTokenExpiration,
   getAccessTokenSecret,
   getRefreshTokenExpiration,
   getRefreshTokenSecret,
@@ -69,11 +70,7 @@ export class AuthService extends BaseService {
       isPasswordSet: true,
     } satisfies UserInfoBeforeLogInResultDto;
 
-    if (isNullOrUndefined(data) || isNullOrEmptyString(data.email)) {
-      return result;
-    }
-
-    const users: User[] = await this._userRepository.findManyByLogin(data.email, data.phone);
+    const users: User[] = await this._userRepository.findManyByLogin(data?.email, data?.phone);
 
     if ((users?.length ?? 0) === 0) {
       return result;
@@ -93,11 +90,7 @@ export class AuthService extends BaseService {
   }
 
   public async requestResetPassword(data: UserTryingToLogInDto): Promise<boolean> {
-    if (isNullOrUndefined(data) || isNullOrEmptyString(data.email)) {
-      return true;
-    }
-
-    const users: User[] = await this._userRepository.findManyByLogin(data.email, data.phone);
+    const users: User[] = await this._userRepository.findManyByLogin(data?.email, data?.phone);
 
     if ((users?.length ?? 0) !== 1) {
       return true;
@@ -153,7 +146,7 @@ export class AuthService extends BaseService {
   }
 
   public async resetPassword(data: ResetPasswordDto): Promise<ResetPasswordResultDto> {
-    if (isNullOrEmptyString(data?.password) || !this._passwordService.isPasswordValid(data.password!)) {
+    if (!this._passwordService.isPasswordValid(data?.password)) {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.Invalid_Password);
     }
 
@@ -168,7 +161,7 @@ export class AuthService extends BaseService {
     const user: User | null = await this._userRepository.getByUuid(data.userId);
 
     if (isNullOrUndefined(user)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.User_Does_Not_Exist);
+      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.Invalid_User_Id);
     }
 
     const token = await this._resetPasswordTokensRepository.getLastToken(user!.id);
@@ -178,6 +171,10 @@ export class AuthService extends BaseService {
     }
 
     await this._userRepository.setPassword(user!.id, data.password!);
+
+    if (!user!.isActive) {
+      await this._userRepository.activate(user!.id);
+    }
 
     await this._resetPasswordTokensRepository.deleteTokens(user!.id);
 
@@ -189,11 +186,7 @@ export class AuthService extends BaseService {
   }
 
   public async login(data: LoginDto): Promise<ILoginResult> {
-    if (isNullOrEmptyString(data?.email) || isNullOrEmptyString(data?.password)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.Invalid_Login_Or_Password);
-    }
-
-    const users: User[] = await this._userRepository.findManyByLogin(data.email, data.phone);
+    const users: User[] = await this._userRepository.findManyByLogin(data?.email, data?.phone);
 
     if (users?.length !== 1) {
       throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.Invalid_Login_Or_Password);
@@ -313,7 +306,7 @@ export class AuthService extends BaseService {
     } satisfies DataStoredInToken;
 
     return sign(dataStoredInToken, getAccessTokenSecret(), {
-      expiresIn: '10m',
+      expiresIn: getAccessTokenExpiration(),
       notBefore: '0',
       algorithm: ACCESS_TOKEN_ALGORITHM,
       audience: getTokenAudience(),
