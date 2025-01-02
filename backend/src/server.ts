@@ -4,7 +4,7 @@ import { CalendarRoutes } from '@modules/calendar';
 import { CommunityRoute } from '@modules/community';
 import { NewsRoutes } from '@modules/news';
 import { PermissionsRoute } from '@modules/permissions';
-import { UserDetailsRoute, UserListRoute, UserProfileRoute, UserRoute } from '@modules/users';
+import { UserDetailsRoute, UserListRoute, UserRoute } from '@modules/users';
 import { ValidateEnv } from '@utils/validateEnv';
 
 ValidateEnv();
@@ -20,7 +20,6 @@ const initializeApp = async (): Promise<App> => {
     new PermissionsRoute(),
     new UserRoute(),
     new UserListRoute(),
-    new UserProfileRoute(),
     new UserDetailsRoute(),
   ]);
 

@@ -5,7 +5,7 @@ import { IAnnouncements } from '../interfaces/announcements';
 import { AnnouncementItemDto, AnnouncementsDto } from './announcements.model';
 
 export class EditAnnouncementsDto extends AnnouncementsDto {
-  public id?: string;
+  public readonly id: string;
 
   public constructor(
     id: string,

@@ -233,6 +233,7 @@
     "Wrong_Authentication_Token": "Nieprawidłowy token autoryzacyjny. Zaloguj się ponownie.",
     "Invalid_Login_Or_Password": "Wprowadzono nieprawidłowe dane logowania.",
     "User_Password_Is_Not_Set": "Hasło użytkownika nie zostało ustawione.",
+    "User_Does_Not_Exist": "Użytkownik nie istnieje.",
     "User_Not_Authenticated": "Użytkownik nie jest uwierzytelniony. Zaloguj się.",
     "User_Not_Authorized": "Brak uprawnień do wykonania tej operacji.",
     "User_Is_Not_Active": "Konto użytkownika nie zostało aktywowane.",

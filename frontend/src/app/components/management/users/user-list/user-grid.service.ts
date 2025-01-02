@@ -100,17 +100,19 @@ export class UserGridService
           return value === true ? 'check' : 'close';
         },
       },
-      {
+    ];
+
+    if (this._permissionService.hasAnyPermission([SystemPermissionValue.PreviewUserDetails])) {
+      result.push({
         propertyName: COLUMN_NAMES.EXPAND,
         isExpandable: true,
-      },
-    ];
+      } satisfies IGridColumn);
+    }
 
     if (
       this._permissionService.hasAnyPermission([
-        SystemPermissionValue.PreviewUserProfile,
         SystemPermissionValue.AddUser,
-        SystemPermissionValue.EditUserProfile,
+        SystemPermissionValue.EditUser,
         SystemPermissionValue.DeactivateUser,
         SystemPermissionValue.ActivateUser,
         SystemPermissionValue.DeleteUser,
@@ -137,7 +139,7 @@ export class UserGridService
   public getContextMenuItems(user: IUserGridItemDto): IMenuItem[] {
     const result: IMenuItem[] = [];
 
-    if (this._permissionService.hasPermission(SystemPermissionValue.EditUserProfile)) {
+    if (this._permissionService.hasPermission(SystemPermissionValue.EditUser)) {
       result.push({
         title: this._translationService.get('Management/UserList/ContextMenu/Edit'),
         icon: 'edit',

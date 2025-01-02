@@ -1,8 +1,8 @@
 enum SystemPermissionValue {
   PreviewUserList = 100,
-  PreviewUserProfile = 101,
+  PreviewUserDetails = 101,
   AddUser = 102,
-  EditUserProfile = 103,
+  EditUser = 103,
   DeactivateUser = 104,
   ActivateUser = 105,
   DeleteUser = 106,
@@ -19,4 +19,3 @@ enum SystemPermissionValue {
 }
 
 export { SystemPermissionValue };
-

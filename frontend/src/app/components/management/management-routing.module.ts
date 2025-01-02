@@ -23,7 +23,7 @@ const routes: Routes = [
   {
     path: ManagementMenuAddUser.Route,
     loadComponent: () =>
-      import('./users/add-user/add-user.component').then(m => m.AddUserComponent),
+      import('./users/user-form/user-form.component').then(m => m.UserFormComponent),
     canActivate: [PermissionGuard],
     data: {
       checkSession: true,
@@ -34,12 +34,12 @@ const routes: Routes = [
   {
     path: ManagementMenuEditUser.Route + '/:id',
     loadComponent: () =>
-      import('./users/edit-user/edit-user.component').then(m => m.EditUserComponent),
+      import('./users/user-form/user-form.component').then(m => m.UserFormComponent),
     canActivate: [PermissionGuard],
     data: {
       checkSession: true,
       hideFooter: true,
-      permissions: [SystemPermissionValue.EditUserProfile],
+      permissions: [SystemPermissionValue.EditUser],
     } satisfies IPermissionRouteData,
   },
   { path: '**', redirectTo: ManagementMenuUserList.Route, pathMatch: 'full' },
