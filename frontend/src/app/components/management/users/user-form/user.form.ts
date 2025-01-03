@@ -15,3 +15,7 @@ export const UserFormControlNames: { [K in keyof IUserForm]: string } = {
   lastName: 'lastName',
   joiningDate: 'joiningDate',
 } as const;
+
+export const EmailMaxLength = 255;
+export const PhoneMaxLength = 30;
+export const NameMaxLength = 255;

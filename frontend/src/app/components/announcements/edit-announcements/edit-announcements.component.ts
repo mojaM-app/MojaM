@@ -3,10 +3,10 @@ import { ChangeDetectionStrategy, Component, model, OnInit, viewChild } from '@a
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Guid } from 'guid-typescript';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthService } from 'src/services/auth/auth.service';
+import { GuidUtils } from 'src/utils/guid.utils';
 import { AnnouncementsFormComponent } from '../announcements-form/announcements-form.component';
 import { AnnouncementsListMenu } from '../announcements.menu';
 import { IAnnouncements } from '../interfaces/announcements';
@@ -44,14 +44,14 @@ export class EditAnnouncementsComponent extends WithUnsubscribe() implements OnI
   public ngOnInit(): void {
     const id = this._route.snapshot.params['id'];
 
-    if (!Guid.isGuid(id)) {
+    if (!GuidUtils.isValidGuid(id)) {
       this.navigateToAnnouncementsList();
       return;
     }
 
     this.addSubscription(
       this._announcementsService.get(id).subscribe((announcements: IAnnouncements) => {
-        if (announcements && Guid.isGuid(announcements.id)) {
+        if (announcements && GuidUtils.isValidGuid(announcements.id)) {
           this.announcements.set(EditAnnouncementsDto.create(announcements));
         } else {
           this.navigateToAnnouncementsList();

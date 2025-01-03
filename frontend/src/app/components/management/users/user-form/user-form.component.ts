@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, Inject, model, OnInit, signal } from '@angular/core';
-import { FormBuilder, FormControl } from '@angular/forms';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Guid } from 'guid-typescript';
 import { IS_MOBILE } from 'src/app/app.config';
+import { NewsMenu } from 'src/app/components/news/news.menu';
 import { FormMode } from 'src/core/form-mode.enum';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { IUser } from 'src/interfaces/users/user.interfaces';
@@ -14,11 +14,19 @@ import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthService } from 'src/services/auth/auth.service';
 import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
+import { GuidUtils } from 'src/utils/guid.utils';
+import { ManagementMenu } from '../../management.menu';
 import { AddUserDto } from './models/add-user.model';
 import { EditUserDto } from './models/edit-user.model';
 import { UserDto } from './models/user.model';
 import { UserService } from './services/user.service';
-import { IUserForm } from './user.form';
+import {
+  EmailMaxLength,
+  IUserForm,
+  NameMaxLength,
+  PhoneMaxLength,
+  UserFormControlNames,
+} from './user.form';
 
 @Component({
   selector: 'app-user-form',
@@ -28,8 +36,9 @@ import { IUserForm } from './user.form';
   styleUrl: './user-form.component.scss',
 })
 export class UserFormComponent extends WithUnsubscribe(WithForm<IUserForm>()) implements OnInit {
-  public user = model<AddUserDto | EditUserDto>();
-  public formMode = signal<FormMode>(FormMode.Add);
+  public readonly formControlNames = UserFormControlNames;
+  public readonly user = model<AddUserDto | EditUserDto>();
+  public readonly formMode = signal<FormMode>(FormMode.Add);
 
   public constructor(
     @Inject(IS_MOBILE) public isMobile: boolean,
@@ -43,15 +52,19 @@ export class UserFormComponent extends WithUnsubscribe(WithForm<IUserForm>()) im
     const formGroup = formBuilder.group<IUserForm>({
       email: new FormControl<string | null>(null, {
         nonNullable: true,
+        validators: [Validators.required, Validators.email, Validators.maxLength(EmailMaxLength)],
       }),
       phone: new FormControl<string | null>(null, {
         nonNullable: true,
+        validators: [Validators.required, Validators.maxLength(PhoneMaxLength)],
       }),
       firstName: new FormControl<string | null>(null, {
         nonNullable: true,
+        validators: [Validators.maxLength(NameMaxLength)],
       }),
       lastName: new FormControl<string | null>(null, {
         nonNullable: true,
+        validators: [Validators.maxLength(NameMaxLength)],
       }),
       joiningDate: new FormControl<Date | null>(null, {
         nonNullable: true,
@@ -75,7 +88,7 @@ export class UserFormComponent extends WithUnsubscribe(WithForm<IUserForm>()) im
 
     this.addSubscription(
       authService.onAuthStateChanged.subscribe(() => {
-        //this.navigateToAnnouncementsList();
+        this.navigateToHomePage();
       })
     );
   }
@@ -83,10 +96,10 @@ export class UserFormComponent extends WithUnsubscribe(WithForm<IUserForm>()) im
   public ngOnInit(): void {
     const id = this._route.snapshot.params['id'];
 
-    if (Guid.isGuid(id)) {
+    if (GuidUtils.isValidGuid(id)) {
       this.addSubscription(
         this._userService.get(id).subscribe((user: IUser) => {
-          if (user && Guid.isGuid(user.id)) {
+          if (user && GuidUtils.isValidGuid(user.id)) {
             this.formMode.set(FormMode.Edit);
             this.user.set(EditUserDto.create(user));
           } else {
@@ -100,8 +113,14 @@ export class UserFormComponent extends WithUnsubscribe(WithForm<IUserForm>()) im
   }
 
   public save(): void {
-    console.log(this.user);
+    console.log(this.user());
   }
 
-  public cancel(): void {}
+  public cancel(): void {
+    this._router.navigateByUrl(ManagementMenu.Path);
+  }
+
+  private navigateToHomePage(): void {
+    this._router.navigateByUrl(NewsMenu.Path);
+  }
 }

@@ -2,13 +2,13 @@ import { ComponentType } from '@angular/cdk/portal';
 import { Location } from '@angular/common';
 import { Inject, inject, Injectable } from '@angular/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-import { Guid } from 'guid-typescript';
 import { firstValueFrom, map, tap } from 'rxjs';
 import { IS_MOBILE } from 'src/app/app.config';
 import { ConfirmDialogComponent } from 'src/app/components/static/confirmation-dialog/confirm-dialog.component';
 import { LoginDialogComponent } from 'src/app/components/static/login/login-dialog/login-dialog.component';
 import { WysiwygEditorPopupComponent } from 'src/app/components/static/wysiwyg-editor/wysiwyg-editor-dialog/wysiwyg-editor-dialog.component';
 import { IDialogSettings } from 'src/interfaces/common/dialog.settings';
+import { GuidUtils } from 'src/utils/guid.utils';
 
 @Injectable({
   providedIn: 'root',
@@ -47,7 +47,7 @@ export class DialogService {
 
     dialogRef
       .afterOpened()
-      .pipe(tap(() => this._location.go(currentUrl + `/${Guid.raw()}`)))
+      .pipe(tap(() => this._location.go(`${currentUrl}/${GuidUtils.create()}`)))
       .subscribe();
 
     dialogRef

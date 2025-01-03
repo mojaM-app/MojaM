@@ -1,8 +1,8 @@
 import { Location } from '@angular/common';
 import { inject, Injectable } from '@angular/core';
 import { MatBottomSheet, MatBottomSheetConfig } from '@angular/material/bottom-sheet';
-import { Guid } from 'guid-typescript';
 import { firstValueFrom, map, tap } from 'rxjs';
+import { GuidUtils } from 'src/utils/guid.utils';
 import { MenuItemClickResult } from '../../../../interfaces/menu/menu.enum';
 import { BottomSheetComponent } from './bottom-sheet.component';
 
@@ -16,7 +16,7 @@ export class BottomSheetService {
 
   public open(config: MatBottomSheetConfig): Promise<MenuItemClickResult | undefined> {
     const currentUrl = this._location.path();
-    const newPath = currentUrl + `/menu/${Guid.raw()}`;
+    const newPath = currentUrl + `/menu/${GuidUtils.create()}`;
 
     const bottomSheetRef = this._bottomSheet.open(BottomSheetComponent, config);
 

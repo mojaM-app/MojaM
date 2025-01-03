@@ -8,7 +8,7 @@ import {
   Renderer2,
   SimpleChanges,
 } from '@angular/core';
-import { Guid } from 'guid-typescript';
+import { GuidUtils } from 'src/utils/guid.utils';
 
 @Directive({
   selector: '[loading]',
@@ -27,7 +27,7 @@ export class LoadingDirective implements OnInit, OnChanges {
   ) {}
 
   public ngOnInit(): void {
-    this.uid = 'loading-container-' + Guid.create();
+    this.uid = 'loading-container-' + GuidUtils.create();
 
     const loadingContainer = this.renderer.createElement('div');
     this.renderer.setStyle(loadingContainer, 'display', this.loading ? 'flex' : 'none');
