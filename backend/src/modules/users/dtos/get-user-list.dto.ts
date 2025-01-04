@@ -12,7 +12,7 @@ export interface IUserGridItemDto {
   lastLoginAt?: Date;
   isActive: boolean;
   isLockedOut: boolean;
-  rolesCount: number;
+  permissionCount: number;
 }
 
 export type UsersGridPageDto = IGridPageResponseDto<IUserGridItemDto>;

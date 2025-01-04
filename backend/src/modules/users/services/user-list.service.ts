@@ -36,7 +36,7 @@ export class UserListService extends BaseService {
       lastLoginAt: user.lastLoginAt,
       isActive: user.isActive,
       isLockedOut: user.isLockedOut,
-      rolesCount: user.rolesCount,
+      permissionCount: user.permissionCount,
     } satisfies IUserGridItemDto;
   }
 }

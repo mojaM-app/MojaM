@@ -7,5 +7,5 @@ export interface IUserDetailsDto extends IUserDto {
   lastLoginAt: Date | null;
   isActive: boolean;
   isLockedOut: boolean;
-  rolesCount: number;
+  permissionCount: number;
 }

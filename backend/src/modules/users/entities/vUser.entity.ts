@@ -12,7 +12,7 @@ export const UserListViewColumns: { [K in keyof IUserGridItemDto]: string } = {
   lastLoginAt: 'lastLoginAt',
   isActive: 'isActive',
   isLockedOut: 'isLockedOut',
-  rolesCount: 'rolesCount',
+  permissionCount: 'permissionCount',
 } as const;
 
 @ViewEntity({
@@ -29,7 +29,7 @@ export const UserListViewColumns: { [K in keyof IUserGridItemDto]: string } = {
       .addSelect('user.IsActive', UserListViewColumns.isActive)
       .addSelect('user.IsLockedOut', UserListViewColumns.isLockedOut)
       .addSelect('user.IsDeleted', 'IsDeleted')
-      .addSelect('(select count(0) from user_to_systempermissions as perm where user.Id = perm.UserId)', UserListViewColumns.rolesCount)
+      .addSelect('(select count(0) from user_to_systempermissions as perm where user.Id = perm.UserId)', UserListViewColumns.permissionCount)
       .from(User, 'user'),
   name: 'vUsers',
 })
@@ -66,5 +66,5 @@ export class vUser implements IUserGridItemDto {
   public isDeleted: boolean;
 
   @ViewColumn()
-  public rolesCount: number;
+  public permissionCount: number;
 }

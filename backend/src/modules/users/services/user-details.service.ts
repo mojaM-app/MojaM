@@ -42,7 +42,7 @@ export class UsersDetailsService extends BaseService {
       lastLoginAt: user.lastLoginAt ?? null,
       isActive: user.isActive,
       isLockedOut: user.isLockedOut,
-      rolesCount: user.rolesCount,
+      permissionCount: user.permissionCount,
     } satisfies IUserDetailsDto;
   }
 }

@@ -8,5 +8,5 @@ export interface IUserDetails {
   isActive: boolean;
   joiningDate?: Date;
   lastLoginAt?: Date;
-  rolesCount: number;
+  permissionCount: number;
 }

@@ -13,7 +13,7 @@ export interface IUserGridItemColumns {
 export interface IUserGridItemDto extends IUserGridItemColumns {
   joiningDate?: Date;
   lastLoginAt?: Date;
-  rolesCount: number;
+  permissionCount: number;
 }
 
 export type UsersGridData = IGridData<IUserGridItemDto>;
