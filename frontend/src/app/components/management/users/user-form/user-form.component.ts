@@ -1,8 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, Inject, model, OnInit, signal } from '@angular/core';
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IS_MOBILE } from 'src/app/app.config';
 import { NewsMenu } from 'src/app/components/news/news.menu';
@@ -31,12 +40,29 @@ import {
 @Component({
   selector: 'app-user-form',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, PipesModule, DirectivesModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatDatepickerModule,
+    FormsModule,
+    PipesModule,
+    DirectivesModule,
+  ],
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.scss',
 })
 export class UserFormComponent extends WithUnsubscribe(WithForm<IUserForm>()) implements OnInit {
   public readonly formControlNames = UserFormControlNames;
+  public readonly formModeTypes = FormMode;
+  public readonly maxLengths = {
+    email: EmailMaxLength,
+    phone: PhoneMaxLength,
+    name: NameMaxLength,
+  };
   public readonly user = model<AddUserDto | EditUserDto>();
   public readonly formMode = signal<FormMode>(FormMode.Add);
 
@@ -113,7 +139,7 @@ export class UserFormComponent extends WithUnsubscribe(WithForm<IUserForm>()) im
   }
 
   public save(): void {
-    console.log(this.user());
+    console.log(this.controls);
   }
 
   public cancel(): void {

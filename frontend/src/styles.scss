@@ -66,6 +66,18 @@ body {
     --bs-card-inner-border-radius: 0;
     --bs-card-cap-bg: #{mat.get-theme-color($light-theme, surface-container)};
   }
+  .alert-light {
+    --bs-alert-color: #{--mat-app-text-color};
+    --bs-alert-bg: #{mat.get-theme-color($light-theme, surface)};
+    --bs-alert-border-color: #{mat.get-theme-color($light-theme, surface-container-high)};
+    // --bs-alert-link-color: var(--bs-dark-text-emphasis);
+  }
+  .alert-dark {
+    --bs-alert-color: #{--mat-app-text-color};
+    --bs-alert-bg: #{mat.get-theme-color($light-theme, surface-container)};
+    --bs-alert-border-color: #{mat.get-theme-color($light-theme, surface-container-high)};
+    // --bs-alert-link-color: var(--bs-dark-text-emphasis);
+  }
 
   //override calendar colors
   @include cal-theme(
@@ -139,6 +151,12 @@ body {
     .alert-light {
       --bs-alert-color: #{mat.get-theme-color($dark-theme, primary, 95)};
       --bs-alert-bg: #{mat.get-theme-color($dark-theme, surface-container-high)};
+      --bs-alert-border-color: #{mat.get-theme-color($dark-theme, secondary-container)};
+      // --bs-alert-link-color: var(--bs-dark-text-emphasis);
+    }
+    .alert-dark {
+      --bs-alert-color: #{mat.get-theme-color($dark-theme, primary, 95)};
+      --bs-alert-bg: #{mat.get-theme-color($dark-theme, surface)};
       --bs-alert-border-color: #{mat.get-theme-color($dark-theme, secondary-container)};
       // --bs-alert-link-color: var(--bs-dark-text-emphasis);
     }

@@ -1,56 +1,54 @@
-<div class="row">
-  <form [formGroup]="formGroup">
-    <div class="row mb-3">
-      <div class="col">
-        <mat-form-field class="w-100">
-          <mat-label>{{ 'Announcements/Form/ValidFrom' | gmessage }}</mat-label>
-          <input
-            [matDatepicker]="picker"
-            matInput
-            [placeholder]="'Announcements/Form/ValidFromPlaceholder' | gmessage"
-            [formControlName]="formControlNames.validFromDate" />
-          <mat-hint>{{ 'Announcements/Form/ValidFromHint' | gmessage }}</mat-hint>
-          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-      </div>
+<form [formGroup]="formGroup">
+  <div class="row mb-3">
+    <div class="col">
+      <mat-form-field class="w-100">
+        <mat-label>{{ 'Announcements/Form/ValidFrom' | gmessage }}</mat-label>
+        <input
+          [matDatepicker]="picker"
+          matInput
+          [placeholder]="'Announcements/Form/ValidFromPlaceholder' | gmessage"
+          [formControlName]="formControlNames.validFromDate" />
+        <mat-hint>{{ 'Announcements/Form/ValidFromHint' | gmessage }}</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
     </div>
-    <div class="row mb-3">
-      <div class="col">
-        <mat-label>{{ 'Announcements/Form/Announcements' | gmessage }}</mat-label>
-      </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col">
+      <mat-label>{{ 'Announcements/Form/Announcements' | gmessage }}</mat-label>
     </div>
-    <ng-container [formArrayName]="formControlNames.items">
-      @for (item of array(formControlNames.items).controls; track item; let i = $index) {
-        <ng-container [formGroupName]="i">
-          @if (isMobile) {
-            <app-announcement-item-mobile
-              [itemFormGroup]="item"
-              [index]="i"
-              (deleteItem)="removeItem($event)"
-              (moveItem)="moveItem($event)">
-            </app-announcement-item-mobile>
-          } @else {
-            <app-announcement-item-desktop
-              [itemFormGroup]="item"
-              [index]="i"
-              (deleteItem)="removeItem($event)"
-              (moveItem)="moveItem($event)">
-            </app-announcement-item-desktop>
-          }
-        </ng-container>
-      } @empty {
-        <small class="mat-mdc-form-field-error">{{
-          'Announcements/Form/NoAnnouncements' | gmessage
-        }}</small>
-      }
-    </ng-container>
-    <div class="row my-2">
-      <div class="col text-end">
-        <button mat-raised-button type="button" (click)="addItem()">
-          {{ 'Announcements/Form/AddItem' | gmessage }}
-        </button>
-      </div>
+  </div>
+  <ng-container [formArrayName]="formControlNames.items">
+    @for (item of array(formControlNames.items).controls; track item; let i = $index) {
+      <ng-container [formGroupName]="i">
+        @if (isMobile) {
+          <app-announcement-item-mobile
+            [itemFormGroup]="item"
+            [index]="i"
+            (deleteItem)="removeItem($event)"
+            (moveItem)="moveItem($event)">
+          </app-announcement-item-mobile>
+        } @else {
+          <app-announcement-item-desktop
+            [itemFormGroup]="item"
+            [index]="i"
+            (deleteItem)="removeItem($event)"
+            (moveItem)="moveItem($event)">
+          </app-announcement-item-desktop>
+        }
+      </ng-container>
+    } @empty {
+      <small class="mat-mdc-form-field-error">{{
+        'Announcements/Form/NoAnnouncements' | gmessage
+      }}</small>
+    }
+  </ng-container>
+  <div class="row my-2">
+    <div class="col text-end">
+      <button mat-raised-button type="button" (click)="addItem()">
+        {{ 'Announcements/Form/AddItem' | gmessage }}
+      </button>
     </div>
-  </form>
-</div>
+  </div>
+</form>
