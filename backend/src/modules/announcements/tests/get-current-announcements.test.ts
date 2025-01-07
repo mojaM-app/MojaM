@@ -35,7 +35,7 @@ describe('GET /announcements/current', () => {
     registerTestEventHandlers(eventDispatcher);
   });
 
-  describe('result should be null ...', () => {
+  describe('result should be null', () => {
     beforeEach(async () => {
       jest.resetAllMocks();
     });

@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
-import { errorKeys } from '@/exceptions';
 import { EventDispatcherService, events } from '@events';
-import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
+import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { IRequestWithIdentity } from '@interfaces';
@@ -224,7 +223,7 @@ describe('POST /auth/refresh-token', () => {
           accessToken: userLoggedIn.accessToken,
         } satisfies RefreshTokenDto);
       expect(refreshTokenResponse.statusCode).toBe(StatusCode.ClientErrorLoginTimeOut);
-      const data = refreshTokenResponse.body.data as TranslatableHttpException;
+      const data = refreshTokenResponse.body.data as BadRequestException;
       expect(typeof data).toBe('object');
       const { message: refreshTokenMessage }: { message: string } = data;
       expect(refreshTokenMessage).toBe(errorKeys.login.Refresh_Token_Expired);

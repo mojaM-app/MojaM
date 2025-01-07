@@ -47,7 +47,7 @@ export class AuthController extends BaseController {
     } catch (error) {
       next(error);
     }
-  }
+  };
 
   public checkResetPasswordToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -59,7 +59,7 @@ export class AuthController extends BaseController {
     } catch (error) {
       next(error);
     }
-  }
+  };
 
   public resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -69,15 +69,21 @@ export class AuthController extends BaseController {
     } catch (error) {
       next(error);
     }
-  }
+  };
 
   public logIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const model: LoginDto = req.body;
       const result: ILoginResult = await this._authService.login(model);
-      res
-        .status(200)
-        .json(new LoginResponseDto({ ...result.user, accessToken: result.accessToken, refreshToken: result.refreshToken }));
+      res.status(200).json(
+        new LoginResponseDto({
+          id: result.user.id,
+          email: result.user.email,
+          phone: result.user.phone,
+          accessToken: result.accessToken,
+          refreshToken: result.refreshToken,
+        }),
+      );
     } catch (error) {
       next(error);
     }

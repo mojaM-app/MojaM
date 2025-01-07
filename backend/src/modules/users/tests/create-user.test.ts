@@ -2,12 +2,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
-import { errorKeys } from '@exceptions';
+import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
-import { CreateUserDto, CreateUserResponseDto, UserCreatedEvent, UserRoute } from '@modules/users';
+import { CreateUserDto, CreateUserResponseDto, IUserDto, UserCreatedEvent, UserRoute } from '@modules/users';
 import { isGuid, isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
@@ -50,6 +50,8 @@ describe('POST /user', () => {
       expect(user?.email).toBeDefined();
       expect(user?.phone).toBeDefined();
       expect(user.hasOwnProperty('uuid')).toBe(false);
+      expect(user.hasOwnProperty('password')).toBe(false);
+      expect(user).toEqual({ id: user.id, email: user.email, phone: user.phone } satisfies IUserDto);
       expect(createMessage).toBe(events.users.userCreated);
 
       const deleteResponse = await request(app.getServer())
@@ -119,8 +121,8 @@ describe('POST /user', () => {
       expect(createUserResponse.statusCode).toBe(400);
       const body = createUserResponse.body;
       expect(typeof body).toBe('object');
-      const { message: createUserResponseMessage } = body.data;
-      const errors = (createUserResponseMessage as string)?.split(',');
+      const { message: createUserResponseMessage } = body.data as BadRequestException;
+      const errors = createUserResponseMessage.split(',');
       expect(errors.filter(x => !x.includes('Password')).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -138,8 +140,8 @@ describe('POST /user', () => {
       expect(createUserResponse.statusCode).toBe(400);
       const body = createUserResponse.body;
       expect(typeof body).toBe('object');
-      const { message: createUserResponseMessage } = body.data;
-      const errors = (createUserResponseMessage as string)?.split(',');
+      const { message: createUserResponseMessage } = body.data as BadRequestException;
+      const errors = createUserResponseMessage.split(',');
       expect(errors.filter(x => !x.includes('Email')).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -157,8 +159,8 @@ describe('POST /user', () => {
       expect(createUserResponse.statusCode).toBe(400);
       const body = createUserResponse.body;
       expect(typeof body).toBe('object');
-      const { message: createUserResponseMessage } = body.data;
-      const errors = (createUserResponseMessage as string)?.split(',');
+      const { message: createUserResponseMessage } = body.data as BadRequestException;
+      const errors = createUserResponseMessage.split(',');
       expect(errors.filter(x => !x.includes('Phone')).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -184,7 +186,7 @@ describe('POST /user', () => {
       expect(createUserResponse2.statusCode).toBe(400);
       const body = createUserResponse2.body;
       expect(typeof body).toBe('object');
-      const { message: createUserResponse2Message, args: createUserResponse2Args } = body.data;
+      const { message: createUserResponse2Message, args: createUserResponse2Args } = body.data as BadRequestException;
       expect(createUserResponse2Message).toBe(errorKeys.users.User_Already_Exists);
       expect(createUserResponse2Args).toEqual({ email: requestData.email, phone: requestData.phone });
 
@@ -222,7 +224,7 @@ describe('POST /user', () => {
       expect(createUserResponse2.statusCode).toBe(400);
       const body = createUserResponse2.body;
       expect(typeof body).toBe('object');
-      const { message: createUserResponse2Message, args: createUserResponse2Args } = body.data;
+      const { message: createUserResponse2Message, args: createUserResponse2Args } = body.data as BadRequestException;
       expect(createUserResponse2Message).toBe(errorKeys.users.User_Already_Exists);
       expect(createUserResponse2Args).toEqual({ email: requestData.email, phone: requestData.phone });
 
@@ -446,8 +448,8 @@ describe('POST /user', () => {
       expect(createUserUsingBobAccessTokenResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createUserUsingBobAccessTokenResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      const data = body.data as UnauthorizedException;
+      const { message: loginMessage, args: loginArgs } = data;
       expect(loginMessage).toBe(errorKeys.login.Wrong_Authentication_Token);
       expect(loginArgs).toBeUndefined();
 

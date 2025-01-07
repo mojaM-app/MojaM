@@ -1,11 +1,9 @@
+import { FormControl } from '@angular/forms';
+import { IUserForm } from '../user.form';
 import { UserDto } from './user.model';
 
 export class AddUserDto extends UserDto {
-  public constructor() {
-    super();
-  }
-
-  public static create(): AddUserDto {
-    return new AddUserDto();
+  public constructor(formControls: { [K in keyof IUserForm]: FormControl<any> }) {
+    super(formControls);
   }
 }

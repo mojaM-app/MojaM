@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
-import { errorKeys } from '@exceptions';
+import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import {
@@ -340,7 +340,8 @@ describe('POST /auth/request-reset-password', () => {
           .post(authRoute.requestResetPasswordPath)
           .send({ email } satisfies UserTryingToLogInDto);
         expect(response.statusCode).toBe(400);
-        const errors = (response.body.data.message as string)?.split(',');
+        const data = response.body.data as BadRequestException;
+        const errors = data.message.split(',');
         expect(errors.filter(x => x !== errorKeys.users.Invalid_Email).length).toBe(0);
 
         expect(mockSendMail).toHaveBeenCalledTimes(0);

@@ -35,7 +35,6 @@ const logger = winston.createLogger({
       filename: '%DATE%.log',
       maxFiles: 30, // 30 Days saved
       json: false,
-      zippedArchive: true,
     }),
     // error log setting
     new winstonDaily({
@@ -46,7 +45,6 @@ const logger = winston.createLogger({
       maxFiles: 30, // 30 Days saved
       handleExceptions: true,
       json: false,
-      zippedArchive: true,
     }),
   ],
 });

@@ -13,7 +13,7 @@ export class ActivateUserReqDto extends BaseReqDto {
 
 export class ActivateUserResponseDto implements IResponse<boolean> {
   public readonly data: boolean;
-  public readonly message?: string | undefined;
+  public readonly message: string;
 
   public constructor(data: boolean) {
     this.data = data;

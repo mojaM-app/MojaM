@@ -1,9 +1,7 @@
-import { errorKeys } from '@exceptions';
-import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
+import { BadRequestException, errorKeys } from '@exceptions';
 import { IUserId } from '@modules/users';
 import { isNullOrUndefined } from '@utils';
 import { isDate } from '@utils/date.utils';
-import StatusCode from 'status-code-enum';
 import { Service } from 'typedi';
 import { Equal, FindManyOptions, FindOptionsOrder, FindOptionsRelations, FindOptionsSelect, FindOptionsWhere } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
@@ -70,16 +68,13 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
       });
 
       if (isNullOrUndefined(announcements)) {
-        throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcements_Does_Not_Exist, {
+        throw new BadRequestException(errorKeys.announcements.Announcements_Does_Not_Exist, {
           id: reqDto.announcementsId,
         });
       }
 
       if (announcements!.state === AnnouncementStateValue.PUBLISHED && (reqDto.announcements.validFromDate ?? null) === null) {
-        throw new TranslatableHttpException(
-          StatusCode.ClientErrorBadRequest,
-          errorKeys.announcements.Cannot_Save_Published_Announcements_Without_ValidFromDate,
-        );
+        throw new BadRequestException(errorKeys.announcements.Cannot_Save_Published_Announcements_Without_ValidFromDate);
       }
 
       const updateAnnouncementModel = this.getUpdateAnnouncementModel(announcements!, reqDto.announcements);
@@ -195,16 +190,12 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
     });
   }
 
-  public async delete(announcements: Announcement, reqDto: DeleteAnnouncementsReqDto): Promise<boolean> {
-    await this._dbContext.announcementItems
-      .createQueryBuilder()
-      .delete()
-      .where('AnnouncementId = :announcementId', { announcementId: announcements.id })
-      .execute();
+  public async delete(announcementId: number, reqDto: DeleteAnnouncementsReqDto): Promise<boolean> {
+    await this._dbContext.announcementItems.createQueryBuilder().delete().where('AnnouncementId = :announcementId', { announcementId }).execute();
 
-    await this._dbContext.announcements.delete({ id: announcements.id });
+    await this._dbContext.announcements.delete({ id: announcementId });
 
-    await this._cacheService.removeIdFromCacheAsync(announcements.uuid);
+    await this._cacheService.removeIdFromCacheAsync(reqDto.announcementsId);
 
     return true;
   }

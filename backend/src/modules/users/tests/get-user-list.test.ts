@@ -7,14 +7,7 @@ import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-han
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
-import {
-  CreateUserResponseDto,
-  DeleteUserResponseDto,
-  GetUserListResponseDto,
-  UserListRetrievedEvent,
-  UserListRoute,
-  UserRoute,
-} from '@modules/users';
+import { CreateUserResponseDto, GetUserListResponseDto, UserListRetrievedEvent, UserListRoute, UserRoute } from '@modules/users';
 import { isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
@@ -140,11 +133,6 @@ describe('GET/user-list', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
-      expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-      expect(deletedUserUuid).toBe(newUserDto.id);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -213,11 +201,6 @@ describe('GET/user-list', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
-      expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-      expect(deletedUserUuid).toBe(newUserDto.id);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)

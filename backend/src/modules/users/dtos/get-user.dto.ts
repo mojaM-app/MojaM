@@ -14,7 +14,7 @@ export class GetUserReqDto extends BaseReqDto {
 
 export class GetUserResponseDto implements IResponse<IGetUserDto | null> {
   public readonly data: IGetUserDto | null;
-  public readonly message?: string | undefined;
+  public readonly message: string;
 
   public constructor(data: IGetUserDto | null) {
     this.data = data;

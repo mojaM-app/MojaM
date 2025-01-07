@@ -2,12 +2,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
-import { errorKeys } from '@exceptions';
+import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
-import { CreateUserResponseDto, DeleteUserResponseDto, UserRetrievedEvent, UserRoute } from '@modules/users';
+import { CreateUserResponseDto, UserRetrievedEvent, UserRoute } from '@modules/users';
 import { isGuid, isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
@@ -144,11 +144,6 @@ describe('GET/user/:id', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
-      expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-      expect(deletedUserUuid).toBe(newUserDto.id);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -220,11 +215,6 @@ describe('GET/user/:id', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
-      expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-      expect(deletedUserUuid).toBe(newUserDto.id);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -265,7 +255,7 @@ describe('GET/user/:id', () => {
       expect(getUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = getUserResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
+      const data = body.data as BadRequestException;
       const { message: getMessage, args: getArgs } = data;
       expect(getMessage).toBe(errorKeys.users.User_Does_Not_Exist);
       expect(getArgs).toEqual({ id: userId });

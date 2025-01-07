@@ -4,6 +4,8 @@ import { IUser } from 'src/interfaces/users/user.interfaces';
 import { BaseService } from 'src/services/common/base.service';
 import { HttpClientService } from 'src/services/common/httpClient.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
+import { AddUserDto } from '../models/add-user.model';
+import { EditUserDto } from '../models/edit-user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -31,5 +33,23 @@ export class UserService extends BaseService {
           return resp;
         })
       );
+  }
+
+  public create(model: AddUserDto): Observable<IUser> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.user.create())
+      .withBody({ ...model })
+      .post<IUser>()
+      .pipe(this._spinnerService.waitForSubscription());
+  }
+
+  public update(model: EditUserDto): Observable<IUser> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.user.update(model.id))
+      .withBody({ ...model })
+      .put<IUser>()
+      .pipe(this._spinnerService.waitForSubscription());
   }
 }

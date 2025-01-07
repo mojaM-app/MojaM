@@ -69,6 +69,9 @@ export class BaseService {
       path: 'user',
       get: (uuid: string): string =>
         `${environment.backendUrl}/${this.API_ROUTES.user.path}/${uuid}`,
+      create: (): string => `${environment.backendUrl}/${this.API_ROUTES.user.path}`,
+      update: (uuid: string): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.user.path}/${uuid}`,
     },
   };
 

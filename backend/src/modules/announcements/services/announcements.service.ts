@@ -1,6 +1,5 @@
 import { events } from '@events';
-import { errorKeys } from '@exceptions';
-import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
+import { BadRequestException, errorKeys } from '@exceptions';
 import {
   AnnouncementsCreatedEvent,
   AnnouncementsDeletedEvent,
@@ -18,7 +17,6 @@ import {
 } from '@modules/announcements';
 import { BaseService } from '@modules/common';
 import { isDate, isNullOrUndefined } from '@utils';
-import StatusCode from 'status-code-enum';
 import Container, { Service } from 'typedi';
 import { IAnnouncementItemDto } from '../dtos/get-announcements.dto';
 import { Announcement } from '../entities/announcement.entity';
@@ -36,7 +34,7 @@ export class AnnouncementsService extends BaseService {
     const announcements = await this._announcementsRepository.getByUuid(reqDto.announcementsId);
 
     if (isNullOrUndefined(announcements)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcements_Does_Not_Exist, {
+      throw new BadRequestException(errorKeys.announcements.Announcements_Does_Not_Exist, {
         id: reqDto.announcementsId,
       });
     }
@@ -57,11 +55,9 @@ export class AnnouncementsService extends BaseService {
 
     const existAnnouncementWithSameDate = await this._announcementsRepository.checkIfExistWithDate(announcementsModel.validFromDate);
     if (existAnnouncementWithSameDate) {
-      throw new TranslatableHttpException(
-        StatusCode.ClientErrorBadRequest,
-        errorKeys.announcements.Announcements_With_Given_ValidFromDate_Already_Exists,
-        { validFromDate: reqDto.announcements.validFromDate },
-      );
+      throw new BadRequestException(errorKeys.announcements.Announcements_With_Given_ValidFromDate_Already_Exists, {
+        validFromDate: reqDto.announcements.validFromDate,
+      });
     }
 
     const { id: announcementsId } = await this._announcementsRepository.create(reqDto);
@@ -86,11 +82,9 @@ export class AnnouncementsService extends BaseService {
         reqDto.announcementsId,
       );
       if (existAnnouncementWithSameDate) {
-        throw new TranslatableHttpException(
-          StatusCode.ClientErrorBadRequest,
-          errorKeys.announcements.Announcements_With_Given_ValidFromDate_Already_Exists,
-          { validFromDate: reqDto.announcements.validFromDate },
-        );
+        throw new BadRequestException(errorKeys.announcements.Announcements_With_Given_ValidFromDate_Already_Exists, {
+          validFromDate: reqDto.announcements.validFromDate,
+        });
       }
     }
 
@@ -103,11 +97,11 @@ export class AnnouncementsService extends BaseService {
     return dto;
   }
 
-  public async delete(reqDto: DeleteAnnouncementsReqDto): Promise<string | null> {
+  public async delete(reqDto: DeleteAnnouncementsReqDto): Promise<boolean> {
     const announcements = await this._announcementsRepository.getByUuid(reqDto.announcementsId);
 
     if (isNullOrUndefined(announcements)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcements_Does_Not_Exist, {
+      throw new BadRequestException(errorKeys.announcements.Announcements_Does_Not_Exist, {
         id: reqDto.announcementsId,
       });
     }
@@ -115,43 +109,35 @@ export class AnnouncementsService extends BaseService {
     const relatedData: string[] = await this._announcementsRepository.checkIfCanBeDeleted(announcements!.id);
 
     if (relatedData.length > 0) {
-      throw new TranslatableHttpException(
-        StatusCode.ClientErrorBadRequest,
-        errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted,
-        {
-          id: announcements?.uuid,
-          relatedData,
-        },
-      );
+      throw new BadRequestException(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted, {
+        id: announcements?.uuid,
+        relatedData,
+      });
     }
 
-    await this._announcementsRepository.delete(announcements!, reqDto);
+    const result = await this._announcementsRepository.delete(announcements!.id, reqDto);
 
     this._eventDispatcher.dispatch(
       events.announcements.announcementsDeleted,
       new AnnouncementsDeletedEvent(this.announcementToIAnnouncements(announcements!), reqDto.currentUserId!),
     );
 
-    return announcements!.uuid;
+    return result;
   }
 
   public async publish(reqDto: PublishAnnouncementsReqDto): Promise<boolean> {
     const announcements = await this._announcementsRepository.getByUuid(reqDto.announcementsId);
 
     if (isNullOrUndefined(announcements)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.announcements.Announcements_Does_Not_Exist, {
+      throw new BadRequestException(errorKeys.announcements.Announcements_Does_Not_Exist, {
         id: reqDto.announcementsId,
       });
     }
 
     if (isNullOrUndefined(announcements?.validFromDate)) {
-      throw new TranslatableHttpException(
-        StatusCode.ClientErrorBadRequest,
-        errorKeys.announcements.Announcements_Without_ValidFromDate_Can_Not_Be_Published,
-        {
-          id: reqDto.announcementsId,
-        },
-      );
+      throw new BadRequestException(errorKeys.announcements.Announcements_Without_ValidFromDate_Can_Not_Be_Published, {
+        id: reqDto.announcementsId,
+      });
     }
 
     if (announcements!.state === AnnouncementStateValue.PUBLISHED) {

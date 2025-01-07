@@ -2,21 +2,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
-import { errorKeys } from '@exceptions';
+import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
-import {
-  AnnouncementItemContentMaxLength,
-  AnnouncementsRout,
-  AnnouncementStateValue,
-  AnnouncementsTitleMaxLength,
-  CreateAnnouncementsResponseDto,
-  GetAnnouncementsResponseDto,
-} from '@modules/announcements';
+import { AnnouncementsRout, AnnouncementStateValue, CreateAnnouncementsResponseDto, GetAnnouncementsResponseDto } from '@modules/announcements';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
-import { isGuid, isNumber } from '@utils';
+import { isGuid, isNumber, VALIDATOR_SETTINGS } from '@utils';
 import { generateRandomDate, getAdminLoginData } from '@utils/tests.utils';
 import { isDateString } from 'class-validator';
 import { EventDispatcher } from 'event-dispatch';
@@ -47,8 +40,8 @@ describe('POST /announcements', () => {
 
     test('create unpublished announcement', async () => {
       const requestData = generateValidAnnouncements();
-      requestData.title = 'a'.repeat(AnnouncementsTitleMaxLength);
-      requestData.items![0].content = 'a'.repeat(AnnouncementItemContentMaxLength);
+      requestData.title = 'a'.repeat(VALIDATOR_SETTINGS.ANNOUNCEMENTS_TITLE_MAX_LENGTH);
+      requestData.items![0].content = 'a'.repeat(VALIDATOR_SETTINGS.ANNOUNCEMENT_ITEM_CONTENT_MAX_LENGTH);
 
       const createAnnouncementsResponse = await request(app.getServer())
         .post(announcementRoute.path)
@@ -416,14 +409,15 @@ describe('POST /announcements', () => {
 
     test('when title is too long', async () => {
       const requestData = generateValidAnnouncements();
-      requestData.title = 'a'.repeat(AnnouncementsTitleMaxLength + 1);
+      requestData.title = 'a'.repeat(VALIDATOR_SETTINGS.ANNOUNCEMENTS_TITLE_MAX_LENGTH + 1);
 
       const createAnnouncementsResponse = await request(app.getServer())
         .post(announcementRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(400);
-      const errors = (createAnnouncementsResponse.body.data.message as string)?.split(',');
+      const data = createAnnouncementsResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.announcements.Title_Too_Long).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -434,14 +428,15 @@ describe('POST /announcements', () => {
 
     test('when item content is too long', async () => {
       const requestData = generateValidAnnouncements();
-      requestData.items![0].content = 'a'.repeat(AnnouncementItemContentMaxLength + 1);
+      requestData.items![0].content = 'a'.repeat(VALIDATOR_SETTINGS.ANNOUNCEMENT_ITEM_CONTENT_MAX_LENGTH + 1);
 
       const createAnnouncementsResponse = await request(app.getServer())
         .post(announcementRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(400);
-      const errors = (createAnnouncementsResponse.body.data.message as string)?.split(',');
+      const data = createAnnouncementsResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Too_Long).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -459,7 +454,8 @@ describe('POST /announcements', () => {
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(400);
-      const errors = (createAnnouncementsResponse.body.data.message as string)?.split(',');
+      const data = createAnnouncementsResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Is_Required).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -477,7 +473,8 @@ describe('POST /announcements', () => {
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(400);
-      const errors = (createAnnouncementsResponse.body.data.message as string)?.split(',');
+      const data = createAnnouncementsResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Is_Required).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -495,7 +492,8 @@ describe('POST /announcements', () => {
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(400);
-      const errors = (createAnnouncementsResponse.body.data.message as string)?.split(',');
+      const data = createAnnouncementsResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Is_Required).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -540,7 +538,8 @@ describe('POST /announcements', () => {
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(400);
-      const errors = (createAnnouncementsResponse.body.data.message as string)?.split(',');
+      const data = createAnnouncementsResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.announcements.Announcements_With_Given_ValidFromDate_Already_Exists).length).toBe(0);
 
       // cleanup
@@ -758,8 +757,8 @@ describe('POST /announcements', () => {
       expect(createAnnouncementsUsingBobAccessTokenResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsUsingBobAccessTokenResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      const data = body.data as UnauthorizedException;
+      const { message: loginMessage, args: loginArgs } = data;
       expect(loginMessage).toBe(errorKeys.login.Wrong_Authentication_Token);
       expect(loginArgs).toBeUndefined();
 

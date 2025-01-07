@@ -12,8 +12,6 @@ export { AnnouncementsController } from './controllers/announcements.controller'
 export { CurrentAnnouncementsController } from './controllers/current-announcements.controller';
 
 export {
-  AnnouncementItemContentMaxLength,
-  AnnouncementsTitleMaxLength,
   CreateAnnouncementItemDto,
   CreateAnnouncementsDto,
   CreateAnnouncementsReqDto,

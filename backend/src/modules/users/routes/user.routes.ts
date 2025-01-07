@@ -2,7 +2,7 @@ import { ForbiddenException, UnauthorizedException } from '@exceptions';
 import { IRequestWithIdentity, IRoutes } from '@interfaces';
 import { validateData } from '@middlewares';
 import { setIdentity } from '@modules/auth';
-import { CreateUserDto, UserController } from '@modules/users';
+import { CreateUserDto, UpdateUserDto, UserController } from '@modules/users';
 import { REGEX_GUID_PATTERN } from '@utils';
 import express, { NextFunction, Response } from 'express';
 
@@ -37,7 +37,11 @@ export class UserRoute implements IRoutes {
       [setIdentity, this.checkUnlockPermission],
       this._controller.unlock,
     );
-    // this.router.put(`${this.path}/:id(${REGEX_INT_PATTERN)`, ValidationMiddleware(UpdateUserDto, true),verifyToken, this._userController.update);
+    this.router.put(
+      `${this.path}/:id(${REGEX_GUID_PATTERN})`,
+      [validateData(UpdateUserDto), setIdentity, this.checkUpdatePermission],
+      this._controller.update,
+    );
     this.router.delete(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity, this.checkDeletePermission], this._controller.delete);
   }
 
@@ -45,6 +49,16 @@ export class UserRoute implements IRoutes {
     if (!req.identity?.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToAddUser()) {
+      next(new ForbiddenException());
+    } else {
+      next();
+    }
+  };
+
+  private readonly checkUpdatePermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+    if (!req.identity?.isAuthenticated()) {
+      next(new UnauthorizedException());
+    } else if (!req.identity.hasPermissionToEditUser()) {
       next(new ForbiddenException());
     } else {
       next();

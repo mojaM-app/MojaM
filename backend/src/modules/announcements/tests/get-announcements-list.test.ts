@@ -7,7 +7,7 @@ import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-han
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
-import { CreateUserResponseDto, DeleteUserResponseDto, UserRoute } from '@modules/users';
+import { CreateUserResponseDto, UserRoute } from '@modules/users';
 import { isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
@@ -149,16 +149,11 @@ describe('GET/announcements-list', () => {
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
-      const deleteResponse = await request(app.getServer())
+      const deleteUserResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteResponse.statusCode).toBe(200);
-      expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-      expect(deletedUserUuid).toBe(newUserDto.id);
+      expect(deleteUserResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -225,16 +220,11 @@ describe('GET/announcements-list', () => {
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
-      const deleteResponse = await request(app.getServer())
+      const deleteUserResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteResponse.statusCode).toBe(200);
-      expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-      expect(deletedUserUuid).toBe(newUserDto.id);
+      expect(deleteUserResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)

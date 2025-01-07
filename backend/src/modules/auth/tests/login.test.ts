@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
-import { errorKeys } from '@exceptions';
+import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { IRequestWithIdentity } from '@interfaces';
@@ -429,8 +429,8 @@ describe('POST /login', () => {
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      const data = body.data as BadRequestException;
+      const { message: loginMessage, args: loginArgs } = data;
       expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
       expect(loginArgs).toBeUndefined();
 
@@ -477,7 +477,8 @@ describe('POST /login', () => {
       for (const body of bodyData) {
         const response = await request(app.getServer()).post(authRoute.loginPath).send(body);
         expect(response.statusCode).toBe(400);
-        const errors = (response.body.data.message as string)?.split(',');
+        const data = response.body.data as BadRequestException;
+        const errors = data.message.split(',');
         expect(errors.filter(x => !x.includes('Login')).length).toBe(0);
       }
 
@@ -508,7 +509,8 @@ describe('POST /login', () => {
       for (const body of bodyData) {
         const response = await request(app.getServer()).post(authRoute.loginPath).send(body);
         expect(response.statusCode).toBe(400);
-        const errors = (response.body.data.message as string)?.split(',');
+        const data = response.body.data as BadRequestException;
+        const errors = data.message.split(',');
         expect(errors.filter(x => !x.includes('Password')).length).toBe(0);
       }
 
@@ -536,8 +538,8 @@ describe('POST /login', () => {
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      const data = body.data as BadRequestException;
+      const { message: loginMessage, args: loginArgs } = data;
       expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
       expect(loginArgs).toBeUndefined();
 
@@ -555,8 +557,8 @@ describe('POST /login', () => {
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      const data = body.data as BadRequestException;
+      const { message: loginMessage, args: loginArgs } = data;
       expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
       expect(loginArgs).toBeUndefined();
 
@@ -587,8 +589,8 @@ describe('POST /login', () => {
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      const data = body.data as BadRequestException;
+      const { message: loginMessage, args: loginArgs } = data;
       expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
       expect(loginArgs).toBeUndefined();
 
@@ -639,8 +641,8 @@ describe('POST /login', () => {
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      const data = body.data as BadRequestException;
+      const { message: loginMessage, args: loginArgs } = data;
       expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
       expect(loginArgs).toBeUndefined();
 
@@ -693,8 +695,8 @@ describe('POST /login', () => {
         expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
         const body = loginResponse.body;
         expect(typeof body).toBe('object');
-        const data = body.data;
-        const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+        const data = body.data as BadRequestException;
+        const { message: loginMessage, args: loginArgs } = data;
         expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
         expect(loginArgs).toBeUndefined();
       }
@@ -704,8 +706,8 @@ describe('POST /login', () => {
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      const data = body.data as BadRequestException;
+      const { message: loginMessage, args: loginArgs } = data;
       expect(loginMessage).toBe(errorKeys.login.User_Is_Locked_Out);
       expect(loginArgs).toBeUndefined();
 
@@ -762,8 +764,8 @@ describe('POST /login', () => {
         expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
         const body = loginResponse.body;
         expect(typeof body).toBe('object');
-        const data = body.data;
-        const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+        const data = body.data as BadRequestException;
+        const { message: loginMessage, args: loginArgs } = data;
         expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
         expect(loginArgs).toBeUndefined();
       }
@@ -773,8 +775,8 @@ describe('POST /login', () => {
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      const data = body.data as BadRequestException;
+      const { message: loginMessage, args: loginArgs } = data;
       expect(loginMessage).toBe(errorKeys.login.User_Is_Locked_Out);
       expect(loginArgs).toBeUndefined();
 
@@ -830,8 +832,8 @@ describe('POST /login', () => {
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = loginResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      const data = body.data as BadRequestException;
+      const { message: loginMessage, args: loginArgs } = data;
       expect(loginMessage).toBe(errorKeys.login.User_Password_Is_Not_Set);
       expect(loginArgs).toBeUndefined();
 
@@ -878,8 +880,8 @@ describe('POST /login', () => {
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      const data = body.data as BadRequestException;
+      const { message: loginMessage, args: loginArgs } = data;
       expect(loginMessage).toBe(errorKeys.login.User_Is_Not_Active);
       expect(loginArgs).toBeUndefined();
 
@@ -930,8 +932,8 @@ describe('POST /login', () => {
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      const data = body.data as BadRequestException;
+      const { message: loginMessage, args: loginArgs } = data;
       expect(loginMessage).toBe(errorKeys.login.User_Is_Not_Active);
       expect(loginArgs).toBeUndefined();
 
@@ -988,8 +990,8 @@ describe('POST /login', () => {
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      const data = body.data as BadRequestException;
+      const { message: loginMessage, args: loginArgs } = data;
       expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
       expect(loginArgs).toBeUndefined();
 

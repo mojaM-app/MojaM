@@ -8,6 +8,7 @@ import { UserDetailsRetrievedEvent } from './user-details-retrieved-event';
 import { UserListRetrievedEvent } from './user-list-retrieved-event';
 import { UserRetrievedEvent } from './user-retrieved-event';
 import { UserUnlockedEvent } from './user-unlocked-event';
+import { UserUpdatedEvent } from './user-updated-event';
 
 @EventSubscriber()
 export class UserEventSubscriber {
@@ -19,6 +20,11 @@ export class UserEventSubscriber {
   @On(events.users.userCreated)
   public onUserCreated(data: UserCreatedEvent): void {
     console.log(`User ${data?.user?.email} (phone: ${data?.user?.phone}) created!`);
+  }
+
+  @On(events.users.userUpdated)
+  public onUserUpdated(data: UserUpdatedEvent): void {
+    console.log(`User ${data?.user?.email} (phone: ${data?.user?.phone}) updated!`);
   }
 
   @On(events.users.userDeleted)

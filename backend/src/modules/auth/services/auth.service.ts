@@ -1,6 +1,6 @@
 import { CLIENT_APP_URL } from '@config';
 import { events } from '@events';
-import { errorKeys } from '@exceptions';
+import { BadRequestException, errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import {
   AuthRoute,
@@ -147,27 +147,27 @@ export class AuthService extends BaseService {
 
   public async resetPassword(data: ResetPasswordDto): Promise<ResetPasswordResultDto> {
     if (!this._passwordService.isPasswordValid(data?.password)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.Invalid_Password);
+      throw new BadRequestException(errorKeys.users.Invalid_Password);
     }
 
     if (isNullOrEmptyString(data?.token)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.Invalid_Reset_Password_Token);
+      throw new BadRequestException(errorKeys.login.Invalid_Reset_Password_Token);
     }
 
     if (isNullOrEmptyString(data?.userId)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.Invalid_User_Id);
+      throw new BadRequestException(errorKeys.users.Invalid_User_Id);
     }
 
     const user: User | null = await this._userRepository.getByUuid(data.userId);
 
     if (isNullOrUndefined(user)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.Invalid_User_Id);
+      throw new BadRequestException(errorKeys.users.Invalid_User_Id);
     }
 
     const token = await this._resetPasswordTokensRepository.getLastToken(user!.id);
 
     if (isNullOrUndefined(token) || this._resetPasswordTokensRepository.isTokenExpired(token) || token!.token !== data.token) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.Invalid_Reset_Password_Token);
+      throw new BadRequestException(errorKeys.login.Invalid_Reset_Password_Token);
     }
 
     await this._userRepository.setPassword(user!.id, data.password!);
@@ -189,25 +189,25 @@ export class AuthService extends BaseService {
     const users: User[] = await this._userRepository.findManyByLogin(data?.email, data?.phone);
 
     if (users?.length !== 1) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.Invalid_Login_Or_Password);
+      throw new BadRequestException(errorKeys.login.Invalid_Login_Or_Password);
     }
 
     const user: User = users[0];
 
     if (isNullOrEmptyString(user.password)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.User_Password_Is_Not_Set);
+      throw new BadRequestException(errorKeys.login.User_Password_Is_Not_Set);
     }
 
     const userDto = userToIUser(user);
 
     if (!user.isActive) {
       this._eventDispatcher.dispatch(events.users.inactiveUserTriesToLogIn, new InactiveUserTriesToLogInEvent(userDto));
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.User_Is_Not_Active);
+      throw new BadRequestException(errorKeys.login.User_Is_Not_Active);
     }
 
     if (user.isLockedOut) {
       this._eventDispatcher.dispatch(events.users.lockedUserTriesToLogIn, new LockedUserTriesToLogInEvent(userDto));
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.User_Is_Locked_Out);
+      throw new BadRequestException(errorKeys.login.User_Is_Locked_Out);
     }
 
     const isPasswordMatching: boolean = this._passwordService.passwordMatches(data.password ?? '', user.salt, user.password!);
@@ -223,7 +223,7 @@ export class AuthService extends BaseService {
         this._eventDispatcher.dispatch(events.users.userLockedOut, new UserLockedOutEvent(userDto));
       }
 
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.Invalid_Login_Or_Password);
+      throw new BadRequestException(errorKeys.login.Invalid_Login_Or_Password);
     } else {
       await this._userRepository.updateAfterLogin(user.id);
     }

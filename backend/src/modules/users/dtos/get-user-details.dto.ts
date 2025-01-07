@@ -14,7 +14,7 @@ export class GetUserDetailsReqDto extends BaseReqDto {
 
 export class GetUserDetailsResponseDto implements IResponse<IUserDetailsDto | null> {
   public readonly data: IUserDetailsDto | null;
-  public readonly message?: string | undefined;
+  public readonly message: string;
 
   public constructor(data: IUserDetailsDto | null) {
     this.data = data;

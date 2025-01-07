@@ -12,7 +12,7 @@ import {
   PermissionsRoute,
   SystemPermission,
 } from '@modules/permissions';
-import { CreateUserResponseDto, DeleteUserResponseDto, IUserDto, UserDetailsRoute, UserRoute } from '@modules/users';
+import { CreateUserResponseDto, IUserDto, UserDetailsRoute, UserRoute } from '@modules/users';
 import { isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
@@ -85,7 +85,7 @@ describe('DELETE /permissions', () => {
       const response = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(response.statusCode).toBe(400);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
-      const body = response.body;
+      const body = response.body as DeletePermissionsResponseDto;
       expect(typeof body).toBe('object');
       const data = body.data;
       expect(data).toBe(false);
@@ -119,7 +119,7 @@ describe('DELETE /permissions', () => {
       const response = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(response.statusCode).toBe(400);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
-      const body = response.body;
+      const body = response.body as DeletePermissionsResponseDto;
       expect(typeof body).toBe('object');
       const data = body.data;
       expect(data).toBe(false);
@@ -221,11 +221,6 @@ describe('DELETE /permissions', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
-      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-      expect(deletedUserUuid).toBe(user.id);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -297,11 +292,6 @@ describe('DELETE /permissions', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
-      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-      expect(deletedUserUuid).toBe(user.id);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -394,11 +384,6 @@ describe('DELETE /permissions', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
-      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-      expect(deletedUserUuid).toBe(user.id);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -451,12 +436,6 @@ describe('DELETE /permissions', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
-      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid, message: deleteMessage }: DeleteUserResponseDto = body;
-      expect(deleteMessage).toBe(events.users.userDeleted);
-      expect(deletedUserUuid).toBe(user.id);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -537,12 +516,6 @@ describe('DELETE /permissions', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
-      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid, message: deleteMessage }: DeleteUserResponseDto = body;
-      expect(deleteMessage).toBe(events.users.userDeleted);
-      expect(deletedUserUuid).toBe(user.id);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)

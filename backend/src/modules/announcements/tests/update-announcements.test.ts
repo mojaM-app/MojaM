@@ -2,14 +2,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
-import { errorKeys } from '@exceptions';
+import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import {
-  AnnouncementItemContentMaxLength,
   AnnouncementsRout,
   AnnouncementStateValue,
-  AnnouncementsTitleMaxLength,
   CreateAnnouncementsResponseDto,
   GetAnnouncementsResponseDto,
   UpdateAnnouncementsDto,
@@ -18,7 +16,7 @@ import {
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
-import { isGuid, isNumber } from '@utils';
+import { isGuid, isNumber, VALIDATOR_SETTINGS } from '@utils';
 import { generateRandomDate, getAdminLoginData } from '@utils/tests.utils';
 import { isDateString } from 'class-validator';
 import { EventDispatcher } from 'event-dispatch';
@@ -1078,7 +1076,7 @@ describe('PUT /announcements', () => {
       expect(announcementsId).toBeDefined();
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        title: 'a'.repeat(AnnouncementsTitleMaxLength + 1),
+        title: 'a'.repeat(VALIDATOR_SETTINGS.ANNOUNCEMENTS_TITLE_MAX_LENGTH + 1),
         setDefaultValues: () => {},
       };
       const updateAnnouncementsResponse = await request(app.getServer())
@@ -1086,7 +1084,8 @@ describe('PUT /announcements', () => {
         .send(updateAnnouncementsModel)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(updateAnnouncementsResponse.statusCode).toBe(400);
-      const errors = (updateAnnouncementsResponse.body.data.message as string)?.split(',');
+      const data = updateAnnouncementsResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.announcements.Title_Too_Long).length).toBe(0);
 
       // cleanup
@@ -1123,7 +1122,7 @@ describe('PUT /announcements', () => {
         setDefaultValues: () => {},
         items: [
           {
-            content: 'a'.repeat(AnnouncementItemContentMaxLength + 1),
+            content: 'a'.repeat(VALIDATOR_SETTINGS.ANNOUNCEMENT_ITEM_CONTENT_MAX_LENGTH + 1),
             setDefaultValues: () => {},
           },
         ],
@@ -1134,7 +1133,8 @@ describe('PUT /announcements', () => {
         .send(updateAnnouncementsModel)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(updateAnnouncementsResponse.statusCode).toBe(400);
-      const errors = (updateAnnouncementsResponse.body.data.message as string)?.split(',');
+      const data = updateAnnouncementsResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Too_Long).length).toBe(0);
 
       // cleanup
@@ -1182,7 +1182,8 @@ describe('PUT /announcements', () => {
         .send(updateAnnouncementsModel)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(updateAnnouncementsResponse.statusCode).toBe(400);
-      const errors = (updateAnnouncementsResponse.body.data.message as string)?.split(',');
+      const data = updateAnnouncementsResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Is_Required).length).toBe(0);
 
       // cleanup
@@ -1230,7 +1231,8 @@ describe('PUT /announcements', () => {
         .send(updateAnnouncementsModel)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(updateAnnouncementsResponse.statusCode).toBe(400);
-      const errors = (updateAnnouncementsResponse.body.data.message as string)?.split(',');
+      const data = updateAnnouncementsResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Is_Required).length).toBe(0);
 
       // cleanup
@@ -1278,7 +1280,8 @@ describe('PUT /announcements', () => {
         .send(updateAnnouncementsModel)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(updateAnnouncementsResponse.statusCode).toBe(400);
-      const errors = (updateAnnouncementsResponse.body.data.message as string)?.split(',');
+      const data = updateAnnouncementsResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Is_Required).length).toBe(0);
 
       // cleanup
@@ -1336,7 +1339,8 @@ describe('PUT /announcements', () => {
         .send(updateAnnouncementsModel)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(updateAnnouncementsResponse.statusCode).toBe(400);
-      const errors = (updateAnnouncementsResponse.body.data.message as string)?.split(',');
+      const data = updateAnnouncementsResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.announcements.Announcements_With_Given_ValidFromDate_Already_Exists).length).toBe(0);
 
       // cleanup
@@ -1391,7 +1395,8 @@ describe('PUT /announcements', () => {
         .send(updateAnnouncementsModel)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(updateAnnouncementsResponse.statusCode).toBe(400);
-      const errors = (updateAnnouncementsResponse.body.data.message as string)?.split(',');
+      const data = updateAnnouncementsResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.announcements.Announcements_Does_Not_Exist).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -1433,7 +1438,8 @@ describe('PUT /announcements', () => {
         .send(updateAnnouncementsModel)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(updateAnnouncementsResponse.statusCode).toBe(400);
-      const errors = (updateAnnouncementsResponse.body.data.message as string)?.split(',');
+      const data = updateAnnouncementsResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.announcements.Cannot_Save_Published_Announcements_Without_ValidFromDate).length).toBe(0);
 
       // cleanup
@@ -1661,8 +1667,8 @@ describe('PUT /announcements', () => {
       expect(updateAnnouncementsUsingBobAccessTokenResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = updateAnnouncementsUsingBobAccessTokenResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      const data = body.data as UnauthorizedException;
+      const { message: loginMessage, args: loginArgs } = data;
       expect(loginMessage).toBe(errorKeys.login.Wrong_Authentication_Token);
       expect(loginArgs).toBeUndefined();
 

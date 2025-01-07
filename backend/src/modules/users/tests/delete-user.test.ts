@@ -2,7 +2,7 @@
 import { App } from '@/app';
 import { relatedDataNames } from '@db';
 import { EventDispatcherService, events } from '@events';
-import { errorKeys } from '@exceptions';
+import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { AnnouncementsRout, CreateAnnouncementsResponseDto, GetAnnouncementsResponseDto, UpdateAnnouncementsDto } from '@modules/announcements';
@@ -66,9 +66,9 @@ describe('DELETE /user', () => {
       expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = deleteResponse.body;
       expect(typeof body).toBe('object');
-      const { data: deletedUserUuid, message: deleteMessage }: DeleteUserResponseDto = body;
+      const { data: deletedUserResult, message: deleteMessage }: DeleteUserResponseDto = body;
       expect(deleteMessage).toBe(events.users.userDeleted);
-      expect(deletedUserUuid).toBe(newUserDto.id);
+      expect(deletedUserResult).toBe(true);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -114,9 +114,9 @@ describe('DELETE /user', () => {
       expect(deleteUserWithSystemPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = deleteUserWithSystemPermissionResponse.body;
       expect(typeof body).toBe('object');
-      const { data: deletedUserUuid, message: deleteMessage }: DeleteUserResponseDto = body;
+      const { data: deletedUserResult, message: deleteMessage }: DeleteUserResponseDto = body;
       expect(deleteMessage).toBe(events.users.userDeleted);
-      expect(deletedUserUuid).toBe(user.id);
+      expect(deletedUserResult).toBe(true);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -180,9 +180,9 @@ describe('DELETE /user', () => {
       expect(deleteUserWithSystemPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = deleteUserWithSystemPermissionResponse.body;
       expect(typeof body).toBe('object');
-      const { data: deletedUserUuid, message: deleteMessage }: DeleteUserResponseDto = body;
+      const { data: deletedUserResult, message: deleteMessage }: DeleteUserResponseDto = body;
       expect(deleteMessage).toBe(events.users.userDeleted);
-      expect(deletedUserUuid).toBe(user.id);
+      expect(deletedUserResult).toBe(true);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -233,9 +233,9 @@ describe('DELETE /user', () => {
       expect(deleteUserWithResetPasswordTokenResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = deleteUserWithResetPasswordTokenResponse.body;
       expect(typeof body).toBe('object');
-      const { data: deletedUserUuid, message: deleteMessage }: DeleteUserResponseDto = body;
+      const { data: deletedUserResult, message: deleteMessage }: DeleteUserResponseDto = body;
       expect(deleteMessage).toBe(events.users.userDeleted);
-      expect(deletedUserUuid).toBe(user.id);
+      expect(deletedUserResult).toBe(true);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -320,9 +320,9 @@ describe('DELETE /user', () => {
       expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = deleteResponse.body;
       expect(typeof body).toBe('object');
-      const { data: deletedUserUuid, message: deleteMessage }: DeleteUserResponseDto = body;
+      const { data: deletedUserResult, message: deleteMessage }: DeleteUserResponseDto = body;
       expect(deleteMessage).toBe(events.users.userDeleted);
-      expect(deletedUserUuid).toBe(user.id);
+      expect(deletedUserResult).toBe(true);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -396,9 +396,9 @@ describe('DELETE /user', () => {
       expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = deleteResponse.body;
       expect(typeof body).toBe('object');
-      const { data: deletedUserUuid, message: deleteMessage }: DeleteUserResponseDto = body;
+      const { data: deletedUserResult, message: deleteMessage }: DeleteUserResponseDto = body;
       expect(deleteMessage).toBe(events.users.userDeleted);
-      expect(deletedUserUuid).toBe(user.id);
+      expect(deletedUserResult).toBe(true);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -438,7 +438,7 @@ describe('DELETE /user', () => {
       expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = deleteResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
+      const data = body.data as BadRequestException;
       const { message: deleteMessage, args: deleteArgs } = data;
       expect(deleteMessage).toBe(errorKeys.users.User_Does_Not_Exist);
       expect(deleteArgs).toEqual({ id: userId });
@@ -515,8 +515,8 @@ describe('DELETE /user', () => {
       expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = deleteUserResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: deleteUserMessage, args: deleteUserArgs }: { message: string; args: string[] } = data;
+      const data = body.data as BadRequestException;
+      const { message: deleteUserMessage, args: deleteUserArgs } = data;
       expect(deleteUserMessage).toBe(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted);
       expect(deleteUserArgs).toEqual({ id: user1.id, relatedData: [relatedDataNames.SystemPermission_AssignedBy] });
 
@@ -611,8 +611,8 @@ describe('DELETE /user', () => {
       expect(deleteUserResponse.statusCode).toBe(400);
       expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = deleteUserResponse.body;
-      const data = body.data;
-      const { message: deleteUserMessage, args: deleteUserArgs }: { message: string; args: string[] } = data;
+      const data = body.data as BadRequestException;
+      const { message: deleteUserMessage, args: deleteUserArgs } = data;
       expect(deleteUserMessage).toBe(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted);
       expect(deleteUserArgs).toEqual({
         id: user.id,
@@ -709,8 +709,8 @@ describe('DELETE /user', () => {
       expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = deleteUserResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: deleteUserMessage, args: deleteUserArgs }: { message: string; args: string[] } = data;
+      const data = body.data as BadRequestException;
+      const { message: deleteUserMessage, args: deleteUserArgs } = data;
       expect(deleteUserMessage).toBe(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted);
       expect(deleteUserArgs).toEqual({ id: user.id, relatedData: [relatedDataNames.Announcements_PublishedBy] });
 
@@ -829,8 +829,8 @@ describe('DELETE /user', () => {
       expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = deleteUserResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: deleteUserMessage, args: deleteUserArgs }: { message: string; args: string[] } = data;
+      const data = body.data as BadRequestException;
+      const { message: deleteUserMessage, args: deleteUserArgs } = data;
       expect(deleteUserMessage).toBe(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted);
       expect(deleteUserArgs).toEqual({ id: user.id, relatedData: [relatedDataNames.AnnouncementItems_CreatedBy] });
 
@@ -950,8 +950,8 @@ describe('DELETE /user', () => {
       expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = deleteUserResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: deleteUserMessage, args: deleteUserArgs }: { message: string; args: string[] } = data;
+      const data = body.data as BadRequestException;
+      const { message: deleteUserMessage, args: deleteUserArgs } = data;
       expect(deleteUserMessage).toBe(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted);
       expect(deleteUserArgs).toEqual({ id: user.id, relatedData: [relatedDataNames.AnnouncementItems_UpdatedBy] });
 

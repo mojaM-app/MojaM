@@ -2,17 +2,16 @@ import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { IHasDefaultValues, IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
-import { isNullOrUndefined } from '@utils';
+import { isNullOrUndefined, VALIDATOR_SETTINGS } from '@utils';
 import { Type } from 'class-transformer';
 import { IsArray, IsDate, IsNotEmpty, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
-import { AnnouncementItemContentMaxLength, AnnouncementsTitleMaxLength } from './create-announcements.dto';
 
 export class UpdateAnnouncementItemDto implements IHasDefaultValues {
   public id?: string;
 
   @IsNotEmpty({ message: errorKeys.announcements.Item_Content_Is_Required })
   @IsString({ message: errorKeys.announcements.Item_Content_Is_Required })
-  @MaxLength(AnnouncementItemContentMaxLength, { message: errorKeys.announcements.Item_Content_Too_Long })
+  @MaxLength(VALIDATOR_SETTINGS.ANNOUNCEMENT_ITEM_CONTENT_MAX_LENGTH, { message: errorKeys.announcements.Item_Content_Too_Long })
   public content: string;
 
   public setDefaultValues(): void {
@@ -24,7 +23,7 @@ export class UpdateAnnouncementItemDto implements IHasDefaultValues {
 
 export class UpdateAnnouncementsDto implements IHasDefaultValues {
   @IsOptional()
-  @MaxLength(AnnouncementsTitleMaxLength, { message: errorKeys.announcements.Title_Too_Long })
+  @MaxLength(VALIDATOR_SETTINGS.ANNOUNCEMENTS_TITLE_MAX_LENGTH, { message: errorKeys.announcements.Title_Too_Long })
   public title?: string | null;
 
   @IsOptional()
@@ -60,7 +59,7 @@ export class UpdateAnnouncementsReqDto extends BaseReqDto {
 
 export class UpdateAnnouncementsResponseDto implements IResponse<string> {
   public readonly data: string;
-  public readonly message?: string | undefined;
+  public readonly message: string;
 
   public constructor(data: string) {
     this.data = data;

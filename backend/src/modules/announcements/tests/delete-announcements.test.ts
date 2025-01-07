@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
-import { errorKeys } from '@exceptions';
+import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { AnnouncementsRout, CreateAnnouncementsResponseDto } from '@modules/announcements';
@@ -85,7 +85,7 @@ describe('DELETE /announcements', () => {
       expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = deleteResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
+      const data = body.data as BadRequestException;
       const { message: deleteMessage, args: deleteArgs } = data;
       expect(deleteMessage).toBe(errorKeys.announcements.Announcements_Does_Not_Exist);
       expect(deleteArgs).toEqual({ id: userId });
@@ -322,8 +322,8 @@ describe('DELETE /announcements', () => {
       expect(createAnnouncementsUsingBobAccessTokenResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsUsingBobAccessTokenResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      const data = body.data as UnauthorizedException;
+      const { message: loginMessage, args: loginArgs } = data;
       expect(loginMessage).toBe(errorKeys.login.Wrong_Authentication_Token);
       expect(loginArgs).toBeUndefined();
 

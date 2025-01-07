@@ -1,7 +1,7 @@
 import { relatedDataNames } from '@db';
-import { errorKeys } from '@exceptions';
-import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
+import { BadRequestException, errorKeys } from '@exceptions';
 import { CryptoService, PasswordService } from '@modules/auth';
+import { ResetPasswordTokensRepository } from '@modules/auth/repositories/reset-password-tokens.repository';
 import {
   ActivateUserReqDto,
   CreateUserDto,
@@ -10,11 +10,13 @@ import {
   DeleteUserReqDto,
   LockUserReqDto,
   UnlockUserReqDto,
+  UpdateUserDto,
+  UpdateUserModel,
   UpdateUserReqDto,
 } from '@modules/users';
 import { getDateTimeNow, isNullOrEmptyString } from '@utils';
-import StatusCode from 'status-code-enum';
 import Container, { Service } from 'typedi';
+import { Not } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { ICreateUser } from '../interfaces/create-user.interfaces';
 import { IUpdateUser, IUpdateUserPassword } from '../interfaces/update-user.interfaces';
@@ -24,11 +26,13 @@ import { BaseUserRepository } from './base.user.repository';
 export class UserRepository extends BaseUserRepository {
   private readonly _cryptoService: CryptoService;
   private readonly _passwordService: PasswordService;
+  private readonly _resetPasswordTokensRepository: ResetPasswordTokensRepository;
 
   public constructor() {
     super();
     this._cryptoService = Container.get(CryptoService);
     this._passwordService = Container.get(PasswordService);
+    this._resetPasswordTokensRepository = Container.get(ResetPasswordTokensRepository);
   }
 
   public async findManyByLogin(email: string | null | undefined, phone?: string | null | undefined): Promise<User[]> {
@@ -46,13 +50,17 @@ export class UserRepository extends BaseUserRepository {
     return users;
   }
 
-  public async checkIfExists(user: { email: string; phone: string } | null | undefined): Promise<boolean> {
+  public async checkIfExists(user: { email: string; phone: string } | null | undefined, skippedUserId?: number): Promise<boolean> {
     if (isNullOrEmptyString(user?.email) || isNullOrEmptyString(user?.phone)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.Invalid_Email_Or_Phone);
+      throw new BadRequestException(errorKeys.users.Invalid_Email_Or_Phone);
     }
 
     const count: number = await this._dbContext.users.count({
-      where: { email: user!.email, phone: user!.phone },
+      where: {
+        id: Not(skippedUserId ?? 0),
+        email: user!.email,
+        phone: user!.phone,
+      },
     });
 
     return count > 0;
@@ -61,13 +69,17 @@ export class UserRepository extends BaseUserRepository {
   public async create(reqDto: CreateUserReqDto): Promise<User> {
     const userData: CreateUserDto = reqDto.userData;
     if ((userData.password?.length ?? 0) > 0 && !this._passwordService.isPasswordValid(userData.password)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.Invalid_Password);
+      throw new BadRequestException(errorKeys.users.Invalid_Password);
     }
 
     const salt = this._cryptoService.generateSalt();
     const hashedPassword = (userData.password?.length ?? 0) > 0 ? this._passwordService.hashPassword(salt, userData.password!) : null;
     const model = {
-      ...userData,
+      email: userData.email,
+      phone: userData.phone,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      joiningDate: userData.joiningDate,
       password: hashedPassword,
       isActive: false,
       salt,
@@ -82,6 +94,20 @@ export class UserRepository extends BaseUserRepository {
     const entity = this._dbContext.users.create(model);
 
     return await this._dbContext.users.save(entity);
+  }
+
+  public async update(userId: number, reqDto: UpdateUserReqDto): Promise<User | null> {
+    const userData: UpdateUserDto = reqDto.userData;
+
+    const model = new UpdateUserModel(userId, {
+      email: userData.email,
+      phone: userData.phone,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      joiningDate: userData.joiningDate,
+    } satisfies IUpdateUser) satisfies UpdateUserModel;
+
+    return await this._update(model);
   }
 
   public async checkIfCanBeDeleted(userId: number): Promise<string[]> {
@@ -120,98 +146,87 @@ export class UserRepository extends BaseUserRepository {
       .map((x: { count: number; entities: string }) => x.entities);
   }
 
-  public async delete(user: User, reqDto: DeleteUserReqDto): Promise<boolean> {
-    await this._dbContext.userSystemPermissions.createQueryBuilder().delete().where('userId = :userId', { userId: user.id }).execute();
+  public async delete(userId: number, reqDto: DeleteUserReqDto): Promise<boolean> {
+    await this._dbContext.userSystemPermissions.createQueryBuilder().delete().where('userId = :userId', { userId }).execute();
+    await this._resetPasswordTokensRepository.deleteTokens(userId);
 
-    await this._dbContext.users.delete({ id: user.id });
+    await this._dbContext.users.delete({ id: userId });
 
-    await this._cacheService.removeIdFromCacheAsync(user.uuid);
+    await this._cacheService.removeIdFromCacheAsync(reqDto.userGuid);
 
     return true;
   }
 
   public async activate(userId: number, reqDto?: ActivateUserReqDto): Promise<User | null> {
-    const updateReqDto = new UpdateUserReqDto(
-      userId,
-      {
-        isActive: true,
-      } satisfies IUpdateUser,
-      reqDto?.currentUserId,
-    );
+    const model = new UpdateUserModel(userId, {
+      isActive: true,
+    } satisfies IUpdateUser);
 
-    return await this.update(updateReqDto);
+    return await this._update(model);
   }
 
   public async deactivate(userId: number, reqDto?: DeactivateUserReqDto): Promise<User | null> {
-    const updateReqDto = new UpdateUserReqDto(
-      userId,
-      {
-        isActive: false,
-      } satisfies IUpdateUser,
-      reqDto?.currentUserId,
-    ) satisfies UpdateUserReqDto;
+    const model = new UpdateUserModel(userId, {
+      isActive: false,
+    } satisfies IUpdateUser) satisfies UpdateUserModel;
 
-    return await this.update(updateReqDto);
+    return await this._update(model);
   }
 
   public async increaseFailedLoginAttempts(userId: number, currentFailedLoginAttempts: number): Promise<number> {
-    const reqDto = {
+    const model = {
       userId,
       userData: {
         failedLoginAttempts: currentFailedLoginAttempts,
       },
-      currentUserId: undefined,
-    } satisfies UpdateUserReqDto;
+    } satisfies UpdateUserModel;
 
-    reqDto.userData.failedLoginAttempts++;
+    model.userData.failedLoginAttempts++;
 
-    const user = await this.update(reqDto);
+    const user = await this._update(model);
 
     return user?.failedLoginAttempts ?? 0;
   }
 
   public async lockOut(userId: number, reqDto?: LockUserReqDto): Promise<User | null> {
-    const updateReqDto = {
+    const model = {
       userId,
       userData: {
         isLockedOut: true,
       } satisfies IUpdateUser,
-      currentUserId: reqDto?.currentUserId,
-    } satisfies UpdateUserReqDto;
+    } satisfies UpdateUserModel;
 
-    return await this.update(updateReqDto);
+    return await this._update(model);
   }
 
   public async unlock(userId: number, reqDto?: UnlockUserReqDto): Promise<User | null> {
-    const updateReqDto = {
+    const model = {
       userId,
       userData: {
         isLockedOut: false,
       } satisfies IUpdateUser,
-      currentUserId: reqDto?.currentUserId,
-    } satisfies UpdateUserReqDto;
+    } satisfies UpdateUserModel;
 
-    return await this.update(updateReqDto);
+    return await this._update(model);
   }
 
   public async updateAfterLogin(userId: number): Promise<void> {
-    const reqDto = {
+    const model = {
       userId,
       userData: {
         lastLoginAt: getDateTimeNow(),
         failedLoginAttempts: 0,
       } satisfies IUpdateUser,
-      currentUserId: undefined,
-    } satisfies UpdateUserReqDto;
+    } satisfies UpdateUserModel;
 
-    await this.update(reqDto);
+    await this._update(model);
   }
 
   public async setPassword(userId: number, password: string): Promise<void> {
     const salt = this._cryptoService.generateSalt();
     const hashedPassword = this._passwordService.hashPassword(salt, password);
 
-    const reqDto = {
+    const model = {
       userId,
       userData: {
         password: hashedPassword,
@@ -219,15 +234,14 @@ export class UserRepository extends BaseUserRepository {
         emailConfirmed: true,
         failedLoginAttempts: 0,
       } satisfies IUpdateUserPassword,
-      currentUserId: undefined,
-    } satisfies UpdateUserReqDto;
+    } satisfies UpdateUserModel;
 
-    await this.update(reqDto);
+    await this._update(model);
   }
 
-  private async update(reqDto: UpdateUserReqDto): Promise<User | null> {
-    await this._dbContext.users.update(reqDto.userId, reqDto.userData);
+  private async _update(model: UpdateUserModel): Promise<User | null> {
+    await this._dbContext.users.update(model.userId, model.userData);
 
-    return await this._dbContext.users.findOne({ where: { id: reqDto.userId } });
+    return await this._dbContext.users.findOne({ where: { id: model.userId } });
   }
 }

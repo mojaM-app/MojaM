@@ -6,10 +6,15 @@ export interface IUpdateUserPassword {
 }
 
 export interface IUpdateUser {
+  email?: string;
+  phone?: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  joiningDate?: Date | null;
   isActive?: boolean;
   failedLoginAttempts?: number;
   isLockedOut?: boolean;
-  lastLoginAt?: Date;
+  lastLoginAt?: Date | null;
 }
 
 export type TUpdateUser = IUpdateUser | IUpdateUserPassword;

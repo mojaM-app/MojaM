@@ -10,14 +10,18 @@ import {
   DeactivateUserResponseDto,
   DeleteUserReqDto,
   DeleteUserResponseDto,
+  GetUserReqDto,
+  GetUserResponseDto,
   UnlockUserReqDto,
   UnlockUserResponseDto,
+  UpdateUserDto,
+  UpdateUserReqDto,
+  UpdateUserResponseDto,
   UsersService,
 } from '@modules/users';
 import { isGuid } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
-import { GetUserReqDto, GetUserResponseDto } from '../dtos/get-user.dto';
 
 export class UserController extends BaseController {
   private readonly _service: UsersService;
@@ -43,6 +47,17 @@ export class UserController extends BaseController {
       const reqDto = new CreateUserReqDto(bodyData, this.getCurrentUserId(req));
       const result = await this._service.create(reqDto);
       res.status(201).json(new CreateUserResponseDto(result));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public update = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const bodyData: UpdateUserDto = req.body;
+      const reqDto = new UpdateUserReqDto(this.getUserGuid(req), bodyData, this.getCurrentUserId(req));
+      const result = await this._service.update(reqDto);
+      res.status(200).json(new UpdateUserResponseDto(result));
     } catch (error) {
       next(error);
     }

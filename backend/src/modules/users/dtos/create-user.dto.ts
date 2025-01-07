@@ -3,7 +3,9 @@ import { errorKeys } from '@exceptions';
 import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
 import { isNullOrEmptyString, VALIDATOR_SETTINGS } from '@utils';
+import { Type } from 'class-transformer';
 import {
+  IsDate,
   IsEmail,
   IsNotEmpty,
   IsOptional,
@@ -72,6 +74,29 @@ export class CreateUserDto {
   public phone: string;
 
   @IsOptional()
+  @IsString({
+    message: errorKeys.users.Invalid_FirstName,
+  })
+  @MaxLength(VALIDATOR_SETTINGS.NAME_MAX_LENGTH, {
+    message: errorKeys.users.FirstName_Too_Long,
+  })
+  public firstName?: string | null;
+
+  @IsOptional()
+  @IsString({
+    message: errorKeys.users.Invalid_LastName,
+  })
+  @MaxLength(VALIDATOR_SETTINGS.NAME_MAX_LENGTH, {
+    message: errorKeys.users.LastName_Too_Long,
+  })
+  public lastName?: string | null;
+
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate()
+  public joiningDate?: Date | null;
+
+  @IsOptional()
   @IsPasswordEmptyOrValid({
     message: errorKeys.users.Invalid_Password,
   })
@@ -89,7 +114,7 @@ export class CreateUserReqDto extends BaseReqDto {
 
 export class CreateUserResponseDto implements IResponse<IUserDto> {
   public readonly data: IUserDto;
-  public readonly message?: string | undefined;
+  public readonly message: string;
 
   public constructor(data: IUserDto) {
     this.data = data;

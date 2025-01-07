@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
-import { errorKeys } from '@exceptions';
+import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import {
@@ -218,7 +218,8 @@ describe('POST /announcements/publish', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(publishAnnouncementsResponse.statusCode).toBe(400);
-      const errors = (publishAnnouncementsResponse.body.data.message as string)?.split(',');
+      const data = publishAnnouncementsResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.announcements.Announcements_Without_ValidFromDate_Can_Not_Be_Published).length).toBe(0);
 
       // cleanup
@@ -258,7 +259,8 @@ describe('POST /announcements/publish', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(publishAnnouncementsResponse.statusCode).toBe(400);
-      const errors = (publishAnnouncementsResponse.body.data.message as string)?.split(',');
+      const data = publishAnnouncementsResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.announcements.Announcements_Without_ValidFromDate_Can_Not_Be_Published).length).toBe(0);
 
       // cleanup
@@ -302,7 +304,8 @@ describe('POST /announcements/publish', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(publishAnnouncementsResponse.statusCode).toBe(400);
-      const errors = (publishAnnouncementsResponse.body.data.message as string)?.split(',');
+      const data = publishAnnouncementsResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.announcements.Announcements_Does_Not_Exist).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -526,8 +529,8 @@ describe('POST /announcements/publish', () => {
       expect(publishAnnouncementsUsingBobAccessTokenResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = publishAnnouncementsUsingBobAccessTokenResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
-      const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+      const data = body.data as UnauthorizedException;
+      const { message: loginMessage, args: loginArgs } = data;
       expect(loginMessage).toBe(errorKeys.login.Wrong_Authentication_Token);
       expect(loginArgs).toBeUndefined();
 

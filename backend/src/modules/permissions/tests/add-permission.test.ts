@@ -6,7 +6,7 @@ import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-han
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { AddPermissionsResponseDto, PermissionAddedEvent, PermissionsRoute, SystemPermission } from '@modules/permissions';
-import { CreateUserResponseDto, DeleteUserResponseDto, IUserDto, UserRoute } from '@modules/users';
+import { CreateUserResponseDto, IUserDto, UserRoute } from '@modules/users';
 import { isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
@@ -84,7 +84,7 @@ describe('POST /permissions', () => {
       const response = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(response.statusCode).toBe(400);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
-      const body = response.body;
+      const body = response.body as AddPermissionsResponseDto;
       expect(typeof body).toBe('object');
       const data = body.data;
       expect(data).toBe(false);
@@ -112,7 +112,7 @@ describe('POST /permissions', () => {
       const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(addPermissionResponse.statusCode).toBe(400);
       expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      const body = addPermissionResponse.body;
+      const body = addPermissionResponse.body as AddPermissionsResponseDto;
       expect(typeof body).toBe('object');
       const data = body.data;
       expect(data).toBe(false);
@@ -201,11 +201,6 @@ describe('POST /permissions', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
-      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-      expect(deletedUserUuid).toBe(user.id);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -272,11 +267,6 @@ describe('POST /permissions', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
-      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-      expect(deletedUserUuid).toBe(user.id);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -350,11 +340,6 @@ describe('POST /permissions', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
-      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-      expect(deletedUserUuid).toBe(user.id);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -414,11 +399,6 @@ describe('POST /permissions', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
-      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-      expect(deletedUserUuid).toBe(user.id);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)

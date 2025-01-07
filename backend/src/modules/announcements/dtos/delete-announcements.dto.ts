@@ -11,11 +11,11 @@ export class DeleteAnnouncementsReqDto extends BaseReqDto {
   }
 }
 
-export class DeleteAnnouncementsResponseDto implements IResponse<string | null> {
-  public readonly data: string | null;
-  public readonly message?: string | undefined;
+export class DeleteAnnouncementsResponseDto implements IResponse<boolean> {
+  public readonly data: boolean;
+  public readonly message: string;
 
-  public constructor(data: string | null) {
+  public constructor(data: boolean) {
     this.data = data;
     this.message = events.announcements.announcementsDeleted;
   }

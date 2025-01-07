@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
-import { errorKeys } from '@exceptions';
+import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
-import { ActivateUserResponseDto, CreateUserResponseDto, DeleteUserResponseDto, UserActivatedEvent, UserRoute } from '@modules/users';
+import { ActivateUserResponseDto, CreateUserResponseDto, UserActivatedEvent, UserRoute } from '@modules/users';
 import { isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
@@ -227,11 +227,6 @@ describe('POST /user/:id/activate', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
-      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-      expect(deletedUserUuid).toBe(user.id);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -303,11 +298,6 @@ describe('POST /user/:id/activate', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
-      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-      expect(deletedUserUuid).toBe(user.id);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -347,7 +337,7 @@ describe('POST /user/:id/activate', () => {
       expect(activateResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = activateResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
+      const data = body.data as BadRequestException;
       const { message: activateMessage, args: activateArgs } = data;
       expect(activateMessage).toBe(errorKeys.users.User_Does_Not_Exist);
       expect(activateArgs).toEqual({ id: userId });

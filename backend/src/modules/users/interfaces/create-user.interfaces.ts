@@ -1,13 +1,16 @@
 export interface ICreateUser {
   email: string;
   phone: string;
-  password: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  joiningDate?: Date | null;
+  password?: string | null;
   isActive: boolean;
   salt: string;
   refreshTokenKey: string;
   isLockedOut: boolean;
   emailConfirmed: boolean;
   phoneConfirmed: boolean;
-  lastLoginAt?: Date;
+  lastLoginAt?: Date | null;
   failedLoginAttempts: number;
 }

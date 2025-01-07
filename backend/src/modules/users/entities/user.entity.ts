@@ -12,6 +12,7 @@ import {
 } from 'typeorm';
 import { ICreateUser } from '../interfaces/create-user.interfaces';
 import { IUserId } from '../interfaces/IUser.Id';
+import { IUpdateUser } from '../interfaces/update-user.interfaces';
 import { IHasGuidId } from './../../../interfaces/IHasGuidId';
 import { AnnouncementItem } from './../../../modules/announcements/entities/announcement-item.entity';
 import { Announcement } from './../../../modules/announcements/entities/announcement.entity';
@@ -22,7 +23,7 @@ import { UserSystemPermission } from './user-system-permission.entity';
 @Entity({
   name: 'users',
 })
-export class User implements IHasGuidId, IUserId, ICreateUser {
+export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser {
   @PrimaryGeneratedColumn('increment', {
     name: 'Id',
     type: 'int',
@@ -102,7 +103,7 @@ export class User implements IHasGuidId, IUserId, ICreateUser {
     length: 255,
     nullable: true,
   })
-  public firstName?: string;
+  public firstName?: string | null;
 
   @Column({
     name: 'LastName',
@@ -110,14 +111,14 @@ export class User implements IHasGuidId, IUserId, ICreateUser {
     length: 255,
     nullable: true,
   })
-  public lastName?: string;
+  public lastName?: string | null;
 
   @Column({
     name: 'JoiningDate',
     type: 'date',
     nullable: true,
   })
-  public joiningDate?: Date;
+  public joiningDate?: Date | null;
 
   @Column({
     name: 'IsActive',
@@ -151,7 +152,7 @@ export class User implements IHasGuidId, IUserId, ICreateUser {
     type: 'timestamp',
     nullable: true,
   })
-  public lastLoginAt?: Date;
+  public lastLoginAt?: Date | null;
 
   @Column({
     name: 'FailedLoginAttempts',

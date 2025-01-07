@@ -1,20 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
-import { errorKeys } from '@exceptions';
-import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
+import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { AuthRoute, LoginDto, LoginResponseDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
-import {
-  ActivateUserResponseDto,
-  CreateUserResponseDto,
-  DeleteUserResponseDto,
-  UnlockUserResponseDto,
-  UserRoute,
-  UserUnlockedEvent,
-} from '@modules/users';
+import { ActivateUserResponseDto, CreateUserResponseDto, UnlockUserResponseDto, UserRoute, UserUnlockedEvent } from '@modules/users';
 import { isNumber } from '@utils';
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
 import { getAdminLoginData } from '@utils/tests.utils';
@@ -76,7 +68,7 @@ describe('POST /user/:id/unlock', () => {
         .send({ email: newUserDto.email, password: user.password } satisfies LoginDto);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      const data = loginResponse.body.data as TranslatableHttpException;
+      const data = loginResponse.body.data as BadRequestException;
       expect(typeof data).toBe('object');
       const { message: login1Message }: { message: string } = data;
       expect(login1Message).toBe(errorKeys.login.User_Is_Locked_Out);
@@ -262,11 +254,6 @@ describe('POST /user/:id/unlock', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
-      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-      expect(deletedUserUuid).toBe(user.id);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -338,11 +325,6 @@ describe('POST /user/:id/unlock', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
-      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid }: DeleteUserResponseDto = body;
-      expect(deletedUserUuid).toBe(user.id);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -382,7 +364,7 @@ describe('POST /user/:id/unlock', () => {
       expect(activateResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = activateResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
+      const data = body.data as BadRequestException;
       const { message: activateMessage, args: activateArgs } = data;
       expect(activateMessage).toBe(errorKeys.users.User_Does_Not_Exist);
       expect(activateArgs).toEqual({ id: userId });

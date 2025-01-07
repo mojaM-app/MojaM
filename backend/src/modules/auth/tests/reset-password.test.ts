@@ -2,8 +2,7 @@
 import { App } from '@/app';
 import { RESET_PASSWORD_TOKEN_EXPIRE_IN } from '@config';
 import { EventDispatcherService, events } from '@events';
-import { errorKeys } from '@exceptions';
-import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
+import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import {
@@ -299,8 +298,8 @@ describe('POST /auth/reset-password', () => {
         expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
         const body = loginResponse.body;
         expect(typeof body).toBe('object');
-        const data = body.data;
-        const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
+        const data = body.data as BadRequestException;
+        const { message: loginMessage, args: loginArgs } = data;
         expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
         expect(loginArgs).toBeUndefined();
       }
@@ -318,7 +317,7 @@ describe('POST /auth/reset-password', () => {
         .post(authRoute.requestResetPasswordPath)
         .send({ email: newUserDto.email } satisfies UserTryingToLogInDto);
       expect(requestResetPasswordResponse.statusCode).toBe(200);
-      let body: RequestResetPasswordResponseDto | ResetPasswordResponseDto | CheckResetPasswordTokenResponseDto | TranslatableHttpException =
+      let body: RequestResetPasswordResponseDto | ResetPasswordResponseDto | CheckResetPasswordTokenResponseDto | BadRequestException =
         requestResetPasswordResponse.body as RequestResetPasswordResponseDto;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
@@ -358,7 +357,7 @@ describe('POST /auth/reset-password', () => {
         .send({ email: newUserDto.email, password: newPassword } satisfies LoginDto);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      const data = loginResponse.body.data as TranslatableHttpException;
+      const data = loginResponse.body.data as BadRequestException;
       expect(typeof data).toBe('object');
       const { message: loginMessage }: { message: string } = data;
       expect(loginMessage).toBe(errorKeys.login.User_Is_Locked_Out);
@@ -423,7 +422,8 @@ describe('POST /auth/reset-password', () => {
       } satisfies ResetPasswordDto;
       const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
-      const errors = (response.body.data.message as string)?.split(',');
+      const data = response.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.users.Invalid_User_Id).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -441,7 +441,8 @@ describe('POST /auth/reset-password', () => {
       } satisfies ResetPasswordDto;
       const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
-      const errors = (response.body.data.message as string)?.split(',');
+      const data = response.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.users.Invalid_User_Id).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -459,7 +460,8 @@ describe('POST /auth/reset-password', () => {
       } satisfies ResetPasswordDto;
       const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
-      const errors = (response.body.data.message as string)?.split(',');
+      const data = response.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.users.Invalid_User_Id).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -477,7 +479,8 @@ describe('POST /auth/reset-password', () => {
       } satisfies ResetPasswordDto;
       const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
-      const errors = (response.body.data.message as string)?.split(',');
+      const data = response.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.users.Invalid_User_Id).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -516,7 +519,8 @@ describe('POST /auth/reset-password', () => {
       } satisfies ResetPasswordDto;
       const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
-      const errors = (response.body.data.message as string)?.split(',');
+      const data = response.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.users.Invalid_User_Id).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -538,7 +542,8 @@ describe('POST /auth/reset-password', () => {
       } satisfies ResetPasswordDto;
       const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
-      const errors = (response.body.data.message as string)?.split(',');
+      const data = response.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.users.Invalid_Password).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -555,7 +560,8 @@ describe('POST /auth/reset-password', () => {
       } satisfies ResetPasswordDto;
       const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
-      const errors = (response.body.data.message as string)?.split(',');
+      const data = response.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.users.Invalid_Password).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -572,7 +578,8 @@ describe('POST /auth/reset-password', () => {
       } satisfies ResetPasswordDto;
       const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
-      const errors = (response.body.data.message as string)?.split(',');
+      const data = response.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.users.Invalid_Password).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -589,7 +596,8 @@ describe('POST /auth/reset-password', () => {
       } satisfies ResetPasswordDto;
       const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
-      const errors = (response.body.data.message as string)?.split(',');
+      const data = response.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.users.Invalid_Password).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -607,7 +615,8 @@ describe('POST /auth/reset-password', () => {
       } satisfies ResetPasswordDto;
       const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
-      const errors = (response.body.data.message as string)?.split(',');
+      const data = response.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.login.Invalid_Reset_Password_Token).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -625,7 +634,8 @@ describe('POST /auth/reset-password', () => {
       } satisfies ResetPasswordDto;
       const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
-      const errors = (response.body.data.message as string)?.split(',');
+      const data = response.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.login.Invalid_Reset_Password_Token).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -643,7 +653,8 @@ describe('POST /auth/reset-password', () => {
       } satisfies ResetPasswordDto;
       const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
-      const errors = (response.body.data.message as string)?.split(',');
+      const data = response.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.login.Invalid_Reset_Password_Token).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -661,7 +672,8 @@ describe('POST /auth/reset-password', () => {
       } satisfies ResetPasswordDto;
       const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
-      const errors = (response.body.data.message as string)?.split(',');
+      const data = response.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.login.Invalid_Reset_Password_Token).length).toBe(0);
 
       // checking events running via eventDispatcher
@@ -709,7 +721,8 @@ describe('POST /auth/reset-password', () => {
       } satisfies ResetPasswordDto;
       const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
-      const errors = (response.body.data.message as string)?.split(',');
+      const data = response.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.login.Invalid_Reset_Password_Token).length).toBe(0);
 
       const deleteResponse = await request(app.getServer())
@@ -779,7 +792,8 @@ describe('POST /auth/reset-password', () => {
       } satisfies ResetPasswordDto;
       const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
-      const errors = (response.body.data.message as string)?.split(',');
+      const data = response.body.data as BadRequestException;
+      const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.login.Invalid_Reset_Password_Token).length).toBe(0);
 
       getDateTimeNow.mockRestore();

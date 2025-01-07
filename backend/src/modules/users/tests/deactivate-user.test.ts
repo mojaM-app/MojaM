@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
-import { errorKeys } from '@exceptions';
+import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
-import { DeletePermissionsResponseDto, PermissionsRoute, SystemPermission } from '@modules/permissions';
+import { PermissionsRoute, SystemPermission } from '@modules/permissions';
 import { ActivateUserResponseDto, CreateUserResponseDto, DeactivateUserResponseDto, UserDeactivatedEvent, UserRoute } from '@modules/users';
 import { isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
@@ -243,11 +243,6 @@ describe('POST /user/:id/deactivate', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
-      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid }: DeletePermissionsResponseDto = body;
-      expect(deletedUserUuid).toBe(user.id);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -318,11 +313,6 @@ describe('POST /user/:id/deactivate', () => {
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
-      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: deletedUserUuid }: DeletePermissionsResponseDto = body;
-      expect(deletedUserUuid).toBe(user.id);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -362,7 +352,7 @@ describe('POST /user/:id/deactivate', () => {
       expect(deactivateResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = deactivateResponse.body;
       expect(typeof body).toBe('object');
-      const data = body.data;
+      const data = body.data as BadRequestException;
       const { message: deactivateMessage, args: deactivateArgs } = data;
       expect(deactivateMessage).toBe(errorKeys.users.User_Does_Not_Exist);
       expect(deactivateArgs).toEqual({ id: userId });

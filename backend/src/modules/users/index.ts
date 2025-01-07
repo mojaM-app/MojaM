@@ -10,11 +10,14 @@ export { DeactivateUserReqDto, DeactivateUserResponseDto } from './dtos/deactiva
 export { DeleteUserReqDto, DeleteUserResponseDto } from './dtos/delete-user.dto';
 export { GetUserDetailsReqDto, GetUserDetailsResponseDto } from './dtos/get-user-details.dto';
 export { GetUserListReqDto, GetUserListResponseDto, type IUserGridItemDto, type UsersGridPageDto } from './dtos/get-user-list.dto';
+export { GetUserReqDto, GetUserResponseDto } from './dtos/get-user.dto';
 export { LockUserReqDto, LockUserResponseDto } from './dtos/lock-user.dto';
 export { UnlockUserReqDto, UnlockUserResponseDto } from './dtos/unlock-user.dto';
-export { UpdateUserReqDto, UpdateUserResponseDto } from './dtos/update-user.dto';
+export { UpdateUserDto, UpdateUserReqDto, UpdateUserResponseDto } from './dtos/update-user.dto';
 export { type IUserDetailsDto } from './interfaces/get-user-details.interfaces';
+export { type IGetUserDto } from './interfaces/get-user.interfaces';
 export { type IUserDto } from './interfaces/IUser.dto';
+export type { IUserId } from './interfaces/IUser.Id';
 
 export { UserActivatedEvent } from './events/user-activated-event';
 export { UserCreatedEvent } from './events/user-created-event';
@@ -24,6 +27,7 @@ export { UserDetailsRetrievedEvent } from './events/user-details-retrieved-event
 export { UserListRetrievedEvent } from './events/user-list-retrieved-event';
 export { UserRetrievedEvent } from './events/user-retrieved-event';
 export { UserUnlockedEvent } from './events/user-unlocked-event';
+export { UserUpdatedEvent } from './events/user-updated-event';
 
 export { vUserRepository } from './repositories/user-details.repository';
 export { UserListRepository } from './repositories/user-list.repository';
@@ -38,4 +42,4 @@ export { UserDetailsRoute } from './routes/user-details.routes';
 export { UserListRoute } from './routes/user-list.routes';
 export { UserRoute } from './routes/user.routes';
 
-export type { IUserId } from './interfaces/IUser.Id';
+export { UpdateUserModel } from './models/update-user.model';

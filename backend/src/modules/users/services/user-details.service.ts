@@ -1,10 +1,8 @@
 import { events } from '@events';
-import { errorKeys } from '@exceptions';
-import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
+import { BadRequestException, errorKeys } from '@exceptions';
 import { BaseService } from '@modules/common';
 import { GetUserDetailsReqDto, IUserDetailsDto, UserDetailsRetrievedEvent, vUserRepository } from '@modules/users';
 import { isNullOrUndefined } from '@utils';
-import StatusCode from 'status-code-enum';
 import { Container, Service } from 'typedi';
 import { vUser } from '../entities/vUser.entity';
 
@@ -21,7 +19,7 @@ export class UsersDetailsService extends BaseService {
     const user = await this._repository.getByUuid(reqDto.userGuid);
 
     if (isNullOrUndefined(user)) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.users.User_Does_Not_Exist, { id: reqDto.userGuid });
+      throw new BadRequestException(errorKeys.users.User_Does_Not_Exist, { id: reqDto.userGuid });
     }
 
     const userDetails = this.vUserToIUserDetailsDto(user!);
