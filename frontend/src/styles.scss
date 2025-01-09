@@ -58,25 +58,9 @@ body {
   --mdc-dialog-subhead-size: 1.25rem;
 
   //override bootstrap colors
-  --bs-body-bg: #{--mat-app-background-color};
-  --bs-body-color: #{--mat-app-text-color};
-  --mat-switch-label-text-color: red;
-  --bs-border-color: #{mat.get-theme-color($light-theme, primary-container)};
   .card {
     --bs-card-inner-border-radius: 0;
     --bs-card-cap-bg: #{mat.get-theme-color($light-theme, surface-container)};
-  }
-  .alert-light {
-    --bs-alert-color: #{--mat-app-text-color};
-    --bs-alert-bg: #{mat.get-theme-color($light-theme, surface)};
-    --bs-alert-border-color: #{mat.get-theme-color($light-theme, surface-container-high)};
-    // --bs-alert-link-color: var(--bs-dark-text-emphasis);
-  }
-  .alert-dark {
-    --bs-alert-color: #{--mat-app-text-color};
-    --bs-alert-bg: #{mat.get-theme-color($light-theme, surface-container)};
-    --bs-alert-border-color: #{mat.get-theme-color($light-theme, surface-container-high)};
-    // --bs-alert-link-color: var(--bs-dark-text-emphasis);
   }
 
   //override calendar colors
@@ -141,25 +125,6 @@ body {
 
   &.theme-dark {
     @include mat.all-component-colors($dark-theme);
-
-    //override bootstrap colors
-    --bs-border-color: #{mat.get-theme-color($dark-theme, primary-container)};
-    .card {
-      --bs-card-inner-border-radius: 0;
-      --bs-card-cap-bg: #{mat.get-theme-color($dark-theme, surface-container-high)};
-    }
-    .alert-light {
-      --bs-alert-color: #{mat.get-theme-color($dark-theme, primary, 95)};
-      --bs-alert-bg: #{mat.get-theme-color($dark-theme, surface-container-high)};
-      --bs-alert-border-color: #{mat.get-theme-color($dark-theme, secondary-container)};
-      // --bs-alert-link-color: var(--bs-dark-text-emphasis);
-    }
-    .alert-dark {
-      --bs-alert-color: #{mat.get-theme-color($dark-theme, primary, 95)};
-      --bs-alert-bg: #{mat.get-theme-color($dark-theme, surface)};
-      --bs-alert-border-color: #{mat.get-theme-color($dark-theme, secondary-container)};
-      // --bs-alert-link-color: var(--bs-dark-text-emphasis);
-    }
 
     .bg-color-primary {
       background-color: mat.get-theme-color($dark-theme, primary-container);

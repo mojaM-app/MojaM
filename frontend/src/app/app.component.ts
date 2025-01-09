@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   effect,
+  ElementRef,
   Inject,
   OnInit,
   signal,
@@ -22,6 +23,7 @@ import { PipesModule } from 'src/pipes/pipes.module';
 import { BrowserWindowSize } from 'src/services/browser/browser-window-size';
 import { BrowserWindowService } from 'src/services/browser/browser-window.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
+import { ThemeService } from 'src/services/theme/theme.service';
 import { IS_MOBILE } from './app.config';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -60,7 +62,9 @@ export class AppComponent extends WithUnsubscribe() implements OnInit {
     private _spinnerService: SpinnerService,
     private _browserService: BrowserWindowService,
     router: Router,
-    activatedRoute: ActivatedRoute
+    activatedRoute: ActivatedRoute,
+    themeService: ThemeService,
+    elRef: ElementRef
   ) {
     super();
 
@@ -91,6 +95,12 @@ export class AppComponent extends WithUnsubscribe() implements OnInit {
 
           this.footerShouldBeVisible.set(!(routeData?.hideFooter ?? !isMobile));
         })
+    );
+
+    this.addSubscription(
+      themeService.onThemeChanged$().subscribe((theme: string) => {
+        elRef.nativeElement.setAttribute('data-bs-theme', theme);
+      })
     );
 
     effect(() => {

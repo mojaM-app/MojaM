@@ -2,14 +2,13 @@ import { ChangeDetectionStrategy, Component, Inject, signal, WritableSignal } fr
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { IS_MOBILE } from 'src/app/app.config';
 import { SystemPermissionValue } from 'src/core/system-permission.enum';
 import { ISideMenuItem } from 'src/interfaces/menu/menu-item';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthTokenService } from 'src/services/auth/auth-token.service';
 import { PermissionService } from 'src/services/auth/permission.service';
-import { ThemeService } from '../../../services/theme/theme.service';
 import { AnnouncementsMenu } from '../announcements/announcements.menu';
 import { BulletinMenu } from '../bulletin/bulletin.menu';
 import { CalendarMenu } from '../calendar/calendar.menu';
@@ -31,11 +30,9 @@ import { SettingsMenu } from '../settings/settings.menu';
     MatIconModule,
     RouterLink,
     RouterLinkActive,
-    RouterOutlet,
   ],
 })
 export class SideMenuComponent {
-  public isDarkMode = false;
   public readonly menuItems: WritableSignal<ISideMenuItem[]> = signal<ISideMenuItem[]>([]);
 
   private readonly _menuItems: ISideMenuItem[] = [
@@ -99,11 +96,8 @@ export class SideMenuComponent {
   public constructor(
     @Inject(IS_MOBILE) public isMobile: boolean,
     private _permissionService: PermissionService,
-    themeService: ThemeService,
     authTokenService: AuthTokenService
   ) {
-    this.isDarkMode = themeService.isDarkMode();
-
     authTokenService.tokenChanged.subscribe(() => {
       const filteredMenuItems = this._menuItems.filter(item => item.isVisible());
       filteredMenuItems.forEach(menuItem => {
