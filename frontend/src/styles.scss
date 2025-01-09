@@ -57,12 +57,6 @@ body {
   //dialog header font size
   --mdc-dialog-subhead-size: 1.25rem;
 
-  //override bootstrap colors
-  .card {
-    --bs-card-inner-border-radius: 0;
-    --bs-card-cap-bg: #{mat.get-theme-color($light-theme, surface-container)};
-  }
-
   //override calendar colors
   @include cal-theme(
     (
