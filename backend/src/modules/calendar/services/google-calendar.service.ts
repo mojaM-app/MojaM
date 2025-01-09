@@ -1,5 +1,6 @@
 import { GOOGLE_API_CLIENT_ID, GOOGLE_API_CLIENT_SECRET, GOOGLE_API_REFRESH_TOKEN, GOOGLE_CALENDAR_ID } from '@config';
 import { ICalendarEventDto } from '@modules/calendar';
+import { logger } from '@modules/logger';
 import { isNullOrEmptyString } from '@utils';
 import { calendar_v3, google } from 'googleapis';
 import { Service } from 'typedi';
@@ -24,12 +25,12 @@ export class GoogleCalendarService {
 
   public async getEvents(startDate: Date, endDate: Date): Promise<any[] | undefined> {
     if (this.googleAuthClient === undefined) {
-      console.error('Google Calendar API is not configured.');
+      logger.error('Google Calendar API is not configured.');
       return [];
     }
 
     if (isNullOrEmptyString(GOOGLE_CALENDAR_ID)) {
-      console.error('Google Calendar ID is not configured.');
+      logger.error('Google Calendar ID is not configured.');
       return [];
     }
 

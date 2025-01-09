@@ -1,7 +1,7 @@
 import { HttpException } from '@exceptions/HttpException';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import { IResponseError } from '@interfaces';
-import { logger } from '@utils';
+import { logger } from '@modules/logger';
 import { NextFunction, Request, Response } from 'express';
 
 export const ErrorMiddleware = async (error: HttpException, req: Request, res: Response, next: NextFunction): Promise<void> => {

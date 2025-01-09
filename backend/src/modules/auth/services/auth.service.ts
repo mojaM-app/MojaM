@@ -1,9 +1,7 @@
-import { CLIENT_APP_URL } from '@config';
 import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import {
-  AuthRoute,
   CheckResetPasswordTokenReqDto,
   CheckResetPasswordTokenResultDto,
   CryptoService,
@@ -34,7 +32,7 @@ import {
   getTokenIssuer,
 } from '@modules/auth/middlewares/set-identity.middleware';
 import { BaseService, userToIUser } from '@modules/common';
-import { EmailService } from '@modules/notifications';
+import { EmailService, LinkHelper } from '@modules/notifications';
 import { PermissionsRepository, SystemPermission } from '@modules/permissions';
 import { UserRepository } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
@@ -107,17 +105,8 @@ export class AuthService extends BaseService {
     const token = this._cryptoService.generateResetPasswordToken();
 
     const resetPasswordToken = await this._resetPasswordTokensRepository.createToken(user.id, token);
-    const url = CLIENT_APP_URL!.endsWith('/') ? CLIENT_APP_URL!.slice(0, -1) : CLIENT_APP_URL;
-    const link = `${url}/${AuthRoute.resetPassword}/${user.uuid}/${resetPasswordToken.token}`;
 
-    return await this._emailService.sendEmailResetPassword(
-      {
-        firstName: user.firstName ?? '',
-        lastName: user.lastName ?? '',
-        email: user.email,
-      },
-      link,
-    );
+    return await this._emailService.sendEmailResetPassword(user, LinkHelper.resetPasswordLink(user.uuid, resetPasswordToken.token));
   }
 
   public async checkResetPasswordToken(data: CheckResetPasswordTokenReqDto): Promise<CheckResetPasswordTokenResultDto> {

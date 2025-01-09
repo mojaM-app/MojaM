@@ -1,5 +1,3 @@
-export { PermissionEventSubscriber } from './events/event.subscriber';
-
 export { PermissionsController } from './controllers/permissions.controller';
 
 export { AddPermissionReqDto, AddPermissionsResponseDto } from './dtos/add-permission.dto';

@@ -4,7 +4,7 @@ import { errorKeys } from '@exceptions';
 import { IRoutes } from '@interfaces';
 import { ErrorMiddleware } from '@middlewares';
 import { AuthRoute } from '@modules/auth';
-import { getFullUrl, logger, stream } from '@utils';
+import { getFullUrl } from '@utils';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -13,6 +13,7 @@ import helmet from 'helmet';
 import hpp from 'hpp';
 import morgan from 'morgan';
 import 'reflect-metadata';
+import { logger, stream } from './modules/logger';
 
 export class App {
   public app: express.Application;

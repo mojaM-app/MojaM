@@ -5,7 +5,6 @@ export { AnnouncementsPublishedEvent } from './events/announcements-published-ev
 export { AnnouncementsRetrievedEvent } from './events/announcements-retrieved-event';
 export { AnnouncementsUpdatedEvent } from './events/announcements-updated-event';
 export { CurrentAnnouncementsRetrievedEvent } from './events/current-announcements-retrieved-event';
-export { AnnouncementsEventSubscriber, AnnouncementsListEventSubscriber } from './events/event.subscriber';
 
 export { AnnouncementsListController } from './controllers/announcements-list.controller';
 export { AnnouncementsController } from './controllers/announcements.controller';

@@ -1,5 +1,14 @@
 /* eslint-disable n/no-callback-literal */
-import { NOTIFICATIONS_EMAIL, REQ_RESET_PASSWORD_TITLE, SMTP_SERVICE_HOST, SMTP_SERVICE_PORT, SMTP_USER_NAME, SMTP_USER_PASSWORD } from '@config';
+import {
+  NOTIFICATIONS_EMAIL,
+  REQ_RESET_PASSWORD_TITLE,
+  SMTP_SERVICE_HOST,
+  SMTP_SERVICE_PORT,
+  SMTP_USER_NAME,
+  SMTP_USER_PASSWORD,
+  WELCOME_EMAIL_TITLE,
+} from '@config';
+import { IUser } from '@modules/users';
 import { toNumber } from '@utils';
 import { readFileSync } from 'fs';
 import { compile } from 'handlebars';
@@ -14,7 +23,38 @@ import { Service } from 'typedi';
 export class EmailService {
   private readonly language: string = 'pl';
 
-  public async sendEmailResetPassword(user: { firstName: string; lastName: string; email: string }, link: string): Promise<boolean> {
+  public async sendWelcomeEmail(user: IUser): Promise<boolean> {
+    return await new Promise((resolve, reject) => {
+      try {
+        const templatePath = join(__dirname, `./../email.templates/welcomeEmail.${this.language}.handlebars`);
+
+        const source = readFileSync(templatePath, 'utf8');
+
+        const compiledTemplate = compile(source);
+
+        const templateVariables = {
+          name: user.getFullNameOrEmail(),
+        };
+
+        const options = (): Mail.Options => {
+          return {
+            from: NOTIFICATIONS_EMAIL,
+            to: user.email,
+            subject: WELCOME_EMAIL_TITLE,
+            html: compiledTemplate(templateVariables),
+          };
+        };
+
+        this.sendEmail(options(), (success: boolean) => {
+          resolve(success);
+        });
+      } catch (error) {
+        resolve(false);
+      }
+    });
+  }
+
+  public async sendEmailResetPassword(user: IUser, link: string): Promise<boolean> {
     return await new Promise((resolve, reject) => {
       try {
         const templatePath = join(__dirname, `./../email.templates/requestResetPassword.${this.language}.handlebars`);
@@ -25,7 +65,7 @@ export class EmailService {
 
         const templateVariables = {
           link,
-          name: user.firstName + ' ' + user.lastName,
+          name: user.getFullNameOrEmail(),
         };
 
         const options = (): Mail.Options => {

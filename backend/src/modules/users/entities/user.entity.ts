@@ -11,6 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ICreateUser } from '../interfaces/create-user.interfaces';
+import { IUser } from '../interfaces/IUser';
 import { IUserId } from '../interfaces/IUser.Id';
 import { IUpdateUser } from '../interfaces/update-user.interfaces';
 import { IHasGuidId } from './../../../interfaces/IHasGuidId';
@@ -23,7 +24,7 @@ import { UserSystemPermission } from './user-system-permission.entity';
 @Entity({
   name: 'users',
 })
-export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser {
+export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser, IUser {
   @PrimaryGeneratedColumn('increment', {
     name: 'Id',
     type: 'int',
@@ -209,5 +210,9 @@ export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser {
     } else {
       return null;
     }
+  }
+
+  public getFullNameOrEmail(): string {
+    return this.getFullName() ?? this.email;
   }
 }

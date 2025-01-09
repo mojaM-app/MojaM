@@ -19,7 +19,7 @@ import {
 } from '@modules/auth';
 import { EmailService } from '@modules/notifications';
 import { PermissionsRoute } from '@modules/permissions';
-import { CreateUserResponseDto, IUserDto, UserRoute } from '@modules/users';
+import { CreateUserResponseDto, IUser, IUserDto, UserRoute } from '@modules/users';
 import * as Utils from '@utils';
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
 import { generateRandomPassword, getAdminLoginData } from '@utils/tests.utils';
@@ -36,7 +36,7 @@ describe('POST /auth/reset-password', () => {
   const app = new App();
   let adminAccessToken: string | undefined;
   let mockSendMail: any;
-  let originalSendEmailResetPassword: (user: { firstName: string; lastName: string; email: string }, link: string) => Promise<boolean>;
+  let originalSendEmailResetPassword: (user: IUser, link: string) => Promise<boolean>;
 
   beforeAll(async () => {
     const emailService = new EmailService();
@@ -74,12 +74,10 @@ describe('POST /auth/reset-password', () => {
       expect(newUserDto.email).toBe(user.email);
 
       let url = '';
-      const mockSendEmailResetPassword = jest
-        .fn()
-        .mockImplementation(async (user: { firstName: string; lastName: string; email: string }, link: string) => {
-          url = link;
-          return await originalSendEmailResetPassword(user, link);
-        });
+      const mockSendEmailResetPassword = jest.fn().mockImplementation(async (user: IUser, link: string) => {
+        url = link;
+        return await originalSendEmailResetPassword(user, link);
+      });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPassword').mockImplementation(mockSendEmailResetPassword);
 
       const requestResetPasswordResponse = await request(app.getServer())
@@ -182,12 +180,10 @@ describe('POST /auth/reset-password', () => {
       expect(activateUserResponse.statusCode).toBe(200);
 
       let url = '';
-      const mockSendEmailResetPassword = jest
-        .fn()
-        .mockImplementation(async (user: { firstName: string; lastName: string; email: string }, link: string) => {
-          url = link;
-          return await originalSendEmailResetPassword(user, link);
-        });
+      const mockSendEmailResetPassword = jest.fn().mockImplementation(async (user: IUser, link: string) => {
+        url = link;
+        return await originalSendEmailResetPassword(user, link);
+      });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPassword').mockImplementation(mockSendEmailResetPassword);
 
       const requestResetPasswordResponse = await request(app.getServer())
@@ -305,12 +301,10 @@ describe('POST /auth/reset-password', () => {
       }
 
       let url = '';
-      const mockSendEmailResetPassword = jest
-        .fn()
-        .mockImplementation(async (user: { firstName: string; lastName: string; email: string }, link: string) => {
-          url = link;
-          return await originalSendEmailResetPassword(user, link);
-        });
+      const mockSendEmailResetPassword = jest.fn().mockImplementation(async (user: IUser, link: string) => {
+        url = link;
+        return await originalSendEmailResetPassword(user, link);
+      });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPassword').mockImplementation(mockSendEmailResetPassword);
 
       const requestResetPasswordResponse = await request(app.getServer())
@@ -691,12 +685,10 @@ describe('POST /auth/reset-password', () => {
       expect(newUserDto.email).toBe(user.email);
 
       let url = '';
-      const mockSendEmailResetPassword = jest
-        .fn()
-        .mockImplementation(async (user: { firstName: string; lastName: string; email: string }, link: string) => {
-          url = link;
-          return await originalSendEmailResetPassword(user, link);
-        });
+      const mockSendEmailResetPassword = jest.fn().mockImplementation(async (user: IUser, link: string) => {
+        url = link;
+        return await originalSendEmailResetPassword(user, link);
+      });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPassword').mockImplementation(mockSendEmailResetPassword);
 
       const requestResetPasswordResponse = await request(app.getServer())
@@ -748,12 +740,10 @@ describe('POST /auth/reset-password', () => {
       expect(newUserDto.email).toBe(user.email);
 
       let url = '';
-      const mockSendEmailResetPassword = jest
-        .fn()
-        .mockImplementation(async (user: { firstName: string; lastName: string; email: string }, link: string) => {
-          url = link;
-          return await originalSendEmailResetPassword(user, link);
-        });
+      const mockSendEmailResetPassword = jest.fn().mockImplementation(async (user: IUser, link: string) => {
+        url = link;
+        return await originalSendEmailResetPassword(user, link);
+      });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPassword').mockImplementation(mockSendEmailResetPassword);
 
       const requestResetPasswordResponse = await request(app.getServer())

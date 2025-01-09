@@ -1,11 +1,11 @@
 /* eslint-disable */
 import { HttpException } from '@exceptions/HttpException';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
-import { logger } from '@utils/logger';
+import { logger } from '@modules/logger';
 import { NextFunction, Request, Response } from 'express';
 import { ErrorMiddleware } from './error.middleware';
 
-jest.mock('@utils/logger', () => ({
+jest.mock('@modules/logger', () => ({
   logger: {
     error: jest.fn(),
   },

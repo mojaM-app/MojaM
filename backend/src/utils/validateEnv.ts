@@ -28,6 +28,7 @@ export const ValidateEnv = (): void => {
     NOTIFICATIONS_EMAIL: email(),
     REQ_RESET_PASSWORD_TITLE: str(),
     RESET_PASSWORD_TOKEN_EXPIRE_IN: str(),
+    WELCOME_EMAIL_TITLE: str(),
 
     ADMIN_EMAIL: email(),
     ADMIN_PASSWORD: str(),

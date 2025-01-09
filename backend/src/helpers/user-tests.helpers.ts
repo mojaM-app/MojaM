@@ -1,15 +1,17 @@
 import { App } from '@/app';
 import { AuthRoute, LoginDto, TLoginResult } from '@modules/auth';
-import { CreateUserDto } from '@modules/users';
+import { CreateUserDto, IUser } from '@modules/users';
 import { generateRandomEmail, generateRandomNumber, generateRandomPassword } from '@utils/tests.utils';
 import request from 'supertest';
 
-const generateValidUser = (): CreateUserDto => {
+const generateValidUser = (): CreateUserDto & IUser => {
   return {
     email: generateRandomEmail(),
     password: generateRandomPassword(),
     phone: '88' + generateRandomNumber(7),
-  } satisfies CreateUserDto;
+    getFullName: () => 'John Doe',
+    getFullNameOrEmail: () => 'John Doe',
+  } satisfies CreateUserDto & IUser;
 };
 
 const loginAs = async (app: App, user: { email?: string; phone?: string; password?: string }): Promise<TLoginResult | null> => {

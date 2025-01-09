@@ -2,8 +2,6 @@ export { UserDetailsController } from './controllers/user-details.controller';
 export { UserListController } from './controllers/user-list.controller';
 export { UserController } from './controllers/user.controller';
 
-export { UserDetailsEventSubscriber, UserEventSubscriber, UserListEventSubscriber } from './events/event.subscriber';
-
 export { ActivateUserReqDto, ActivateUserResponseDto } from './dtos/activate-user.dto';
 export { CreateUserDto, CreateUserReqDto, CreateUserResponseDto } from './dtos/create-user.dto';
 export { DeactivateUserReqDto, DeactivateUserResponseDto } from './dtos/deactivate-user.dto';
@@ -16,8 +14,9 @@ export { UnlockUserReqDto, UnlockUserResponseDto } from './dtos/unlock-user.dto'
 export { UpdateUserDto, UpdateUserReqDto, UpdateUserResponseDto } from './dtos/update-user.dto';
 export { type IUserDetailsDto } from './interfaces/get-user-details.interfaces';
 export { type IGetUserDto } from './interfaces/get-user.interfaces';
+export { type IUser } from './interfaces/IUser';
 export { type IUserDto } from './interfaces/IUser.dto';
-export type { IUserId } from './interfaces/IUser.Id';
+export { type IUserId } from './interfaces/IUser.Id';
 
 export { UserActivatedEvent } from './events/user-activated-event';
 export { UserCreatedEvent } from './events/user-created-event';
