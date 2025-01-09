@@ -52,7 +52,7 @@ export class TranslationService {
           return keyName;
         };
       }
-      console.error('Translation error for key: ' + key, ex);
+      console?.error('Translation error for key: ' + key, ex);
       return () => key;
     }
   }
@@ -67,7 +67,7 @@ export class TranslationService {
             this._localStorageService.saveString(TranslationService._storageKey, lang);
           })
           .catch(e => {
-            console.error(`There is no language module with ${lang} id`, e);
+            console?.error(`There is no language module with ${lang} id`, e);
           });
       }
     }

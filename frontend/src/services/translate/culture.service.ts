@@ -36,7 +36,7 @@ export class CultureService {
   public setCultureByCldrLocale(id: string): void {
     const pack = this._cldrLocaleService.getCldrLocale(id);
     if (!pack) {
-      console.error(`There is no CldrData module with id=${id}`);
+      console?.error(`There is no CldrData module with id=${id}`);
       return;
     }
 
