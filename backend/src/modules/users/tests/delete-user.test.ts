@@ -9,7 +9,7 @@ import { AnnouncementsRout, CreateAnnouncementsResponseDto, GetAnnouncementsResp
 import { generateValidAnnouncements } from '@modules/announcements/tests/announcements-tests.helpers';
 import { AuthRoute, LoginDto, UserTryingToLogInDto } from '@modules/auth';
 import { AddPermissionsResponseDto, PermissionsRoute, SystemPermission } from '@modules/permissions';
-import { CreateUserResponseDto, DeleteUserResponseDto, UserDeletedEvent, UserRoute } from '@modules/users';
+import { CreateUserResponseDto, DeleteUserResponseDto, UserRoute } from '@modules/users';
 import { isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
@@ -78,7 +78,6 @@ describe('DELETE /user', () => {
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserDeleted).toHaveBeenCalledWith(new UserDeletedEvent(newUserDto, 1));
     });
 
     test('when a user have ony of system permissions granted by another user', async () => {

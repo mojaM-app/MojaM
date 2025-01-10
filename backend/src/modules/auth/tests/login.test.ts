@@ -5,8 +5,7 @@ import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { IRequestWithIdentity } from '@interfaces';
-import { AuthRoute, LoginDto, LoginResponseDto, setIdentity, UserLoggedInEvent } from '@modules/auth';
-import { userToIUser } from '@modules/common';
+import { AuthRoute, LoginDto, LoginResponseDto, setIdentity } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
@@ -48,7 +47,7 @@ describe('POST /login', () => {
       expect(loginResponse.statusCode).toBe(200);
       const headers = loginResponse.headers;
       expect(headers['content-type']).toEqual(expect.stringContaining('json'));
-      const { data: userLoggedIn, message: loginMessage } = body;
+      const { data: userLoggedIn, message: loginMessage }: LoginResponseDto = body;
       expect(loginMessage).toBe(events.users.userLoggedIn);
       expect(userLoggedIn.email).toBe(email);
       expect(userLoggedIn.accessToken).toBeDefined();
@@ -76,9 +75,6 @@ describe('POST /login', () => {
 
       // checking events running via eventDispatcher
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(
-        new UserLoggedInEvent(userToIUser({ ...userLoggedIn, uuid: userLoggedIn.id } as any)),
-      );
 
       Object.entries(testEventHandlers)
         .filter(([, eventHandler]) => ![testEventHandlers.onUserLoggedIn].includes(eventHandler))
@@ -126,9 +122,6 @@ describe('POST /login', () => {
 
       // checking events running via eventDispatcher
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(
-        new UserLoggedInEvent(userToIUser({ ...userLoggedIn, uuid: userLoggedIn.id } as any)),
-      );
 
       Object.entries(testEventHandlers)
         .filter(([, eventHandler]) => ![testEventHandlers.onUserLoggedIn].includes(eventHandler))

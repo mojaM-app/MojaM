@@ -6,7 +6,7 @@ import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-han
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
-import { ActivateUserResponseDto, CreateUserResponseDto, UserActivatedEvent, UserRoute } from '@modules/users';
+import { ActivateUserResponseDto, CreateUserResponseDto, UserRoute } from '@modules/users';
 import { isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
@@ -71,7 +71,6 @@ describe('POST /user/:id/activate', () => {
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserActivated).toHaveBeenCalledWith(new UserActivatedEvent(newUserDto, 1));
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
     });
 

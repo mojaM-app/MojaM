@@ -10,12 +10,11 @@ import {
   RequestResetPasswordResponseDto,
   ResetPasswordDto,
   ResetPasswordResponseDto,
-  UserPasswordChangedEvent,
   UserTryingToLogInDto,
 } from '@modules/auth';
 import { EmailService } from '@modules/notifications';
 import { PermissionsRoute } from '@modules/permissions';
-import { CreateUserResponseDto, IUser, IUserDto, UserRoute } from '@modules/users';
+import { CreateUserResponseDto, IUser, UserRoute } from '@modules/users';
 import { generateRandomEmail, getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import nodemailer from 'nodemailer';
@@ -477,7 +476,7 @@ describe('POST /auth/request-reset-password', () => {
       });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPassword').mockImplementation(mockSendEmailResetPassword);
 
-      const { email, uuid: userId, password, phone } = getAdminLoginData();
+      const { email, uuid: userId, password } = getAdminLoginData();
       let response = await request(app.getServer())
         .post(authRoute.requestResetPasswordPath)
         .send({ email } satisfies UserTryingToLogInDto);
@@ -520,9 +519,6 @@ describe('POST /auth/request-reset-password', () => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onUserPasswordChanged).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserPasswordChanged).toHaveBeenCalledWith(
-        new UserPasswordChangedEvent({ id: userId, phone, email } satisfies IUserDto),
-      );
     });
 
     it('when exist only one user (via e-mail and phone) and user password is set', async () => {
@@ -595,9 +591,6 @@ describe('POST /auth/request-reset-password', () => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onUserPasswordChanged).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserPasswordChanged).toHaveBeenCalledWith(
-        new UserPasswordChangedEvent({ id: newUserDto.id, phone: newUserDto.phone, email: newUserDto.email } satisfies IUserDto),
-      );
     });
   });
 

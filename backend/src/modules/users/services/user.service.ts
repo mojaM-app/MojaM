@@ -62,10 +62,9 @@ export class UsersService extends BaseService {
     }
 
     const user = await this._userRepository.create(reqDto);
-    const userDto = userToIUser(user);
-    this._eventDispatcher.dispatch(events.users.userCreated, new UserCreatedEvent(userDto, reqDto.currentUserId));
+    this._eventDispatcher.dispatch(events.users.userCreated, new UserCreatedEvent(user, reqDto.currentUserId));
 
-    return userDto;
+    return userToIUser(user);
   }
 
   public async update(reqDto: UpdateUserReqDto): Promise<IUserDto> {
@@ -108,10 +107,10 @@ export class UsersService extends BaseService {
     }
 
     const updatedUser = await this._userRepository.update(user!.id, reqDto);
-    const userDto = userToIUser(updatedUser!);
-    this._eventDispatcher.dispatch(events.users.userUpdated, new UserUpdatedEvent(userDto, reqDto.currentUserId));
 
-    return userDto;
+    this._eventDispatcher.dispatch(events.users.userUpdated, new UserUpdatedEvent(updatedUser!, reqDto.currentUserId));
+
+    return userToIUser(updatedUser!);
   }
 
   public async delete(reqDto: DeleteUserReqDto): Promise<boolean> {
@@ -136,7 +135,7 @@ export class UsersService extends BaseService {
 
     const result = await this._userRepository.delete(user!.id, reqDto);
 
-    this._eventDispatcher.dispatch(events.users.userDeleted, new UserDeletedEvent(userToIUser(user!), reqDto.currentUserId));
+    this._eventDispatcher.dispatch(events.users.userDeleted, new UserDeletedEvent(user!, reqDto.currentUserId));
 
     return result;
   }
@@ -154,7 +153,7 @@ export class UsersService extends BaseService {
 
     const activatedUser = await this._userRepository.activate(user!.id, reqDto);
 
-    this._eventDispatcher.dispatch(events.users.userActivated, new UserActivatedEvent(userToIUser(activatedUser!), reqDto.currentUserId));
+    this._eventDispatcher.dispatch(events.users.userActivated, new UserActivatedEvent(activatedUser!, reqDto.currentUserId));
 
     return activatedUser!.isActive;
   }
@@ -172,7 +171,7 @@ export class UsersService extends BaseService {
 
     const deactivatedUser = await this._userRepository.deactivate(user!.id, reqDto);
 
-    this._eventDispatcher.dispatch(events.users.userDeactivated, new UserDeactivatedEvent(userToIUser(deactivatedUser!), reqDto.currentUserId));
+    this._eventDispatcher.dispatch(events.users.userDeactivated, new UserDeactivatedEvent(deactivatedUser!, reqDto.currentUserId));
 
     return !deactivatedUser!.isActive;
   }
@@ -190,7 +189,7 @@ export class UsersService extends BaseService {
 
     const unlockedUser = await this._userRepository.unlock(user!.id, reqDto);
 
-    this._eventDispatcher.dispatch(events.users.userUnlocked, new UserUnlockedEvent(userToIUser(unlockedUser!), reqDto.currentUserId));
+    this._eventDispatcher.dispatch(events.users.userUnlocked, new UserUnlockedEvent(unlockedUser!, reqDto.currentUserId));
 
     return !unlockedUser!.isLockedOut;
   }

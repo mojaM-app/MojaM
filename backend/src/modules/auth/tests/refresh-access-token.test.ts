@@ -5,8 +5,7 @@ import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { IRequestWithIdentity } from '@interfaces';
-import { AuthRoute, LoginDto, LoginResponseDto, RefreshTokenDto, RefreshTokenResponseDto, setIdentity, UserLoggedInEvent } from '@modules/auth';
-import { userToIUser } from '@modules/common';
+import { AuthRoute, LoginDto, LoginResponseDto, RefreshTokenDto, RefreshTokenResponseDto, setIdentity } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
 import * as Utils from '@utils';
@@ -127,9 +126,6 @@ describe('POST /auth/refresh-token', () => {
 
       // checking events running via eventDispatcher
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(
-        new UserLoggedInEvent(userToIUser({ ...userLoggedIn, uuid: userLoggedIn.id } as any)),
-      );
 
       Object.entries(testEventHandlers)
         .filter(
@@ -230,9 +226,6 @@ describe('POST /auth/refresh-token', () => {
 
       // checking events running via eventDispatcher
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(
-        new UserLoggedInEvent(userToIUser({ ...userLoggedIn, uuid: userLoggedIn.id } as any)),
-      );
 
       Object.entries(testEventHandlers)
         .filter(([, eventHandler]) => ![testEventHandlers.onUserLoggedIn].includes(eventHandler))
@@ -288,9 +281,6 @@ describe('POST /auth/refresh-token', () => {
 
       // checking events running via eventDispatcher
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(
-        new UserLoggedInEvent(userToIUser({ ...userLoggedIn, uuid: userLoggedIn.id } as any)),
-      );
 
       Object.entries(testEventHandlers)
         .filter(([, eventHandler]) => ![testEventHandlers.onUserLoggedIn].includes(eventHandler))

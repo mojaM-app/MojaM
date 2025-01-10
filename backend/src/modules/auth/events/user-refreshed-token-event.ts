@@ -1,10 +1,10 @@
 import { Event } from '@events';
-import { IUserDto } from '@modules/users';
+import { IUser } from '@modules/users';
 
 export class UserRefreshedTokenEvent extends Event {
-  public readonly user: IUserDto;
+  public readonly user: IUser;
 
-  public constructor(user: IUserDto) {
+  public constructor(user: IUser) {
     super();
     this.user = user;
   }

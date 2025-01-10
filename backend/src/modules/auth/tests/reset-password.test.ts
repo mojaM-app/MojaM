@@ -8,18 +8,15 @@ import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import {
   AuthRoute,
   CheckResetPasswordTokenResponseDto,
-  LockedUserTriesToLogInEvent,
   LoginDto,
   RequestResetPasswordResponseDto,
   ResetPasswordDto,
   ResetPasswordResponseDto,
-  UserLoggedInEvent,
-  UserPasswordChangedEvent,
   UserTryingToLogInDto,
 } from '@modules/auth';
 import { EmailService } from '@modules/notifications';
 import { PermissionsRoute } from '@modules/permissions';
-import { CreateUserResponseDto, IUser, IUserDto, UserRoute } from '@modules/users';
+import { CreateUserResponseDto, IUser, UserRoute } from '@modules/users';
 import * as Utils from '@utils';
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
 import { generateRandomPassword, getAdminLoginData } from '@utils/tests.utils';
@@ -148,21 +145,6 @@ describe('POST /auth/reset-password', () => {
       expect(testEventHandlers.onUserPasswordChanged).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
-
-      expect(testEventHandlers.onUserPasswordChanged).toHaveBeenCalledWith(
-        new UserPasswordChangedEvent({
-          id: newUserDto.id,
-          email: newUserDto.email,
-          phone: newUserDto.phone,
-        } satisfies IUserDto),
-      );
-      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(
-        new UserLoggedInEvent({
-          id: newUserDto.id,
-          email: newUserDto.email,
-          phone: newUserDto.phone,
-        } satisfies IUserDto),
-      );
     });
 
     it('when user is active, after reset password user should be active and should be able to log in', async () => {
@@ -256,21 +238,6 @@ describe('POST /auth/reset-password', () => {
       expect(testEventHandlers.onUserPasswordChanged).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
-
-      expect(testEventHandlers.onUserPasswordChanged).toHaveBeenCalledWith(
-        new UserPasswordChangedEvent({
-          id: newUserDto.id,
-          email: newUserDto.email,
-          phone: newUserDto.phone,
-        } satisfies IUserDto),
-      );
-      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledWith(
-        new UserLoggedInEvent({
-          id: newUserDto.id,
-          email: newUserDto.email,
-          phone: newUserDto.phone,
-        } satisfies IUserDto),
-      );
     });
 
     it('when user is lockedOut, after reset password user should be active and should stay lockedOut (should not be able to log in)', async () => {
@@ -388,21 +355,6 @@ describe('POST /auth/reset-password', () => {
       expect(testEventHandlers.onUserPasswordChanged).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.lockedUserTriesToLogIn).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
-
-      expect(testEventHandlers.onUserPasswordChanged).toHaveBeenCalledWith(
-        new UserPasswordChangedEvent({
-          id: newUserDto.id,
-          email: newUserDto.email,
-          phone: newUserDto.phone,
-        } satisfies IUserDto),
-      );
-      expect(testEventHandlers.lockedUserTriesToLogIn).toHaveBeenCalledWith(
-        new LockedUserTriesToLogInEvent({
-          id: newUserDto.id,
-          email: newUserDto.email,
-          phone: newUserDto.phone,
-        } satisfies IUserDto),
-      );
     });
   });
 

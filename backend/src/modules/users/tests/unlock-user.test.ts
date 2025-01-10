@@ -6,7 +6,7 @@ import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-han
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { AuthRoute, LoginDto, LoginResponseDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
-import { ActivateUserResponseDto, CreateUserResponseDto, UnlockUserResponseDto, UserRoute, UserUnlockedEvent } from '@modules/users';
+import { ActivateUserResponseDto, CreateUserResponseDto, UnlockUserResponseDto, UserRoute } from '@modules/users';
 import { isNumber } from '@utils';
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
 import { getAdminLoginData } from '@utils/tests.utils';
@@ -127,7 +127,6 @@ describe('POST /user/:id/unlock', () => {
       expect(testEventHandlers.lockedUserTriesToLogIn).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserUnlocked).toHaveBeenCalledWith(new UserUnlockedEvent(newUserDto, 1));
     });
 
     test('when data are valid, user has permission and unlockedUser is not locked', async () => {

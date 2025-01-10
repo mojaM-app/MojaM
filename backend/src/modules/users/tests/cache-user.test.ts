@@ -24,6 +24,8 @@ describe('Cache user data tests', () => {
         id: 1,
         uuid: adminUuid,
         isActive: true,
+        getFullName: () => 'John Doe',
+        getFullNameOrEmail: () => 'John Doe',
       } as unknown as Promise<User>);
     });
 
@@ -44,6 +46,8 @@ describe('Cache user data tests', () => {
               password:
                 '0054475aec0228265ef119a559090cf84fe6a986ce5fa6a621ea22d965087408aaab71efcb84eff4df5106bdd8304b0b8e446ff3ebdd555b588549e586df5c52',
               isActive: true,
+              getFullName: () => 'John Doe',
+              getFullNameOrEmail: () => 'John Doe',
             },
           ];
         },

@@ -167,7 +167,7 @@ export class AuthService extends BaseService {
 
     await this._resetPasswordTokensRepository.deleteTokens(user!.id);
 
-    this._eventDispatcher.dispatch(events.users.userPasswordChanged, new UserPasswordChangedEvent(userToIUser(user!)));
+    this._eventDispatcher.dispatch(events.users.userPasswordChanged, new UserPasswordChangedEvent(user!));
 
     return {
       isPasswordSet: true,
@@ -187,15 +187,13 @@ export class AuthService extends BaseService {
       throw new BadRequestException(errorKeys.login.User_Password_Is_Not_Set);
     }
 
-    const userDto = userToIUser(user);
-
     if (!user.isActive) {
-      this._eventDispatcher.dispatch(events.users.inactiveUserTriesToLogIn, new InactiveUserTriesToLogInEvent(userDto));
+      this._eventDispatcher.dispatch(events.users.inactiveUserTriesToLogIn, new InactiveUserTriesToLogInEvent(user));
       throw new BadRequestException(errorKeys.login.User_Is_Not_Active);
     }
 
     if (user.isLockedOut) {
-      this._eventDispatcher.dispatch(events.users.lockedUserTriesToLogIn, new LockedUserTriesToLogInEvent(userDto));
+      this._eventDispatcher.dispatch(events.users.lockedUserTriesToLogIn, new LockedUserTriesToLogInEvent(user));
       throw new BadRequestException(errorKeys.login.User_Is_Locked_Out);
     }
 
@@ -204,12 +202,12 @@ export class AuthService extends BaseService {
     if (!isPasswordMatching) {
       const failedLoginAttempts = await this._userRepository.increaseFailedLoginAttempts(user.id, user.failedLoginAttempts);
 
-      this._eventDispatcher.dispatch(events.users.failedLoginAttempt, new FailedLoginAttemptEvent(userDto));
+      this._eventDispatcher.dispatch(events.users.failedLoginAttempt, new FailedLoginAttemptEvent(user));
 
       if (failedLoginAttempts >= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS) {
         await this._userRepository.lockOut(user.id);
 
-        this._eventDispatcher.dispatch(events.users.userLockedOut, new UserLockedOutEvent(userDto));
+        this._eventDispatcher.dispatch(events.users.userLockedOut, new UserLockedOutEvent(user));
       }
 
       throw new BadRequestException(errorKeys.login.Invalid_Login_Or_Password);
@@ -221,10 +219,10 @@ export class AuthService extends BaseService {
     const accessToken = this.createAccessToken(user, userPermissions);
     const refreshToken = this.createRefreshToken(user);
 
-    this._eventDispatcher.dispatch(events.users.userLoggedIn, new UserLoggedInEvent(userDto));
+    this._eventDispatcher.dispatch(events.users.userLoggedIn, new UserLoggedInEvent(user));
 
     return {
-      user: userDto,
+      user: userToIUser(user),
       accessToken,
       refreshToken,
     } satisfies ILoginResult;
@@ -265,7 +263,7 @@ export class AuthService extends BaseService {
     const userPermissions = await this._permissionRepository.getUserPermissions(user!.id);
     const accessToken = this.createAccessToken(user!, userPermissions);
 
-    this._eventDispatcher.dispatch(events.users.userRefreshedToken, new UserRefreshedTokenEvent(userToIUser(user!)));
+    this._eventDispatcher.dispatch(events.users.userRefreshedToken, new UserRefreshedTokenEvent(user!));
 
     return accessToken;
   }
