@@ -1,4 +1,4 @@
 export { EmailService } from './services/email.service';
 export { LinkHelper } from './services/Link.helper';
 
-export { NotificationEventSubscriber } from './event-subscribers/send-email-events-subscriber';
+export { UserCreatedEventSubscriber } from './event-subscribers/user-created-events-subscriber';
