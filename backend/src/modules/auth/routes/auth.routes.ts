@@ -11,7 +11,7 @@ export class AuthRoute implements IRoutes {
   public getUserInfoBeforeLogInPath = `${this.path}/get-user-info-before-log-in`;
   public requestResetPasswordPath = `${this.path}/request-reset-password`;
   public checkResetPasswordTokenPath = `${this.path}/check-reset-password-token`;
-  public resetPasswordPath = `${this.path}/reset-password`;
+  public resetPasswordPath = `${this.path}/${AuthRoute.resetPassword}`;
   public refreshTokenPath = `${this.path}/refresh-token`;
   public router = express.Router();
 
