@@ -57,6 +57,8 @@ describe('POST /auth/request-reset-password', () => {
 
   describe('when login data are invalid (given email is NOT unique, is empty or invalid)', () => {
     it('when exist more then one user with given email and both are activated', async () => {
+      const sendWelcomeEmailSpy = jest.spyOn(EmailService.prototype, 'sendWelcomeEmail');
+
       const user1 = generateValidUser();
       const user2 = generateValidUser();
       const email = user1.email;
@@ -100,7 +102,8 @@ describe('POST /auth/request-reset-password', () => {
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
-      expect(mockSendMail).toHaveBeenCalledTimes(0);
+      expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(2);
+      expect(mockSendMail).toHaveBeenCalledTimes(2);
 
       let deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUser1Dto.id)
@@ -115,6 +118,8 @@ describe('POST /auth/request-reset-password', () => {
     });
 
     it('when exist more then one user with given email and only one is activated', async () => {
+      const sendWelcomeEmailSpy = jest.spyOn(EmailService.prototype, 'sendWelcomeEmail');
+
       const user1 = generateValidUser();
       const user2 = generateValidUser();
       const email = user1.email;
@@ -152,7 +157,8 @@ describe('POST /auth/request-reset-password', () => {
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
-      expect(mockSendMail).toHaveBeenCalledTimes(0);
+      expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(2);
+      expect(mockSendMail).toHaveBeenCalledTimes(2);
 
       let deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUser1Dto.id)
@@ -167,6 +173,8 @@ describe('POST /auth/request-reset-password', () => {
     });
 
     it('when exist more then one user with given email and NO one is activated', async () => {
+      const sendWelcomeEmailSpy = jest.spyOn(EmailService.prototype, 'sendWelcomeEmail');
+
       const user1 = generateValidUser();
       const user2 = generateValidUser();
       const email = user1.email;
@@ -198,7 +206,8 @@ describe('POST /auth/request-reset-password', () => {
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
-      expect(mockSendMail).toHaveBeenCalledTimes(0);
+      expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(2);
+      expect(mockSendMail).toHaveBeenCalledTimes(2);
 
       let deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUser1Dto.id)
@@ -213,6 +222,8 @@ describe('POST /auth/request-reset-password', () => {
     });
 
     it('when exist more then one user with given email and only one has a password set', async () => {
+      const sendWelcomeEmailSpy = jest.spyOn(EmailService.prototype, 'sendWelcomeEmail');
+
       const user1 = generateValidUser();
       const user2 = generateValidUser();
       const email = user1.email;
@@ -257,7 +268,8 @@ describe('POST /auth/request-reset-password', () => {
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
-      expect(mockSendMail).toHaveBeenCalledTimes(0);
+      expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(2);
+      expect(mockSendMail).toHaveBeenCalledTimes(2);
 
       let deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUser1Dto.id)
@@ -272,6 +284,8 @@ describe('POST /auth/request-reset-password', () => {
     });
 
     it('when exist more then one user with given email and NO one has a password set', async () => {
+      const sendWelcomeEmailSpy = jest.spyOn(EmailService.prototype, 'sendWelcomeEmail');
+
       const user1 = generateValidUser();
       user1.password = undefined;
       const user2 = generateValidUser();
@@ -317,7 +331,8 @@ describe('POST /auth/request-reset-password', () => {
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
-      expect(mockSendMail).toHaveBeenCalledTimes(0);
+      expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(2);
+      expect(mockSendMail).toHaveBeenCalledTimes(2);
 
       let deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUser1Dto.id)
@@ -350,6 +365,8 @@ describe('POST /auth/request-reset-password', () => {
 
   describe('when login data are valid (given email is unique, not exist, etc.)', () => {
     it('when exist only one active user with given e-mail and user password is NOT set', async () => {
+      const sendWelcomeEmailSpy = jest.spyOn(EmailService.prototype, 'sendWelcomeEmail');
+
       const user = generateValidUser();
       user.password = undefined;
 
@@ -380,10 +397,13 @@ describe('POST /auth/request-reset-password', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
 
-      expect(mockSendMail).toHaveBeenCalledTimes(1);
+      expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
+      expect(mockSendMail).toHaveBeenCalledTimes(2);
     });
 
     it('when exist only one inactive user with given e-mail and user password is NOT set', async () => {
+      const sendWelcomeEmailSpy = jest.spyOn(EmailService.prototype, 'sendWelcomeEmail');
+
       const user = generateValidUser();
       user.password = undefined;
 
@@ -408,7 +428,8 @@ describe('POST /auth/request-reset-password', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
 
-      expect(mockSendMail).toHaveBeenCalledTimes(1);
+      expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
+      expect(mockSendMail).toHaveBeenCalledTimes(2);
     });
 
     it('when NO user with given e-mail (or email is invalid)', async () => {
@@ -427,6 +448,8 @@ describe('POST /auth/request-reset-password', () => {
     });
 
     it('email is sent only once when token is still valid (not expired)', async () => {
+      const sendWelcomeEmailSpy = jest.spyOn(EmailService.prototype, 'sendWelcomeEmail');
+
       const user = generateValidUser();
       user.password = undefined;
 
@@ -459,7 +482,8 @@ describe('POST /auth/request-reset-password', () => {
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
-      expect(mockSendMail).toHaveBeenCalledTimes(1);
+      expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
+      expect(mockSendMail).toHaveBeenCalledTimes(2);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
@@ -528,6 +552,7 @@ describe('POST /auth/request-reset-password', () => {
         return await originalSendEmailResetPassword(user, link);
       });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPassword').mockImplementation(mockSendEmailResetPassword);
+      const sendWelcomeEmailSpy = jest.spyOn(EmailService.prototype, 'sendWelcomeEmail');
 
       const user = generateValidUser();
       user.email = getAdminLoginData().email;
@@ -579,7 +604,8 @@ describe('POST /auth/request-reset-password', () => {
       expect(deleteResponse.statusCode).toBe(200);
 
       expect(mockSendEmailResetPassword).toHaveBeenCalledTimes(1);
-      expect(mockSendMail).toHaveBeenCalledTimes(1);
+      expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
+      expect(mockSendMail).toHaveBeenCalledTimes(2);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -595,11 +621,13 @@ describe('POST /auth/request-reset-password', () => {
   });
 
   afterEach(() => {
+    jest.restoreAllMocks();
     jest.resetAllMocks();
   });
 
   afterAll(async () => {
     await app.closeDbConnection();
+    jest.restoreAllMocks();
     jest.resetAllMocks();
   });
 });

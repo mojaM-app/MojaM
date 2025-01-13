@@ -101,6 +101,17 @@ export class EmailService {
   }
 
   private createTransporter(): nodemailer.Transporter<SMTPTransport.SentMessageInfo> {
+    if (process.env.NODE_ENV === 'test') {
+      return nodemailer.createTransport({
+        host: 'smtp.ethereal.email',
+        port: 587,
+        auth: {
+          user: 'macie.boehm@ethereal.email',
+          pass: 'ma6XxuckZh1SSka3q4',
+        },
+      } satisfies SMTPConnection.Options);
+    }
+
     return nodemailer.createTransport({
       host: SMTP_SERVICE_HOST,
       port: toNumber(SMTP_SERVICE_PORT)!,

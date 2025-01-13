@@ -19,11 +19,10 @@ export class UserCreatedEventSubscriber {
       .sendWelcomeEmail(data.user)
       .then((success: boolean) => {
         if (success) {
-          logger.debug(`Welcome email sent to ${data.user.email}`);
+          logger.debug(`Welcome email sent to '${data.user.email}'`);
         }
       })
       .catch((error: Error) => {
-        throw new Error('Method not implemented.');
         logger.error(`Failed to send welcome email to ${data.user.email}`, error);
       });
   }
