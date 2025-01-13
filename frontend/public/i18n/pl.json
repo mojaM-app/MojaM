@@ -254,6 +254,7 @@
     "Bad_Request": "Wystąpił błąd podczas przetwarzania żądania. Spróbuj ponownie później.",
     "Wrong_Authentication_Token": "Nieprawidłowy token autoryzacyjny. Zaloguj się ponownie.",
     "Invalid_Login_Or_Password": "Wprowadzono nieprawidłowe dane logowania.",
+    "Invalid_Phone": "Wprowadzono nieprawidłowy numer telefonu.",
     "User_Password_Is_Not_Set": "Hasło użytkownika nie zostało ustawione.",
     "User_Does_Not_Exist": "Użytkownik nie istnieje.",
     "User_Not_Authenticated": "Użytkownik nie jest uwierzytelniony. Zaloguj się.",
