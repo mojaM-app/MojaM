@@ -9,8 +9,9 @@ export class GlobalErrorHandler implements ErrorHandler {
   public handleError(error: any): void {
     let message = error?.errorMessage ?? error?.message;
     if (
-      StringUtils.isString(message) &&
-      (message as string).trim().toLowerCase().startsWith('failed to fetch')
+      (StringUtils.isString(message) &&
+        (message as string).trim().toLowerCase().startsWith('failed to fetch')) ||
+      error?.status === 0
     ) {
       message = 'Errors/No_Connection';
     }
