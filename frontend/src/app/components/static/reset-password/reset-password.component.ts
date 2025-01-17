@@ -11,12 +11,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { ActivatedRoute, Router } from '@angular/router';
+import { CheckResetPasswordTokenResult } from 'src/interfaces/auth/auth.models';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { ResetPasswordService } from 'src/services/auth/reset-password.service';
 import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
+import { GuidUtils } from 'src/utils/guid.utils';
 import { ControlValidators } from 'src/validators/control.validators';
 import { PasswordValidator } from 'src/validators/password.validator';
+import { ResetPasswordControlComponent } from './reset-password-control/reset-password-control.component';
 import { IResetPasswordForm, ResetPasswordFormControlNames } from './reset-password.form';
 
 @Component({
@@ -30,6 +33,7 @@ import { IResetPasswordForm, ResetPasswordFormControlNames } from './reset-passw
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
+    ResetPasswordControlComponent,
   ],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss',
@@ -38,8 +42,6 @@ import { IResetPasswordForm, ResetPasswordFormControlNames } from './reset-passw
 export class ResetPasswordComponent extends WithForm<IResetPasswordForm>() implements OnInit {
   public readonly isTokenValid = signal<boolean | null>(null);
   public readonly userEmail = signal<string | undefined>(undefined);
-  public readonly hideConfirmPassword = signal(true);
-  public readonly hidePassword = signal(true);
   public readonly formControlNames = ResetPasswordFormControlNames;
 
   public constructor(
@@ -79,20 +81,22 @@ export class ResetPasswordComponent extends WithForm<IResetPasswordForm>() imple
     const userId = params['userId'];
     const token = params['token'];
 
-    this._resetPasswordService.checkResetPasswordToken(userId, token).subscribe(result => {
-      this.isTokenValid.set(result.isValid);
-      this.userEmail.set(result.userEmail);
-    });
+    this._resetPasswordService
+      .checkResetPasswordToken(userId, token)
+      .subscribe((result: CheckResetPasswordTokenResult) => {
+        this.isTokenValid.set(result.isValid);
+        this.userEmail.set(result.userEmail);
+      });
   }
 
   public changePassword(): void {
-    if (this.isReadyToSubmit() !== true) {
-      return;
-    }
-
     const params = this._route.snapshot.params;
     const userId = params['userId'];
     const token = params['token'];
+
+    if (this.isReadyToSubmit() !== true || GuidUtils.isValidGuid(userId) !== true) {
+      return;
+    }
 
     this._resetPasswordService
       .resetPassword(userId, token, this.controls.password.value)
@@ -105,15 +109,5 @@ export class ResetPasswordComponent extends WithForm<IResetPasswordForm>() imple
 
         this._router.navigateByUrl('/');
       });
-  }
-
-  public togglePasswordVisibility(event: MouseEvent): void {
-    this.hidePassword.set(!this.hidePassword());
-    event.stopPropagation();
-  }
-
-  public toggleConfirmPasswordVisibility(event: MouseEvent): void {
-    this.hideConfirmPassword.set(!this.hideConfirmPassword());
-    event.stopPropagation();
   }
 }
