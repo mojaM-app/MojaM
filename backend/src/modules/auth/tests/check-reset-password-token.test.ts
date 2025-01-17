@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
 import { EventDispatcherService } from '@events';
-import { errorKeys } from '@exceptions';
+import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { AuthRoute, CheckResetPasswordTokenResponseDto } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
@@ -31,24 +31,7 @@ describe('POST /auth/check-reset-password-token/:userId/:token', () => {
     jest.resetAllMocks();
   });
 
-  describe('request should end with status code od 400', () => {
-    it('when user id is invalid', async () => {
-      const response = await request(app.getServer())
-        .post(authRoute.checkResetPasswordTokenPath + '/invalidUserId/validToken')
-        .send();
-      expect(response.statusCode).toBe(404);
-      expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
-      const body = response.body;
-      expect(typeof body).toBe('object');
-      const { message: activateMessage }: { message: string } = body;
-      expect(activateMessage).toBe(errorKeys.general.Resource_Does_Not_Exist);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    });
-
+  describe('request should end with status code od 200', () => {
     it('when user with given id not exist', async () => {
       const response = await request(app.getServer())
         .post(authRoute.checkResetPasswordTokenPath + '/' + Guid.EMPTY + '/validToken')
@@ -59,6 +42,25 @@ describe('POST /auth/check-reset-password-token/:userId/:token', () => {
       const { data: checkResetPasswordTokenResult } = body;
       expect(checkResetPasswordTokenResult.isValid).toBe(false);
       expect(checkResetPasswordTokenResult.userEmail).toBeUndefined();
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('request should end with status code od 404', () => {
+    it('when user id is invalid', async () => {
+      const response = await request(app.getServer())
+        .post(authRoute.checkResetPasswordTokenPath + '/invalidUserId/validToken')
+        .send();
+      expect(response.statusCode).toBe(404);
+      expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = response.body as BadRequestException;
+      expect(typeof body).toBe('object');
+      const { message: activateMessage }: { message: string } = body;
+      expect(activateMessage).toBe(errorKeys.general.Resource_Does_Not_Exist);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {

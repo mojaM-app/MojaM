@@ -1,7 +1,8 @@
 import { IUser } from '../users/user.interfaces';
 
-export interface UserInfoBeforeLogInResult {
-  isEmailSufficientToLogIn: boolean;
+export interface IUserInfoBeforeLogInDto {
+  isPhoneRequired?: boolean;
+  isActive?: boolean;
   isPasswordSet?: boolean;
 }
 

@@ -1,8 +1,8 @@
+import { REGEX_GUID_PATTERN, REGEX_INT_PATTERN } from '@config';
 import { ForbiddenException, UnauthorizedException } from '@exceptions';
 import { IRequestWithIdentity, IRoutes } from '@interfaces';
 import { setIdentity } from '@modules/auth';
 import { PermissionsController } from '@modules/permissions';
-import { REGEX_GUID_PATTERN, REGEX_INT_PATTERN } from '@utils';
 import express, { NextFunction, Response } from 'express';
 
 export class PermissionsRoute implements IRoutes {
@@ -29,7 +29,7 @@ export class PermissionsRoute implements IRoutes {
   }
 
   private readonly checkAddPermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!(req.identity?.isAuthenticated())) {
+    if (!req.identity?.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToAddPermission()) {
       next(new ForbiddenException());
@@ -39,7 +39,7 @@ export class PermissionsRoute implements IRoutes {
   };
 
   private readonly checkDeletePermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!(req.identity?.isAuthenticated())) {
+    if (!req.identity?.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToDeletePermission()) {
       next(new ForbiddenException());

@@ -23,7 +23,7 @@ import { Service } from 'typedi';
 export class EmailService {
   private readonly language: string = 'pl';
 
-  public async sendWelcomeEmail(user: IUser): Promise<boolean> {
+  public async sendWelcomeEmail(user: IUser, link: string): Promise<boolean> {
     return await new Promise((resolve, reject) => {
       try {
         const templatePath = join(__dirname, `./../email.templates/welcomeEmail.${this.language}.handlebars`);
@@ -33,6 +33,7 @@ export class EmailService {
         const compiledTemplate = compile(source);
 
         const templateVariables = {
+          link,
           name: user.getFullNameOrEmail(),
         };
 
@@ -101,23 +102,23 @@ export class EmailService {
   }
 
   private createTransporter(): nodemailer.Transporter<SMTPTransport.SentMessageInfo> {
-    if (process.env.NODE_ENV === 'test') {
+    if (process.env.NODE_ENV === 'production') {
       return nodemailer.createTransport({
-        host: 'smtp.ethereal.email',
-        port: 587,
+        host: SMTP_SERVICE_HOST,
+        port: toNumber(SMTP_SERVICE_PORT)!,
         auth: {
-          user: 'macie.boehm@ethereal.email',
-          pass: 'ma6XxuckZh1SSka3q4',
+          user: SMTP_USER_NAME,
+          pass: SMTP_USER_PASSWORD,
         },
       } satisfies SMTPConnection.Options);
     }
 
     return nodemailer.createTransport({
-      host: SMTP_SERVICE_HOST,
-      port: toNumber(SMTP_SERVICE_PORT)!,
+      host: 'smtp.ethereal.email',
+      port: 587,
       auth: {
-        user: SMTP_USER_NAME,
-        pass: SMTP_USER_PASSWORD,
+        user: 'litzy.spinka10@ethereal.email',
+        pass: 'd6ftn7cjBBdvQA8BJJ',
       },
     } satisfies SMTPConnection.Options);
   }

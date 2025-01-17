@@ -162,11 +162,15 @@
     "BtnResetPasswordHint": "Kliknij w powyższy przycisk, aby zresetować hasło do swojego konta. Następnie sprawdź pocztę. Jeśli nie otrzymano wiadomości, sprawdź folder ze spamem.",
     "ResetPasswordSuccess": "Hasło zostało zresetowane.",
     "ResetPasswordFailed": "Wystąpił błąd podczas resetowania hasła.",
-    "HidePasswordAriaLabel": "Ukryj hasło"
+    "HidePasswordAriaLabel": "Ukryj hasło",
+    "AccountActivatedSuccessfully": "Twoje konto zostało aktywowane. Możesz się teraz zalogować.",
+    "AccountNotActiveErrorTitle": "Konto nieaktywne",
+    "ErrorAccountNotActive": "<b>Nie możesz się zalogować ponieważ twoje konto nie zostało aktywowane</b>.<br>Podczas tworzenia konta, na podany w poprzednim kroku adres e-mail, została wysłana wiadomość ze wskazówkami jak aktywować konto. Sprawdź pocztę, sprawdź folder ze spamem, może wiadomość została usunięta.<br>W przypadku braku wiadomości, skontaktuj się proszę z liderem wspólnoty i poproś go o przesłanie nowego e-maila z informacją jak aktywować twoje konto."
   },
   "ResetPassword": {
     "ChangePasswordTitle": "Zmiana hasła",
-    "EnterNewPassword": "Wprowadź nowe hasło dla konta {email}",
+    "ChangePasswordDescription": "Wprowadź nowe hasło dla konta <b>{email}</b>",
+    "ChangePasswordHint": "Pamiętaj, że silne hasło to podstawa bezpieczeństwa Twojego konta.<br>Hasło musi zawierać co najmniej dziewięć znaków w tym minimum jedną dużą literę i minimum jedną małą literę. Cyfry i znaki specjalne są opcjonalne.",
     "Password": "Nowe hasło",
     "PasswordPlaceholder": "wprowadź nowe hasło",
     "PasswordRequiredError": "Wprowadź nowe hasło",
@@ -182,6 +186,42 @@
     "TryAgain": "Spróbuj ponownie raz jeszcze.",
     "InvalidTokenHint": "Link do resetu hasła może być użyty tylko raz i jest ważny przez godzinę. Po tym czasie traci ważność i należy wysłać kolejną prośbę o zmianę hasła.",
     "HidePasswordAriaLabel": "Ukryj hasło"
+  },
+  "ActivateAccount": {
+    "Title": "Aktywacja konta",
+    "Steps": {
+      "Welcome": {
+        "Title": "Witaj!",
+        "Description": "<b>Jeszcze kilka kliknięć i twoje konto będzie aktywne.</b><br><br>Specjalnie dla ciebie został przygotowany niniejszy kreator, który szybko i bez problemów przeprowadzi Cię przez proces aktywacji konta.",
+        "BtnNext": "Rozpocznij"
+      },
+      "Identity": {
+        "Title": "Potwierdź dane",
+        "Description": "Potwierdź, czy poniższe adres e-mail i telefon należą do ciebie i czy są takie jakie podano podczas zapisów do wspólnoty.",
+        "EmailConfirmed": "Potwierdzam, to jest mój e-mail",
+        "PhoneConfirmed": "Potwierdzam, to jest mój numer telefonu",
+        "BtnNext": "Dalej",
+        "BtnBack": "Wstecz"
+      },
+      "UserInfo": {
+        "Title": "Uzupełnij dane",
+        "Description": "Podaj/potwierdź swoje imię i nazwisko.",
+        "OptionalFieldsHint": "Opcjonalnie, jeżeli pamiętasz, podaj datę dołączenia do wspólnoty.",
+        "BtnNext": "Dalej",
+        "BtnBack": "Wstecz"
+      },
+      "SetPassword": {
+        "Title": "Ustaw hasło",
+        "Description": "<b>Ustaw hasło do swojego konta</b>.<br><br>Pamiętaj, że silne hasło to podstawa bezpieczeństwa Twojego konta.<br>Hasło musi zawierać co najmniej dziewięć znaków w tym minimum jedną dużą literę i minimum jedną małą literę. Cyfry i znaki specjalne są opcjonalne.",
+        "Password": "Hasło",
+        "PasswordPlaceholder": "Wprowadź hasło",
+        "PasswordHint": "Hasło musi zawierać co najmniej dziewięć znaków w tym minimum jedną dużą literę i minimum jedną małą literę. Cyfry i znaki specjalne są opcjonalne.",
+        "ConfirmPassword": "Potwierdź hasło",
+        "ConfirmPasswordPlaceholder": "Potwierdź hasło",
+        "BtnNext": "Dalej",
+        "BtnBack": "Wstecz"
+      }
+    }
   },
   "Management": {
     "Title": "Zarządzanie",
@@ -263,13 +303,15 @@
     "User_Already_Exists": "Istnieje już użytkownik o podanym adresie e-mail i numerze telefonu.",
     "User_Is_Locked_Out": "Konto użytkownika zostało zablokowane. Skontaktuj się z liderem.",
     "Session_Expired": "Twoja sesja wygasła. Zaloguj się ponownie.",
+    "Invalid_Activated_Account_Identifier": "Nie udało się aktywować konta, link aktywujący konto jest nieprawidłowy.",
     "Announcements_Does_Not_Exist": "Ogłoszenia nie istnieje.",
     "Announcements_With_Given_ValidFromDate_Already_Exists": "Istnieją już ogłoszenia z wprowadzoną datą rozpoczęcia obowiązywania.",
     "Announcements_Published_Announcements_Cant_Be_Deleted": "Nie można usunąć opublikowanych ogłoszeń. Można przenieść je do archiwum.",
     "Announcements_Archived_Announcements_Cant_Be_Deleted": "Nie można usunąć zarchiwizowanych ogłoszeń.",
     "Announcements_Archived_Announcements_Cant_Be_Edited": "Nie można edytować zarchiwizowanych ogłoszeń.",
     "Announcements_Without_ValidFromDate_Can_Not_Be_Published": "Nie można opublikować ogłoszeń bez daty rozpoczęcia obowiązywania.",
-    "Cannot_Save_Published_Announcements_Without_ValidFromDate": "Nie można zapisać opublikowanych ogłoszeń bez daty rozpoczęcia obowiązywania."
+    "Cannot_Save_Published_Announcements_Without_ValidFromDate": "Nie można zapisać opublikowanych ogłoszeń bez daty rozpoczęcia obowiązywania.",
+    "Cannot_Activate_Locked_Account": "Twoje konto jest zablokowane, nie można aktywować zablokowanego konta. Skontaktuj się z liderem."
   },
   "Grid": {
     "NoColumns": "Brak kolumn",

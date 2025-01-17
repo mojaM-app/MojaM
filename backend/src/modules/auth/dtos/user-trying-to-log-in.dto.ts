@@ -1,6 +1,6 @@
+import { VALIDATOR_SETTINGS } from '@config';
 import { errorKeys } from '@exceptions';
 import { IResponse } from '@interfaces';
-import { VALIDATOR_SETTINGS } from '@utils';
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 export class UserTryingToLogInDto {
@@ -18,15 +18,17 @@ export class UserTryingToLogInDto {
   public phone?: string;
 }
 
-export interface UserInfoBeforeLogInResultDto {
-  isEmailSufficientToLogIn: boolean;
+export interface IUserInfoBeforeLogInResultDto {
+  isPhoneRequired?: boolean;
+  isActive?: boolean;
   isPasswordSet?: boolean;
+  shouldConfirmEmail?: boolean;
 }
 
-export class GetUserInfoBeforeLogInResponseDto implements IResponse<UserInfoBeforeLogInResultDto> {
-  public readonly data: UserInfoBeforeLogInResultDto;
+export class GetUserInfoBeforeLogInResponseDto implements IResponse<IUserInfoBeforeLogInResultDto> {
+  public readonly data: IUserInfoBeforeLogInResultDto;
 
-  public constructor(userInfo: UserInfoBeforeLogInResultDto) {
+  public constructor(userInfo: IUserInfoBeforeLogInResultDto) {
     this.data = userInfo;
   }
 }

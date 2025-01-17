@@ -126,6 +126,25 @@
         </div>
       </div>
     }
+    @if (showStep() === formSteps.UserNotActive) {
+      <div>
+        <div class="row mb-3">
+          <div class="col-12 error-container fw-bold p-2">
+            {{ 'Login/AccountNotActiveErrorTitle' | gmessage }}
+          </div>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-12" [innerHtml]="'Login/ErrorAccountNotActive' | gmessage"></div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-6">
+          <button mat-raised-button class="w-100" type="button" (click)="goToStepEnterEmail()">
+            {{ 'Shared/BtnBack' | gmessage }}
+          </button>
+        </div>
+      </div>
+    }
 
     @if (loginError()) {
       <p class="mat-mdc-form-field-error">

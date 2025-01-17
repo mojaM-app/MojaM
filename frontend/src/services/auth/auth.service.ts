@@ -3,7 +3,7 @@ import { BehaviorSubject, Observable, of, skip, tap } from 'rxjs';
 import {
   ILoginModel,
   ILoginResponse,
-  UserInfoBeforeLogInResult,
+  IUserInfoBeforeLogInDto,
 } from 'src/interfaces/auth/auth.models';
 import { BaseService } from '../common/base.service';
 import { HttpClientService } from '../common/httpClient.service';
@@ -36,12 +36,12 @@ export class AuthService extends BaseService {
   public getUserInfoBeforeLogIn(
     email: string,
     phone?: string
-  ): Observable<UserInfoBeforeLogInResult> {
+  ): Observable<IUserInfoBeforeLogInDto> {
     return this._httpClient
       .request()
       .withUrl(this.API_ROUTES.auth.getUserInfoBeforeLogIn())
       .withBody({ email, phone })
-      .post<UserInfoBeforeLogInResult>();
+      .post<IUserInfoBeforeLogInDto>();
   }
 
   public login(

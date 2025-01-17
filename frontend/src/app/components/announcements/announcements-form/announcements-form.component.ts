@@ -15,6 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { IS_MOBILE } from 'src/app/app.config';
+import { VALIDATOR_SETTINGS } from 'src/core/consts';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
@@ -56,8 +57,6 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
 
   public readonly announcements = input.required<AnnouncementsDto>();
 
-  private readonly _contentMaxLength: number = 20_000; //max number or chars
-
   public constructor(
     @Inject(IS_MOBILE) public isMobile: boolean,
     formBuilder: FormBuilder,
@@ -93,7 +92,10 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
           nonNullable: true,
         }),
         content: new FormControl<string | null>(content ?? null, {
-          validators: [Validators.required, Validators.maxLength(this._contentMaxLength)],
+          validators: [
+            Validators.required,
+            Validators.maxLength(VALIDATOR_SETTINGS.ANNOUNCEMENT_ITEM_CONTENT_MAX_LENGTH),
+          ],
         }),
       } satisfies IAnnouncementsItemForm)
     );
@@ -141,7 +143,7 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
         if (tooLength) {
           this._snackBarService.translateAndShowError(
             'Announcements/Form/Errors/ContentIsTooLong',
-            { maxLength: this._contentMaxLength }
+            { maxLength: VALIDATOR_SETTINGS.ANNOUNCEMENT_ITEM_CONTENT_MAX_LENGTH }
           );
           return false;
         }

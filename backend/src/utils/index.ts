@@ -1,5 +1,3 @@
-export { REGEX_GUID_PATTERN, REGEX_INT_PATTERN, VALIDATOR_SETTINGS } from '@utils/constants';
-
 export { getDateNow, getDateTimeNow, isDate } from '@utils/date.utils';
 
 export { isNumber, isPositiveNumber, toNumber } from '@utils/numbers.utils';

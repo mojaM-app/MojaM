@@ -120,6 +120,19 @@ body {
   &.theme-dark {
     @include mat.all-component-colors($dark-theme);
 
+    @include mat.sidenav-overrides(
+      (
+        content-background-color: #212529,
+        content-text-color: #dee2e6,
+      )
+    );
+
+    @include mat.stepper-overrides(
+      (
+        container-color: #212529,
+      )
+    );
+
     .bg-color-primary {
       background-color: mat.get-theme-color($dark-theme, primary-container);
     }
@@ -169,6 +182,10 @@ body {
           background-color: mat.get-theme-color($dark-theme, surface-container-high);
         }
       }
+    }
+
+    .mat-accent.mat-mdc-checkbox {
+      --mat-checkbox-label-text-color: var(--mat-app-text-color);
     }
 
     //override calendar colors

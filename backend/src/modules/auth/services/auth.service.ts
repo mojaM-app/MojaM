@@ -1,3 +1,4 @@
+import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
 import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
@@ -7,15 +8,17 @@ import {
   CryptoService,
   DataStoredInToken,
   FailedLoginAttemptEvent,
+  GetUserToActivateReqDto,
   ILoginResult,
   InactiveUserTriesToLogInEvent,
+  IUserInfoBeforeLogInResultDto,
+  IUserToActivateResultDto,
   LockedUserTriesToLogInEvent,
   LoginDto,
   PasswordService,
   RefreshTokenDto,
   ResetPasswordDto,
   ResetPasswordResultDto,
-  UserInfoBeforeLogInResultDto,
   UserLockedOutEvent,
   UserLoggedInEvent,
   UserPasswordChangedEvent,
@@ -37,7 +40,6 @@ import { PermissionsRepository, SystemPermission } from '@modules/permissions';
 import { UserRepository } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
-import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
 import { decode, JwtPayload, sign, verify, VerifyErrors } from 'jsonwebtoken';
 import StatusCode from 'status-code-enum';
 import { Container, Service } from 'typedi';
@@ -62,11 +64,11 @@ export class AuthService extends BaseService {
     this._emailService = Container.get(EmailService);
   }
 
-  public async getUserInfoBeforeLogIn(data: UserTryingToLogInDto): Promise<UserInfoBeforeLogInResultDto> {
+  public async getUserInfoBeforeLogIn(data: UserTryingToLogInDto): Promise<IUserInfoBeforeLogInResultDto> {
     const result = {
-      isEmailSufficientToLogIn: true,
       isPasswordSet: true,
-    } satisfies UserInfoBeforeLogInResultDto;
+      isActive: true,
+    } satisfies IUserInfoBeforeLogInResultDto;
 
     const users: User[] = await this._userRepository.findManyByLogin(data?.email, data?.phone);
 
@@ -76,15 +78,16 @@ export class AuthService extends BaseService {
 
     if (users.length > 1) {
       return {
-        isEmailSufficientToLogIn: false,
-      } satisfies UserInfoBeforeLogInResultDto;
+        isPhoneRequired: true,
+      } satisfies IUserInfoBeforeLogInResultDto;
     }
 
     const user = users[0];
+
     return {
-      isEmailSufficientToLogIn: true,
       isPasswordSet: !isNullOrEmptyString(user.password),
-    } satisfies UserInfoBeforeLogInResultDto;
+      isActive: user.isActive,
+    } satisfies IUserInfoBeforeLogInResultDto;
   }
 
   public async requestResetPassword(data: UserTryingToLogInDto): Promise<boolean> {
@@ -266,6 +269,40 @@ export class AuthService extends BaseService {
     this._eventDispatcher.dispatch(events.users.userRefreshedToken, new UserRefreshedTokenEvent(user!));
 
     return accessToken;
+  }
+
+  public async getUserToActivate(data: GetUserToActivateReqDto): Promise<IUserToActivateResultDto> {
+    const result = {
+      isActive: true,
+    } satisfies IUserToActivateResultDto;
+
+    const userId = await this._userRepository.getIdByUuid(data.userGuid);
+    const user = await this._userRepository.getById(userId);
+
+    if (isNullOrUndefined(user)) {
+      return result;
+    }
+
+    if (user!.isActive) {
+      return result;
+    }
+
+    if (user!.isLockedOut) {
+      return {
+        isActive: user!.isActive,
+        isLockedOut: user!.isLockedOut,
+      } satisfies IUserToActivateResultDto;
+    }
+
+    return {
+      email: user!.email,
+      phone: user!.phone,
+      joiningDate: user!.joiningDate,
+      isActive: user!.isActive,
+      firstName: user!.firstName,
+      lastName: user!.lastName,
+      isLockedOut: user!.isLockedOut,
+    } satisfies IUserToActivateResultDto;
   }
 
   // public async logout(userData: IUserDto): Promise<IUserDto> {

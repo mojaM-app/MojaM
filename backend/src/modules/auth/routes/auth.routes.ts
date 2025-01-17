@@ -1,7 +1,7 @@
+import { REGEX_GUID_PATTERN } from '@config';
 import { IRoutes } from '@interfaces';
 import { validateData } from '@middlewares';
 import { AuthController, LoginDto, RefreshTokenDto, ResetPasswordDto, UserTryingToLogInDto } from '@modules/auth';
-import { REGEX_GUID_PATTERN } from '@utils';
 import express from 'express';
 
 export class AuthRoute implements IRoutes {
@@ -13,6 +13,7 @@ export class AuthRoute implements IRoutes {
   public checkResetPasswordTokenPath = `${this.path}/check-reset-password-token`;
   public resetPasswordPath = `${this.path}/${AuthRoute.resetPassword}`;
   public refreshTokenPath = `${this.path}/refresh-token`;
+  public getUserToActivatePath = `${this.path}/get-user-to-activate`;
   public router = express.Router();
 
   private readonly _authController: AuthController;
@@ -29,6 +30,7 @@ export class AuthRoute implements IRoutes {
     this.router.post(this.checkResetPasswordTokenPath + `/:userId(${REGEX_GUID_PATTERN})/:token`, this._authController.checkResetPasswordToken);
     this.router.post(this.resetPasswordPath, [validateData(ResetPasswordDto)], this._authController.resetPassword);
     this.router.post(this.refreshTokenPath, [validateData(RefreshTokenDto)], this._authController.refreshAccessToken);
+    this.router.post(this.getUserToActivatePath + `/:userId(${REGEX_GUID_PATTERN})`, this._authController.getUserToActivate);
     // this.router.post(`${this.path}logout`, verifyToken, this._authController.logOut);
   }
 }

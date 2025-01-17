@@ -1,8 +1,9 @@
+import { VALIDATOR_SETTINGS } from '@config';
 import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
-import { isNullOrEmptyString, VALIDATOR_SETTINGS } from '@utils';
+import { isNullOrEmptyString } from '@utils';
 import { Type } from 'class-transformer';
 import {
   IsDate,

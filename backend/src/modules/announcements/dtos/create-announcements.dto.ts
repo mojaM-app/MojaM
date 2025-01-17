@@ -1,8 +1,9 @@
+import { VALIDATOR_SETTINGS } from '@config';
 import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { IHasDefaultValues, IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
-import { isNullOrUndefined, VALIDATOR_SETTINGS } from '@utils';
+import { isNullOrUndefined } from '@utils';
 import { Type } from 'class-transformer';
 import { IsArray, IsDate, IsNotEmpty, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
 

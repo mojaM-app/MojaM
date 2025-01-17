@@ -1,6 +1,7 @@
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
+import { VALIDATOR_SETTINGS } from '@config';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
@@ -8,7 +9,7 @@ import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
 import { CreateUserDto, CreateUserResponseDto, GetUserDetailsResponseDto, UpdateUserDto, UserRoute } from '@modules/users';
-import { isNumber, VALIDATOR_SETTINGS } from '@utils';
+import { isNumber } from '@utils';
 import { generateRandomDate, generateRandomNumber, getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import request from 'supertest';

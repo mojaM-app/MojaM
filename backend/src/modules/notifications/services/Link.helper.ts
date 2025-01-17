@@ -2,13 +2,12 @@ import { CLIENT_APP_URL } from '@config';
 import { AuthRoute } from '@modules/auth';
 
 export class LinkHelper {
-  public static activateAccountLink(uuid: string): string {
-    throw new Error('Method not implemented.');
+  public static activateAccountLink(userUuid: string): string {
+    return `${LinkHelper.getClientAppUrl()}/account/${userUuid}/activate?t=${new Date().getTime()}`;
   }
 
   public static resetPasswordLink(userUuid: string, resetPasswordToken: string): string {
-    const url = LinkHelper.getClientAppUrl();
-    return `${url}/${AuthRoute.resetPassword}/${userUuid}/${resetPasswordToken}`;
+    return `${LinkHelper.getClientAppUrl()}/${AuthRoute.resetPassword}/${userUuid}/${resetPasswordToken}`;
   }
 
   private static getClientAppUrl(): string {

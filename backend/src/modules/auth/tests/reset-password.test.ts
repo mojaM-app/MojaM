@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
-import { RESET_PASSWORD_TOKEN_EXPIRE_IN } from '@config';
+import { RESET_PASSWORD_TOKEN_EXPIRE_IN, USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
@@ -18,7 +18,6 @@ import { EmailService } from '@modules/notifications';
 import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, IUser, UserRoute } from '@modules/users';
 import * as Utils from '@utils';
-import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
 import { generateRandomPassword, getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import { Guid } from 'guid-typescript';
@@ -657,11 +656,12 @@ describe('POST /auth/reset-password', () => {
       const token = splittedUrl[splittedUrl.length - 1];
       expect(token?.length).toBe(64);
 
-      const { uuid, password } = getAdminLoginData();
+      const { uuid: adminUuid } = getAdminLoginData();
+      expect(newUserDto.id).not.toBe(adminUuid);
       const resetPasswordDto = {
-        userId: uuid,
+        userId: adminUuid,
         token,
-        password,
+        password: generateRandomPassword(),
       } satisfies ResetPasswordDto;
       const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
       expect(response.statusCode).toBe(400);

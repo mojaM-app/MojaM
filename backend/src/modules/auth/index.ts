@@ -11,11 +11,12 @@ export {
   CheckResetPasswordTokenResponseDto,
   type CheckResetPasswordTokenResultDto,
 } from './dtos/check-reset-password-token.dto';
+export { GetUserToActivateReqDto, GetUserToActivateResponseDto, type IUserToActivateResultDto } from './dtos/get-user-to-activate.dto';
 export { LoginDto, LoginResponseDto } from './dtos/login.dto';
 export { RefreshTokenDto, RefreshTokenResponseDto } from './dtos/refresh-token.dto';
 export { RequestResetPasswordResponseDto } from './dtos/request-reset-password.dto';
 export { ResetPasswordDto, ResetPasswordResponseDto, type ResetPasswordResultDto } from './dtos/reset-password.dto';
-export { GetUserInfoBeforeLogInResponseDto, UserTryingToLogInDto, type UserInfoBeforeLogInResultDto } from './dtos/user-trying-to-log-in.dto';
+export { GetUserInfoBeforeLogInResponseDto, UserTryingToLogInDto, type IUserInfoBeforeLogInResultDto } from './dtos/user-trying-to-log-in.dto';
 
 export type { DataStoredInToken } from './models/DataStoredInToken';
 export { Identity } from './models/Identity';

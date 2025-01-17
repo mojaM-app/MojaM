@@ -62,5 +62,13 @@ export const routes: Routes = [
         m => m.NoPermissionComponent
       ),
   },
+  {
+    path: 'account/:userId/activate',
+    loadComponent: () =>
+      import('./components/static/activate-account/activate-account.component').then(
+        m => m.ActivateAccountComponent
+      ),
+    data: { closeSideNav: true, hideFooter: true } satisfies IRouteData,
+  },
   { path: '**', redirectTo: '/not-found' },
 ];

@@ -32,7 +32,8 @@
                     [formControlName]="formControlNames.email" />
                   @if (control(formControlNames.email).errors) {
                     <mat-error>{{
-                      'Management/UserForm/EmailHint' | gmessage: { maxLength: maxLengths.email }
+                      'Management/UserForm/EmailHint'
+                        | gmessage: { maxLength: maxLengths.EMAIL_MAX_LENGTH }
                     }}</mat-error>
                   }
                 </mat-form-field>
@@ -49,7 +50,8 @@
                     [formControlName]="formControlNames.phone" />
                   @if (control(formControlNames.phone).errors) {
                     <mat-error>{{
-                      'Management/UserForm/PhoneHint' | gmessage: { maxLength: maxLengths.phone }
+                      'Management/UserForm/PhoneHint'
+                        | gmessage: { maxLength: maxLengths.PHONE_MAX_LENGTH }
                     }}</mat-error>
                   }
                 </mat-form-field>
@@ -70,7 +72,8 @@
                     [formControlName]="formControlNames.firstName" />
                   @if (control(formControlNames.firstName).errors) {
                     <mat-error>{{
-                      'Management/UserForm/FirstNameHint' | gmessage: { maxLength: maxLengths.name }
+                      'Management/UserForm/FirstNameHint'
+                        | gmessage: { maxLength: maxLengths.NAME_MAX_LENGTH }
                     }}</mat-error>
                   }
                 </mat-form-field>
@@ -84,7 +87,8 @@
                     [formControlName]="formControlNames.lastName" />
                   @if (control(formControlNames.lastName).errors) {
                     <mat-error>{{
-                      'Management/UserForm/LastNameHint' | gmessage: { maxLength: maxLengths.name }
+                      'Management/UserForm/LastNameHint'
+                        | gmessage: { maxLength: maxLengths.NAME_MAX_LENGTH }
                     }}</mat-error>
                   }
                 </mat-form-field>
@@ -100,10 +104,7 @@
                     [placeholder]="'Management/UserForm/JoiningDatePlaceholder' | gmessage"
                     [formControlName]="formControlNames.joiningDate" />
                   @if (control(formControlNames.joiningDate).errors) {
-                    <mat-error>{{
-                      'Management/UserForm/JoiningDateHint'
-                        | gmessage: { maxLength: maxLengths.name }
-                    }}</mat-error>
+                    <mat-error>{{ 'Management/UserForm/JoiningDateHint' | gmessage }}</mat-error>
                   }
                   <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                   <mat-datepicker #picker></mat-datepicker>

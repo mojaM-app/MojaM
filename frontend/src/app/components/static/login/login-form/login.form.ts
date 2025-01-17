@@ -18,4 +18,5 @@ export enum LoginFormSteps {
   ResetPassword,
   EnterPassword,
   ForgotPassword,
+  UserNotActive,
 }

@@ -1,8 +1,8 @@
+import { VALIDATOR_SETTINGS } from '@config';
 import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
-import { VALIDATOR_SETTINGS } from '@utils';
 import { Type } from 'class-transformer';
 import { IsDate, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MaxLength } from 'class-validator';
 import { IUserDto } from '../interfaces/IUser.dto';

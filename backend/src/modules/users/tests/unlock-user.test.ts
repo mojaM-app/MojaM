@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
+import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
@@ -8,7 +9,6 @@ import { AuthRoute, LoginDto, LoginResponseDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
 import { ActivateUserResponseDto, CreateUserResponseDto, UnlockUserResponseDto, UserRoute } from '@modules/users';
 import { isNumber } from '@utils';
-import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@utils/constants';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import { Guid } from 'guid-typescript';

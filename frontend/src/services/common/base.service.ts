@@ -55,6 +55,8 @@ export class BaseService {
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/reset-password`,
       refreshToken: (): string =>
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/refresh-token`,
+      getUserToActivate: (uuid: string): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.auth.path}/get-user-to-activate/${uuid}`,
     },
     userList: {
       path: 'user-list',

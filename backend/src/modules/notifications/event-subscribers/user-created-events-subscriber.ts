@@ -4,6 +4,7 @@ import { UserCreatedEvent } from '@modules/users';
 import { EventSubscriber, On } from 'event-dispatch';
 import Container from 'typedi';
 import { EmailService } from '../services/email.service';
+import { LinkHelper } from '../services/Link.helper';
 
 @EventSubscriber()
 export class UserCreatedEventSubscriber {
@@ -16,7 +17,7 @@ export class UserCreatedEventSubscriber {
   @On(events.users.userCreated)
   public onUserCreated(data: UserCreatedEvent): void {
     this._emailService
-      .sendWelcomeEmail(data.user)
+      .sendWelcomeEmail(data.user, LinkHelper.activateAccountLink(data.user.uuid))
       .then((success: boolean) => {
         if (success) {
           logger.debug(`Welcome email sent to '${data.user.email}'`);

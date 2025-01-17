@@ -1,9 +1,9 @@
+import { REGEX_GUID_PATTERN } from '@config';
 import { ForbiddenException, UnauthorizedException } from '@exceptions';
 import { IRequestWithIdentity, IRoutes } from '@interfaces';
 import { validateData } from '@middlewares';
 import { AnnouncementsController, CreateAnnouncementsDto, CurrentAnnouncementsController } from '@modules/announcements';
 import { setIdentity } from '@modules/auth';
-import { REGEX_GUID_PATTERN } from '@utils';
 import express, { NextFunction, Response } from 'express';
 import { UpdateAnnouncementsDto } from '../dtos/update-announcements.dto';
 

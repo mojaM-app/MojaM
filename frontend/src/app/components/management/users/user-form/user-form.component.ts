@@ -23,6 +23,7 @@ import { MatInputModule } from '@angular/material/input';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IS_MOBILE } from 'src/app/app.config';
 import { NewsMenu } from 'src/app/components/news/news.menu';
+import { VALIDATOR_SETTINGS } from 'src/core/consts';
 import { FormMode } from 'src/core/form-mode.enum';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { environment } from 'src/environments/environment';
@@ -38,13 +39,7 @@ import { AddUserDto } from './models/add-user.model';
 import { EditUserDto } from './models/edit-user.model';
 import { UserDto } from './models/user.model';
 import { UserService } from './services/user.service';
-import {
-  EmailMaxLength,
-  IUserForm,
-  NameMaxLength,
-  PhoneMaxLength,
-  UserFormControlNames,
-} from './user.form';
+import { IUserForm, UserFormControlNames } from './user.form';
 
 @Component({
   selector: 'app-user-form',
@@ -68,11 +63,7 @@ import {
 export class UserFormComponent extends WithUnsubscribe(WithForm<IUserForm>()) implements OnInit {
   public readonly formControlNames = UserFormControlNames;
   public readonly formModeTypes = FormMode;
-  public readonly maxLengths = {
-    email: EmailMaxLength,
-    phone: PhoneMaxLength,
-    name: NameMaxLength,
-  };
+  public readonly maxLengths = VALIDATOR_SETTINGS;
   public readonly user = model<IUser>();
   public readonly formMode = signal<FormMode>(FormMode.Add);
 
@@ -88,19 +79,26 @@ export class UserFormComponent extends WithUnsubscribe(WithForm<IUserForm>()) im
     const formGroup = formBuilder.group<IUserForm>({
       email: new FormControl<string | null>(null, {
         nonNullable: true,
-        validators: [Validators.required, Validators.email, Validators.maxLength(EmailMaxLength)],
+        validators: [
+          Validators.required,
+          Validators.email,
+          Validators.maxLength(VALIDATOR_SETTINGS.EMAIL_MAX_LENGTH),
+        ],
       }),
       phone: new FormControl<string | null>(null, {
         nonNullable: true,
-        validators: [Validators.required, Validators.maxLength(PhoneMaxLength)],
+        validators: [
+          Validators.required,
+          Validators.maxLength(VALIDATOR_SETTINGS.PHONE_MAX_LENGTH),
+        ],
       }),
       firstName: new FormControl<string | null>(null, {
         nonNullable: true,
-        validators: [Validators.maxLength(NameMaxLength)],
+        validators: [Validators.maxLength(VALIDATOR_SETTINGS.NAME_MAX_LENGTH)],
       }),
       lastName: new FormControl<string | null>(null, {
         nonNullable: true,
-        validators: [Validators.maxLength(NameMaxLength)],
+        validators: [Validators.maxLength(VALIDATOR_SETTINGS.NAME_MAX_LENGTH)],
       }),
       joiningDate: new FormControl<Date | null>(null, {
         nonNullable: true,

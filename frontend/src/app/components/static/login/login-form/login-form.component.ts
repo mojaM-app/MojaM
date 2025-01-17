@@ -20,7 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { IS_MOBILE } from 'src/app/app.config';
 import { environment } from 'src/environments/environment';
-import { UserInfoBeforeLogInResult } from 'src/interfaces/auth/auth.models';
+import { IUserInfoBeforeLogInDto } from 'src/interfaces/auth/auth.models';
 import { IResponseError } from 'src/interfaces/errors/response.error';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
@@ -128,17 +128,24 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
 
     this._authService
       .getUserInfoBeforeLogIn(email)
-      .subscribe((response: UserInfoBeforeLogInResult) => {
+      .subscribe((response: IUserInfoBeforeLogInDto) => {
+        if (response?.isActive === false) {
+          this.goToStepUserNotActive();
+          return;
+        }
+
         this.showResetPasswordButton.set(response.isPasswordSet === true);
-        if (response.isEmailSufficientToLogIn === true) {
-          if (response.isPasswordSet === true) {
-            this.goToStepEnterPassword();
-          } else {
-            this.goToStepResetPassword();
-          }
-        } else {
+
+        if (response.isPhoneRequired === true) {
           this.showStep.set(LoginFormSteps.EnterPhone);
           this.focusPhoneInput();
+          return;
+        }
+
+        if (response.isPasswordSet === true) {
+          this.goToStepEnterPassword();
+        } else {
+          this.goToStepResetPassword();
         }
       });
   }
@@ -158,8 +165,14 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
 
       this._authService
         .getUserInfoBeforeLogIn(this.controls.email.value, phone)
-        .subscribe((response: UserInfoBeforeLogInResult) => {
+        .subscribe((response: IUserInfoBeforeLogInDto) => {
+          if (response?.isActive === false) {
+            this.goToStepUserNotActive();
+            return;
+          }
+
           this.showResetPasswordButton.set(response.isPasswordSet === true);
+
           if (response.isPasswordSet === true) {
             showStepEnterPassword();
           } else {
@@ -220,5 +233,10 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
 
   private focusPasswordInput(): void {
     setTimeout(() => this._passwordInput()?.nativeElement.focus(), 100);
+  }
+
+  private goToStepUserNotActive(): void {
+    this.loginError.set(undefined);
+    this.showStep.set(LoginFormSteps.UserNotActive);
   }
 }

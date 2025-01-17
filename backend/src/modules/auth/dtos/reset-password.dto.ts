@@ -1,7 +1,7 @@
+import { VALIDATOR_SETTINGS } from '@config';
 import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { IResponse } from '@interfaces';
-import { VALIDATOR_SETTINGS } from '@utils';
 import { IsNotEmpty, IsString, IsUUID, MaxLength } from 'class-validator';
 
 export class ResetPasswordDto {
