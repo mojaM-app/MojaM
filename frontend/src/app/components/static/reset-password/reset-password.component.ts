@@ -11,14 +11,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CheckResetPasswordTokenResult } from 'src/interfaces/auth/auth.models';
+import { ResetPasswordService } from 'src/app/components/static/reset-password/services/reset-password.service';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
-import { ResetPasswordService } from 'src/services/auth/reset-password.service';
 import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { GuidUtils } from 'src/utils/guid.utils';
 import { ControlValidators } from 'src/validators/control.validators';
 import { PasswordValidator } from 'src/validators/password.validator';
+import { ICheckResetPasswordTokenResult } from './interfaces/reset-password.interfaces';
+import { ResetPasswordDto } from './models/reset-password.models';
 import { ResetPasswordControlComponent } from './reset-password-control/reset-password-control.component';
 import { IResetPasswordForm, ResetPasswordFormControlNames } from './reset-password.form';
 
@@ -83,7 +84,7 @@ export class ResetPasswordComponent extends WithForm<IResetPasswordForm>() imple
 
     this._resetPasswordService
       .checkResetPasswordToken(userId, token)
-      .subscribe((result: CheckResetPasswordTokenResult) => {
+      .subscribe((result: ICheckResetPasswordTokenResult) => {
         this.isTokenValid.set(result.isValid);
         this.userEmail.set(result.userEmail);
       });
@@ -94,13 +95,13 @@ export class ResetPasswordComponent extends WithForm<IResetPasswordForm>() imple
     const userId = params['userId'];
     const token = params['token'];
 
-    if (this.isReadyToSubmit() !== true || GuidUtils.isValidGuid(userId) !== true) {
+    if (!this.isReadyToSubmit() || !GuidUtils.isValidGuid(userId)) {
       this.showErrors();
       return;
     }
 
     this._resetPasswordService
-      .resetPassword(userId, token, this.controls.password.value)
+      .resetPassword(userId, new ResetPasswordDto(token, this.controls.password.value))
       .subscribe(response => {
         if (response.isPasswordSet) {
           this._snackBarService.translateAndShowSuccess('Login/ResetPasswordSuccess');

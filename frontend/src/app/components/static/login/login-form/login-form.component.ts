@@ -19,16 +19,17 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { IS_MOBILE } from 'src/app/app.config';
+import { ResetPasswordService } from 'src/app/components/static/reset-password/services/reset-password.service';
 import { environment } from 'src/environments/environment';
 import { IUserInfoBeforeLogInDto } from 'src/interfaces/auth/auth.models';
 import { IResponseError } from 'src/interfaces/errors/response.error';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthService } from 'src/services/auth/auth.service';
-import { ResetPasswordService } from 'src/services/auth/reset-password.service';
 import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { conditionalValidator } from 'src/validators/conditional.validator';
 import { phoneValidator } from 'src/validators/phone.validator';
+import { RequestResetPasswordDto } from '../../reset-password/models/reset-password.models';
 import { ILoginForm, LoginFormControlNames, LoginFormSteps } from './login.form';
 
 @Component({
@@ -93,7 +94,7 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
   }
 
   public login(): void {
-    if (this.isReadyToSubmit() !== true) {
+    if (!this.isReadyToSubmit()) {
       this.showErrors();
       return;
     }
@@ -190,9 +191,11 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
     this.showStep.set(LoginFormSteps.ResetPassword);
   }
 
-  public sendEmailResetPassword(): void {
+  public requestResetPassword(): void {
     this._resetPasswordService
-      .sendEmailResetPassword(this.controls.email.value, this.controls.phone.value)
+      .requestResetPassword(
+        new RequestResetPasswordDto(this.controls.email.value, this.controls.phone.value)
+      )
       .subscribe({
         next: () => {
           this.loginError.set('');

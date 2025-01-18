@@ -1,4 +1,7 @@
 import {
+  ActivateAccountDto,
+  ActivateAccountReqDto,
+  ActivateAccountResponseDto,
   AuthService,
   CheckResetPasswordTokenReqDto,
   CheckResetPasswordTokenResponseDto,
@@ -6,6 +9,7 @@ import {
   GetUserInfoBeforeLogInResponseDto,
   GetUserToActivateReqDto,
   GetUserToActivateResponseDto,
+  IActivateAccountResultDto,
   ILoginResult,
   IUserInfoBeforeLogInResultDto,
   IUserToActivateResultDto,
@@ -15,6 +19,7 @@ import {
   RefreshTokenResponseDto,
   RequestResetPasswordResponseDto,
   ResetPasswordDto,
+  ResetPasswordReqDto,
   ResetPasswordResponseDto,
   ResetPasswordResultDto,
   UserTryingToLogInDto,
@@ -66,8 +71,9 @@ export class AuthController extends BaseController {
 
   public resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const userGuid = isGuid(req?.params?.userId) ? req.params.userId : undefined;
       const model: ResetPasswordDto = req.body;
-      const result: ResetPasswordResultDto = await this._authService.resetPassword(model);
+      const result: ResetPasswordResultDto = await this._authService.resetPassword(new ResetPasswordReqDto(userGuid, model));
       res.status(200).json(new ResetPasswordResponseDto(result));
     } catch (error) {
       next(error);
@@ -108,6 +114,17 @@ export class AuthController extends BaseController {
       const reqDto = new GetUserToActivateReqDto(userGuid);
       const result: IUserToActivateResultDto = await this._authService.getUserToActivate(reqDto);
       res.status(200).json(new GetUserToActivateResponseDto(result));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public activateAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userGuid = isGuid(req?.params?.userId) ? req.params.userId : undefined;
+      const model: ActivateAccountDto = req.body;
+      const result: IActivateAccountResultDto = await this._authService.activateAccount(new ActivateAccountReqDto(userGuid, model));
+      res.status(200).json(new ActivateAccountResponseDto(result));
     } catch (error) {
       next(error);
     }

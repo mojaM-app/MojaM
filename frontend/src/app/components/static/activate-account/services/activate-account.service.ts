@@ -3,7 +3,8 @@ import { map, Observable } from 'rxjs';
 import { BaseService } from 'src/services/common/base.service';
 import { HttpClientService } from 'src/services/common/httpClient.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
-import { IUserToActivate } from '../interfaces/activate-account';
+import { IActivateAccountResult, IUserToActivate } from '../interfaces/activate-account';
+import { ActivateUserDto } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -31,5 +32,14 @@ export class ActivateAccountService extends BaseService {
           return resp;
         })
       );
+  }
+
+  public activate(userUuid: string, user: ActivateUserDto): Observable<IActivateAccountResult> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.auth.activateAccount(userUuid))
+      .withBody({ ...user })
+      .post<IActivateAccountResult>()
+      .pipe(this._spinnerService.waitForSubscription());
   }
 }

@@ -6,11 +6,6 @@ export interface IUserInfoBeforeLogInDto {
   isPasswordSet?: boolean;
 }
 
-export interface CheckResetPasswordTokenResult {
-  isValid: boolean;
-  userEmail?: string;
-}
-
 export interface ResetPasswordResultDto {
   isPasswordSet: boolean;
 }

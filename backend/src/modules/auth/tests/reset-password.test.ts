@@ -103,11 +103,12 @@ describe('POST /auth/reset-password', () => {
 
       const newPassword = generateRandomPassword();
       const resetPasswordDto = {
-        userId: newUserDto.id,
         token,
         password: newPassword,
       } satisfies ResetPasswordDto;
-      const resetPasswordResponse = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
+      const resetPasswordResponse = await request(app.getServer())
+        .post(authRoute.resetPasswordPath + '/' + newUserDto.id)
+        .send(resetPasswordDto);
       expect(resetPasswordResponse.statusCode).toBe(200);
       body = resetPasswordResponse.body as ResetPasswordResponseDto;
       expect(typeof body).toBe('object');
@@ -194,11 +195,12 @@ describe('POST /auth/reset-password', () => {
 
       const newPassword = generateRandomPassword();
       const resetPasswordDto = {
-        userId: newUserDto.id,
         token,
         password: newPassword,
       } satisfies ResetPasswordDto;
-      const resetPasswordResponse = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
+      const resetPasswordResponse = await request(app.getServer())
+        .post(authRoute.resetPasswordPath + '/' + newUserDto.id)
+        .send(resetPasswordDto);
       expect(resetPasswordResponse.statusCode).toBe(200);
       body = resetPasswordResponse.body as ResetPasswordResponseDto;
       expect(typeof body).toBe('object');
@@ -300,11 +302,12 @@ describe('POST /auth/reset-password', () => {
 
       const newPassword = generateRandomPassword();
       const resetPasswordDto = {
-        userId: newUserDto.id,
         token,
         password: newPassword,
       } satisfies ResetPasswordDto;
-      const resetPasswordResponse = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
+      const resetPasswordResponse = await request(app.getServer())
+        .post(authRoute.resetPasswordPath + '/' + newUserDto.id)
+        .send(resetPasswordDto);
       expect(resetPasswordResponse.statusCode).toBe(200);
       body = resetPasswordResponse.body as ResetPasswordResponseDto;
       expect(typeof body).toBe('object');
@@ -361,15 +364,13 @@ describe('POST /auth/reset-password', () => {
     it('when user id is invalid', async () => {
       const user = generateValidUser();
       const resetPasswordDto = {
-        userId: 'invalid uuid',
         token: 'valid token',
         password: user.password,
       } satisfies ResetPasswordDto;
-      const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
-      expect(response.statusCode).toBe(400);
-      const data = response.body.data as BadRequestException;
-      const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.users.Invalid_User_Id).length).toBe(0);
+      const response = await request(app.getServer())
+        .post(authRoute.resetPasswordPath + '/invalid uuid')
+        .send(resetPasswordDto);
+      expect(response.statusCode).toBe(404);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -377,56 +378,16 @@ describe('POST /auth/reset-password', () => {
       });
     });
 
-    it('when user id is empty', async () => {
+    it('when user id is empty/null/undefined', async () => {
       const user = generateValidUser();
       const resetPasswordDto = {
-        userId: '',
         token: 'valid token',
         password: user.password,
       } satisfies ResetPasswordDto;
-      const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
-      expect(response.statusCode).toBe(400);
-      const data = response.body.data as BadRequestException;
-      const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.users.Invalid_User_Id).length).toBe(0);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    });
-
-    it('when user id is null', async () => {
-      const user = generateValidUser();
-      const resetPasswordDto = {
-        userId: null,
-        token: 'valid token',
-        password: user.password,
-      } satisfies ResetPasswordDto;
-      const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
-      expect(response.statusCode).toBe(400);
-      const data = response.body.data as BadRequestException;
-      const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.users.Invalid_User_Id).length).toBe(0);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    });
-
-    it('when user id is undefined', async () => {
-      const user = generateValidUser();
-      const resetPasswordDto = {
-        userId: undefined,
-        token: 'valid token',
-        password: user.password,
-      } satisfies ResetPasswordDto;
-      const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
-      expect(response.statusCode).toBe(400);
-      const data = response.body.data as BadRequestException;
-      const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.users.Invalid_User_Id).length).toBe(0);
+      const response = await request(app.getServer())
+        .post(authRoute.resetPasswordPath + '/')
+        .send(resetPasswordDto);
+      expect(response.statusCode).toBe(404);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -458,11 +419,12 @@ describe('POST /auth/reset-password', () => {
       expect(deleteUserResponse.statusCode).toBe(200);
 
       const resetPasswordDto = {
-        userId: newUserDto.id,
         token: 'valid token',
         password: generateRandomPassword(),
       } satisfies ResetPasswordDto;
-      const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
+      const response = await request(app.getServer())
+        .post(authRoute.resetPasswordPath + '/' + newUserDto.id)
+        .send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
       const data = response.body.data as BadRequestException;
       const errors = data.message.split(',');
@@ -481,11 +443,12 @@ describe('POST /auth/reset-password', () => {
 
     it('when password is invalid', async () => {
       const resetPasswordDto = {
-        userId: Guid.EMPTY,
         token: 'valid token',
         password: 'invalid password',
       } satisfies ResetPasswordDto;
-      const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
+      const response = await request(app.getServer())
+        .post(authRoute.resetPasswordPath + '/' + Guid.EMPTY)
+        .send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
       const data = response.body.data as BadRequestException;
       const errors = data.message.split(',');
@@ -499,11 +462,12 @@ describe('POST /auth/reset-password', () => {
 
     it('when password is empty', async () => {
       const resetPasswordDto = {
-        userId: Guid.EMPTY,
         token: 'valid token',
         password: '',
       } satisfies ResetPasswordDto;
-      const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
+      const response = await request(app.getServer())
+        .post(authRoute.resetPasswordPath + '/' + Guid.EMPTY)
+        .send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
       const data = response.body.data as BadRequestException;
       const errors = data.message.split(',');
@@ -517,11 +481,12 @@ describe('POST /auth/reset-password', () => {
 
     it('when password is null', async () => {
       const resetPasswordDto = {
-        userId: Guid.EMPTY,
         token: 'valid token',
         password: null,
       } satisfies ResetPasswordDto;
-      const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
+      const response = await request(app.getServer())
+        .post(authRoute.resetPasswordPath + '/' + Guid.EMPTY)
+        .send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
       const data = response.body.data as BadRequestException;
       const errors = data.message.split(',');
@@ -535,11 +500,12 @@ describe('POST /auth/reset-password', () => {
 
     it('when password is undefined', async () => {
       const resetPasswordDto = {
-        userId: Guid.EMPTY,
         token: 'valid token',
         password: undefined,
       } satisfies ResetPasswordDto;
-      const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
+      const response = await request(app.getServer())
+        .post(authRoute.resetPasswordPath + '/' + Guid.EMPTY)
+        .send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
       const data = response.body.data as BadRequestException;
       const errors = data.message.split(',');
@@ -554,11 +520,12 @@ describe('POST /auth/reset-password', () => {
     it('when token is empty', async () => {
       const user = generateValidUser();
       const resetPasswordDto = {
-        userId: Guid.EMPTY,
         token: '',
         password: user.password,
       } satisfies ResetPasswordDto;
-      const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
+      const response = await request(app.getServer())
+        .post(authRoute.resetPasswordPath + '/' + Guid.EMPTY)
+        .send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
       const data = response.body.data as BadRequestException;
       const errors = data.message.split(',');
@@ -573,11 +540,12 @@ describe('POST /auth/reset-password', () => {
     it('when token is null', async () => {
       const user = generateValidUser();
       const resetPasswordDto = {
-        userId: Guid.EMPTY,
         token: null,
         password: user.password,
       } satisfies ResetPasswordDto;
-      const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
+      const response = await request(app.getServer())
+        .post(authRoute.resetPasswordPath + '/' + Guid.EMPTY)
+        .send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
       const data = response.body.data as BadRequestException;
       const errors = data.message.split(',');
@@ -592,11 +560,12 @@ describe('POST /auth/reset-password', () => {
     it('when token is undefined', async () => {
       const user = generateValidUser();
       const resetPasswordDto = {
-        userId: Guid.EMPTY,
         token: undefined,
         password: user.password,
       } satisfies ResetPasswordDto;
-      const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
+      const response = await request(app.getServer())
+        .post(authRoute.resetPasswordPath + '/' + Guid.EMPTY)
+        .send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
       const data = response.body.data as BadRequestException;
       const errors = data.message.split(',');
@@ -611,11 +580,12 @@ describe('POST /auth/reset-password', () => {
     it('when token is invalid', async () => {
       const { uuid, password } = getAdminLoginData();
       const resetPasswordDto = {
-        userId: uuid,
         token: 'invalid token',
         password,
       } satisfies ResetPasswordDto;
-      const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
+      const response = await request(app.getServer())
+        .post(authRoute.resetPasswordPath + '/' + uuid)
+        .send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
       const data = response.body.data as BadRequestException;
       const errors = data.message.split(',');
@@ -659,11 +629,12 @@ describe('POST /auth/reset-password', () => {
       const { uuid: adminUuid } = getAdminLoginData();
       expect(newUserDto.id).not.toBe(adminUuid);
       const resetPasswordDto = {
-        userId: adminUuid,
         token,
         password: generateRandomPassword(),
       } satisfies ResetPasswordDto;
-      const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
+      const response = await request(app.getServer())
+        .post(authRoute.resetPasswordPath + '/' + adminUuid)
+        .send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
       const data = response.body.data as BadRequestException;
       const errors = data.message.split(',');
@@ -728,11 +699,12 @@ describe('POST /auth/reset-password', () => {
       expect(checkResetPasswordTokenResult).toEqual({ isValid: false });
 
       const resetPasswordDto = {
-        userId: newUserDto.id,
         token,
         password: generateRandomPassword(),
       } satisfies ResetPasswordDto;
-      const response = await request(app.getServer()).post(authRoute.resetPasswordPath).send(resetPasswordDto);
+      const response = await request(app.getServer())
+        .post(authRoute.resetPasswordPath + '/' + newUserDto.id)
+        .send(resetPasswordDto);
       expect(response.statusCode).toBe(400);
       const data = response.body.data as BadRequestException;
       const errors = data.message.split(',');

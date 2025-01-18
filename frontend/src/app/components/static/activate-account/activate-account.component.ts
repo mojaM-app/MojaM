@@ -43,7 +43,8 @@ import {
   SetPasswordFormGroupControlNames,
   UserInfoFormGroupControlNames,
 } from './activate-account.form';
-import { IUserToActivate } from './interfaces/activate-account';
+import { IActivateAccountResult, IUserToActivate } from './interfaces/activate-account';
+import { ActivateUserDto } from './models/user.model';
 import { ActivateAccountService } from './services/activate-account.service';
 
 @Component({
@@ -182,15 +183,15 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
 
   public ngOnInit(): void {
     const params = this._route.snapshot.params;
-    const userId = params['userId'];
+    const userUuid = params['userId'];
 
-    if (!GuidUtils.isValidGuid(userId)) {
+    if (!GuidUtils.isValidGuid(userUuid)) {
       this._router.navigate(['/not-found']);
       this._snackBarService.translateAndShowError('Errors/Invalid_Activated_Account_Identifier');
       return;
     }
 
-    this._activateAccountService.get(userId).subscribe((result: IUserToActivate) => {
+    this._activateAccountService.get(userUuid).subscribe((result: IUserToActivate) => {
       if (result?.isLockedOut ?? false) {
         this.navigateToHomePage();
         this._snackBarService.translateAndShowError('Errors/Cannot_Activate_Locked_Account');
@@ -208,22 +209,25 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
   }
 
   public save(): void {
-    if (!this.isReadyToSubmit()) {
+    const params = this._route.snapshot.params;
+    const userUuid = params['userId'];
+
+    if (!GuidUtils.isValidGuid(userUuid) || !this.isReadyToSubmit()) {
       this.showErrors();
       return;
     }
 
-    // if (this.formMode() === FormMode.Edit) {
-    //   const dto = new EditUserDto(this.user()!.id!, this.controls);
-    //   this._userService.update(dto).subscribe(() => {
-    //     this.navigateToUserList();
-    //   });
-    // } else {
-    //   const dto = new AddUserDto(this.controls);
-    //   this._userService.create(dto).subscribe(() => {
-    //     this.navigateToUserList();
-    //   });
-    // }
+    const dto = new ActivateUserDto(this.controls as unknown as IActivateAccountForm);
+    this._activateAccountService
+      .activate(userUuid, dto)
+      .subscribe((result: IActivateAccountResult) => {
+        if (result?.isActive ?? true) {
+          this.navigateToHomePage();
+          this._snackBarService.translateAndShowSuccess('Login/AccountActivatedSuccessfully');
+        } else {
+          this._snackBarService.translateAndShowError('Errors/Failed_To_Activate_Account');
+        }
+      });
   }
 
   public cancel(): void {

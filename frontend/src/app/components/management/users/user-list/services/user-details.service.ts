@@ -3,8 +3,8 @@ import { map, Observable } from 'rxjs';
 import { BaseService } from 'src/services/common/base.service';
 import { HttpClientService } from 'src/services/common/httpClient.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
-import { BooleanUtils } from 'src/utils/boolean.utils';
 import { IUserDetails } from '../interfaces/user-details.interfaces';
+import { transformUser } from './transform-user';
 
 @Injectable({
   providedIn: 'root',
@@ -26,10 +26,7 @@ export class UserDetailsService extends BaseService {
         this._spinnerService.waitForSubscription(),
         map((resp: IUserDetails) => {
           if (resp) {
-            resp.lastLoginAt = resp.lastLoginAt ? new Date(resp.lastLoginAt) : undefined;
-            resp.lastLoginAt = resp.lastLoginAt ? new Date(resp.lastLoginAt) : undefined;
-            resp.isActive = BooleanUtils.toBoolean(resp.isActive);
-            resp.isLockedOut = BooleanUtils.toBoolean(resp.isLockedOut);
+            resp = transformUser(resp);
           }
           return resp;
         })

@@ -12,6 +12,7 @@ import {
   IUserDto,
   UnlockUserReqDto,
   UpdateUserDto,
+  UpdateUserModel,
   UpdateUserReqDto,
   UserActivatedEvent,
   UserCreatedEvent,
@@ -25,6 +26,7 @@ import {
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { Container, Service } from 'typedi';
 import { User } from '../entities/user.entity';
+import { IUpdateUser } from '../interfaces/update-user.interfaces';
 
 @Service()
 export class UsersService extends BaseService {
@@ -106,7 +108,14 @@ export class UsersService extends BaseService {
       }
     }
 
-    const updatedUser = await this._userRepository.update(user!.id, reqDto);
+    const model = new UpdateUserModel(user!.id, {
+      email: userData.email,
+      phone: userData.phone,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      joiningDate: userData.joiningDate,
+    } satisfies IUpdateUser) satisfies UpdateUserModel;
+    const updatedUser = await this._userRepository.update(model);
 
     this._eventDispatcher.dispatch(events.users.userUpdated, new UserUpdatedEvent(updatedUser!, reqDto.currentUserId));
 

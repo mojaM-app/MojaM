@@ -25,7 +25,8 @@
             </mat-step>
             <mat-step
               [label]="'ActivateAccount/Steps/Identity/Title' | gmessage"
-              [stepControl]="group(formGroupNames.identity)">
+              [stepControl]="group(formGroupNames.identity)"
+              [errorMessage]="'ActivateAccount/Steps/Identity/TitleErrorMessage' | gmessage">
               <div [formGroupName]="formGroupNames.identity" class="mt-3">
                 <div class="row">
                   <div class="col-12">
@@ -93,7 +94,8 @@
             </mat-step>
             <mat-step
               [label]="'ActivateAccount/Steps/UserInfo/Title' | gmessage"
-              [stepControl]="group(formGroupNames.userInfo)">
+              [stepControl]="group(formGroupNames.userInfo)"
+              [errorMessage]="'ActivateAccount/Steps/UserInfo/TitleErrorMessage' | gmessage">
               <div [formGroupName]="formGroupNames.userInfo" class="mt-3">
                 <div class="row">
                   <div class="col-12">
@@ -182,7 +184,8 @@
             </mat-step>
             <mat-step
               [label]="'ActivateAccount/Steps/SetPassword/Title' | gmessage"
-              [stepControl]="group(formGroupNames.setPassword)">
+              [stepControl]="group(formGroupNames.setPassword)"
+              [errorMessage]="'ActivateAccount/Steps/SetPassword/TitleErrorMessage' | gmessage">
               <div [formGroupName]="formGroupNames.setPassword" class="mt-3">
                 <div class="row">
                   <div class="col-12">
@@ -207,12 +210,21 @@
                 </div>
               </div>
             </mat-step>
-
-            <mat-step>
-              <ng-template matStepLabel>Done</ng-template>
-              <p>You are now done.</p>
-              <div>
-                <button mat-button matStepperPrevious type="button">Back</button>
+            <mat-step [label]="'ActivateAccount/Steps/Finish/Title' | gmessage">
+              <div class="row my-3">
+                <p
+                  class="text-wrap"
+                  [innerHTML]="'ActivateAccount/Steps/Finish/Description' | gmessage"></p>
+              </div>
+              <div class="row">
+                <div class="col text-end">
+                  <button mat-raised-button matStepperPrevious type="button" class="me-2">
+                    {{ 'ActivateAccount/Steps/SetPassword/BtnBack' | gmessage }}
+                  </button>
+                  <button mat-raised-button type="submit">
+                    {{ 'ActivateAccount/Steps/Finish/BtnFinish' | gmessage }}
+                  </button>
+                </div>
               </div>
             </mat-step>
           </mat-stepper>

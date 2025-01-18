@@ -6,6 +6,7 @@ export { UserLoggedInEvent } from './events/user-logged-in-event';
 export { UserPasswordChangedEvent } from './events/user-password-changed-event';
 export { UserRefreshedTokenEvent } from './events/user-refreshed-token-event';
 
+export { ActivateAccountDto, ActivateAccountReqDto, ActivateAccountResponseDto, type IActivateAccountResultDto } from './dtos/activate-account.dto';
 export {
   CheckResetPasswordTokenReqDto,
   CheckResetPasswordTokenResponseDto,
@@ -15,7 +16,7 @@ export { GetUserToActivateReqDto, GetUserToActivateResponseDto, type IUserToActi
 export { LoginDto, LoginResponseDto } from './dtos/login.dto';
 export { RefreshTokenDto, RefreshTokenResponseDto } from './dtos/refresh-token.dto';
 export { RequestResetPasswordResponseDto } from './dtos/request-reset-password.dto';
-export { ResetPasswordDto, ResetPasswordResponseDto, type ResetPasswordResultDto } from './dtos/reset-password.dto';
+export { ResetPasswordDto, ResetPasswordReqDto, ResetPasswordResponseDto, type ResetPasswordResultDto } from './dtos/reset-password.dto';
 export { GetUserInfoBeforeLogInResponseDto, UserTryingToLogInDto, type IUserInfoBeforeLogInResultDto } from './dtos/user-trying-to-log-in.dto';
 
 export type { DataStoredInToken } from './models/DataStoredInToken';

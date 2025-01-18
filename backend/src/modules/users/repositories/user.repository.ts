@@ -10,9 +10,7 @@ import {
   DeleteUserReqDto,
   LockUserReqDto,
   UnlockUserReqDto,
-  UpdateUserDto,
   UpdateUserModel,
-  UpdateUserReqDto,
 } from '@modules/users';
 import { getDateTimeNow, isNullOrEmptyString } from '@utils';
 import Container, { Service } from 'typedi';
@@ -96,17 +94,7 @@ export class UserRepository extends BaseUserRepository {
     return await this._dbContext.users.save(entity);
   }
 
-  public async update(userId: number, reqDto: UpdateUserReqDto): Promise<User | null> {
-    const userData: UpdateUserDto = reqDto.userData;
-
-    const model = new UpdateUserModel(userId, {
-      email: userData.email,
-      phone: userData.phone,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      joiningDate: userData.joiningDate,
-    } satisfies IUpdateUser) satisfies UpdateUserModel;
-
+  public async update(model: UpdateUserModel): Promise<User | null> {
     return await this._update(model);
   }
 

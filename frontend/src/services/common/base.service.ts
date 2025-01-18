@@ -49,14 +49,16 @@ export class BaseService {
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/get-user-info-before-log-in`,
       requestResetPassword: (): string =>
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/request-reset-password`,
-      checkResetPasswordToken: (userId: string, token: string): string =>
-        `${environment.backendUrl}/${this.API_ROUTES.auth.path}/check-reset-password-token/${userId}/${token}`,
-      resetPassword: (): string =>
-        `${environment.backendUrl}/${this.API_ROUTES.auth.path}/reset-password`,
+      checkResetPasswordToken: (uuid: string, token: string): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.auth.path}/check-reset-password-token/${uuid}/${token}`,
+      resetPassword: (uuid: string): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.auth.path}/reset-password/${uuid}`,
       refreshToken: (): string =>
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/refresh-token`,
       getUserToActivate: (uuid: string): string =>
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/get-user-to-activate/${uuid}`,
+      activateAccount: (uuid: string): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.auth.path}/activate-account/${uuid}`,
     },
     userList: {
       path: 'user-list',

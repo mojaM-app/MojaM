@@ -3,12 +3,15 @@ import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
 import {
+  ActivateAccountDto,
+  ActivateAccountReqDto,
   CheckResetPasswordTokenReqDto,
   CheckResetPasswordTokenResultDto,
   CryptoService,
   DataStoredInToken,
   FailedLoginAttemptEvent,
   GetUserToActivateReqDto,
+  IActivateAccountResultDto,
   ILoginResult,
   InactiveUserTriesToLogInEvent,
   IUserInfoBeforeLogInResultDto,
@@ -17,7 +20,7 @@ import {
   LoginDto,
   PasswordService,
   RefreshTokenDto,
-  ResetPasswordDto,
+  ResetPasswordReqDto,
   ResetPasswordResultDto,
   UserLockedOutEvent,
   UserLoggedInEvent,
@@ -37,8 +40,9 @@ import {
 import { BaseService, userToIUser } from '@modules/common';
 import { EmailService, LinkHelper } from '@modules/notifications';
 import { PermissionsRepository, SystemPermission } from '@modules/permissions';
-import { UserRepository } from '@modules/users';
+import { UpdateUserModel, UserActivatedEvent, UserRepository } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
+import { IUpdateUser } from '@modules/users/interfaces/update-user.interfaces';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { decode, JwtPayload, sign, verify, VerifyErrors } from 'jsonwebtoken';
 import StatusCode from 'status-code-enum';
@@ -137,20 +141,20 @@ export class AuthService extends BaseService {
     } satisfies CheckResetPasswordTokenResultDto;
   }
 
-  public async resetPassword(data: ResetPasswordDto): Promise<ResetPasswordResultDto> {
-    if (!this._passwordService.isPasswordValid(data?.password)) {
-      throw new BadRequestException(errorKeys.users.Invalid_Password);
-    }
-
-    if (isNullOrEmptyString(data?.token)) {
-      throw new BadRequestException(errorKeys.login.Invalid_Reset_Password_Token);
-    }
-
-    if (isNullOrEmptyString(data?.userId)) {
+  public async resetPassword(data: ResetPasswordReqDto): Promise<ResetPasswordResultDto> {
+    if (isNullOrEmptyString(data?.userGuid)) {
       throw new BadRequestException(errorKeys.users.Invalid_User_Id);
     }
 
-    const user: User | null = await this._userRepository.getByUuid(data.userId);
+    if (isNullOrEmptyString(data?.model?.token)) {
+      throw new BadRequestException(errorKeys.login.Invalid_Reset_Password_Token);
+    }
+
+    if (!this._passwordService.isPasswordValid(data?.model?.password)) {
+      throw new BadRequestException(errorKeys.users.Invalid_Password);
+    }
+
+    const user: User | null = await this._userRepository.getByUuid(data.userGuid);
 
     if (isNullOrUndefined(user)) {
       throw new BadRequestException(errorKeys.users.Invalid_User_Id);
@@ -158,11 +162,11 @@ export class AuthService extends BaseService {
 
     const token = await this._resetPasswordTokensRepository.getLastToken(user!.id);
 
-    if (isNullOrUndefined(token) || this._resetPasswordTokensRepository.isTokenExpired(token) || token!.token !== data.token) {
+    if (isNullOrUndefined(token) || this._resetPasswordTokensRepository.isTokenExpired(token) || token!.token !== data.model!.token) {
       throw new BadRequestException(errorKeys.login.Invalid_Reset_Password_Token);
     }
 
-    await this._userRepository.setPassword(user!.id, data.password!);
+    await this._userRepository.setPassword(user!.id, data.model!.password!);
 
     if (!user!.isActive) {
       await this._userRepository.activate(user!.id);
@@ -303,6 +307,47 @@ export class AuthService extends BaseService {
       lastName: user!.lastName,
       isLockedOut: user!.isLockedOut,
     } satisfies IUserToActivateResultDto;
+  }
+
+  public async activateAccount(reqDto: ActivateAccountReqDto): Promise<IActivateAccountResultDto> {
+    if (isNullOrEmptyString(reqDto?.userGuid)) {
+      throw new BadRequestException(errorKeys.users.Invalid_User_Id);
+    }
+
+    if (!this._passwordService.isPasswordValid(reqDto?.model?.password)) {
+      throw new BadRequestException(errorKeys.users.Invalid_Password);
+    }
+
+    const user: User | null = await this._userRepository.getByUuid(reqDto.userGuid);
+
+    if (isNullOrUndefined(user)) {
+      return {
+        isActive: true,
+      } satisfies IActivateAccountResultDto;
+    }
+
+    const userData: ActivateAccountDto = reqDto.model!;
+
+    await this._userRepository.setPassword(user!.id, reqDto.model!.password!);
+
+    if (!user!.isActive) {
+      await this._userRepository.activate(user!.id);
+    }
+
+    const model = new UpdateUserModel(user!.id, {
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      joiningDate: userData.joiningDate,
+    } satisfies IUpdateUser) satisfies UpdateUserModel;
+    const updatedUser = await this._userRepository.update(model);
+
+    await this._resetPasswordTokensRepository.deleteTokens(user!.id);
+
+    this._eventDispatcher.dispatch(events.users.userActivated, new UserActivatedEvent(updatedUser!, undefined));
+
+    return {
+      isActive: updatedUser!.isActive,
+    } satisfies IActivateAccountResultDto;
   }
 
   // public async logout(userData: IUserDto): Promise<IUserDto> {

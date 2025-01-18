@@ -5,10 +5,10 @@ import {
   IUserGridItemDto,
   UsersGridData,
 } from 'src/app/components/management/users/user-list/interfaces/user-list.interfaces';
-import { BooleanUtils } from 'src/utils/boolean.utils';
-import { BaseService } from '../../../../../../services/common/base.service';
-import { HttpClientService } from '../../../../../../services/common/httpClient.service';
-import { SpinnerService } from '../../../../../../services/spinner/spinner.service';
+import { BaseService } from 'src/services/common/base.service';
+import { HttpClientService } from 'src/services/common/httpClient.service';
+import { SpinnerService } from 'src/services/spinner/spinner.service';
+import { transformUser } from './transform-user';
 
 @Injectable({
   providedIn: 'root',
@@ -42,10 +42,7 @@ export class UserListService extends BaseService {
         map((resp: UsersGridData) => {
           if (resp.items?.length > 0) {
             resp.items.forEach((item: IUserGridItemDto) => {
-              item.lastLoginAt = item.lastLoginAt ? new Date(item.lastLoginAt) : undefined;
-              item.lastLoginAt = item.lastLoginAt ? new Date(item.lastLoginAt) : undefined;
-              item.isActive = BooleanUtils.toBoolean(item.isActive);
-              item.isLockedOut = BooleanUtils.toBoolean(item.isLockedOut);
+              transformUser(item);
             });
           }
           return resp;

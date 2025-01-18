@@ -197,6 +197,7 @@
       },
       "Identity": {
         "Title": "Potwierdź dane",
+        "TitleErrorMessage": "Błąd",
         "Description": "Potwierdź, czy poniższe adres e-mail i telefon należą do ciebie i czy są takie jakie podano podczas zapisów do wspólnoty.",
         "EmailConfirmed": "Potwierdzam, to jest mój e-mail",
         "PhoneConfirmed": "Potwierdzam, to jest mój numer telefonu",
@@ -205,6 +206,7 @@
       },
       "UserInfo": {
         "Title": "Uzupełnij dane",
+        "TitleErrorMessage": "Błąd",
         "Description": "Podaj/potwierdź swoje imię i nazwisko.",
         "OptionalFieldsHint": "Opcjonalnie, jeżeli pamiętasz, podaj datę dołączenia do wspólnoty.",
         "BtnNext": "Dalej",
@@ -212,6 +214,7 @@
       },
       "SetPassword": {
         "Title": "Ustaw hasło",
+        "TitleErrorMessage": "Błąd",
         "Description": "<b>Ustaw hasło do swojego konta</b>.<br><br>Pamiętaj, że silne hasło to podstawa bezpieczeństwa Twojego konta.<br>Hasło musi zawierać co najmniej dziewięć znaków w tym minimum jedną dużą literę i minimum jedną małą literę. Cyfry i znaki specjalne są opcjonalne.",
         "Password": "Hasło",
         "PasswordPlaceholder": "Wprowadź hasło",
@@ -220,6 +223,11 @@
         "ConfirmPasswordPlaceholder": "Potwierdź hasło",
         "BtnNext": "Dalej",
         "BtnBack": "Wstecz"
+      },
+      "Finish": {
+        "Title": "Gotowe!",
+        "Description": "Możesz aktywować swoje konto.",
+        "BtnFinish": "Aktywuj konto"
       }
     }
   },
@@ -311,7 +319,8 @@
     "Announcements_Archived_Announcements_Cant_Be_Edited": "Nie można edytować zarchiwizowanych ogłoszeń.",
     "Announcements_Without_ValidFromDate_Can_Not_Be_Published": "Nie można opublikować ogłoszeń bez daty rozpoczęcia obowiązywania.",
     "Cannot_Save_Published_Announcements_Without_ValidFromDate": "Nie można zapisać opublikowanych ogłoszeń bez daty rozpoczęcia obowiązywania.",
-    "Cannot_Activate_Locked_Account": "Twoje konto jest zablokowane, nie można aktywować zablokowanego konta. Skontaktuj się z liderem."
+    "Cannot_Activate_Locked_Account": "Twoje konto jest zablokowane, nie można aktywować zablokowanego konta. Skontaktuj się z liderem.",
+    "Failed_To_Activate_Account": "Nie udało się aktywować konta. Skontaktuj się z liderem wspólnoty."
   },
   "Grid": {
     "NoColumns": "Brak kolumn",

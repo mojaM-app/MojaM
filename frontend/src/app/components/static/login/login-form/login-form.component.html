@@ -59,7 +59,7 @@
           {{ 'Login/PasswordNotSetError' | gmessage }}
         </div>
         <div class="col-12 mb-3">
-          <button mat-stroked-button class="w-100" type="button" (click)="sendEmailResetPassword()">
+          <button mat-stroked-button class="w-100" type="button" (click)="requestResetPassword()">
             {{ 'Login/BtnSetPassword' | gmessage }}
           </button>
         </div>
@@ -117,7 +117,7 @@
           {{ 'Login/ResetPasswordMessage' | gmessage }}
         </div>
         <div class="col-12 mb-3">
-          <button mat-stroked-button class="w-100" type="button" (click)="sendEmailResetPassword()">
+          <button mat-stroked-button class="w-100" type="button" (click)="requestResetPassword()">
             {{ 'Login/BtnResetPassword' | gmessage }}
           </button>
         </div>

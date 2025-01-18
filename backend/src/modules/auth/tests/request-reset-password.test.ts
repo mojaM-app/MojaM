@@ -523,8 +523,8 @@ describe('POST /auth/request-reset-password', () => {
       const token = splittedUrl[6];
 
       response = await request(app.getServer())
-        .post(authRoute.resetPasswordPath)
-        .send({ userId, token, password } satisfies ResetPasswordDto);
+        .post(authRoute.resetPasswordPath + `/${userId}`)
+        .send({ token, password } satisfies ResetPasswordDto);
       expect(response.statusCode).toBe(200);
 
       const resetPasswordResultBody: ResetPasswordResponseDto = response.body;
@@ -587,8 +587,8 @@ describe('POST /auth/request-reset-password', () => {
       const token = splittedUrl[6];
 
       response = await request(app.getServer())
-        .post(authRoute.resetPasswordPath)
-        .send({ userId: newUserDto.id, token, password: user.password } satisfies ResetPasswordDto);
+        .post(authRoute.resetPasswordPath + `/${newUserDto.id}`)
+        .send({ token, password: user.password } satisfies ResetPasswordDto);
       expect(response.statusCode).toBe(200);
 
       const resetPasswordResultBody: ResetPasswordResponseDto = response.body;

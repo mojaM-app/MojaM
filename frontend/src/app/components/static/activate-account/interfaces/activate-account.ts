@@ -7,3 +7,7 @@ export interface IUserToActivate {
   isActive: boolean;
   isLockedOut?: boolean;
 }
+
+export interface IActivateAccountResult {
+  isActive?: boolean;
+}
