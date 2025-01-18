@@ -64,6 +64,7 @@ export class EditAnnouncementsComponent extends WithUnsubscribe() implements OnI
     const form = this._formComponent();
 
     if (!form || !form.containsValidData()) {
+      form?.showErrors();
       return;
     }
 

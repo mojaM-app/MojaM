@@ -95,6 +95,7 @@ export class ResetPasswordComponent extends WithForm<IResetPasswordForm>() imple
     const token = params['token'];
 
     if (this.isReadyToSubmit() !== true || GuidUtils.isValidGuid(userId) !== true) {
+      this.showErrors();
       return;
     }
 

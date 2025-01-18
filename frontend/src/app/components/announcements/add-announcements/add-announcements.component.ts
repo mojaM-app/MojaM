@@ -63,6 +63,7 @@ export class AddAnnouncementsComponent extends WithUnsubscribe() implements OnIn
     const form = this._formComponent();
 
     if (!form || !form.containsValidData()) {
+      form?.showErrors();
       return;
     }
 

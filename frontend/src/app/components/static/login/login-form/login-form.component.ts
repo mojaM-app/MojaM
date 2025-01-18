@@ -94,6 +94,7 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
 
   public login(): void {
     if (this.isReadyToSubmit() !== true) {
+      this.showErrors();
       return;
     }
 

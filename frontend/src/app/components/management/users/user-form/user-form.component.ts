@@ -26,7 +26,6 @@ import { NewsMenu } from 'src/app/components/news/news.menu';
 import { VALIDATOR_SETTINGS } from 'src/core/consts';
 import { FormMode } from 'src/core/form-mode.enum';
 import { DirectivesModule } from 'src/directives/directives.module';
-import { environment } from 'src/environments/environment';
 import { IUser } from 'src/interfaces/users/user.interfaces';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
@@ -119,15 +118,15 @@ export class UserFormComponent extends WithUnsubscribe(WithForm<IUserForm>()) im
         } satisfies UserDto);
       }
 
-      if (this.formMode() === FormMode.Add && environment.production === false) {
-        this.formGroup.patchValue({
-          email: `email${new Date().getTime()}@example.com`,
-          phone: '123456789',
-          firstName: 'John',
-          lastName: 'Doe',
-          joiningDate: new Date(),
-        });
-      }
+      // if (this.formMode() === FormMode.Add && environment.production === false) {
+      //   this.formGroup.patchValue({
+      //     email: `email${new Date().getTime()}@example.com`,
+      //     phone: '123456789',
+      //     firstName: 'John',
+      //     lastName: 'Doe',
+      //     joiningDate: new Date(),
+      //   });
+      // }
     });
 
     this.addSubscription(
@@ -158,6 +157,7 @@ export class UserFormComponent extends WithUnsubscribe(WithForm<IUserForm>()) im
 
   public save(): void {
     if (!this.isReadyToSubmit()) {
+      this.showErrors();
       return;
     }
 

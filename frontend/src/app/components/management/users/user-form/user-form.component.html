@@ -16,9 +16,10 @@
           <form [formGroup]="formGroup" (ngSubmit)="save()">
             <div class="row">
               <div class="col-12">
-                <div class="alert alert-light" role="alert">
-                  {{ 'Management/UserForm/RequiredFieldsHint' | gmessage }}
-                </div>
+                <div
+                  class="alert alert-light"
+                  role="alert"
+                  [innerHTML]="'Management/UserForm/RequiredFieldsHint' | gmessage"></div>
               </div>
               <div class="col-12 col-sm-6 mb-3">
                 <mat-form-field class="w-100">

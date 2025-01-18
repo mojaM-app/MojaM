@@ -250,9 +250,9 @@
     "UserForm": {
       "AddTitle": "Dodaj użytkownika",
       "EditTitle": "Edytuj użytkownika",
-      "RequiredFieldsHint": "E-mail i telefon są danymi wymaganymi. Służą do identyfikacji użytkownika, są niezbędne do zalogowania się do aplikacji.",
+      "RequiredFieldsHint": "<b>E-mail i telefon są danymi wymaganymi.</b><br>Służą do identyfikacji użytkownika, są niezbędne do zalogowania się do aplikacji.",
       "OptionalFieldsHint": "Dane opcjonalne.",
-      "NewUserHint": "Po utworzeniu nowy użytkownik domyślnie jest nieaktywny. W chwili dodania użytkownika do aplikacji zostanie wysłany do niego e-mail z linkiem aktywacyjnym konto. E-mail zostanie wysłany na adres podany w polu \"E-mail\".",
+      "NewUserHint": "Po utworzeniu nowego konta domyślnie nowy użytkownik jest nieaktywny i nie będzie w stanie się zalogować. W chwili dodania użytkownika do aplikacji zostanie wysłany do niego e-mail z instrukcją, jak aktywować swoje konto. Instrukcja zostanie wysłana na adres podany w polu \"E-mail\".",
       "Email": "E-mail",
       "EmailPlaceholder": "Wprowadź e-mail",
       "EmailHint": "Proszę podać adres e-mail użytkownika, podany podczas zapisów do wspólnoty.",

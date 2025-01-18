@@ -8,7 +8,7 @@
     <div class="row">
       <div class="col-12">
         <form [formGroup]="formGroup" (ngSubmit)="save()">
-          <mat-stepper [orientation]="stepperOrientation()" [linear]="true" #stepper>
+          <mat-stepper [orientation]="stepperOrientation()" linear #stepper>
             <mat-step [label]="'ActivateAccount/Steps/Welcome/Title' | gmessage">
               <div class="row my-3">
                 <p
@@ -75,9 +75,9 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-12 mb-3">
-                    {{ 'Management/UserForm/RequiredFieldsHint' | gmessage }}
-                  </div>
+                  <div
+                    class="col-12 mb-3"
+                    [innerHtml]="'Management/UserForm/RequiredFieldsHint' | gmessage"></div>
                 </div>
                 <div class="row">
                   <div class="col text-end">
@@ -180,7 +180,6 @@
                 </div>
               </div>
             </mat-step>
-
             <mat-step
               [label]="'ActivateAccount/Steps/SetPassword/Title' | gmessage"
               [stepControl]="group(formGroupNames.setPassword)">

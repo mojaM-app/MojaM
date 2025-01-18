@@ -209,6 +209,7 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
 
   public save(): void {
     if (!this.isReadyToSubmit()) {
+      this.showErrors();
       return;
     }
 

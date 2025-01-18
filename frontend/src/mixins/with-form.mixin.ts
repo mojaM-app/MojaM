@@ -62,5 +62,9 @@ export function WithForm<
     public isReadyToSubmit(): boolean {
       return this.isValid && !this.hasErrors;
     }
+
+    public showErrors(): void {
+      this.formGroup.markAllAsTouched();
+    }
   };
 }
