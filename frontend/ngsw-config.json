@@ -2,15 +2,23 @@
   "$schema": "./node_modules/@angular/service-worker/config/schema.json",
   "index": "/index.html",
   "appData": {
-    "version": "2024.11.12",
+    "version": "2025.01.24",
     "name": "Moja Miriam"
   },
   "assetGroups": [
     {
       "name": "app",
       "installMode": "prefetch",
+      "updateMode": "prefetch",
       "resources": {
-        "files": ["/favicon.ico", "/index.html", "/manifest.webmanifest", "/*.css", "/*.js"]
+        "files": [
+          "/favicon.ico",
+          "/index.html",
+          "/manifest.webmanifest",
+          "/browserconfig.xml",
+          "/*.css",
+          "/*.js"
+        ]
       }
     },
     {
