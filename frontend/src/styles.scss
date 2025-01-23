@@ -1,5 +1,4 @@
 /* You can add global styles to this file, and also import other style files */
-
 @use '@angular/material' as mat;
 
 @include mat.core();
@@ -31,18 +30,26 @@ $light-theme: mat.define-theme(
   )
 );
 
+:root {
+  --sat: env(safe-area-inset-top, 0);
+  --sar: env(safe-area-inset-right, 0);
+  --sab: env(safe-area-inset-bottom, 0);
+  --sal: env(safe-area-inset-left, 0);
+}
+
 html {
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  height: -webkit-fill-available;
+  width: 100vw;
 }
 
 body {
-  width: 100%;
-  height: 100vh;
-  min-height: calc(100% + env(safe-area-inset-top));
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
-    env(safe-area-inset-left);
-  background-color: #fff;
+  min-height: 100vh;
+  /* mobile viewport bug fix */
+  min-height: -webkit-fill-available;
+  width: 100vw;
+  background-color: var(--mat-toolbar-container-background-color, #fff);
+  padding: 0 var(--sar) 0 var(--sal);
 
   @include mat.all-component-themes($light-theme);
 
@@ -120,7 +127,7 @@ body {
   }
 
   &.theme-dark {
-    background-color: #000;
+    background-color: var(--mat-toolbar-container-background-color, #000);
 
     @include mat.all-component-colors($dark-theme);
 
