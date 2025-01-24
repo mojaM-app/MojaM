@@ -1,0 +1,43 @@
+<div class="card border-0">
+  <div class="d-grid-with-header-and-footer">
+    <header class="mat-toolbar" [ngClass]="{ mobile: isMobile }">
+      <div class="card-header">
+        {{ title() }}
+      </div>
+    </header>
+    <main>
+      <div class="card-body">
+        @if (announcements()) {
+          @for (item of announcements()!.items; track item; let i = $index) {
+            <div class="alert alert-light" role="alert">
+              <app-wysiwyg-preview [content]="item.content"></app-wysiwyg-preview>
+              <div class="row lh-1 mt-2 opacity-50">
+                <div class="col d-flex flex-wrap">
+                  <div class="text-nowrap">
+                    <mat-icon class="fs-8 align-middle">person</mat-icon>
+                    <span class="fs-8"
+                      >{{ 'Announcements/CreatedBy' | gmessage }} {{ item.getAuthorName() }}&nbsp;
+                    </span>
+                  </div>
+                  <div class="text-nowrap">
+                    <mat-icon class="fs-8 align-middle">calendar_month</mat-icon>
+                    <span class="fs-8">{{ item.getCreationDateTime() | gdate }} </span>
+                    <mat-icon class="fs-8 align-middle">schedule</mat-icon>
+                    <span class="fs-8">{{ item.getCreationDateTime() | gtime }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </main>
+    <footer class="sticky-bottom">
+      <div class="card-footer text-body-secondary text-end">
+        <button mat-raised-button type="button" class="me-4" (click)="cancel()">
+          {{ 'Shared/BtnOk' | gmessage }}
+        </button>
+      </div>
+    </footer>
+  </div>
+</div>

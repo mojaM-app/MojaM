@@ -25,3 +25,10 @@ export class AnnouncementsListMenu {
   public static Route = 'list';
   public static Path: string = AnnouncementsMenu.Path + '/' + AnnouncementsListMenu.Route;
 }
+
+export class PreviewAnnouncementsMenu {
+  public static Label = 'Announcements/BtnPreview';
+  public static Icon = 'open_in_new';
+  public static Route = 'preview';
+  public static Path: string = AnnouncementsMenu.Path + '/' + PreviewAnnouncementsMenu.Route;
+}

@@ -8,7 +8,7 @@ import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthService } from 'src/services/auth/auth.service';
 import { AnnouncementsFormComponent } from '../announcements-form/announcements-form.component';
-import { AnnouncementsListMenu } from '../announcements.menu';
+import { AnnouncementsListMenu, AnnouncementsMenu } from '../announcements.menu';
 import { IAnnouncements } from '../interfaces/announcements';
 import { AddAnnouncementsDto } from '../models/add-announcements.model';
 
@@ -35,7 +35,7 @@ export class AddAnnouncementsComponent extends WithUnsubscribe() implements OnIn
 
     this.addSubscription(
       authService.onAuthStateChanged.subscribe(() => {
-        this.navigateToAnnouncementsList();
+        this.navigateToAnnouncements();
       })
     );
   }
@@ -79,5 +79,9 @@ export class AddAnnouncementsComponent extends WithUnsubscribe() implements OnIn
 
   private navigateToAnnouncementsList(): void {
     this._router.navigateByUrl(AnnouncementsListMenu.Path);
+  }
+
+  private navigateToAnnouncements(): void {
+    this._router.navigateByUrl(AnnouncementsMenu.Path);
   }
 }

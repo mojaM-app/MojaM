@@ -31,7 +31,7 @@
     .buttons-container {
       display: flex;
       flex-direction: row;
-      background-color: var(--bs-card-cap-bg);
+      background: rgb(from var(--mat-app-text-color) r g b / 10%);
     }
   }
 }

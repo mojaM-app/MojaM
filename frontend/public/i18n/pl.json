@@ -15,6 +15,7 @@
     "BtnYes": "Tak",
     "BtnNo": "Nie",
     "BtnAdd": "Dodaj",
+    "BtnPreview": "Podgląd",
     "BtnPublish": "Opublikuj",
     "Location": "Lokalizacja",
     "Yes": "Tak",
@@ -117,7 +118,8 @@
         "Edit": "Edytuj",
         "Publish": "Opublikuj",
         "Archive": "Zarchiwizuj",
-        "Delete": "Usuń"
+        "Delete": "Usuń",
+        "Preview": "Podgląd"
       },
       "DeleteConfirmText": "Czy na pewno chcesz usunąć ogłoszenia utworzone {createdAt} przez '{createdBy}'?",
       "PublishConfirmText": "Czy na pewno chcesz opublikować ogłoszenia utworzone {createdAt} przez '{createdBy}'?"

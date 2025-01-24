@@ -7,6 +7,7 @@ import {
   AddAnnouncementsMenu,
   AnnouncementsListMenu,
   EditAnnouncementsMenu,
+  PreviewAnnouncementsMenu,
 } from './announcements.menu';
 import { CurrentAnnouncementsComponent } from './current-announcements.component';
 
@@ -50,6 +51,21 @@ const routes: Routes = [
       hideFooter: true,
     } satisfies IPermissionRouteData,
   },
+
+  {
+    path: PreviewAnnouncementsMenu.Route + '/:id',
+    loadComponent: () =>
+      import('./preview-announcements/preview-announcements.component').then(
+        m => m.PreviewAnnouncementsComponent
+      ),
+    canActivate: [PermissionGuard],
+    data: {
+      checkSession: true,
+      permissions: [SystemPermissionValue.AddAnnouncements],
+      hideFooter: true,
+    } satisfies IPermissionRouteData,
+  },
+
   {
     path: AnnouncementsListMenu.Route,
     loadComponent: () =>

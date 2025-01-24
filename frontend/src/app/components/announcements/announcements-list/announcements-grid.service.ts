@@ -22,7 +22,11 @@ import { TranslationService } from 'src/services/translate/translation.service';
 import { MenuItemClickResult } from '../../../../interfaces/menu/menu.enum';
 import { BaseGridService } from '../../static/grid/grid/services/base-grid.service';
 import { AnnouncementStateValue } from '../announcement-state.enum';
-import { AddAnnouncementsMenu, EditAnnouncementsMenu } from '../announcements.menu';
+import {
+  AddAnnouncementsMenu,
+  EditAnnouncementsMenu,
+  PreviewAnnouncementsMenu,
+} from '../announcements.menu';
 import { AnnouncementsListColumns } from './announcements-list.columns';
 
 @Injectable({
@@ -170,12 +174,28 @@ export class AnnouncementsGridService
     ) {
       result.push({
         title: this._translationService.get('Announcements/List/ContextMenu/Edit'),
-        icon: 'edit',
+        icon: EditAnnouncementsMenu.Icon,
         action: async () => this.handleEdit(announcements),
       });
     }
 
+    if (this._permissionService.hasPermission(SystemPermissionValue.PreviewAnnouncementsList)) {
+      result.push({
+        title: this._translationService.get('Announcements/List/ContextMenu/Preview'),
+        icon: PreviewAnnouncementsMenu.Icon,
+        action: async () => this.handlePreview(announcements),
+      });
+    }
+
     return result;
+  }
+
+  private async handlePreview(
+    announcements: IAnnouncementsGridItemDto
+  ): Promise<MenuItemClickResult | undefined> {
+    return this._router
+      .navigateByUrl(PreviewAnnouncementsMenu.Path + '/' + announcements.id)
+      .then(() => MenuItemClickResult.REDIRECT_TO_URL);
   }
 
   private async handleCopy(

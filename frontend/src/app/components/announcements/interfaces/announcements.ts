@@ -5,6 +5,9 @@ export interface IAnnouncementItem {
   createdBy: string | null;
   updatedAt?: Date;
   updatedBy?: string | null;
+
+  getAuthorName(): string;
+  getCreationDateTime(): Date;
 }
 
 export interface IAnnouncements {

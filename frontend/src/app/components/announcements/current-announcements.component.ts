@@ -6,6 +6,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { IS_MOBILE } from 'src/app/app.config';
 import {
   ICurrentAnnouncements,
@@ -13,13 +14,12 @@ import {
 } from 'src/app/components/announcements/interfaces/current-announcements';
 import { CurrentAnnouncementsService } from 'src/app/components/announcements/services/current-announcements.service';
 import { SystemPermissionValue } from 'src/core/system-permission.enum';
-import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
-import { GdatePipe } from 'src/pipes/gdate.pipe';
 import { AuthService } from 'src/services/auth/auth.service';
 import { PermissionService } from 'src/services/auth/permission.service';
 import { CultureService } from 'src/services/translate/culture.service';
 import { TranslationService } from 'src/services/translate/translation.service';
 import { AddAnnouncementsMenu, AnnouncementsListMenu } from './announcements.menu';
+import { BasePreviewAnnouncementComponent } from './preview-announcements/base-preview-announcement.component';
 
 @Component({
   selector: 'app-current-announcements',
@@ -27,24 +27,26 @@ import { AddAnnouncementsMenu, AnnouncementsListMenu } from './announcements.men
   styleUrls: ['./current-announcements.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CurrentAnnouncementsComponent extends WithUnsubscribe() implements OnInit {
+export class CurrentAnnouncementsComponent
+  extends BasePreviewAnnouncementComponent
+  implements OnInit
+{
   public readonly AddAnnouncementsMenu = AddAnnouncementsMenu;
   public readonly AnnouncementsListMenu = AnnouncementsListMenu;
 
-  public title: WritableSignal<string | null> = signal(null);
-  public announcements: WritableSignal<ICurrentAnnouncements | null> = signal(null);
   public showButtonAddAnnouncement: WritableSignal<boolean> = signal(false);
   public showButtonGoToAnnouncementList: WritableSignal<boolean> = signal(false);
 
   public constructor(
-    @Inject(IS_MOBILE) public isMobile: boolean,
+    @Inject(IS_MOBILE) isMobile: boolean,
     private _currentAnnouncementsService: CurrentAnnouncementsService,
-    private _translationService: TranslationService,
-    private _cultureService: CultureService,
     private _permissionService: PermissionService,
+    translationService: TranslationService,
+    cultureService: CultureService,
+    router: Router,
     authService: AuthService
   ) {
-    super();
+    super(isMobile, translationService, cultureService, router);
 
     this.addSubscription(
       authService.onAuthStateChanged.subscribe(() => {
@@ -59,7 +61,7 @@ export class CurrentAnnouncementsComponent extends WithUnsubscribe() implements 
         const currentAnnouncements = resp?.currentAnnouncements ?? null;
         const announcementsCount = resp?.announcementsCount ?? 0;
         if (currentAnnouncements) {
-          this.setAnnouncements(currentAnnouncements);
+          this.setViewModels(currentAnnouncements);
         } else {
           this.setEmptyAnnouncements(announcementsCount);
         }
@@ -67,16 +69,8 @@ export class CurrentAnnouncementsComponent extends WithUnsubscribe() implements 
     );
   }
 
-  private setAnnouncements(announcements: ICurrentAnnouncements): void {
-    let title = announcements.title;
-    if ((title?.length ?? 0) === 0) {
-      title = this._translationService.get('Announcements/AnnouncementsOfTheDay', {
-        date: new GdatePipe(this._cultureService, this._translationService).transform(
-          announcements.validFromDate
-        ),
-      });
-    }
-    this.title.set(title!);
+  protected override setViewModels(announcements: ICurrentAnnouncements): void {
+    this.title.set(this.getAnnouncementsTitle(announcements));
 
     this.showButtonAddAnnouncement.set(
       this._permissionService.hasPermission(SystemPermissionValue.AddAnnouncements)

@@ -48,6 +48,12 @@ export class AnnouncementsService extends BaseService {
             resp.items?.forEach(item => {
               item.createdAt = new Date(item.createdAt);
               item.updatedAt = item.updatedAt ? new Date(item.updatedAt) : undefined;
+              item.getAuthorName = (): string => {
+                return item.updatedBy ?? item.createdBy ?? '';
+              };
+              item.getCreationDateTime = (): Date => {
+                return item.updatedAt ?? item.createdAt;
+              };
             });
           }
 

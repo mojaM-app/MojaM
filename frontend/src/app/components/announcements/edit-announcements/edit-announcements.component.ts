@@ -8,7 +8,7 @@ import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthService } from 'src/services/auth/auth.service';
 import { GuidUtils } from 'src/utils/guid.utils';
 import { AnnouncementsFormComponent } from '../announcements-form/announcements-form.component';
-import { AnnouncementsListMenu } from '../announcements.menu';
+import { AnnouncementsListMenu, AnnouncementsMenu } from '../announcements.menu';
 import { IAnnouncements } from '../interfaces/announcements';
 import { EditAnnouncementsDto } from '../models/edit-announcements.model';
 import { AnnouncementsService } from '../services/announcements.service';
@@ -36,7 +36,7 @@ export class EditAnnouncementsComponent extends WithUnsubscribe() implements OnI
 
     this.addSubscription(
       authService.onAuthStateChanged.subscribe(() => {
-        this.navigateToAnnouncementsList();
+        this.navigateToAnnouncements();
       })
     );
   }
@@ -62,13 +62,14 @@ export class EditAnnouncementsComponent extends WithUnsubscribe() implements OnI
 
   public save(): void {
     const form = this._formComponent();
+    const announcementsId = this.announcements()?.id;
 
-    if (!form || !form.containsValidData()) {
+    if (!form || !form.containsValidData() || !GuidUtils.isValidGuid(announcementsId)) {
       form?.showErrors();
       return;
     }
 
-    const dto = new EditAnnouncementsDto(this.announcements()!.id!, form.controls);
+    const dto = new EditAnnouncementsDto(announcementsId!, form.controls);
     this._announcementsService.update(dto).subscribe(() => {
       this.navigateToAnnouncementsList();
     });
@@ -80,5 +81,9 @@ export class EditAnnouncementsComponent extends WithUnsubscribe() implements OnI
 
   private navigateToAnnouncementsList(): void {
     this._router.navigateByUrl(AnnouncementsListMenu.Path);
+  }
+
+  private navigateToAnnouncements(): void {
+    this._router.navigateByUrl(AnnouncementsMenu.Path);
   }
 }

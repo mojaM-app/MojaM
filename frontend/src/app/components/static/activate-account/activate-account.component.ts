@@ -210,16 +210,16 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
 
   public save(): void {
     const params = this._route.snapshot.params;
-    const userUuid = params['userId'];
+    const userId = params['userId'];
 
-    if (!GuidUtils.isValidGuid(userUuid) || !this.isReadyToSubmit()) {
+    if (!GuidUtils.isValidGuid(userId) || !this.isReadyToSubmit()) {
       this.showErrors();
       return;
     }
 
     const dto = new ActivateUserDto(this.controls as unknown as IActivateAccountForm);
     this._activateAccountService
-      .activate(userUuid, dto)
+      .activate(userId, dto)
       .subscribe((result: IActivateAccountResult) => {
         if (result?.isActive ?? true) {
           this.navigateToHomePage();
