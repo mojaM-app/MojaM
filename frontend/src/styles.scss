@@ -29,6 +29,128 @@ $light-theme: mat.define-theme(
     ),
   )
 );
+/* These tokens are generated using https://themes.angular-material.dev/ */
+/* Preview: https://themes.angular-material.dev/?seed-error=%23ba1a1a&seed-neutral=%2373787c&seed-neutral-variant=%236e7880&seed-primary=%2300a0db&seed-secondary=%233d637a&seed-tertiary=%237f459d */
+/* Seed Colors: primary: #00a0db, secondary: #3d637a, tertiary: #7f459d, error: #ba1a1a, neutral: #73787c, neutral-variant: #6e7880 */
+
+/* Light Theme */
+:root,
+:host {
+  --sys-primary: #00658c;
+  --sys-on-primary: #ffffff;
+  --sys-primary-container: #c5e7ff;
+  --sys-on-primary-container: #001e2d;
+  --sys-inverse-primary: #80cfff;
+  --sys-primary-fixed: #c5e7ff;
+  --sys-primary-fixed-dim: #80cfff;
+  --sys-on-primary-fixed: #001e2d;
+  --sys-on-primary-fixed-variant: #004c6b;
+  --sys-secondary: #3d637a;
+  --sys-on-secondary: #ffffff;
+  --sys-secondary-container: #c5e7ff;
+  --sys-on-secondary-container: #001e2d;
+  --sys-secondary-fixed: #c5e7ff;
+  --sys-secondary-fixed-dim: #a5cce6;
+  --sys-on-secondary-fixed: #001e2d;
+  --sys-on-secondary-fixed-variant: #234b61;
+  --sys-tertiary: #7f459d;
+  --sys-on-tertiary: #ffffff;
+  --sys-tertiary-container: #f6d9ff;
+  --sys-on-tertiary-container: #310049;
+  --sys-tertiary-fixed: #f6d9ff;
+  --sys-tertiary-fixed-dim: #e8b3ff;
+  --sys-on-tertiary-fixed: #310049;
+  --sys-on-tertiary-fixed-variant: #652c83;
+  --sys-background: #fcf8f8;
+  --sys-on-background: #1c1b1c;
+  --sys-surface: #fcf8f8;
+  --sys-surface-dim: #dcd9d9;
+  --sys-surface-bright: #fcf8f8;
+  --sys-surface-container-lowest: #ffffff;
+  --sys-surface-container-low: #f6f3f2;
+  --sys-surface-container: #f0eded;
+  --sys-surface-container-high: #ebe7e7;
+  --sys-surface-container-highest: #e5e2e1;
+  --sys-on-surface: #1c1b1c;
+  --sys-shadow: #000000;
+  --sys-scrim: #000000;
+  --sys-surface-tint: #5a5f63;
+  --sys-inverse-surface: #313030;
+  --sys-inverse-on-surface: #f3f0f0;
+  --sys-outline: #74777a;
+  --sys-outline-variant: #c4c7ca;
+  --sys-neutral: #787777;
+  --sys-neutral10: #1c1b1c;
+  --sys-error: #ba1a1a;
+  --sys-error-container: #ffdad6;
+  --sys-on-error: #ffffff;
+  --sys-on-error-container: #410002;
+  --sys-surface-variant: #e0e3e6;
+  --sys-on-surface-variant: #44474a;
+  --sys-neutral-variant: #74777b;
+  --sys-neutral-variant20: #2d3134;
+  --sys-inverse-secondary: #a5cce6;
+  --sys-inverse-tertiary: #e8b3ff;
+}
+
+/* Dark Theme */
+.dark {
+  --sys-primary: #80cfff;
+  --sys-on-primary: #00344b;
+  --sys-primary-container: #004c6b;
+  --sys-on-primary-container: #c5e7ff;
+  --sys-inverse-primary: #00658c;
+  --sys-primary-fixed: #c5e7ff;
+  --sys-primary-fixed-dim: #80cfff;
+  --sys-on-primary-fixed: #001e2d;
+  --sys-on-primary-fixed-variant: #004c6b;
+  --sys-secondary: #a5cce6;
+  --sys-on-secondary: #053449;
+  --sys-secondary-container: #234b61;
+  --sys-on-secondary-container: #c5e7ff;
+  --sys-secondary-fixed: #c5e7ff;
+  --sys-secondary-fixed-dim: #a5cce6;
+  --sys-on-secondary-fixed: #001e2d;
+  --sys-on-secondary-fixed-variant: #234b61;
+  --sys-tertiary: #e8b3ff;
+  --sys-on-tertiary: #4d106b;
+  --sys-tertiary-container: #652c83;
+  --sys-on-tertiary-container: #f6d9ff;
+  --sys-tertiary-fixed: #f6d9ff;
+  --sys-tertiary-fixed-dim: #e8b3ff;
+  --sys-on-tertiary-fixed: #310049;
+  --sys-on-tertiary-fixed-variant: #652c83;
+  --sys-background: #131313;
+  --sys-on-background: #e5e2e1;
+  --sys-surface: #131313;
+  --sys-surface-dim: #131313;
+  --sys-surface-bright: #3a3939;
+  --sys-surface-container-lowest: #0e0e0e;
+  --sys-surface-container-low: #1c1b1c;
+  --sys-surface-container: #201f20;
+  --sys-surface-container-high: #2a2a2a;
+  --sys-surface-container-highest: #353535;
+  --sys-on-surface: #e5e2e1;
+  --sys-shadow: #000000;
+  --sys-scrim: #000000;
+  --sys-surface-tint: #c2c7cb;
+  --sys-inverse-surface: #e5e2e1;
+  --sys-inverse-on-surface: #313030;
+  --sys-outline: #8e9194;
+  --sys-outline-variant: #44474a;
+  --sys-neutral: #787777;
+  --sys-neutral10: #1c1b1c;
+  --sys-error: #ffb4ab;
+  --sys-error-container: #93000a;
+  --sys-on-error: #690005;
+  --sys-on-error-container: #ffdad6;
+  --sys-surface-variant: #44474a;
+  --sys-on-surface-variant: #c4c7ca;
+  --sys-neutral-variant: #74777b;
+  --sys-neutral-variant20: #2d3134;
+  --sys-inverse-secondary: #3d637a;
+  --sys-inverse-tertiary: #7f459d;
+}
 
 :root {
   --sat: env(safe-area-inset-top, 0);

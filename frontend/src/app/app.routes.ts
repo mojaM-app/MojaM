@@ -29,8 +29,8 @@ export const routes: Routes = [
   },
   {
     path: CommunityMenu.Path,
-    loadChildren: () =>
-      import('./components/community/community.module').then(m => m.CommunityModule),
+    loadComponent: () =>
+      import('./components/community/community.component').then(m => m.CommunityComponent),
   },
   {
     path: SettingsMenu.Path,

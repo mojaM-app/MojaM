@@ -30,24 +30,8 @@
   "Footer": {},
   "Community": {
     "Title": "Wspólnota",
-    "Index": {},
     "Contact": {
       "Title": "Kontakt"
-    },
-    "Meetings": {
-      "Title": "Spotkania"
-    },
-    "Mission": {
-      "Title": "Misja"
-    },
-    "Diaconie": {
-      "Title": "Diakonie"
-    },
-    "Structure": {
-      "Title": "Struktura"
-    },
-    "Regulations": {
-      "Title": "Regulamin"
     }
   },
   "Calendar": {

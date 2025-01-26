@@ -1,0 +1,47 @@
+<table>
+  <tr>
+    <td colspan="2">
+      <h5 class="title">{{ 'Community/Contact/Title' | gmessage }}</h5>
+    </td>
+  </tr>
+  @if (model()?.phone) {
+    <tr>
+      <td>
+        <mat-icon aria-hidden="false" fontIcon="call"></mat-icon>
+      </td>
+      <td class="text-break">
+        <a class="card-text link-color" href="tel:{{ model()!.phone }}">{{ model()!.phone }}</a>
+      </td>
+    </tr>
+  }
+  @if (model()?.email) {
+    <tr>
+      <td>
+        <mat-icon aria-hidden="false" fontIcon="mail"></mat-icon>
+      </td>
+      <td class="text-break">
+        <a class="card-text link-color" href="mailto:{{ model()!.email }}">{{ model()!.email }}</a>
+      </td>
+    </tr>
+  }
+  @if (model()?.webPage) {
+    <tr>
+      <td>
+        <mat-icon aria-hidden="false" fontIcon="language"></mat-icon>
+      </td>
+      <td class="text-break">
+        <a class="card-text link-color" href="{{ model()!.webPage }}">{{ model()!.webPage }}</a>
+      </td>
+    </tr>
+  }
+  @if (model()?.address) {
+    <tr>
+      <td>
+        <mat-icon aria-hidden="false" fontIcon="location_on"></mat-icon>
+      </td>
+      <td class="text-break">
+        <span [innerHtml]="model()!.address"></span>
+      </td>
+    </tr>
+  }
+</table>

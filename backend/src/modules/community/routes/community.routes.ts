@@ -1,115 +1,19 @@
 import { IRoutes } from '@interfaces';
 import { setIdentity } from '@modules/auth';
-import { DiaconieController, MeetingsController, MissionController, RegulationsController, StructureController } from '@modules/community';
-import express, { Router } from 'express';
-
-class StructureRout implements IRoutes {
-  public path = '/structure';
-  private readonly _controller: StructureController;
-
-  public constructor(
-    public router: Router,
-    private readonly _parentPath: string
-  ) {
-    this._controller = new StructureController();
-    this.initializeRoutes();
-  }
-
-  public initializeRoutes(): void {
-    this.router.get(`${this._parentPath}${this.path}`, [setIdentity], this._controller.get);
-  }
-}
-
-class RegulationsRout implements IRoutes {
-  public path = '/regulations';
-  private readonly _controller: RegulationsController;
-
-  public constructor(
-    public router: Router,
-    private readonly _parentPath: string
-  ) {
-    this._controller = new RegulationsController();
-    this.initializeRoutes();
-  }
-
-  public initializeRoutes(): void {
-    this.router.get(`${this._parentPath}${this.path}`, [setIdentity], this._controller.get);
-  }
-}
-
-class MissionRout implements IRoutes {
-  public path = '/mission';
-  private readonly _controller: MissionController;
-
-  public constructor(
-    public router: Router,
-    private readonly _parentPath: string
-  ) {
-    this._controller = new MissionController();
-    this.initializeRoutes();
-  }
-
-  public initializeRoutes(): void {
-    this.router.get(`${this._parentPath}${this.path}`, [setIdentity], this._controller.get);
-  }
-}
-
-class MeetingsRout implements IRoutes {
-  public path = '/meetings';
-  private readonly _controller: MeetingsController;
-
-  public constructor(
-    public router: Router,
-    private readonly _parentPath: string
-  ) {
-    this._controller = new MeetingsController();
-    this.initializeRoutes();
-  }
-
-  public initializeRoutes(): void {
-    this.router.get(`${this._parentPath}${this.path}`, [setIdentity], this._controller.get);
-  }
-}
-
-class DiaconieRout implements IRoutes {
-  public path = '/diaconie';
-  private readonly _controller: DiaconieController;
-
-  public constructor(
-    public router: Router,
-    private readonly _parentPath: string
-  ) {
-    this._controller = new DiaconieController();
-    this.initializeRoutes();
-  }
-
-  public initializeRoutes(): void {
-    this.router.get(`${this._parentPath}${this.path}`, [setIdentity], this._controller.get);
-  }
-}
+import express from 'express';
+import { CommunityController } from '../controllers/community.controller';
 
 export class CommunityRoute implements IRoutes {
   public path = '/community';
   public router = express.Router();
+  private readonly _controller: CommunityController;
 
   constructor() {
+    this._controller = new CommunityController();
     this.initializeRoutes();
   }
 
   private initializeRoutes(): void {
-    const diaconieRout: DiaconieRout = new DiaconieRout(this.router, this.path);
-    diaconieRout.initializeRoutes();
-
-    const meetingsRout: MeetingsRout = new MeetingsRout(this.router, this.path);
-    meetingsRout.initializeRoutes();
-
-    const missionRout: MissionRout = new MissionRout(this.router, this.path);
-    missionRout.initializeRoutes();
-
-    const regulationsRout: RegulationsRout = new RegulationsRout(this.router, this.path);
-    regulationsRout.initializeRoutes();
-
-    const structureRout: StructureRout = new StructureRout(this.router, this.path);
-    structureRout.initializeRoutes();
+    this.router.get(`${this.path}`, [setIdentity], this._controller.get);
   }
 }

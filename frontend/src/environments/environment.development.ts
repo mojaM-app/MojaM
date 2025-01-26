@@ -5,11 +5,6 @@
 export const environment = {
   production: false,
   backendUrl: 'http://localhost:5100',
-
-  communityEmail: 'email@some.domain',
-  communityWebPage: 'https://www.some.domain/',
-  communityPhone: '+48 123 456 789',
-  communityAddress: 'some street<br>zip code',
 };
 
 /*

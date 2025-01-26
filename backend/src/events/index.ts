@@ -15,21 +15,7 @@ export const events = {
     announcementsUpdated: 'onAnnouncementsUpdated',
   },
   community: {
-    diaconie: {
-      retrieved: 'onDiaconieRetrieved',
-    },
-    meetings: {
-      retrieved: 'onMeetingsRetrieved',
-    },
-    mission: {
-      retrieved: 'onMissionRetrieved',
-    },
-    structure: {
-      retrieved: 'onStructureRetrieved',
-    },
-    regulations: {
-      retrieved: 'onRegulationsRetrieved',
-    },
+    communityRetrieved: 'onCommunityRetrieved',
   },
   users: {
     userLoggedIn: 'onUserLoggedIn',

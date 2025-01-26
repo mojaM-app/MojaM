@@ -1,0 +1,30 @@
+@if (model()) {
+  <div class="container-fluid m-0 p-0">
+    <div class="header">
+      <img
+        class="header-image"
+        src="./images/community/community-logo.png"
+        alt="{{ 'Shared/Name' | gmessage }}"
+        title="{{ 'Shared/Name' | gmessage }}" />
+    </div>
+    <div class="body px-1">
+      <app-info [model]="model()?.info"></app-info>
+      <mat-tab-group
+        #tabGroup
+        dynamicHeight
+        mat-align-tabs="center"
+        animationDuration="250ms"
+        [(selectedIndex)]="selectedTab"
+        swipe
+        (swipeNext)="selectNextTab()"
+        (swipePrev)="selectPrevTab()"
+        (selectedTabChange)="selectedTabChange()">
+        @for (tab of model()!.tabs; track tab) {
+          <mat-tab [label]="tab.title">
+            <app-tab [content]="tab.content"></app-tab>
+          </mat-tab>
+        }
+      </mat-tab-group>
+    </div>
+  </div>
+}
