@@ -23,6 +23,7 @@ import { PipesModule } from 'src/pipes/pipes.module';
 import { BrowserWindowSize } from 'src/services/browser/browser-window-size';
 import { BrowserWindowService } from 'src/services/browser/browser-window.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
+import { FontSizeService } from 'src/services/theme/font-size.service';
 import { ThemeService } from 'src/services/theme/theme.service';
 import { IS_MOBILE } from './app.config';
 import { FooterComponent } from './components/footer/footer.component';
@@ -64,6 +65,7 @@ export class AppComponent extends WithUnsubscribe() implements OnInit {
     router: Router,
     activatedRoute: ActivatedRoute,
     themeService: ThemeService,
+    fontSizeService: FontSizeService,
     elRef: ElementRef
   ) {
     super();
@@ -100,6 +102,12 @@ export class AppComponent extends WithUnsubscribe() implements OnInit {
     this.addSubscription(
       themeService.onThemeChanged$().subscribe((theme: string) => {
         elRef.nativeElement.setAttribute('data-bs-theme', theme);
+      })
+    );
+
+    this.addSubscription(
+      fontSizeService.onFontSizeChanged$().subscribe((fontSize: number) => {
+        document.documentElement.style.setProperty('--font-size', (fontSize / 100).toString());
       })
     );
 
