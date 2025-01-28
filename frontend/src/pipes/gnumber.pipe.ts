@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Pipe, PipeTransform } from '@angular/core';
 import { CultureService } from 'src/services/translate/culture.service';
 import { TranslationService } from 'src/services/translate/translation.service';
 
 @Pipe({
   name: 'gnumber',
+  standalone: false,
 })
 export class GnumberPipe implements PipeTransform {
   public constructor(

@@ -15,7 +15,6 @@ import { EventPreviewModel } from './event-preview.model';
 
 @Component({
   selector: 'app-event-preview',
-  standalone: true,
   templateUrl: './event-preview.component.html',
   styleUrl: './event-preview.component.scss',
   imports: [

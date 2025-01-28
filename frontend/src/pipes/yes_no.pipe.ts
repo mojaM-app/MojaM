@@ -5,6 +5,7 @@ import { CultureService } from '../services/translate/culture.service';
 
 @Pipe({
   name: 'yesNo',
+  standalone: false,
 })
 export class YesNoPipe implements PipeTransform {
   public constructor(

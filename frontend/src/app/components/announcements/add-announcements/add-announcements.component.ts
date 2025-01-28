@@ -14,7 +14,6 @@ import { AddAnnouncementsDto } from '../models/add-announcements.model';
 
 @Component({
   selector: 'app-add-announcements',
-  standalone: true,
   imports: [CommonModule, MatButtonModule, MatIconModule, AnnouncementsFormComponent, PipesModule],
   templateUrl: './add-announcements.component.html',
   styleUrl: './add-announcements.component.scss',

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Pipe, PipeTransform } from '@angular/core';
 import { TranslationService } from '../services/translate/translation.service';
 
@@ -12,9 +11,10 @@ interface ICachedFormatter {
 @Pipe({
   name: 'gdateAgo',
   pure: true,
+  standalone: false,
 })
 export class DateAgoPipe implements PipeTransform {
-  private static formatters: ICachedFormatter[] = [
+  private static _formatters: ICachedFormatter[] = [
     { key: 'Pipes/date-ago/years', interval: 31536000, lang: '-', func: () => null },
     { key: 'Pipes/date-ago/months', interval: 2592000, lang: '-', func: () => null },
     { key: 'Pipes/date-ago/weeks', interval: 604800, lang: '-', func: () => null },
@@ -33,7 +33,7 @@ export class DateAgoPipe implements PipeTransform {
 
     const seconds = Math.floor((+new Date() - +new Date(value)) / 1000);
 
-    for (const formatter of DateAgoPipe.formatters) {
+    for (const formatter of DateAgoPipe._formatters) {
       if (seconds < formatter.interval) {
         continue;
       }

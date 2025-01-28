@@ -14,7 +14,6 @@ import { TranslationService } from 'src/services/translate/translation.service';
 
 @Component({
   selector: 'app-confirm-dialog',
-  standalone: true,
   imports: [
     MatButtonModule,
     MatDialogTitle,

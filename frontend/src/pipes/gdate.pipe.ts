@@ -5,6 +5,7 @@ import { CultureService } from '../services/translate/culture.service';
 
 @Pipe({
   name: 'gdate',
+  standalone: false,
 })
 export class GdatePipe implements PipeTransform {
   public constructor(

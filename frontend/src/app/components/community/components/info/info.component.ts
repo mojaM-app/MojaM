@@ -5,7 +5,6 @@ import { ICommunityInfo } from '../../interfaces/community.interfaces';
 
 @Component({
   selector: 'app-info',
-  standalone: true,
   imports: [MatIconModule, PipesModule],
   templateUrl: './info.component.html',
   styleUrl: './info.component.scss',

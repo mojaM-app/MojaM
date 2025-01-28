@@ -37,7 +37,6 @@ import { ColumnType, IGridColumn, IGridService } from './services/grid-service.i
 
 @Component({
   selector: 'app-grid',
-  standalone: true,
   imports: [
     CommonModule,
     MatPaginatorModule,

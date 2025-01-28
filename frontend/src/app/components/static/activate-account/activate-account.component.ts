@@ -49,7 +49,6 @@ import { ActivateAccountService } from './services/activate-account.service';
 
 @Component({
   selector: 'app-activate-account',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

@@ -9,7 +9,6 @@ import { UserDetailsService } from '../services/user-details.service';
 
 @Component({
   selector: 'app-user-details',
-  standalone: true,
   imports: [PipesModule, MatInputModule, MatFormFieldModule, FormsModule],
   templateUrl: './user-details.component.html',
   styleUrl: './user-details.component.scss',

@@ -10,7 +10,6 @@ import { DeviceDetectorService } from 'ngx-device-detector';
 
 @Component({
   selector: 'app-web-app-info',
-  standalone: true,
   imports: [MatExpansionModule],
   templateUrl: './web-app-info.component.html',
   styleUrl: './web-app-info.component.scss',

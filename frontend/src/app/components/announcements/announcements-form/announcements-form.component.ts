@@ -32,7 +32,6 @@ import {
 
 @Component({
   selector: 'app-announcements-form',
-  standalone: true,
   imports: [
     ReactiveFormsModule,
     CommonModule,

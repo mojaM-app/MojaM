@@ -8,7 +8,6 @@ import { LoginFormComponent } from '../login-form/login-form.component';
 
 @Component({
   selector: 'app-login-dialog',
-  standalone: true,
   imports: [
     MatDialogModule,
     MatButtonModule,

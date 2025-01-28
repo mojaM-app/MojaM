@@ -43,6 +43,7 @@ import { EventPreviewComponent } from './event-preview/event-preview.component';
       useClass: CustomEventTitleFormatter,
     },
   ],
+  standalone: false,
 })
 export class CalendarComponent {
   public readonly weekStartsOn: number = DAYS_OF_WEEK.MONDAY;

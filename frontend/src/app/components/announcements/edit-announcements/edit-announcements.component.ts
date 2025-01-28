@@ -15,7 +15,6 @@ import { AnnouncementsService } from '../services/announcements.service';
 
 @Component({
   selector: 'app-edit-announcements',
-  standalone: true,
   imports: [CommonModule, MatButtonModule, MatIconModule, AnnouncementsFormComponent, PipesModule],
   templateUrl: './edit-announcements.component.html',
   styleUrl: './edit-announcements.component.scss',

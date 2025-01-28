@@ -7,7 +7,7 @@ import {
   Inject,
   Input,
   OnInit,
-  viewChild
+  viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,7 +27,6 @@ import { ThemeService } from '../../../services/theme/theme.service';
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [PipesModule, MatToolbarModule, MatIconModule, MatButtonModule, MatMenuModule],
 })
@@ -46,7 +45,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     private _themeService: ThemeService,
     private _authTokenService: AuthTokenService,
     private _authService: AuthService,
-    private _dialogService : DialogService
+    private _dialogService: DialogService
   ) {
     const tokenIsSet = toSignal<ITokenChangedEvent>(this._authTokenService.tokenChanged);
 

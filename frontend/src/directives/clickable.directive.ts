@@ -2,6 +2,7 @@ import { Directive, ElementRef, OnDestroy, Renderer2, inject, output } from '@an
 
 @Directive({
   selector: '[clickable]',
+  standalone: false,
 })
 export class ClickableDirective implements OnDestroy {
   public itemClick = output<PointerEvent | KeyboardEvent>();

@@ -12,6 +12,7 @@ import { GuidUtils } from 'src/utils/guid.utils';
 
 @Directive({
   selector: '[loading]',
+  standalone: false,
 })
 export class LoadingDirective implements OnInit, OnChanges {
   @HostBinding('style.position')

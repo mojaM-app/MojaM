@@ -12,7 +12,6 @@ import { PipesModule } from 'src/pipes/pipes.module';
 
 @Component({
   selector: 'app-wysiwyg-editor',
-  standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [QuillModule, CommonModule, FormsModule, PipesModule],
   templateUrl: './wysiwyg-editor.component.html',

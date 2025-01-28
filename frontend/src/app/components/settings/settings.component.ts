@@ -30,7 +30,6 @@ import { ISettingsForm, SettingsFormControlNames } from './settings.form';
 
 @Component({
   selector: 'app-settings',
-  standalone: true,
   imports: [
     PipesModule,
     MatSlideToggleModule,

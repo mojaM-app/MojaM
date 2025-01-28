@@ -21,7 +21,6 @@ import { BasePreviewAnnouncementComponent } from './base-preview-announcement.co
 
 @Component({
   selector: 'app-preview-announcements',
-  standalone: true,
   imports: [
     ReactiveFormsModule,
     CommonModule,

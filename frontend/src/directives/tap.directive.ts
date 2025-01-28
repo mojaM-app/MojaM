@@ -2,6 +2,7 @@ import { Directive, HostListener, OnInit, output } from '@angular/core';
 
 @Directive({
   selector: '[tap]',
+  standalone: false,
 })
 export class TapDirective implements OnInit {
   public tap = output<PointerEvent>();
