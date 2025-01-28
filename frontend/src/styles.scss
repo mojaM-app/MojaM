@@ -54,6 +54,7 @@ body {
   @include mat.all-component-themes($light-theme);
 
   //override mat variables
+  //left side active element radius
   --mat-list-active-indicator-shape: 0.5rem;
   //size of icon in left menu
   --mdc-list-list-item-leading-icon-size: 1.25rem;
@@ -451,6 +452,7 @@ body {
 @import url('./app/components/announcements/announcements.style.scss');
 @import url('./app/components/static/wysiwyg-editor/wysiwyg-editor.style.scss');
 @import url('./app/components/static/grid/grid.style.scss');
+@import url('./services/theme/_font-size.scss');
 
 .swipe-animation-container {
   position: absolute;
@@ -491,21 +493,6 @@ body {
         margin-left: calc(var(--main-container-width) * 0.2);
       }
     }
-  }
-}
-
-.fs-7 {
-  font-size: 0.875rem;
-}
-
-.fs-8 {
-  font-size: 0.75rem;
-}
-
-$fontSizes: 80, 90, 100, 110, 120, 130, 140, 150;
-@each $fs in $fontSizes {
-  .fs-#{$fs} {
-    font-size: #{$fs}#{'%'} !important;
   }
 }
 

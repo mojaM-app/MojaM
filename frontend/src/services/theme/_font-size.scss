@@ -1,0 +1,15 @@
+.fs-7 {
+  font-size: 0.875rem;
+}
+
+.fs-8 {
+  font-size: 0.75rem;
+}
+
+$fontSizes: 80, 90, 100, 110, 120, 130, 140, 150;
+@each $fs in $fontSizes {
+  .fs-#{$fs} {
+    font-size: #{$fs}#{'%'} !important;
+    line-height: normal;
+  }
+}
