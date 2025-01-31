@@ -18,17 +18,18 @@ export class GlobalErrorHandler implements ErrorHandler {
 
     if (!(message?.length ?? 0) && error?.status >= 0) {
       switch (error.status) {
-        case 0:
+        case 0: // No connection
+        case 504: // Gateway Timeout
           message = 'Errors/No_Connection';
           break;
-        case 400:
+        case 400: // Bad Request
           message = 'Errors/Bad_Request';
           break;
-        case 401:
-        case 403:
+        case 401: // Unauthorized
+        case 403: // Forbidden
           message = 'Errors/Unauthorized';
           break;
-        case 440:
+        case 440: // Session expired
           message = 'Errors/Session_Expired';
           break;
       }
