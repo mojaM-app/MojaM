@@ -4,8 +4,8 @@ import { IUser } from 'src/interfaces/users/user.interfaces';
 import { BaseService } from 'src/services/common/base.service';
 import { HttpClientService } from 'src/services/common/httpClient.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
-import { AddUserDto } from '../models/add-user.model';
-import { EditUserDto } from '../models/edit-user.model';
+import { AddUserDto } from '../../user-form/models/add-user.model';
+import { EditUserDto } from '../../user-form/models/edit-user.model';
 
 @Injectable({
   providedIn: 'root',
