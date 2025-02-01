@@ -1,12 +1,7 @@
-import {
-  HttpErrorResponse,
-  HttpEvent,
-  HttpHandler,
-  HttpInterceptor,
-  HttpRequest,
-} from '@angular/common/http';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, filter, Observable, switchMap, take, throwError } from 'rxjs';
+import { ErrorUtils } from 'src/utils/error.utils';
 import { AuthTokenService } from './auth-token.service';
 import { AuthService } from './auth.service';
 
@@ -30,7 +25,7 @@ export class AuthorizationHeaderInterceptor implements HttpInterceptor {
 
     return next.handle(request).pipe(
       catchError((error: unknown) => {
-        if (error instanceof HttpErrorResponse && error.status === 401) {
+        if (ErrorUtils.isUnauthorizedError(error)) {
           return this.handle401Error(request, next);
         }
 

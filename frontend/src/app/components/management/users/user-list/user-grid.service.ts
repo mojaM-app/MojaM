@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SortDirection } from '@angular/material/sort';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { IUserGridItemDto } from 'src/app/components/management/users/user-list/interfaces/user-list.interfaces';
 import { UserListService } from 'src/app/components/management/users/user-list/services/user-list.service';
 import { BaseGridService } from 'src/app/components/static/grid/grid/services/base-grid.service';
@@ -11,7 +11,9 @@ import {
   IGridColumn,
   IGridService,
 } from 'src/app/components/static/grid/grid/services/grid-service.interface';
+import { DeleteResult } from 'src/core/delete-result.enum';
 import { SystemPermissionValue } from 'src/core/system-permission.enum';
+import { IDialogSettings } from 'src/interfaces/common/dialog.settings';
 import { IGridData } from 'src/interfaces/common/grid.data';
 import { IMenuItem } from 'src/interfaces/menu/menu-item';
 import { MenuItemClickResult } from 'src/interfaces/menu/menu.enum';
@@ -147,6 +149,14 @@ export class UserGridService
       });
     }
 
+    if (this._permissionService.hasPermission(SystemPermissionValue.DeleteUser)) {
+      result.push({
+        title: this._translationService.get('Management/UserList/ContextMenu/Delete'),
+        icon: 'delete',
+        action: async () => this.handleDelete(user),
+      });
+    }
+
     return result;
   }
 
@@ -154,5 +164,40 @@ export class UserGridService
     return this._router
       .navigateByUrl(ManagementMenuEditUser.Path + '/' + user.id)
       .then(() => MenuItemClickResult.REDIRECT_TO_URL);
+  }
+
+  private async handleDelete(user: IUserGridItemDto): Promise<MenuItemClickResult | undefined> {
+    const confirmed = await this._dialogService
+      .confirm({
+        message: {
+          text: 'Management/UserList/DeleteConfirmText',
+          interpolateParams: {
+            firstName: user.firstName ?? user.email,
+            lastName: user.lastName ?? '',
+          },
+        },
+        noBtnText: 'Shared/BtnCancel',
+        yesBtnText: 'Shared/BtnDelete',
+      } satisfies IDialogSettings)
+      .then((result: boolean) => result);
+
+    if (confirmed !== true) {
+      return;
+    }
+
+    const deleteResult = await firstValueFrom(this._listService.delete(user.id));
+
+    if (deleteResult === DeleteResult.Success) {
+      return MenuItemClickResult.REFRESH_GRID;
+    }
+
+    if (deleteResult === DeleteResult.DbFkConstraintError) {
+      this._snackBarService.translateAndShowError(
+        'Errors/Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted'
+      );
+      return MenuItemClickResult.NONE;
+    }
+
+    throw new Error('Not supported delete result');
   }
 }
