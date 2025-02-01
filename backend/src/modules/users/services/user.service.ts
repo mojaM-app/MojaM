@@ -1,5 +1,5 @@
 import { events } from '@events';
-import { BadRequestException, errorKeys } from '@exceptions';
+import { BadRequestException, ConflictException, errorKeys } from '@exceptions';
 import { BaseService, userToIUser } from '@modules/common';
 import {
   ActivateUserReqDto,
@@ -136,7 +136,7 @@ export class UsersService extends BaseService {
     const relatedData: string[] = await this._userRepository.checkIfCanBeDeleted(user!.id);
 
     if (relatedData.length > 0) {
-      throw new BadRequestException(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted, {
+      throw new ConflictException(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted, {
         id: user!.uuid,
         relatedData,
       });
