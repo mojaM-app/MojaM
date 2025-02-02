@@ -12,6 +12,7 @@ import { isGuid, isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import { Guid } from 'guid-typescript';
+import nodemailer from 'nodemailer';
 import request from 'supertest';
 import { GetUserResponseDto } from '../dtos/get-user.dto';
 
@@ -20,6 +21,7 @@ describe('GET/user/:id', () => {
   const permissionsRoute = new PermissionsRoute();
   const app = new App();
   let adminAccessToken: string | undefined;
+  let mockSendMail: any;
 
   beforeAll(async () => {
     await app.initialize([userRoute, userRoute, permissionsRoute]);
@@ -31,11 +33,20 @@ describe('GET/user/:id', () => {
     registerTestEventHandlers(eventDispatcher);
   });
 
-  describe('GET should respond with a status code of 200', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
+  beforeEach(async () => {
+    jest.resetAllMocks();
+
+    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
+      callback(null, null);
     });
 
+    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
+      sendMail: mockSendMail,
+      close: jest.fn().mockImplementation(() => {}),
+    } as any);
+  });
+
+  describe('GET should respond with a status code of 200', () => {
     test('when data are valid and user has permission', async () => {
       const newUser = generateValidUser();
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
@@ -87,10 +98,6 @@ describe('GET/user/:id', () => {
   });
 
   describe('GET should respond with a status code of 403', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when token is not set', async () => {
       const userId: string = Guid.EMPTY;
       const getUserResponse = await request(app.getServer())
@@ -241,10 +248,6 @@ describe('GET/user/:id', () => {
   });
 
   describe('GET should respond with a status code of 400', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('GET should respond with a status code of 400 when user not exist', async () => {
       const userId: string = Guid.EMPTY;
       const getUserResponse = await request(app.getServer())
@@ -268,10 +271,6 @@ describe('GET/user/:id', () => {
   });
 
   describe('GET should respond with a status code of 404', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('GET should respond with a status code of 404 when user Id is not GUID', async () => {
       const getUserResponse = await request(app.getServer())
         .get(userRoute.path + '/invalid-guid')
@@ -292,10 +291,6 @@ describe('GET/user/:id', () => {
   });
 
   describe('GET should respond with a status code of 401', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when token is invalid', async () => {
       const userId: string = Guid.EMPTY;
       const getUserResponse = await request(app.getServer())

@@ -2,6 +2,7 @@ import { VALIDATOR_SETTINGS } from '@config';
 import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { IResponse } from '@interfaces';
+import { BaseReqDto } from '@modules/common';
 import { Type } from 'class-transformer';
 import { IsDate, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
@@ -41,11 +42,12 @@ export class ActivateAccountDto {
   public joiningDate?: Date | null;
 }
 
-export class ActivateAccountReqDto {
+export class ActivateAccountReqDto extends BaseReqDto {
   public readonly userGuid: string | undefined;
   public readonly model: ActivateAccountDto | undefined;
 
   public constructor(userGuid: string | undefined, model: ActivateAccountDto | undefined) {
+    super(undefined);
     this.userGuid = userGuid;
     this.model = model;
   }

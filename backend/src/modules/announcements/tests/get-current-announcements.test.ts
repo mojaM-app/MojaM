@@ -15,6 +15,7 @@ import { getDateNow, isGuid } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { isDateString } from 'class-validator';
 import { EventDispatcher } from 'event-dispatch';
+import nodemailer from 'nodemailer';
 import request from 'supertest';
 import './../../../utils/date.extensions';
 import { generateValidAnnouncements } from './announcements-tests.helpers';
@@ -22,8 +23,9 @@ import { generateValidAnnouncements } from './announcements-tests.helpers';
 describe('GET /announcements/current', () => {
   const announcementRoute = new AnnouncementsRout();
   const app = new App();
-
+  let mockSendMail: any;
   let adminAccessToken: string | undefined;
+
   beforeAll(async () => {
     await app.initialize([announcementRoute]);
 
@@ -35,11 +37,20 @@ describe('GET /announcements/current', () => {
     registerTestEventHandlers(eventDispatcher);
   });
 
-  describe('result should be null', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
+  beforeEach(async () => {
+    jest.resetAllMocks();
+
+    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
+      callback(null, null);
     });
 
+    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
+      sendMail: mockSendMail,
+      close: jest.fn().mockImplementation(() => {}),
+    } as any);
+  });
+
+  describe('result should be null', () => {
     it('when there is no announcements', async () => {
       const response = await request(app.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
       expect(response.statusCode).toBe(200);
@@ -194,10 +205,6 @@ describe('GET /announcements/current', () => {
   });
 
   describe('result shouldn`t be null', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     it('when there are one published announcements with validFromDate=6_days_ago and one unpublish with validFromDate=today_s_date', async () => {
       const requestData1 = generateValidAnnouncements();
       // 6 days ago

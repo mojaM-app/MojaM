@@ -6,19 +6,23 @@ import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptio
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
+import { EmailService } from '@modules/notifications';
 import { PermissionsRoute, SystemPermission } from '@modules/permissions';
 import { CreateUserDto, CreateUserResponseDto, IUserDto, UserRoute } from '@modules/users';
 import { isGuid, isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
+import nodemailer from 'nodemailer';
 import request from 'supertest';
 
 describe('POST /user', () => {
   const userRoute = new UserRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App();
-
+  let mockSendMail: any;
   let adminAccessToken: string | undefined;
+  let sendWelcomeEmailSpy: any;
+
   beforeAll(async () => {
     await app.initialize([userRoute, permissionsRoute]);
     const { email, password } = getAdminLoginData();
@@ -29,11 +33,23 @@ describe('POST /user', () => {
     registerTestEventHandlers(eventDispatcher);
   });
 
-  describe('POST should respond with a status code of 201', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
+  beforeEach(async () => {
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
+
+    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
+      callback(null, null);
     });
 
+    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
+      sendMail: mockSendMail,
+      close: jest.fn().mockImplementation(() => {}),
+    } as any);
+
+    sendWelcomeEmailSpy = jest.spyOn(EmailService.prototype, 'sendWelcomeEmail');
+  });
+
+  describe('POST should respond with a status code of 201', () => {
     test('when data are valid and user has permission', async () => {
       const requestData = generateValidUser();
       const createUserResponse = await request(app.getServer())
@@ -53,6 +69,9 @@ describe('POST /user', () => {
       expect(user.hasOwnProperty('password')).toBe(false);
       expect(user).toEqual({ id: user.id, email: user.email, phone: user.phone } satisfies IUserDto);
       expect(createMessage).toBe(events.users.userCreated);
+
+      expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
+      expect(mockSendMail).toHaveBeenCalledTimes(1);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + user.id)
@@ -103,14 +122,13 @@ describe('POST /user', () => {
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
+
+      expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
+      expect(mockSendMail).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('POST should respond with a status code of 400', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when password is invalid', async () => {
       const requestData = { email: 'email@domain.com', phone: '123456789', password: 'paasssword' } satisfies CreateUserDto;
       const createUserResponse = await request(app.getServer())
@@ -128,6 +146,9 @@ describe('POST /user', () => {
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
         expect(eventHandler).not.toHaveBeenCalled();
       });
+
+      expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
+      expect(mockSendMail).not.toHaveBeenCalled();
     });
 
     test('when email is invalid', async () => {
@@ -142,6 +163,9 @@ describe('POST /user', () => {
       const { message: createUserResponseMessage } = body.data as BadRequestException;
       const errors = createUserResponseMessage.split(',');
       expect(errors.filter(x => !x.includes('Email')).length).toBe(0);
+
+      expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
+      expect(mockSendMail).not.toHaveBeenCalled();
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -161,6 +185,9 @@ describe('POST /user', () => {
       const { message: createUserResponseMessage } = body.data as BadRequestException;
       const errors = createUserResponseMessage.split(',');
       expect(errors.filter(x => !x.includes('Phone')).length).toBe(0);
+
+      expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
+      expect(mockSendMail).not.toHaveBeenCalled();
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -203,6 +230,9 @@ describe('POST /user', () => {
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
+
+      expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
+      expect(mockSendMail).toHaveBeenCalledTimes(1);
     });
 
     test('when exist user with same email and phone (different letters size)', async () => {
@@ -241,14 +271,13 @@ describe('POST /user', () => {
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
+
+      expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
+      expect(mockSendMail).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('POST should respond with a status code of 403', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when token is not set', async () => {
       const requestData = generateValidUser();
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(requestData);
@@ -256,6 +285,9 @@ describe('POST /user', () => {
       const body = createUserResponse.body;
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+
+      expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
+      expect(mockSendMail).not.toHaveBeenCalled();
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -319,6 +351,9 @@ describe('POST /user', () => {
       expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
+
+      expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
+      expect(mockSendMail).toHaveBeenCalledTimes(1);
     });
 
     test('when user have all permissions expect AddUser', async () => {
@@ -391,14 +426,13 @@ describe('POST /user', () => {
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
       expect(testEventHandlers.onPermissionAdded).toHaveBeenCalled();
+
+      expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
+      expect(mockSendMail).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('POST should respond with a status code of 401', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when token is invalid', async () => {
       const requestData = generateValidUser();
       const response = await request(app.getServer())
@@ -409,6 +443,9 @@ describe('POST /user', () => {
       const body = response.body;
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+
+      expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
+      expect(mockSendMail).not.toHaveBeenCalled();
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -470,6 +507,9 @@ describe('POST /user', () => {
       expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
+
+      expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
+      expect(mockSendMail).toHaveBeenCalledTimes(1);
     });
   });
 

@@ -727,10 +727,6 @@ describe('POST /auth/reset-password', () => {
     });
   });
 
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
-
   afterAll(async () => {
     await app.closeDbConnection();
     jest.resetAllMocks();

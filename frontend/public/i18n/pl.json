@@ -233,7 +233,8 @@
         "Edit": "Edytuj",
         "Delete": "Usuń"
       },
-      "DeleteConfirmText": "Czy na pewno chcesz usunąć użytkownika '{firstName} {lastName}'?"
+      "DeleteConfirmText": "Czy na pewno chcesz usunąć użytkownika '{firstName} {lastName}'?",
+      "SuggestLockoutUserInsteadOfDelete": "Zamiast usuwania użytkownika, zablokuj go. Zablokowany użytkownik nie będzie mógł zalogować się do aplikacji."
     },
     "UserDetails": {
       "Email": "E-mail",

@@ -195,6 +195,9 @@ export class UserGridService
       this._snackBarService.translateAndShowError(
         'Errors/Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted'
       );
+      this._snackBarService.translateAndShowSuccess(
+        'Management/UserList/SuggestLockoutUserInsteadOfDelete'
+      );
       return MenuItemClickResult.NONE;
     }
 

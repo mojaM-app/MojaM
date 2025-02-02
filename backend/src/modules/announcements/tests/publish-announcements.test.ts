@@ -20,6 +20,7 @@ import { getAdminLoginData } from '@utils/tests.utils';
 import { isDateString } from 'class-validator';
 import { EventDispatcher } from 'event-dispatch';
 import { Guid } from 'guid-typescript';
+import nodemailer from 'nodemailer';
 import request from 'supertest';
 import { generateValidAnnouncements } from './announcements-tests.helpers';
 
@@ -28,8 +29,9 @@ describe('POST /announcements/publish', () => {
   const userRoute = new UserRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App();
-
+  let mockSendMail: any;
   let adminAccessToken: string | undefined;
+
   beforeAll(async () => {
     await app.initialize([userRoute, permissionsRoute, announcementRoute]);
     const { email, password } = getAdminLoginData();
@@ -40,11 +42,20 @@ describe('POST /announcements/publish', () => {
     registerTestEventHandlers(eventDispatcher);
   });
 
-  describe('POST should respond with a status code of 200 when data are valid and user has permission', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
+  beforeEach(async () => {
+    jest.resetAllMocks();
+
+    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
+      callback(null, null);
     });
 
+    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
+      sendMail: mockSendMail,
+      close: jest.fn().mockImplementation(() => {}),
+    } as any);
+  });
+
+  describe('POST should respond with a status code of 200 when data are valid and user has permission', () => {
     test('create and publish announcement', async () => {
       const requestData = generateValidAnnouncements();
       const createAnnouncementsResponse = await request(app.getServer())
@@ -194,10 +205,6 @@ describe('POST /announcements/publish', () => {
   });
 
   describe('POST should respond with a status code of 400', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when validFromDate is undefined', async () => {
       const requestData = generateValidAnnouncements();
       requestData.validFromDate = undefined;
@@ -320,10 +327,6 @@ describe('POST /announcements/publish', () => {
   });
 
   describe('POST should respond with a status code of 403', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when token is not set', async () => {
       const id: string = Guid.EMPTY;
       const publishAnnouncementsResponse = await request(app.getServer())
@@ -466,10 +469,6 @@ describe('POST /announcements/publish', () => {
   });
 
   describe('POST should respond with a status code of 401', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when token is invalid', async () => {
       const id: string = Guid.EMPTY;
       const response = await request(app.getServer())

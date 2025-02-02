@@ -11,6 +11,7 @@ import { CreateUserResponseDto, UserRoute } from '@modules/users';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import { Guid } from 'guid-typescript';
+import nodemailer from 'nodemailer';
 import request from 'supertest';
 
 describe('POST /auth/get-user-to-activate/:userId/', () => {
@@ -18,6 +19,7 @@ describe('POST /auth/get-user-to-activate/:userId/', () => {
   const authRoute = new AuthRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App();
+  let mockSendMail: any;
   let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
@@ -32,6 +34,15 @@ describe('POST /auth/get-user-to-activate/:userId/', () => {
 
   beforeEach(async () => {
     jest.resetAllMocks();
+
+    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
+      callback(null, null);
+    });
+
+    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
+      sendMail: mockSendMail,
+      close: jest.fn().mockImplementation(() => {}),
+    } as any);
   });
 
   describe('request should end with status code od 200', () => {
@@ -224,10 +235,6 @@ describe('POST /auth/get-user-to-activate/:userId/', () => {
         expect(eventHandler).not.toHaveBeenCalled();
       });
     });
-  });
-
-  afterEach(() => {
-    jest.resetAllMocks();
   });
 
   afterAll(async () => {

@@ -13,6 +13,7 @@ import { isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import { Guid } from 'guid-typescript';
+import nodemailer from 'nodemailer';
 import request from 'supertest';
 import { generateValidAnnouncements } from './announcements-tests.helpers';
 
@@ -21,8 +22,9 @@ describe('DELETE /announcements', () => {
   const userRoute = new UserRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App();
-
+  let mockSendMail: any;
   let adminAccessToken: string | undefined;
+
   beforeAll(async () => {
     await app.initialize([userRoute, permissionsRoute, announcementRoute]);
     const { email, password } = getAdminLoginData();
@@ -33,11 +35,20 @@ describe('DELETE /announcements', () => {
     registerTestEventHandlers(eventDispatcher);
   });
 
-  describe('DELETE should respond with a status code of 200 when data are valid and user has permission', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
+  beforeEach(async () => {
+    jest.resetAllMocks();
+
+    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
+      callback(null, null);
     });
 
+    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
+      sendMail: mockSendMail,
+      close: jest.fn().mockImplementation(() => {}),
+    } as any);
+  });
+
+  describe('DELETE should respond with a status code of 200 when data are valid and user has permission', () => {
     test('create announcement', async () => {
       const requestData = generateValidAnnouncements();
       const createAnnouncementsResponse = await request(app.getServer())
@@ -71,10 +82,6 @@ describe('DELETE /announcements', () => {
   });
 
   describe('DELETE should respond with a status code of 400', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when announcements not exist', async () => {
       const userId: string = Guid.EMPTY;
       const deleteResponse = await request(app.getServer())
@@ -98,10 +105,6 @@ describe('DELETE /announcements', () => {
   });
 
   describe('DELETE should respond with a status code of 404', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('DELETE should respond with a status code of 404 when Id is not GUID', async () => {
       const deleteResponse = await request(app.getServer())
         .delete(announcementRoute.path + '/invalid-guid')
@@ -122,10 +125,6 @@ describe('DELETE /announcements', () => {
   });
 
   describe('DELETE should respond with a status code of 403', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when token is not set', async () => {
       const id: string = Guid.EMPTY;
       const deleteResponse = await request(app.getServer())
@@ -270,10 +269,6 @@ describe('DELETE /announcements', () => {
   });
 
   describe('DELETE should respond with a status code of 401', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when token is invalid', async () => {
       const id: string = Guid.EMPTY;
       const deleteResponse = await request(app.getServer())

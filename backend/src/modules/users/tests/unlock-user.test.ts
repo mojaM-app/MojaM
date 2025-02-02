@@ -12,6 +12,7 @@ import { isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import { Guid } from 'guid-typescript';
+import nodemailer from 'nodemailer';
 import request from 'supertest';
 
 describe('POST /user/:id/unlock', () => {
@@ -20,6 +21,7 @@ describe('POST /user/:id/unlock', () => {
   const authRoute = new AuthRoute();
   const app = new App();
   let adminAccessToken: string | undefined;
+  let mockSendMail: any;
 
   beforeAll(async () => {
     await app.initialize([userRoute, permissionsRoute, authRoute]);
@@ -31,11 +33,20 @@ describe('POST /user/:id/unlock', () => {
     registerTestEventHandlers(eventDispatcher);
   });
 
-  describe('POST should respond with a status code of 200', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
+  beforeEach(async () => {
+    jest.resetAllMocks();
+
+    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
+      callback(null, null);
     });
 
+    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
+      sendMail: mockSendMail,
+      close: jest.fn().mockImplementation(() => {}),
+    } as any);
+  });
+
+  describe('POST should respond with a status code of 200', () => {
     it('when data are valid and user has permission', async () => {
       const user = generateValidUser();
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
@@ -195,10 +206,6 @@ describe('POST /user/:id/unlock', () => {
   });
 
   describe('POST should respond with a status code of 403', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when token is not set', async () => {
       const userId: string = Guid.EMPTY;
       const activateUserResponse = await request(app.getServer())
@@ -349,10 +356,6 @@ describe('POST /user/:id/unlock', () => {
   });
 
   describe('POST should respond with a status code of 400', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when user not exist', async () => {
       const userId: string = Guid.EMPTY;
       const activateResponse = await request(app.getServer())
@@ -376,10 +379,6 @@ describe('POST /user/:id/unlock', () => {
   });
 
   describe('POST should respond with a status code of 404', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when user Id is not GUID', async () => {
       const activateResponse = await request(app.getServer())
         .post(userRoute.path + '/invalid-guid/' + userRoute.unlockPath)
@@ -400,10 +399,6 @@ describe('POST /user/:id/unlock', () => {
   });
 
   describe('POST should respond with a status code of 401', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when token is invalid', async () => {
       const userId: string = Guid.EMPTY;
       const activateResponse = await request(app.getServer())

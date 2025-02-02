@@ -17,6 +17,7 @@ import { isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import { Guid } from 'guid-typescript';
+import nodemailer from 'nodemailer';
 import request from 'supertest';
 
 describe('DELETE /permissions', () => {
@@ -25,6 +26,7 @@ describe('DELETE /permissions', () => {
   const permissionsRoute = new PermissionsRoute();
   const app = new App();
   let adminAccessToken: string | undefined;
+  let mockSendMail: any;
   let userLoggedIn: IUserDto;
 
   beforeAll(async () => {
@@ -39,11 +41,20 @@ describe('DELETE /permissions', () => {
     registerTestEventHandlers(eventDispatcher);
   });
 
-  describe('DELETE should respond with a status code of 404', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
+  beforeEach(async () => {
+    jest.resetAllMocks();
+
+    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
+      callback(null, null);
     });
 
+    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
+      sendMail: mockSendMail,
+      close: jest.fn().mockImplementation(() => {}),
+    } as any);
+  });
+
+  describe('DELETE should respond with a status code of 404', () => {
     it('DELETE should respond with a status code of 404 when userId is missing', async () => {
       const path = permissionsRoute.path + '/' + SystemPermission.ActivateUser.toString();
       const response = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
@@ -76,10 +87,6 @@ describe('DELETE /permissions', () => {
   });
 
   describe('DELETE should respond with a status code of 400', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     it('DELETE should respond with a status code of 400 when user not exist', async () => {
       const path = permissionsRoute.path + '/' + Guid.EMPTY + '/' + SystemPermission.ActivateUser.toString();
       const response = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
@@ -137,10 +144,6 @@ describe('DELETE /permissions', () => {
   });
 
   describe('DELETE should respond with a status code of 401', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     it('when token is invalid', async () => {
       const path = permissionsRoute.path + '/' + Guid.EMPTY + '/' + SystemPermission.PreviewUserList.toString();
       const response = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
@@ -157,10 +160,6 @@ describe('DELETE /permissions', () => {
   });
 
   describe('DELETE should respond with a status code of 403', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     it('when token is not set', async () => {
       const path = permissionsRoute.path + '/' + Guid.EMPTY + '/' + SystemPermission.PreviewUserList.toString();
       const response = await request(app.getServer()).delete(path).send();
@@ -317,10 +316,6 @@ describe('DELETE /permissions', () => {
   });
 
   describe('DELETE should respond with a status code of 200', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     it('when user have permissions to delete systemPermission', async () => {
       const requestData = generateValidUser();
 
