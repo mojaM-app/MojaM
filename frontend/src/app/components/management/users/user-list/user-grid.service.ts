@@ -23,6 +23,7 @@ import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { CultureService } from 'src/services/translate/culture.service';
 import { TranslationService } from 'src/services/translate/translation.service';
 import { ManagementMenuEditUser } from '../../management.menu';
+import { UserService } from './services/user.service';
 import { UserListColumns } from './user-list.columns';
 
 @Injectable({
@@ -34,6 +35,7 @@ export class UserGridService
 {
   public constructor(
     private _listService: UserListService,
+    private _userService: UserService,
     permissionService: PermissionService,
     dialogService: DialogService,
     translationService: TranslationService,
@@ -141,14 +143,6 @@ export class UserGridService
   public getContextMenuItems(user: IUserGridItemDto): IMenuItem[] {
     const result: IMenuItem[] = [];
 
-    if (this._permissionService.hasPermission(SystemPermissionValue.EditUser)) {
-      result.push({
-        title: this._translationService.get('Management/UserList/ContextMenu/Edit'),
-        icon: 'edit',
-        action: async () => this.handleEdit(user),
-      });
-    }
-
     if (this._permissionService.hasPermission(SystemPermissionValue.DeleteUser)) {
       result.push({
         title: this._translationService.get('Management/UserList/ContextMenu/Delete'),
@@ -157,7 +151,78 @@ export class UserGridService
       });
     }
 
+    if (
+      user.isLockedOut &&
+      this._permissionService.hasPermission(SystemPermissionValue.UnlockUser)
+    ) {
+      result.push({
+        title: this._translationService.get('Management/UserList/ContextMenu/Unlock'),
+        icon: 'lock_open',
+        action: async () => this.handleUnlock(user),
+      });
+    }
+
+    if (
+      user.isActive &&
+      this._permissionService.hasPermission(SystemPermissionValue.DeactivateUser)
+    ) {
+      result.push({
+        title: this._translationService.get('Management/UserList/ContextMenu/Deactivate'),
+        icon: 'close',
+        action: async () => this.handleDeactivate(user),
+      });
+    }
+
+    if (
+      !user.isActive &&
+      this._permissionService.hasPermission(SystemPermissionValue.ActivateUser)
+    ) {
+      result.push({
+        title: this._translationService.get('Management/UserList/ContextMenu/Activate'),
+        icon: 'check',
+        action: async () => this.handleActivate(user),
+      });
+    }
+
+    if (this._permissionService.hasPermission(SystemPermissionValue.EditUser)) {
+      result.push({
+        title: this._translationService.get('Management/UserList/ContextMenu/Edit'),
+        icon: 'edit',
+        action: async () => this.handleEdit(user),
+      });
+    }
+
     return result;
+  }
+
+  private async handleActivate(user: IUserGridItemDto): Promise<MenuItemClickResult | undefined> {
+    const result = await firstValueFrom(this._userService.activate(user.id));
+
+    if (result) {
+      return MenuItemClickResult.REFRESH_GRID;
+    }
+
+    return MenuItemClickResult.NONE;
+  }
+
+  private async handleDeactivate(user: IUserGridItemDto): Promise<MenuItemClickResult | undefined> {
+    const result = await firstValueFrom(this._userService.deactivate(user.id));
+
+    if (result) {
+      return MenuItemClickResult.REFRESH_GRID;
+    }
+
+    return MenuItemClickResult.NONE;
+  }
+
+  private async handleUnlock(user: IUserGridItemDto): Promise<MenuItemClickResult | undefined> {
+    const result = await firstValueFrom(this._userService.unlock(user.id));
+
+    if (result) {
+      return MenuItemClickResult.REFRESH_GRID;
+    }
+
+    return MenuItemClickResult.NONE;
   }
 
   private async handleEdit(user: IUserGridItemDto): Promise<MenuItemClickResult | undefined> {
@@ -185,18 +250,15 @@ export class UserGridService
       return;
     }
 
-    const deleteResult = await firstValueFrom(this._listService.delete(user.id));
+    const result = await firstValueFrom(this._userService.delete(user.id));
 
-    if (deleteResult === DeleteResult.Success) {
+    if (result === DeleteResult.Success) {
       return MenuItemClickResult.REFRESH_GRID;
     }
 
-    if (deleteResult === DeleteResult.DbFkConstraintError) {
+    if (result === DeleteResult.DbFkConstraintError) {
       this._snackBarService.translateAndShowError(
         'Errors/Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted'
-      );
-      this._snackBarService.translateAndShowSuccess(
-        'Management/UserList/SuggestLockoutUserInsteadOfDelete'
       );
       return MenuItemClickResult.NONE;
     }

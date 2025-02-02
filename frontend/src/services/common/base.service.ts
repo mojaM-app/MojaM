@@ -65,6 +65,12 @@ export class BaseService {
         `${environment.backendUrl}/${this.API_ROUTES.user.path}/${uuid}`,
       delete: (uuid: string): string =>
         `${environment.backendUrl}/${this.API_ROUTES.user.path}/${uuid}`,
+      unlock: (uuid: string): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.user.path}/${uuid}/unlock`,
+      activate: (uuid: string): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.user.path}/${uuid}/activate`,
+      deactivate: (uuid: string): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.user.path}/${uuid}/deactivate`,
     },
   };
 

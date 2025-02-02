@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { AddAnnouncementsDto } from 'src/app/components/announcements/models/add-announcements.model';
+import { DeleteResult } from 'src/core/delete-result.enum';
+import { ErrorUtils } from 'src/utils/error.utils';
 import { BaseService } from '../../../../services/common/base.service';
 import { HttpClientService } from '../../../../services/common/httpClient.service';
 import { SpinnerService } from '../../../../services/spinner/spinner.service';
@@ -16,20 +18,6 @@ export class AnnouncementsService extends BaseService {
     private _spinnerService: SpinnerService
   ) {
     super();
-  }
-
-  public create(model: AddAnnouncementsDto): Observable<string | null> {
-    return this._httpClient
-      .request()
-      .withUrl(this.API_ROUTES.announcements.create())
-      .withBody({ ...model })
-      .post<string | null>()
-      .pipe(
-        this._spinnerService.waitForSubscription(),
-        map((resp: string | null) => {
-          return resp ?? null;
-        })
-      );
   }
 
   public get(uuid: string): Observable<IAnnouncements> {
@@ -62,6 +50,20 @@ export class AnnouncementsService extends BaseService {
       );
   }
 
+  public create(model: AddAnnouncementsDto): Observable<string | null> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.announcements.create())
+      .withBody({ ...model })
+      .post<string | null>()
+      .pipe(
+        this._spinnerService.waitForSubscription(),
+        map((resp: string | null) => {
+          return resp ?? null;
+        })
+      );
+  }
+
   public update(model: EditAnnouncementsDto): Observable<string | null> {
     return this._httpClient
       .request()
@@ -72,6 +74,34 @@ export class AnnouncementsService extends BaseService {
         this._spinnerService.waitForSubscription(),
         map((resp: string | null) => {
           return resp ?? null;
+        })
+      );
+  }
+
+  public publish(uuid: string): Observable<boolean> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.announcements.publish(uuid))
+      .post<boolean>()
+      .pipe(
+        this._spinnerService.waitForSubscription(),
+        map(response => response)
+      );
+  }
+
+  public delete(uuid: string): Observable<DeleteResult> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.announcements.delete(uuid))
+      .delete<boolean>()
+      .pipe(
+        this._spinnerService.waitForSubscription(),
+        map(() => DeleteResult.Success),
+        catchError((error: unknown) => {
+          if (ErrorUtils.isConflictError(error)) {
+            return of(DeleteResult.DbFkConstraintError);
+          }
+          return throwError(() => error);
         })
       );
   }

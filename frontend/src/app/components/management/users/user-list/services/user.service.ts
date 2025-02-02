@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { catchError, map, Observable, of, throwError } from 'rxjs';
+import { DeleteResult } from 'src/core/delete-result.enum';
 import { IUser } from 'src/interfaces/users/user.interfaces';
 import { BaseService } from 'src/services/common/base.service';
 import { HttpClientService } from 'src/services/common/httpClient.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
+import { ErrorUtils } from 'src/utils/error.utils';
 import { AddUserDto } from '../../user-form/models/add-user.model';
 import { EditUserDto } from '../../user-form/models/edit-user.model';
 
@@ -50,6 +52,47 @@ export class UserService extends BaseService {
       .withUrl(this.API_ROUTES.user.update(model.id))
       .withBody({ ...model })
       .put<IUser>()
+      .pipe(this._spinnerService.waitForSubscription());
+  }
+
+  public delete(uuid: string): Observable<DeleteResult> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.user.delete(uuid))
+      .delete<boolean>()
+      .pipe(
+        this._spinnerService.waitForSubscription(),
+        map(() => DeleteResult.Success),
+        catchError((error: unknown) => {
+          if (ErrorUtils.isConflictError(error)) {
+            return of(DeleteResult.DbFkConstraintError);
+          }
+          return throwError(() => error);
+        })
+      );
+  }
+
+  public unlock(uuid: string): Observable<boolean> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.user.unlock(uuid))
+      .post<boolean>()
+      .pipe(this._spinnerService.waitForSubscription());
+  }
+
+  public activate(uuid: string): Observable<boolean> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.user.activate(uuid))
+      .post<boolean>()
+      .pipe(this._spinnerService.waitForSubscription());
+  }
+
+  public deactivate(uuid: string): Observable<boolean> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.user.deactivate(uuid))
+      .post<boolean>()
       .pipe(this._spinnerService.waitForSubscription());
   }
 }

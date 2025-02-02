@@ -231,10 +231,13 @@
       },
       "ContextMenu": {
         "Edit": "Edytuj",
-        "Delete": "Usuń"
+        "Delete": "Usuń",
+        "Unlock": "Odblokuj",
+        "Lock": "Zablokuj",
+        "Deactivate": "Dezaktywuj",
+        "Activate": "Aktywuj"
       },
-      "DeleteConfirmText": "Czy na pewno chcesz usunąć użytkownika '{firstName} {lastName}'?",
-      "SuggestLockoutUserInsteadOfDelete": "Zamiast usuwania użytkownika, zablokuj go. Zablokowany użytkownik nie będzie mógł zalogować się do aplikacji."
+      "DeleteConfirmText": "Czy na pewno chcesz usunąć użytkownika '{firstName} {lastName}'?"
     },
     "UserDetails": {
       "Email": "E-mail",
@@ -296,9 +299,9 @@
     "User_Does_Not_Exist": "Użytkownik nie istnieje.",
     "User_Not_Authenticated": "Użytkownik nie jest uwierzytelniony. Zaloguj się.",
     "User_Not_Authorized": "Brak uprawnień do wykonania tej operacji.",
-    "User_Is_Not_Active": "Konto użytkownika nie zostało aktywowane.",
+    "User_Is_Not_Active": "Twoje konto nie zostało aktywowane.",
     "User_Already_Exists": "Istnieje już użytkownik o podanym adresie e-mail i numerze telefonu.",
-    "User_Is_Locked_Out": "Konto użytkownika zostało zablokowane. Skontaktuj się z liderem.",
+    "User_Is_Locked_Out": "Twoje konto zostało zablokowane. Skontaktuj się z liderem.",
     "Session_Expired": "Twoja sesja wygasła. Zaloguj się ponownie.",
     "Invalid_Activated_Account_Identifier": "Nie udało się aktywować konta, link aktywujący konto jest nieprawidłowy.",
     "Announcements_Does_Not_Exist": "Ogłoszenia nie istnieje.",
