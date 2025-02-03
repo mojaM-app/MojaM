@@ -32,7 +32,6 @@ import { SideMenuComponent } from './components/side-menu/side-menu.component';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [
     RouterOutlet,
     RouterModule,

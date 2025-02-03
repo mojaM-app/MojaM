@@ -1,34 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 @use '@angular/material' as mat;
 
-@include mat.core();
-@import 'node_modules/angular-calendar/scss/angular-calendar.scss';
-
-$dark-theme: mat.define-theme(
-  (
-    color: (
-      theme-type: dark,
-      primary: mat.$azure-palette,
-      tertiary: mat.$blue-palette,
-    ),
-    density: (
-      scale: -1,
-    ),
-  )
-);
-
-$light-theme: mat.define-theme(
-  (
-    color: (
-      theme-type: light,
-      primary: mat.$azure-palette,
-      tertiary: mat.$blue-palette,
-    ),
-    density: (
-      scale: -1,
-    ),
-  )
-);
+@include mat.elevation-classes();
+@include mat.app-background();
 
 :root {
   --sat: env(safe-area-inset-top, 0);
@@ -48,186 +22,105 @@ body {
   /* mobile viewport bug fix */
   min-height: -webkit-fill-available;
   width: 100vw;
-  background-color: var(--mat-toolbar-container-background-color, #fff);
   padding: 0 var(--sar) 0 var(--sal);
-
-  @include mat.all-component-themes($light-theme);
+  --mat-toolbar-standard-height: 64px;
+  --mat-toolbar-mobile-height: 56px;
 
   //override mat variables
-  --mat-list-active-indicator-shape: 0.5rem;
-  //size of icon in left menu
-  --mdc-list-list-item-leading-icon-size: 1.25rem;
-  .mdc-list-item--with-leading-icon .mdc-list-item__start {
-    width: auto;
-    height: auto;
+  @include mat.sidenav-overrides(
+    (
+      container-width: 300px,
+    )
+  );
+  @include mat.list-overrides(
+    (
+      list-item-label-text-size: calc(1rem * var(--font-size)),
+      list-item-label-text-line-height: calc(1.5rem * var(--font-size)),
+      active-indicator-shape: 0.5rem,
+    )
+  );
+  .material-icons {
+    --mdc-list-list-item-leading-icon-size: calc(1.3rem * var(--font-size));
+    font-size: var(--mdc-list-list-item-leading-icon-size);
   }
+  @include mat.tabs-overrides(
+    (
+      label-text-size: calc(0.875rem * var(--font-size)),
+    )
+  );
+  @include mat.table-overrides(
+    (
+      header-headline-line-height: calc(1.25rem * var(--font-size)),
+      header-headline-size: calc(0.875rem * var(--font-size)),
+      row-item-label-text-line-height: calc(1.25rem * var(--font-size)),
+      row-item-label-text-size: calc(0.875rem * var(--font-size)),
+    )
+  );
+  @include mat.button-overrides(
+    (
+      filled-label-text-size: calc(0.875rem * var(--font-size)),
+      outlined-label-text-size: calc(0.875rem * var(--font-size)),
+      protected-label-text-size: calc(0.875rem * var(--font-size)),
+      text-label-text-size: calc(0.875rem * var(--font-size)),
+    )
+  );
+  .mat-mdc-icon-button {
+    --mdc-icon-button-icon-size: calc(1.3rem * var(--font-size));
+  }
+  @include mat.menu-overrides(
+    (
+      item-label-text-size: calc(0.875rem * var(--font-size)),
+      item-label-text-line-height: calc(1.25rem * var(--font-size)),
+    )
+  );
+  @include mat.slider-overrides(
+    (
+      label-label-text-size: calc(0.875rem * var(--font-size)),
+      label-label-text-line-height: calc(1.25rem * var(--font-size)),
+    )
+  );
+  @include mat.form-field-overrides(
+    (
+      subscript-text-size: calc(0.75rem * var(--font-size)),
+      subscript-text-line-height: calc(1rem * var(--font-size)),
+    )
+  );
+
+  //left side active element radius
+  //--mat-list-active-indicator-shape: 0.5rem;
+  //size of icon in left menu
+  // --mdc-list-list-item-leading-icon-size: 1.25rem;
+  // .mdc-list-item--with-leading-icon .mdc-list-item__start {
+  //   width: auto;
+  //   height: auto;
+  // }
   //padding of dialog header title
-  --mat-dialog-headline-padding: 0 0 0.25rem 24px;
+  //--mat-dialog-headline-padding: 0 0 0.25rem 24px;
   //dialog header font size
-  --mdc-dialog-subhead-size: 1.25rem;
+  //--mdc-dialog-subhead-size: 1.25rem;
+
   //slider thumb labe
   .mdc-slider__value-indicator-text {
     white-space: nowrap;
   }
 
-  //override calendar colors
-  @include cal-theme(
-    (
-      bg-primary: mat.get-theme-color($light-theme, surface),
-      bg-secondary: mat.get-theme-color($light-theme, on-secondary),
-      weekend-color: mat.get-theme-color($light-theme, error),
-      bg-active: mat.get-theme-color($light-theme, secondary-container),
-      border-color: mat.get-theme-color($light-theme, primary-container),
-      gray: mat.get-theme-color($light-theme, tertiary),
-      today-bg: mat.get-theme-color($light-theme, primary-container),
-      event-color-primary: mat.get-theme-color($light-theme, primary),
-    )
-  );
-
-  .bg-color-primary {
-    background-color: mat.get-theme-color($light-theme, primary-container);
-  }
-
-  .bg-color-secondary {
-    background-color: mat.get-theme-color($light-theme, secondary-container);
-  }
-
-  .error-container {
-    background-color: #{mat.get-theme-color($light-theme, error)};
-    color: #{mat.get-theme-color($light-theme, on-error)};
-  }
-
-  .mat-mdc-snack-bar-container {
-    &.error {
-      --mdc-snackbar-container-color: #{mat.get-theme-color($light-theme, error)};
-      --mat-snack-bar-button-color: #{mat.get-theme-color($light-theme, error-container)};
-      --mdc-snackbar-supporting-text-color: #{mat.get-theme-color($light-theme, on-error)};
-    }
-    &.success {
-      --mdc-snackbar-container-color: #{mat.get-theme-color($light-theme, tertiary-container)};
-      --mat-snack-bar-button-color: #{mat.get-theme-color($light-theme, primary)};
-      --mdc-snackbar-supporting-text-color: #{mat.get-theme-color(
-          $light-theme,
-          on-tertiary-container
-        )};
-    }
-  }
-
-  .mat-mdc-table {
-    .mat-mdc-header-row {
-      background-color: mat.get-theme-color($light-theme, secondary-container);
-      color: mat.get-theme-color($light-theme, on-secondary-container);
-    }
-
-    .mat-mdc-row {
-      &.even-row {
-        background-color: mat.get-theme-color($light-theme, surface-container-low);
-      }
-
-      &:hover {
-        background-color: mat.get-theme-color($light-theme, surface-container);
-      }
-    }
-  }
-
   &.theme-dark {
-    background-color: var(--mat-toolbar-container-background-color, #000);
-
-    @include mat.all-component-colors($dark-theme);
-
-    @include mat.sidenav-overrides(
-      (
-        content-background-color: #212529,
-        content-text-color: #dee2e6,
-      )
-    );
-
-    @include mat.stepper-overrides(
-      (
-        container-color: #212529,
-      )
-    );
-
-    .bg-color-primary {
-      background-color: mat.get-theme-color($dark-theme, primary-container);
-    }
-
-    .bg-color-secondary {
-      background-color: mat.get-theme-color($dark-theme, secondary-container);
-    }
-
-    .error-container {
-      background-color: #{mat.get-theme-color($dark-theme, error)};
-      color: #{mat.get-theme-color($dark-theme, on-error)};
-    }
-
-    .mat-mdc-snack-bar-container {
-      &.error {
-        --mdc-snackbar-container-color: #{mat.get-theme-color($dark-theme, on-error)};
-        --mat-snack-bar-button-color: #{mat.get-theme-color($dark-theme, on-error-container)};
-        --mdc-snackbar-supporting-text-color: #{mat.get-theme-color($dark-theme, error)};
-      }
-      &.success {
-        --mdc-snackbar-container-color: #{mat.get-theme-color($dark-theme, secondary-container)};
-        --mat-snack-bar-button-color: #{mat.get-theme-color($dark-theme, primary)};
-        --mdc-snackbar-supporting-text-color: #{mat.get-theme-color(
-            $dark-theme,
-            on-secondary-container
-          )};
-      }
-    }
-
-    .mat-mdc-raised-button {
-      --mdc-protected-button-container-elevation-shadow: 0px 2px 1px -1px rgba(128, 128, 128, 0.2),
-        0px 1px 1px 0px rgba(128, 128, 128, 0.14), 0px 1px 3px 0px rgba(128, 128, 128, 0.12);
-    }
-
-    .mat-mdc-table {
-      .mat-mdc-header-row {
-        background-color: mat.get-theme-color($dark-theme, secondary-container);
-        color: mat.get-theme-color($dark-theme, on-secondary-container);
-      }
-
-      .mat-mdc-row {
-        &.even-row {
-          background-color: mat.get-theme-color($dark-theme, surface-container);
-        }
-
-        &:hover {
-          background-color: mat.get-theme-color($dark-theme, surface-container-high);
-        }
-      }
-    }
-
-    .mat-accent.mat-mdc-checkbox {
-      --mat-checkbox-label-text-color: var(--mat-app-text-color);
-    }
-
-    //override calendar colors
-    @include cal-theme(
-      (
-        bg-primary: mat.get-theme-color($dark-theme, surface),
-        bg-secondary: mat.get-theme-color($dark-theme, on-secondary),
-        weekend-color: mat.get-theme-color($dark-theme, error),
-        bg-active: mat.get-theme-color($dark-theme, secondary-container),
-        border-color: mat.get-theme-color($dark-theme, primary-container),
-        gray: mat.get-theme-color($dark-theme, tertiary),
-        today-bg: mat.get-theme-color($dark-theme, primary-container),
-        event-color-primary: mat.get-theme-color($dark-theme, primary-container),
-      )
-    );
-
     .swipe-animation {
       .hand-icon {
         background-image: url('/images/hand-white.png');
       }
     }
   }
-
-  --mat-sidenav-container-width: 300px;
 }
 
 .d-grid-with-header-and-footer {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    'header'
+    'main'
+    'footer';
   height: calc(
     var(--main-container-height) - var(--mat-toolbar-standard-height) - var(
         --mat-toolbar-standard-height
@@ -240,13 +133,6 @@ body {
         ) * var(--is-mobile) * var(--footer-is-visible)
     );
   }
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto 1fr auto;
-  grid-template-areas:
-    'header'
-    'main'
-    'footer';
 
   header {
     grid-area: header;
@@ -300,6 +186,12 @@ body {
 }
 
 .d-grid-with-header {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    'header'
+    'main';
   height: calc(
     var(--main-container-height) - var(--mat-toolbar-standard-height) - var(
         --mat-toolbar-standard-height
@@ -312,12 +204,6 @@ body {
         ) * var(--is-mobile) * var(--footer-is-visible)
     );
   }
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto 1fr;
-  grid-template-areas:
-    'header'
-    'main';
 
   header {
     grid-area: header;
@@ -451,6 +337,7 @@ body {
 @import url('./app/components/announcements/announcements.style.scss');
 @import url('./app/components/static/wysiwyg-editor/wysiwyg-editor.style.scss');
 @import url('./app/components/static/grid/grid.style.scss');
+@import url('./styles/_font-size.scss');
 
 .swipe-animation-container {
   position: absolute;
@@ -472,7 +359,7 @@ body {
       background-position: center;
       width: 80px;
       height: 80px;
-      opacity: 0.3;
+      opacity: 0.8;
       animation: spin 4s infinite;
       transform-origin: 52% 62%;
     }
@@ -491,21 +378,6 @@ body {
         margin-left: calc(var(--main-container-width) * 0.2);
       }
     }
-  }
-}
-
-.fs-7 {
-  font-size: 0.875rem;
-}
-
-.fs-8 {
-  font-size: 0.75rem;
-}
-
-$fontSizes: 80, 90, 100, 110, 120, 130, 140, 150;
-@each $fs in $fontSizes {
-  .fs-#{$fs} {
-    font-size: #{$fs}#{'%'} !important;
   }
 }
 

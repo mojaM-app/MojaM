@@ -2,6 +2,7 @@ import { Directive, HostListener, output } from '@angular/core';
 
 @Directive({
   selector: '[swipe]',
+  standalone: false,
 })
 export class SwipeDirective {
   public swipeNext = output<TouchEvent>();

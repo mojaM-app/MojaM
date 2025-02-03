@@ -5,7 +5,6 @@ import { PipesModule } from '../../../../pipes/pipes.module';
   selector: 'app-no-permission',
   templateUrl: './no-permission.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [PipesModule],
 })
 export class NoPermissionComponent {}

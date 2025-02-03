@@ -8,7 +8,6 @@ import { AnnouncementsGridService } from './announcements-grid.service';
 
 @Component({
   selector: 'app-announcements-list',
-  standalone: true,
   imports: [RouterModule, GridModule],
   templateUrl: './announcements-list.component.html',
   styleUrl: './announcements-list.component.scss',

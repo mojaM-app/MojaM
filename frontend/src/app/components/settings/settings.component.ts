@@ -30,7 +30,6 @@ import { ISettingsForm, SettingsFormControlNames } from './settings.form';
 
 @Component({
   selector: 'app-settings',
-  standalone: true,
   imports: [
     PipesModule,
     MatSlideToggleModule,
@@ -89,13 +88,16 @@ export class SettingsComponent extends WithUnsubscribe(WithForm<ISettingsForm>()
       this._themeService.onOffDarkMode(this.darkModeChanged());
       this._fontSizeService.setFontSize(this.fontSizeChanged());
 
-      if (this._element()) {
-        this._element()
-          .nativeElement.querySelector('.mdc-switch__icon--on')
-          .firstChild.setAttribute('d', this.moon);
-        this._element()
-          .nativeElement.querySelector('.mdc-switch__icon--off')
-          .firstChild.setAttribute('d', this.sun);
+      if (this._element()?.nativeElement) {
+        const switchElement = this._element().nativeElement;
+        setTimeout(() => {
+          switchElement
+            .querySelector('.mdc-switch__icon--on')
+            ?.firstChild.setAttribute('d', this.moon);
+          switchElement
+            .querySelector('.mdc-switch__icon--off')
+            ?.firstChild.setAttribute('d', this.sun);
+        }, 100);
       }
     });
 

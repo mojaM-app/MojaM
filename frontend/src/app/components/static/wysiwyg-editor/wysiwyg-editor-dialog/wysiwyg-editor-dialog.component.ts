@@ -8,7 +8,6 @@ import { WysiwygEditorComponent } from '../wysiwyg-editor/wysiwyg-editor.compone
 
 @Component({
   selector: 'app-wysiwyg-editor-dialog',
-  standalone: true,
   imports: [
     MatDialogModule,
     MatButtonModule,

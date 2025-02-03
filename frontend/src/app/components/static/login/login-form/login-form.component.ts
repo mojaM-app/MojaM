@@ -34,7 +34,6 @@ import { ILoginForm, LoginFormControlNames, LoginFormSteps } from './login.form'
 
 @Component({
   selector: 'app-login-form',
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,

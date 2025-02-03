@@ -8,7 +8,6 @@ import { IMenuItem } from 'src/interfaces/menu/menu-item';
 
 @Component({
   selector: 'app-bottom-sheet',
-  standalone: true,
   imports: [MatListModule, MatButtonModule, MatIconModule],
   templateUrl: './bottom-sheet.component.html',
   styleUrl: './bottom-sheet.component.scss',

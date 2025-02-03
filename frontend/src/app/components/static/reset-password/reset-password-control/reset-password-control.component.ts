@@ -16,7 +16,6 @@ import { IResetPasswordForm, ResetPasswordFormControlNames } from '../reset-pass
 
 @Component({
   selector: 'app-reset-password-control',
-  standalone: true,
   imports: [
     FormsModule,
     PipesModule,

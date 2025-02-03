@@ -12,7 +12,6 @@ import { AnnouncementItemBase } from '../announcement-item.base';
 
 @Component({
   selector: 'app-announcement-item-desktop',
-  standalone: true,
   imports: [
     CommonModule,
     PipesModule,

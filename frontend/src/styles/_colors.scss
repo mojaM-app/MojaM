@@ -1,0 +1,323 @@
+/* These tokens are generated using https://themes.angular-material.dev/ */
+/* Preview: https://themes.angular-material.dev/?seed-error=%23ba1a1a&seed-neutral=%2372787c&seed-neutral-variant=%236d7980&seed-primary=%2300b1e6&seed-secondary=%23396478&seed-tertiary=%2380459e */
+/* Seed Colors: primary: #00b1e6, secondary: #396478, tertiary: #80459e, error: #ba1a1a, neutral: #72787c, neutral-variant: #6d7980 */
+
+@use '@angular/material' as mat;
+@import 'node_modules/angular-calendar/scss/angular-calendar.scss';
+
+$dark-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    density: (
+      scale: -1,
+    ),
+  )
+);
+
+$light-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    density: (
+      scale: -1,
+    ),
+  )
+);
+
+/* Light Theme */
+body {
+  @include mat.theme-overrides(
+    (
+      primary: #0e61a4,
+      on-primary: #ffffff,
+      primary-container: #d2e4ff,
+      on-primary-container: #001c37,
+      inverse-primary: #a1c9ff,
+      primary-fixed: #d2e4ff,
+      primary-fixed-dim: #a1c9ff,
+      on-primary-fixed: #001c37,
+      on-primary-fixed-variant: #00487f,
+      secondary: #4b607c,
+      on-secondary: #ffffff,
+      secondary-container: #d2e4ff,
+      on-secondary-container: #031c35,
+      secondary-fixed: #d2e4ff,
+      secondary-fixed-dim: #b2c8e8,
+      on-secondary-fixed: #031c35,
+      on-secondary-fixed-variant: #334863,
+      tertiary: #824791,
+      on-tertiary: #ffffff,
+      tertiary-container: #fcd7ff,
+      on-tertiary-container: #340043,
+      tertiary-fixed: #fcd7ff,
+      tertiary-fixed-dim: #f2afff,
+      on-tertiary-fixed: #340043,
+      on-tertiary-fixed-variant: #682e77,
+      background: #ffffff,
+      on-background: #1c1c1c,
+      surface: #fcf8f8,
+      surface-dim: #dcd9d9,
+      surface-bright: #fcf8f8,
+      surface-container-lowest: #ffffff,
+      surface-container-low: #f6f3f3,
+      surface-container: #f1eded,
+      surface-container-high: #ebe7e7,
+      surface-container-highest: #e5e2e2,
+      on-surface: #1c1b1c,
+      shadow: #000000,
+      scrim: #000000,
+      surface-tint: #5c5e64,
+      inverse-surface: #313030,
+      inverse-on-surface: #f3f0f0,
+      outline: #76777b,
+      outline-variant: #c5c6cb,
+      neutral: #797777,
+      neutral10: #1c1b1c,
+      error: #ba1a1a,
+      error-container: #ffdad6,
+      on-error: #ffffff,
+      on-error-container: #410002,
+      surface-variant: #e1e2e7,
+      on-surface-variant: #45474b,
+      neutral-variant: #75777c,
+      neutral-variant20: #2e3035,
+      inverse-secondary: #b2c8e8,
+      inverse-tertiary: #f2afff,
+    )
+  );
+
+  @include mat.slider-overrides(
+    (
+      label-container-color: transparent,
+      label-label-text-color: mat.get-theme-color($light-theme, on-background),
+    )
+  );
+
+  //override calendar colors
+  @include cal-theme(
+    (
+      bg-primary: mat.get-theme-color($light-theme, surface),
+      bg-secondary: mat.get-theme-color($light-theme, on-secondary),
+      weekend-color: mat.get-theme-color($light-theme, error),
+      bg-active: mat.get-theme-color($light-theme, secondary-container),
+      border-color: mat.get-theme-color($light-theme, primary-container),
+      gray: mat.get-theme-color($light-theme, tertiary),
+      today-bg: mat.get-theme-color($light-theme, primary-container),
+      event-color-primary: mat.get-theme-color($light-theme, primary),
+    )
+  );
+
+  .bg-color-primary {
+    background-color: mat.get-theme-color($light-theme, primary-container);
+  }
+
+  .bg-color-secondary {
+    background-color: mat.get-theme-color($light-theme, secondary-container);
+  }
+
+  .error-container {
+    background-color: #{mat.get-theme-color($light-theme, error)};
+    color: #{mat.get-theme-color($light-theme, on-error)};
+  }
+
+  .mat-mdc-snack-bar-container {
+    &.error {
+      --mdc-snackbar-container-color: #{mat.get-theme-color($light-theme, error)};
+      --mat-snack-bar-button-color: #{mat.get-theme-color($light-theme, error-container)};
+      --mdc-snackbar-supporting-text-color: #{mat.get-theme-color($light-theme, on-error)};
+    }
+    &.success {
+      --mdc-snackbar-container-color: #{mat.get-theme-color($light-theme, tertiary-container)};
+      --mat-snack-bar-button-color: #{mat.get-theme-color($light-theme, primary)};
+      --mdc-snackbar-supporting-text-color: #{mat.get-theme-color(
+          $light-theme,
+          on-tertiary-container
+        )};
+    }
+  }
+
+  .mat-mdc-table {
+    .mat-mdc-header-row {
+      background-color: mat.get-theme-color($light-theme, secondary-container);
+      color: mat.get-theme-color($light-theme, on-secondary-container);
+    }
+
+    .mat-mdc-row {
+      &.even-row {
+        background-color: mat.get-theme-color($light-theme, surface-container-low);
+      }
+
+      &:hover {
+        background-color: mat.get-theme-color($light-theme, surface-container);
+      }
+    }
+  }
+
+  //bootstrap overrides
+  .alert-light {
+    --bs-alert-color: #{mat.get-theme-color($light-theme, on-background)};
+  }
+
+  /* Dark Theme */
+  &.theme-dark {
+    @include mat.theme-overrides(
+      (
+        primary: #a1c9ff,
+        on-primary: #00325a,
+        primary-container: #00487f,
+        on-primary-container: #d2e4ff,
+        inverse-primary: #0e61a4,
+        primary-fixed: #d2e4ff,
+        primary-fixed-dim: #a1c9ff,
+        on-primary-fixed: #001c37,
+        on-primary-fixed-variant: #00487f,
+        secondary: #b2c8e8,
+        on-secondary: #1c314b,
+        secondary-container: #334863,
+        on-secondary-container: #d2e4ff,
+        secondary-fixed: #d2e4ff,
+        secondary-fixed-dim: #b2c8e8,
+        on-secondary-fixed: #031c35,
+        on-secondary-fixed-variant: #334863,
+        tertiary: #f2afff,
+        on-tertiary: #4e155f,
+        tertiary-container: #682e77,
+        on-tertiary-container: #fcd7ff,
+        tertiary-fixed: #fcd7ff,
+        tertiary-fixed-dim: #f2afff,
+        on-tertiary-fixed: #340043,
+        on-tertiary-fixed-variant: #682e77,
+        background: #131314,
+        on-background: #e5e2e2,
+        surface: #131314,
+        surface-dim: #131314,
+        surface-bright: #3a3939,
+        surface-container-lowest: #0e0e0e,
+        surface-container-low: #1c1b1c,
+        surface-container: #201f20,
+        surface-container-high: #2a2a2a,
+        surface-container-highest: #353435,
+        on-surface: #e5e5e5,
+        shadow: #000000,
+        scrim: #000000,
+        surface-tint: #c5c6cd,
+        inverse-surface: #e5e2e2,
+        inverse-on-surface: #313030,
+        outline: #909095,
+        outline-variant: #45474b,
+        neutral: #797777,
+        neutral10: #1c1b1c,
+        error: #ffb4ab,
+        error-container: #93000a,
+        on-error: #690005,
+        on-error-container: #ffdad6,
+        surface-variant: #45474b,
+        on-surface-variant: #c5c6cb,
+        neutral-variant: #75777c,
+        neutral-variant20: #2e3035,
+        inverse-secondary: #4b607c,
+        inverse-tertiary: #824791,
+      )
+    );
+
+    @include mat.sidenav-overrides(
+      (
+        content-background-color: #212529,
+        content-text-color: #dee2e6,
+      )
+    );
+
+    @include mat.stepper-overrides(
+      (
+        container-color: #212529,
+      )
+    );
+    @include mat.slider-overrides(
+      (
+        label-container-color: transparent,
+        label-label-text-color: mat.get-theme-color($dark-theme, on-background),
+      )
+    );
+
+    .bg-color-primary {
+      background-color: mat.get-theme-color($dark-theme, primary-container);
+    }
+
+    .bg-color-secondary {
+      background-color: mat.get-theme-color($dark-theme, secondary-container);
+    }
+
+    .error-container {
+      background-color: #{mat.get-theme-color($dark-theme, error)};
+      color: #{mat.get-theme-color($dark-theme, on-error)};
+    }
+
+    .mat-mdc-snack-bar-container {
+      &.error {
+        --mdc-snackbar-container-color: #{mat.get-theme-color($dark-theme, on-error)};
+        --mat-snack-bar-button-color: #{mat.get-theme-color($dark-theme, on-error-container)};
+        --mdc-snackbar-supporting-text-color: #{mat.get-theme-color($dark-theme, error)};
+      }
+      &.success {
+        --mdc-snackbar-container-color: #{mat.get-theme-color($dark-theme, secondary-container)};
+        --mat-snack-bar-button-color: #{mat.get-theme-color($dark-theme, primary)};
+        --mdc-snackbar-supporting-text-color: #{mat.get-theme-color(
+            $dark-theme,
+            on-secondary-container
+          )};
+      }
+    }
+
+    .mat-mdc-raised-button {
+      --mdc-protected-button-container-elevation-shadow: 0px 2px 1px -1px rgba(128, 128, 128, 0.2),
+        0px 1px 1px 0px rgba(128, 128, 128, 0.14), 0px 1px 3px 0px rgba(128, 128, 128, 0.12);
+    }
+
+    .mat-mdc-table {
+      .mat-mdc-header-row {
+        background-color: mat.get-theme-color($dark-theme, secondary-container);
+        color: mat.get-theme-color($dark-theme, on-secondary-container);
+      }
+
+      .mat-mdc-row {
+        &.even-row {
+          background-color: mat.get-theme-color($dark-theme, surface-container);
+        }
+
+        &:hover {
+          background-color: mat.get-theme-color($dark-theme, surface-container-high);
+        }
+      }
+    }
+
+    .mat-accent.mat-mdc-checkbox {
+      --mat-checkbox-label-text-color: #{mat.get-theme-color($dark-theme, on-background)};
+    }
+
+    //override calendar colors
+    @include cal-theme(
+      (
+        bg-primary: mat.get-theme-color($dark-theme, surface),
+        bg-secondary: mat.get-theme-color($dark-theme, on-secondary),
+        weekend-color: mat.get-theme-color($dark-theme, error),
+        bg-active: mat.get-theme-color($dark-theme, secondary-container),
+        border-color: mat.get-theme-color($dark-theme, primary-container),
+        gray: mat.get-theme-color($dark-theme, tertiary),
+        today-bg: mat.get-theme-color($dark-theme, primary-container),
+        event-color-primary: mat.get-theme-color($dark-theme, primary-container),
+      )
+    );
+
+    //bootstrap overrides
+    .alert-light {
+      --bs-alert-color: #{mat.get-theme-color($dark-theme, on-background)};
+    }
+  }
+}

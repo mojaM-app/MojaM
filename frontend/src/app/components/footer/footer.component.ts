@@ -12,7 +12,6 @@ import { CommunityMenu } from '../community/community.menu';
   selector: 'app-footer',
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss'],
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [PipesModule, MatIconModule, MatToolbarModule, MatButtonModule],
 })

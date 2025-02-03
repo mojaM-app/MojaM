@@ -10,7 +10,6 @@ import { UserGridService } from './user-grid.service';
 
 @Component({
   selector: 'app-user-list',
-  standalone: true,
   imports: [RouterModule, UserDetailsComponent, GridModule],
   templateUrl: './user-list.component.html',
   styleUrl: './user-list.component.scss',

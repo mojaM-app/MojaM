@@ -13,7 +13,6 @@ import { CommunityService } from './services/community.service';
   templateUrl: './community.component.html',
   styleUrls: ['./community.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [CommonModule, MatTabsModule, PipesModule, TabComponent, InfoComponent],
 })
 export class CommunityComponent extends WithUnsubscribe() implements OnInit {

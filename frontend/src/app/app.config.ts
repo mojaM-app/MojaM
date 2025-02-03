@@ -1,12 +1,13 @@
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import {
-  APP_INITIALIZER,
   ApplicationConfig,
   ErrorHandler,
   importProvidersFrom,
+  inject,
   InjectionToken,
   isDevMode,
+  provideAppInitializer,
   provideZoneChangeDetection,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -62,14 +63,12 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideHttpClient(withInterceptorsFromDi()),
     LocalStorageService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory(translateInit: TranslationInitService) {
-        return () => translateInit.initializeApp();
-      },
-      deps: [TranslationInitService],
-      multi: true,
-    },
+    provideAppInitializer(() => {
+      const initializerFn = ((translateInit: TranslationInitService) => {
+        return (): Promise<void> => translateInit.initializeApp();
+      })(inject(TranslationInitService));
+      return initializerFn();
+    }),
     { provide: LocationStrategy, useClass: HashLocationStrategy },
     {
       provide: ErrorHandler,

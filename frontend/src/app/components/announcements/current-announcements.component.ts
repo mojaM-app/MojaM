@@ -26,6 +26,7 @@ import { BasePreviewAnnouncementComponent } from './preview-announcements/base-p
   templateUrl: './current-announcements.component.html',
   styleUrls: ['./current-announcements.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class CurrentAnnouncementsComponent
   extends BasePreviewAnnouncementComponent

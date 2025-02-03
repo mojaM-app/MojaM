@@ -5,7 +5,6 @@ import { PipesModule } from '../../../../pipes/pipes.module';
   selector: 'app-not-found',
   templateUrl: './not-found.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [PipesModule],
 })
 export class NotFoundComponent {}

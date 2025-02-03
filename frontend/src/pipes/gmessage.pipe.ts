@@ -3,6 +3,7 @@ import { TranslationService } from '../services/translate/translation.service';
 
 @Pipe({
   name: 'gmessage',
+  standalone: false,
 })
 export class GmessagePipe implements PipeTransform {
   public constructor(private _translationService: TranslationService) {}

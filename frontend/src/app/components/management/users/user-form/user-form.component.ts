@@ -43,7 +43,6 @@ import { IUserForm, UserFormControlNames } from './user.form';
 
 @Component({
   selector: 'app-user-form',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
