@@ -69,10 +69,6 @@ describe('POST /auth/check-reset-password-token/:userId/:token', () => {
     });
   });
 
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
-
   afterAll(async () => {
     await app.closeDbConnection();
     jest.resetAllMocks();

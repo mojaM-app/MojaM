@@ -11,6 +11,7 @@ import { CreateUserResponseDto, GetUserListResponseDto, UserListRetrievedEvent, 
 import { isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
+import nodemailer from 'nodemailer';
 import request from 'supertest';
 
 describe('GET/user-list', () => {
@@ -19,6 +20,7 @@ describe('GET/user-list', () => {
   const permissionsRoute = new PermissionsRoute();
   const app = new App();
   let adminAccessToken: string | undefined;
+  let mockSendMail: any;
 
   beforeAll(async () => {
     await app.initialize([userRoute, userListRoute, permissionsRoute]);
@@ -30,11 +32,20 @@ describe('GET/user-list', () => {
     registerTestEventHandlers(eventDispatcher);
   });
 
-  describe('GET should respond with a status code of 200', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
+  beforeEach(async () => {
+    jest.resetAllMocks();
+
+    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
+      callback(null, null);
     });
 
+    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
+      sendMail: mockSendMail,
+      close: jest.fn().mockImplementation(() => {}),
+    } as any);
+  });
+
+  describe('GET should respond with a status code of 200', () => {
     test('when data are valid and user has permission', async () => {
       const newUser = generateValidUser();
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
@@ -82,10 +93,6 @@ describe('GET/user-list', () => {
   });
 
   describe('GET should respond with a status code of 403', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when token is not set', async () => {
       const getListResponse = await request(app.getServer()).get(userListRoute.path).send();
       expect(getListResponse.statusCode).toBe(401);
@@ -227,10 +234,6 @@ describe('GET/user-list', () => {
   });
 
   describe('GET should respond with a status code of 401', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when token is invalid', async () => {
       const getListResponse = await request(app.getServer())
         .get(userListRoute.path)

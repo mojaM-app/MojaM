@@ -11,6 +11,7 @@ import { CreateUserResponseDto, UserRoute } from '@modules/users';
 import { isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
+import nodemailer from 'nodemailer';
 import request from 'supertest';
 import { CreateAnnouncementsResponseDto } from '../dtos/create-announcements.dto';
 import { GetAnnouncementListResponseDto } from '../dtos/get-announcement-list.dto';
@@ -25,6 +26,7 @@ describe('GET/announcements-list', () => {
   const announcementsListRoute = new AnnouncementsListRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App();
+  let mockSendMail: any;
   let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
@@ -37,11 +39,20 @@ describe('GET/announcements-list', () => {
     registerTestEventHandlers(eventDispatcher);
   });
 
-  describe('GET should respond with a status code of 200', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
+  beforeEach(async () => {
+    jest.resetAllMocks();
+
+    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
+      callback(null, null);
     });
 
+    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
+      sendMail: mockSendMail,
+      close: jest.fn().mockImplementation(() => {}),
+    } as any);
+  });
+
+  describe('GET should respond with a status code of 200', () => {
     test('when data are valid and user has permission', async () => {
       const newAnnouncements = generateValidAnnouncements();
       const createAnnouncementsResponse = await request(app.getServer())
@@ -100,10 +111,6 @@ describe('GET/announcements-list', () => {
   });
 
   describe('GET should respond with a status code of 403', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when token is not set', async () => {
       const getAnnouncementsListResponse = await request(app.getServer()).get(announcementsListRoute.path).send();
       expect(getAnnouncementsListResponse.statusCode).toBe(401);
@@ -251,10 +258,6 @@ describe('GET/announcements-list', () => {
   });
 
   describe('GET should respond with a status code of 401', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when token is invalid', async () => {
       const getListResponse = await request(app.getServer())
         .get(announcementsListRoute.path)

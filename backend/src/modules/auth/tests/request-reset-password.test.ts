@@ -27,6 +27,7 @@ describe('POST /auth/request-reset-password', () => {
   const app = new App();
   let adminAccessToken: string | undefined;
   let mockSendMail: any;
+  let sendWelcomeEmailSpy: any;
   let originalSendEmailResetPassword: (user: IUser, link: string) => Promise<boolean>;
 
   beforeAll(async () => {
@@ -44,6 +45,7 @@ describe('POST /auth/request-reset-password', () => {
 
   beforeEach(async () => {
     jest.resetAllMocks();
+    jest.restoreAllMocks();
 
     mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
       callback(null, null);
@@ -53,12 +55,12 @@ describe('POST /auth/request-reset-password', () => {
       sendMail: mockSendMail,
       close: jest.fn().mockImplementation(() => {}),
     } as any);
+
+    sendWelcomeEmailSpy = jest.spyOn(EmailService.prototype, 'sendWelcomeEmail');
   });
 
   describe('when login data are invalid (given email is NOT unique, is empty or invalid)', () => {
     it('when exist more then one user with given email and both are activated', async () => {
-      const sendWelcomeEmailSpy = jest.spyOn(EmailService.prototype, 'sendWelcomeEmail');
-
       const user1 = generateValidUser();
       const user2 = generateValidUser();
       const email = user1.email;
@@ -118,8 +120,6 @@ describe('POST /auth/request-reset-password', () => {
     });
 
     it('when exist more then one user with given email and only one is activated', async () => {
-      const sendWelcomeEmailSpy = jest.spyOn(EmailService.prototype, 'sendWelcomeEmail');
-
       const user1 = generateValidUser();
       const user2 = generateValidUser();
       const email = user1.email;
@@ -173,8 +173,6 @@ describe('POST /auth/request-reset-password', () => {
     });
 
     it('when exist more then one user with given email and NO one is activated', async () => {
-      const sendWelcomeEmailSpy = jest.spyOn(EmailService.prototype, 'sendWelcomeEmail');
-
       const user1 = generateValidUser();
       const user2 = generateValidUser();
       const email = user1.email;
@@ -222,8 +220,6 @@ describe('POST /auth/request-reset-password', () => {
     });
 
     it('when exist more then one user with given email and only one has a password set', async () => {
-      const sendWelcomeEmailSpy = jest.spyOn(EmailService.prototype, 'sendWelcomeEmail');
-
       const user1 = generateValidUser();
       const user2 = generateValidUser();
       const email = user1.email;
@@ -284,8 +280,6 @@ describe('POST /auth/request-reset-password', () => {
     });
 
     it('when exist more then one user with given email and NO one has a password set', async () => {
-      const sendWelcomeEmailSpy = jest.spyOn(EmailService.prototype, 'sendWelcomeEmail');
-
       const user1 = generateValidUser();
       user1.password = undefined;
       const user2 = generateValidUser();
@@ -365,8 +359,6 @@ describe('POST /auth/request-reset-password', () => {
 
   describe('when login data are valid (given email is unique, not exist, etc.)', () => {
     it('when exist only one active user with given e-mail and user password is NOT set', async () => {
-      const sendWelcomeEmailSpy = jest.spyOn(EmailService.prototype, 'sendWelcomeEmail');
-
       const user = generateValidUser();
       user.password = undefined;
 
@@ -402,8 +394,6 @@ describe('POST /auth/request-reset-password', () => {
     });
 
     it('when exist only one inactive user with given e-mail and user password is NOT set', async () => {
-      const sendWelcomeEmailSpy = jest.spyOn(EmailService.prototype, 'sendWelcomeEmail');
-
       const user = generateValidUser();
       user.password = undefined;
 
@@ -448,8 +438,6 @@ describe('POST /auth/request-reset-password', () => {
     });
 
     it('email is sent only once when token is still valid (not expired)', async () => {
-      const sendWelcomeEmailSpy = jest.spyOn(EmailService.prototype, 'sendWelcomeEmail');
-
       const user = generateValidUser();
       user.password = undefined;
 
@@ -552,7 +540,6 @@ describe('POST /auth/request-reset-password', () => {
         return await originalSendEmailResetPassword(user, link);
       });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPassword').mockImplementation(mockSendEmailResetPassword);
-      const sendWelcomeEmailSpy = jest.spyOn(EmailService.prototype, 'sendWelcomeEmail');
 
       const user = generateValidUser();
       user.email = getAdminLoginData().email;

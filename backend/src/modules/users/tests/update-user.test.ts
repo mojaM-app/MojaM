@@ -12,14 +12,16 @@ import { CreateUserDto, CreateUserResponseDto, GetUserDetailsResponseDto, Update
 import { isNumber } from '@utils';
 import { generateRandomDate, generateRandomNumber, getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
+import nodemailer from 'nodemailer';
 import request from 'supertest';
 
 describe('PUT /user/:id', () => {
   const userRoute = new UserRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App();
-
+  let mockSendMail: any;
   let adminAccessToken: string | undefined;
+
   beforeAll(async () => {
     await app.initialize([userRoute, permissionsRoute]);
     const { email, password } = getAdminLoginData();
@@ -30,11 +32,20 @@ describe('PUT /user/:id', () => {
     registerTestEventHandlers(eventDispatcher);
   });
 
-  describe('PUT should respond with a status code of 200', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
+  beforeEach(async () => {
+    jest.resetAllMocks();
+
+    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
+      callback(null, null);
     });
 
+    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
+      sendMail: mockSendMail,
+      close: jest.fn().mockImplementation(() => {}),
+    } as any);
+  });
+
+  describe('PUT should respond with a status code of 200', () => {
     test('when all data are passed but only firstName is changed', async () => {
       const createUserRequestData = {
         ...generateValidUser(),
@@ -375,10 +386,6 @@ describe('PUT /user/:id', () => {
   });
 
   describe('PUT should respond with a status code of 400', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when email is invalid', async () => {
       const requestData = generateValidUser();
       const createUserResponse = await request(app.getServer())
@@ -870,10 +877,6 @@ describe('PUT /user/:id', () => {
   });
 
   describe('PUT should respond with a status code of 403', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when token is not set', async () => {
       const admin = getAdminLoginData();
       const updateUserResponse = await request(app.getServer())
@@ -1026,10 +1029,6 @@ describe('PUT /user/:id', () => {
   });
 
   describe('PUT should respond with a status code of 401', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when token is invalid', async () => {
       const requestData = getAdminLoginData();
       const response = await request(app.getServer())

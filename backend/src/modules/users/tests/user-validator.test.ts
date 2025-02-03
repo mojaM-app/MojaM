@@ -1,7 +1,8 @@
 import { generateValidUser } from '@helpers/user-tests.helpers';
 import { CreateUserDto } from '@modules/users';
 import { plainToInstance } from 'class-transformer';
-import { ValidationError, validateSync } from 'class-validator';
+import { validateSync, ValidationError } from 'class-validator';
+import 'reflect-metadata';
 
 describe('user validator test', () => {
   describe('CreateUserDto validator test', () => {

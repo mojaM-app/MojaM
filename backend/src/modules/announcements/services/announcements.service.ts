@@ -1,5 +1,5 @@
 import { events } from '@events';
-import { BadRequestException, errorKeys } from '@exceptions';
+import { BadRequestException, ConflictException, errorKeys } from '@exceptions';
 import {
   AnnouncementsCreatedEvent,
   AnnouncementsDeletedEvent,
@@ -109,7 +109,7 @@ export class AnnouncementsService extends BaseService {
     const relatedData: string[] = await this._announcementsRepository.checkIfCanBeDeleted(announcements!.id);
 
     if (relatedData.length > 0) {
-      throw new BadRequestException(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted, {
+      throw new ConflictException(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted, {
         id: announcements?.uuid,
         relatedData,
       });

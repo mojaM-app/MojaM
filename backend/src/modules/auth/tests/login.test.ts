@@ -13,6 +13,7 @@ import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import { NextFunction } from 'express';
 import { decode } from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
 import request from 'supertest';
 
 describe('POST /login', () => {
@@ -20,8 +21,9 @@ describe('POST /login', () => {
   const authRoute = new AuthRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App();
-
+  let mockSendMail: any;
   let adminAccessToken: string | undefined;
+
   beforeAll(async () => {
     const { email, password } = getAdminLoginData();
     await app.initialize([userRoute, permissionsRoute]);
@@ -32,11 +34,20 @@ describe('POST /login', () => {
     registerTestEventHandlers(eventDispatcher);
   });
 
-  describe('when login data are valid', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
+  beforeEach(async () => {
+    jest.resetAllMocks();
+
+    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
+      callback(null, null);
     });
 
+    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
+      sendMail: mockSendMail,
+      close: jest.fn().mockImplementation(() => {}),
+    } as any);
+  });
+
+  describe('when login data are valid', () => {
     it('(login via email and password) response should have set the Authorization token when login data are correct', async () => {
       const { email, password } = getAdminLoginData();
       const loginResponse = await request(app.getServer())
@@ -375,10 +386,6 @@ describe('POST /login', () => {
   });
 
   describe('when exist more then one user with same login', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     it('login via email should respond with a status code of 400 when exist more then one user with same email', async () => {
       const user1 = generateValidUser();
       const user2 = generateValidUser();
@@ -454,10 +461,6 @@ describe('POST /login', () => {
   });
 
   describe('when login data are invalid', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     it('should respond with a status code of 400 when login is invalid', async () => {
       const model = { password: 'strongPassword1@' };
 
@@ -848,10 +851,6 @@ describe('POST /login', () => {
   });
 
   describe('when user is not active', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     it('should respond with a status code of 400 when user is not active and password is correct', async () => {
       const user = generateValidUser();
 
@@ -958,10 +957,6 @@ describe('POST /login', () => {
   });
 
   describe('when user is deleted', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     it('should respond with a status code of 400 when user is deleted', async () => {
       const user = generateValidUser();
 

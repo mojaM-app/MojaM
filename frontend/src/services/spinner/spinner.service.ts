@@ -29,8 +29,7 @@ export class SpinnerService {
   public waitForSubscription<T>(): MonoTypeOperatorFunction<T> {
     this.incrementWait();
     return tap({
-      error: () => this.decrementWait(),
-      complete: () => this.decrementWait(),
+      finalize: () => this.decrementWait(),
     });
   }
 

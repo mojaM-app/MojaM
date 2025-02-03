@@ -10,6 +10,7 @@ import {
   IGridColumn,
   IGridService,
 } from 'src/app/components/static/grid/grid/services/grid-service.interface';
+import { DeleteResult } from 'src/core/delete-result.enum';
 import { SystemPermissionValue } from 'src/core/system-permission.enum';
 import { IDialogSettings } from 'src/interfaces/common/dialog.settings';
 import { IGridData } from 'src/interfaces/common/grid.data';
@@ -27,6 +28,7 @@ import {
   EditAnnouncementsMenu,
   PreviewAnnouncementsMenu,
 } from '../announcements.menu';
+import { AnnouncementsService } from '../services/announcements.service';
 import { AnnouncementsListColumns } from './announcements-list.columns';
 
 @Injectable({
@@ -38,6 +40,7 @@ export class AnnouncementsGridService
 {
   public constructor(
     private _listService: AnnouncementsListService,
+    private _announcementsService: AnnouncementsService,
     permissionService: PermissionService,
     dialogService: DialogService,
     translationService: TranslationService,
@@ -54,6 +57,7 @@ export class AnnouncementsGridService
       cultureService
     );
   }
+
   public getData(
     sortColumn: string,
     sortDirection: SortDirection,
@@ -228,7 +232,7 @@ export class AnnouncementsGridService
     }
 
     return firstValueFrom(
-      this._listService
+      this._announcementsService
         .publish(announcements.id)
         .pipe(map((result: boolean) => (result ? MenuItemClickResult.REFRESH_GRID : undefined)))
     );
@@ -270,10 +274,19 @@ export class AnnouncementsGridService
       return;
     }
 
-    return firstValueFrom(
-      this._listService
-        .delete(announcements.id)
-        .pipe(map((result: boolean) => (result ? MenuItemClickResult.REFRESH_GRID : undefined)))
-    );
+    const result = await firstValueFrom(this._announcementsService.delete(announcements.id));
+
+    if (result === DeleteResult.Success) {
+      return MenuItemClickResult.REFRESH_GRID;
+    }
+
+    if (result === DeleteResult.DbFkConstraintError) {
+      this._snackBarService.translateAndShowError(
+        'Errors/Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted'
+      );
+      return MenuItemClickResult.NONE;
+    }
+
+    throw new Error('Not supported delete result');
   }
 }

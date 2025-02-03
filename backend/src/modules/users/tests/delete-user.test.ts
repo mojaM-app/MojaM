@@ -36,20 +36,20 @@ describe('DELETE /user', () => {
     registerTestEventHandlers(eventDispatcher);
   });
 
-  describe('DELETE should respond with a status code of 200', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
+  beforeEach(async () => {
+    jest.resetAllMocks();
 
-      mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
-        callback(null, null);
-      });
-
-      jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
-        sendMail: mockSendMail,
-        close: jest.fn().mockImplementation(() => {}),
-      } as any);
+    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
+      callback(null, null);
     });
 
+    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
+      sendMail: mockSendMail,
+      close: jest.fn().mockImplementation(() => {}),
+    } as any);
+  });
+
+  describe('DELETE should respond with a status code of 200', () => {
     test('when data are valid and logged user has permission', async () => {
       const user = generateValidUser();
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
@@ -259,10 +259,6 @@ describe('DELETE /user', () => {
   });
 
   describe('DELETE should respond with a status code of 403', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when token is not set', async () => {
       const userId: string = Guid.EMPTY;
       const deleteResponse = await request(app.getServer())
@@ -423,10 +419,6 @@ describe('DELETE /user', () => {
   });
 
   describe('DELETE should respond with a status code of 400', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when user not exist', async () => {
       const userId: string = Guid.EMPTY;
       const deleteResponse = await request(app.getServer())
@@ -447,7 +439,9 @@ describe('DELETE /user', () => {
         expect(eventHandler).not.toHaveBeenCalled();
       });
     });
+  });
 
+  describe('DELETE should respond with a status code of 409', () => {
     test('when a user has granted ony of system permissions to another users', async () => {
       const user1RequestData = generateValidUser();
 
@@ -510,7 +504,7 @@ describe('DELETE /user', () => {
         .delete(userRoute.path + '/' + user1.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteUserResponse.statusCode).toBe(400);
+      expect(deleteUserResponse.statusCode).toBe(409);
       expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = deleteUserResponse.body;
       expect(typeof body).toBe('object');
@@ -527,16 +521,12 @@ describe('DELETE /user', () => {
       deleteAllPermissionsResponse = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAllPermissionsResponse.statusCode).toBe(200);
 
-      deleteUserResponse = await request(app.getServer())
-        .delete(userRoute.path + '/' + user1.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      path = userRoute.path + '/' + user1.id;
+      deleteUserResponse = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
 
-      deleteUserResponse = await request(app.getServer())
-        .delete(userRoute.path + '/' + user2.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      path = userRoute.path + '/' + user2.id;
+      deleteUserResponse = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -607,7 +597,7 @@ describe('DELETE /user', () => {
         .delete(userRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteUserResponse.statusCode).toBe(400);
+      expect(deleteUserResponse.statusCode).toBe(409);
       expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = deleteUserResponse.body;
       const data = body.data as BadRequestException;
@@ -622,10 +612,8 @@ describe('DELETE /user', () => {
       const deleteAnnouncementsResponse = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
-      deleteUserResponse = await request(app.getServer())
-        .delete(userRoute.path + '/' + user.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      path = userRoute.path + '/' + user.id;
+      deleteUserResponse = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -704,7 +692,7 @@ describe('DELETE /user', () => {
         .delete(userRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteUserResponse.statusCode).toBe(400);
+      expect(deleteUserResponse.statusCode).toBe(409);
       expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = deleteUserResponse.body;
       expect(typeof body).toBe('object');
@@ -717,10 +705,8 @@ describe('DELETE /user', () => {
       const deleteAnnouncementsResponse = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
-      deleteUserResponse = await request(app.getServer())
-        .delete(userRoute.path + '/' + user.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      path = userRoute.path + '/' + user.id;
+      deleteUserResponse = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -824,7 +810,7 @@ describe('DELETE /user', () => {
         .delete(userRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteUserResponse.statusCode).toBe(400);
+      expect(deleteUserResponse.statusCode).toBe(409);
       expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = deleteUserResponse.body;
       expect(typeof body).toBe('object');
@@ -837,10 +823,8 @@ describe('DELETE /user', () => {
       const deleteAnnouncementsResponse = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
-      deleteUserResponse = await request(app.getServer())
-        .delete(userRoute.path + '/' + user.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      path = userRoute.path + '/' + user.id;
+      deleteUserResponse = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -945,7 +929,7 @@ describe('DELETE /user', () => {
         .delete(userRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteUserResponse.statusCode).toBe(400);
+      expect(deleteUserResponse.statusCode).toBe(409);
       expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = deleteUserResponse.body;
       expect(typeof body).toBe('object');
@@ -958,10 +942,8 @@ describe('DELETE /user', () => {
       const deleteAnnouncementsResponse = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
-      deleteUserResponse = await request(app.getServer())
-        .delete(userRoute.path + '/' + user.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      path = userRoute.path + '/' + user.id;
+      deleteUserResponse = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -996,10 +978,6 @@ describe('DELETE /user', () => {
   });
 
   describe('DELETE should respond with a status code of 404', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('DELETE should respond with a status code of 404 when user Id is not GUID', async () => {
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/invalid-guid')
@@ -1020,10 +998,6 @@ describe('DELETE /user', () => {
   });
 
   describe('DELETE should respond with a status code of 401', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     test('when token is invalid', async () => {
       const userId: string = Guid.EMPTY;
       const deleteResponse = await request(app.getServer())

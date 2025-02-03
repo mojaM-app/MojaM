@@ -1,6 +1,6 @@
-import { isNullOrEmptyString } from '@/utils';
 import { COMMUNITY_INFO_URL } from '@config';
 import { BaseService } from '@modules/common';
+import { isNullOrEmptyString } from '@utils';
 import { Service } from 'typedi';
 import { CommunityInfoDto, GetCommunityDto } from '../dtos/community.dto';
 

@@ -14,6 +14,7 @@ import { EventDispatcher } from 'event-dispatch';
 import { NextFunction } from 'express';
 import { decode } from 'jsonwebtoken';
 import ms from 'ms';
+import nodemailer from 'nodemailer';
 import StatusCode from 'status-code-enum';
 import request from 'supertest';
 import { getAccessTokenExpiration, getRefreshTokenExpiration } from '../middlewares/set-identity.middleware';
@@ -23,8 +24,9 @@ describe('POST /auth/refresh-token', () => {
   const authRoute = new AuthRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App();
-
+  let mockSendMail: any;
   let adminAccessToken: string | undefined;
+
   beforeAll(async () => {
     const { email, password } = getAdminLoginData();
     await app.initialize([userRoute, permissionsRoute]);
@@ -35,11 +37,20 @@ describe('POST /auth/refresh-token', () => {
     registerTestEventHandlers(eventDispatcher);
   });
 
-  describe('new access token should be generated', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
+  beforeEach(async () => {
+    jest.resetAllMocks();
+
+    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
+      callback(null, null);
     });
 
+    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
+      sendMail: mockSendMail,
+      close: jest.fn().mockImplementation(() => {}),
+    } as any);
+  });
+
+  describe('new access token should be generated', () => {
     it('when current access token is expired', async () => {
       const { email, password } = getAdminLoginData();
       const loginResponse = await request(app.getServer())
@@ -148,10 +159,6 @@ describe('POST /auth/refresh-token', () => {
   });
 
   describe('new access token should NOT be generated', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     it('when current: refresh and access token are expired', async () => {
       const { email, password } = getAdminLoginData();
       const loginResponse = await request(app.getServer())

@@ -9,6 +9,7 @@ import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
 import { generateRandomEmail, getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
+import nodemailer from 'nodemailer';
 import request from 'supertest';
 
 describe('POST /auth/get-user-who-logs-in', () => {
@@ -16,8 +17,9 @@ describe('POST /auth/get-user-who-logs-in', () => {
   const authRoute = new AuthRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App();
-
+  let mockSendMail: any;
   let adminAccessToken: string | undefined;
+
   beforeAll(async () => {
     await app.initialize([userRoute, permissionsRoute]);
     const { email, password } = getAdminLoginData();
@@ -28,11 +30,20 @@ describe('POST /auth/get-user-who-logs-in', () => {
     registerTestEventHandlers(eventDispatcher);
   });
 
-  describe('when login data are valid (given email is unique or not exist)', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
+  beforeEach(async () => {
+    jest.resetAllMocks();
+
+    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
+      callback(null, null);
     });
 
+    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
+      sendMail: mockSendMail,
+      close: jest.fn().mockImplementation(() => {}),
+    } as any);
+  });
+
+  describe('when login data are valid (given email is unique or not exist)', () => {
     it('when exist only one activated user with given e-mail and user password is set', async () => {
       const { email } = getAdminLoginData();
       const response = await request(app.getServer())
@@ -168,10 +179,6 @@ describe('POST /auth/get-user-who-logs-in', () => {
   });
 
   describe('when login data are invalid (eg. given email is NOT unique)', () => {
-    beforeEach(async () => {
-      jest.resetAllMocks();
-    });
-
     it('when exist more then one user with given email and both are activated', async () => {
       const user1 = generateValidUser();
       const user2 = generateValidUser();

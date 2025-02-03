@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { SortDirection } from '@angular/material/sort';
 import { map, Observable } from 'rxjs';
-import {
-  AnnouncementsGridData,
-  IAnnouncementsGridItemDto,
-} from 'src/app/components/announcements/interfaces/announcements-list.interfaces';
 import { BaseService } from '../../../../services/common/base.service';
 import { HttpClientService } from '../../../../services/common/httpClient.service';
 import { SpinnerService } from '../../../../services/spinner/spinner.service';
+import {
+  AnnouncementsGridData,
+  IAnnouncementsGridItemDto,
+} from '../../announcements/interfaces/announcements-list.interfaces';
 
 @Injectable({
   providedIn: 'root',
@@ -51,13 +51,5 @@ export class AnnouncementsListService extends BaseService {
           return resp;
         })
       );
-  }
-
-  public publish(uuid: string): Observable<boolean> {
-    return this._httpClient.request().withUrl(this.API_ROUTES.announcements.publish(uuid)).post();
-  }
-
-  public delete(uuid: string): Observable<boolean> {
-    return this._httpClient.request().withUrl(this.API_ROUTES.announcements.delete(uuid)).delete();
   }
 }
