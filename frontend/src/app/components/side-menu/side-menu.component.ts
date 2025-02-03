@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Inject, signal, WritableSignal } from '@angular/core';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -28,6 +29,7 @@ import { SettingsMenu } from '../settings/settings.menu';
     MatSlideToggleModule,
     MatListModule,
     MatIconModule,
+    MatExpansionModule,
     RouterLink,
     RouterLinkActive,
   ],
@@ -76,7 +78,11 @@ export class SideMenuComponent {
       name: ManagementMenu.Label,
       icon: ManagementMenu.Icon,
       isVisible: (): boolean => {
-        return this._permissionService.hasAnyPermission([SystemPermissionValue.PreviewUserList]);
+        return this._permissionService.hasAnyPermission([
+          SystemPermissionValue.PreviewUserList,
+          SystemPermissionValue.AddPermission,
+          SystemPermissionValue.DeletePermission,
+        ]);
       },
       children: [
         {

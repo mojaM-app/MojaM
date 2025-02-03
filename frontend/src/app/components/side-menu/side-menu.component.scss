@@ -1,0 +1,9 @@
+@use '@angular/material' as mat;
+
+:host {
+  @include mat.expansion-overrides(
+    (
+      container-shape: #{var(--mat-list-active-indicator-shape)},
+    )
+  );
+}
