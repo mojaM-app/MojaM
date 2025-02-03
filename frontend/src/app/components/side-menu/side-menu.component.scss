@@ -1,9 +1,24 @@
 @use '@angular/material' as mat;
 
-:host {
+.side-menu-container {
   @include mat.expansion-overrides(
     (
       container-shape: #{var(--mat-list-active-indicator-shape)},
+      header-text-weight: #{var(--mat-sys-body-large-weight)},
     )
   );
+  --mat-sys-on-surface-variant: #{var(--mat-sys-on-surface)};
+  --mat-expansion-header-expanded-state-height: #{var(
+      --mdc-list-list-item-one-line-container-height,
+      48px
+    )};
+  .mat-expansion-panel {
+    .mat-expansion-panel-header {
+      padding-inline-start: 0;
+      .mat-icon {
+        margin-inline-start: var(--mat-list-list-item-leading-icon-start-space, 16px);
+        margin-inline-end: var(--mat-list-list-item-leading-icon-end-space, 16px);
+      }
+    }
+  }
 }

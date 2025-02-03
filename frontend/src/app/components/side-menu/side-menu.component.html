@@ -1,12 +1,12 @@
-<div class="overflow-y-auto overflow-x-hidden">
+<div class="side-menu-container overflow-y-auto overflow-x-hidden">
   <mat-nav-list>
     @for (menuItem of menuItems(); track menuItem) {
       @if ((menuItem?.children || []).length > 0) {
-        <mat-expansion-panel>
+        <mat-expansion-panel class="mat-elevation-z">
           <mat-expansion-panel-header>
             <mat-panel-title>
               @if (menuItem.icon) {
-                <mat-icon matListItemIcon class="me-2">{{ menuItem.icon }}</mat-icon>
+                <mat-icon matListItemIcon>{{ menuItem.icon }}</mat-icon>
               }
               <span>{{ menuItem.name | gmessage }}</span>
             </mat-panel-title>

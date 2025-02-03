@@ -25,7 +25,7 @@ body {
   padding: 0 var(--sar) 0 var(--sal);
   --mat-toolbar-standard-height: 64px;
   --mat-toolbar-mobile-height: 56px;
-
+  --mat-toolbar-title-text-line-height: #{var(--mat-sys-title-large-line-height)};
   //override mat variables
   @include mat.sidenav-overrides(
     (
@@ -85,6 +85,12 @@ body {
       subscript-text-line-height: calc(1rem * var(--font-size)),
     )
   );
+  @include mat.expansion-overrides(
+    (
+      header-text-size: calc(1rem * var(--font-size)),
+      header-text-line-height: calc(1.5rem * var(--font-size)),
+    )
+  );
 
   //left side active element radius
   //--mat-list-active-indicator-shape: 0.5rem;
@@ -124,13 +130,15 @@ body {
   height: calc(
     var(--main-container-height) - var(--mat-toolbar-standard-height) - var(
         --mat-toolbar-standard-height
-      ) * var(--is-mobile) * var(--footer-is-visible)
+      ) *
+      var(--is-mobile) * var(--footer-is-visible)
   );
   @media (max-width: 599px) {
     height: calc(
       var(--main-container-height) - var(--mat-toolbar-mobile-height) - var(
           --mat-toolbar-mobile-height
-        ) * var(--is-mobile) * var(--footer-is-visible)
+        ) *
+        var(--is-mobile) * var(--footer-is-visible)
     );
   }
 
@@ -160,21 +168,21 @@ body {
     height: calc(
       var(--main-container-height) - var(--mat-toolbar-standard-height) - var(
           --mat-toolbar-standard-height
-        ) * var(--is-mobile) * var(--footer-is-visible) - var(--bs-card-cap-padding-y) * 2 - var(
-          --mat-toolbar-title-text-line-height
-        ) - var(--bs-card-border-width) - var(--mat-toolbar-mobile-height) - var(
-          --bs-card-border-width
-        )
+        ) *
+        var(--is-mobile) * var(--footer-is-visible) - var(--bs-card-cap-padding-y) *
+        2 - var(--mat-toolbar-title-text-line-height) - var(--bs-card-border-width) - var(
+          --mat-toolbar-mobile-height
+        ) - var(--bs-card-border-width)
     );
     @media (max-width: 599px) {
       height: calc(
         var(--main-container-height) - var(--mat-toolbar-mobile-height) - var(
             --mat-toolbar-mobile-height
-          ) * var(--is-mobile) * var(--footer-is-visible) - var(--bs-card-cap-padding-y) * 2 - var(
-            --mat-toolbar-title-text-line-height
-          ) - var(--bs-card-border-width) - var(--mat-toolbar-mobile-height) - var(
-            --bs-card-border-width
-          )
+          ) *
+          var(--is-mobile) * var(--footer-is-visible) - var(--bs-card-cap-padding-y) *
+          2 - var(--mat-toolbar-title-text-line-height) - var(--bs-card-border-width) - var(
+            --mat-toolbar-mobile-height
+          ) - var(--bs-card-border-width)
       );
     }
   }
@@ -195,13 +203,15 @@ body {
   height: calc(
     var(--main-container-height) - var(--mat-toolbar-standard-height) - var(
         --mat-toolbar-standard-height
-      ) * var(--is-mobile) * var(--footer-is-visible)
+      ) *
+      var(--is-mobile) * var(--footer-is-visible)
   );
   @media (max-width: 599px) {
     height: calc(
       var(--main-container-height) - var(--mat-toolbar-mobile-height) - var(
           --mat-toolbar-mobile-height
-        ) * var(--is-mobile) * var(--footer-is-visible)
+        ) *
+        var(--is-mobile) * var(--footer-is-visible)
     );
   }
 
@@ -230,17 +240,17 @@ body {
     height: calc(
       var(--main-container-height) - var(--mat-toolbar-standard-height) - var(
           --mat-toolbar-standard-height
-        ) * var(--is-mobile) * var(--footer-is-visible) - var(--bs-card-cap-padding-y) * 2 - var(
-          --mat-toolbar-title-text-line-height
-        ) - var(--bs-card-border-width)
+        ) *
+        var(--is-mobile) * var(--footer-is-visible) - var(--bs-card-cap-padding-y) *
+        2 - var(--mat-toolbar-title-text-line-height) - var(--bs-card-border-width)
     );
     @media (max-width: 599px) {
       height: calc(
         var(--main-container-height) - var(--mat-toolbar-mobile-height) - var(
             --mat-toolbar-mobile-height
-          ) * var(--is-mobile) * var(--footer-is-visible) - var(--bs-card-cap-padding-y) * 2 - var(
-            --mat-toolbar-title-text-line-height
-          ) - var(--bs-card-border-width)
+          ) *
+          var(--is-mobile) * var(--footer-is-visible) - var(--bs-card-cap-padding-y) *
+          2 - var(--mat-toolbar-title-text-line-height) - var(--bs-card-border-width)
       );
     }
 
@@ -248,17 +258,21 @@ body {
       height: calc(
         var(--main-container-height) - var(--mat-toolbar-standard-height) - var(
             --mat-toolbar-standard-height
-          ) * var(--is-mobile) * var(--footer-is-visible) - var(--bs-card-cap-padding-y) * 2 - var(
-            --mat-toolbar-title-text-line-height
-          ) - var(--bs-card-border-width) - var(--mat-paginator-container-size)
+          ) *
+          var(--is-mobile) * var(--footer-is-visible) - var(--bs-card-cap-padding-y) *
+          2 - var(--mat-toolbar-title-text-line-height) - var(--bs-card-border-width) - var(
+            --mat-paginator-container-size
+          )
       );
       @media (max-width: 599px) {
         height: calc(
           var(--main-container-height) - var(--mat-toolbar-mobile-height) - var(
               --mat-toolbar-mobile-height
-            ) * var(--is-mobile) * var(--footer-is-visible) - var(--bs-card-cap-padding-y) * 2 - var(
-              --mat-toolbar-title-text-line-height
-            ) - var(--bs-card-border-width) - var(--mat-paginator-container-size)
+            ) *
+            var(--is-mobile) * var(--footer-is-visible) - var(--bs-card-cap-padding-y) *
+            2 - var(--mat-toolbar-title-text-line-height) - var(--bs-card-border-width) - var(
+              --mat-paginator-container-size
+            )
         );
       }
     }
@@ -330,6 +344,12 @@ body {
         }
       }
     }
+  }
+}
+
+.side-menu-container {
+  .mat-expansion-panel-body {
+    padding-inline-end: 0;
   }
 }
 
