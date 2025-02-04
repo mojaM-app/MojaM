@@ -6,6 +6,7 @@ import { firstValueFrom, map, tap } from 'rxjs';
 import { IS_MOBILE } from 'src/app/app.config';
 import { ConfirmDialogComponent } from 'src/app/components/static/confirmation-dialog/confirm-dialog.component';
 import { LoginDialogComponent } from 'src/app/components/static/login/login-dialog/login-dialog.component';
+import { ILoginDialogOptions } from 'src/app/components/static/login/login-dialog/login-dialog.options';
 import { WysiwygEditorPopupComponent } from 'src/app/components/static/wysiwyg-editor/wysiwyg-editor-dialog/wysiwyg-editor-dialog.component';
 import { IDialogSettings } from 'src/interfaces/common/dialog.settings';
 import { GuidUtils } from 'src/utils/guid.utils';
@@ -25,12 +26,13 @@ export class DialogService {
     return this._dialog.open(component, config);
   }
 
-  public openLoginComponent(): MatDialogRef<LoginDialogComponent> {
+  public openLoginComponent(options?: ILoginDialogOptions): MatDialogRef<LoginDialogComponent> {
     return this.open(LoginDialogComponent, {
       restoreFocus: false,
       width: '90%',
       maxWidth: '35rem',
       position: this._isMobile ? { top: '10%' } : {},
+      data: options,
     });
   }
 

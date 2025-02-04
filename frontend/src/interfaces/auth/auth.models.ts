@@ -6,7 +6,7 @@ export interface IUserInfoBeforeLogInDto {
   isPasswordSet?: boolean;
 }
 
-export interface ResetPasswordResultDto {
+export interface IResetPasswordResultDto {
   isPasswordSet: boolean;
 }
 

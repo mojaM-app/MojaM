@@ -25,6 +25,7 @@ import { IUserInfoBeforeLogInDto } from 'src/interfaces/auth/auth.models';
 import { IResponseError } from 'src/interfaces/errors/response.error';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
+import { AuthTokenService } from 'src/services/auth/auth-token.service';
 import { AuthService } from 'src/services/auth/auth.service';
 import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { conditionalValidator } from 'src/validators/conditional.validator';
@@ -64,6 +65,7 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
   public constructor(
     formBuilder: FormBuilder,
     private _authService: AuthService,
+    private _authTokenService: AuthTokenService,
     private _snackBarService: SnackBarService,
     private _resetPasswordService: ResetPasswordService,
     @Inject(IS_MOBILE) private _isMobile: boolean
@@ -218,6 +220,12 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
 
   public focusEmailInput(): void {
     setTimeout(() => this._emailInput()?.nativeElement.focus(), 100);
+  }
+
+  public setLoginData(): void {
+    const email = this._authTokenService.getUserEmail();
+    this.controls.email.setValue(email);
+    this.goToStepEnterPhone();
   }
 
   public togglePasswordVisibility(event: MouseEvent): void {

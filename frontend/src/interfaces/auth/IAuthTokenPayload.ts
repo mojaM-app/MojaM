@@ -4,6 +4,8 @@ export interface ITokenPayload {
 }
 
 export interface IAuthTokenPayload extends ITokenPayload {
-  userName?: string;
+  userName?: string | null;
   permissions?: number[];
+  email: string;
+  phone: string;
 }

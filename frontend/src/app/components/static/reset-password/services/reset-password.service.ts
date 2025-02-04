@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ResetPasswordResultDto } from 'src/interfaces/auth/auth.models';
+import { IResetPasswordResultDto } from 'src/interfaces/auth/auth.models';
 import { BaseService } from 'src/services/common/base.service';
 import { HttpClientService } from 'src/services/common/httpClient.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
@@ -40,11 +40,11 @@ export class ResetPasswordService extends BaseService {
   public resetPassword(
     userUuid: string,
     model: ResetPasswordDto
-  ): Observable<ResetPasswordResultDto> {
+  ): Observable<IResetPasswordResultDto> {
     return this._httpClient
       .request()
       .withUrl(this.API_ROUTES.auth.resetPassword(userUuid))
       .withBody({ ...model })
-      .post<ResetPasswordResultDto>();
+      .post<IResetPasswordResultDto>();
   }
 }

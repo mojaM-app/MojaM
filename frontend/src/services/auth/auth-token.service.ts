@@ -18,7 +18,27 @@ export class AuthTokenService extends TokenService<IAuthTokenPayload> {
       return undefined;
     }
 
-    return payload.userName;
+    return payload.userName ?? undefined;
+  }
+
+  public getUserEmail(): string | undefined {
+    const payload = this.getPayload();
+
+    if (!payload) {
+      return undefined;
+    }
+
+    return payload.email;
+  }
+
+  public getUserPhone(): string | undefined {
+    const payload = this.getPayload();
+
+    if (!payload) {
+      return undefined;
+    }
+
+    return payload.phone;
   }
 
   public getUserPermissions(): number[] {
@@ -32,14 +52,10 @@ export class AuthTokenService extends TokenService<IAuthTokenPayload> {
   }
 
   public getUserInitialLetters(): string | undefined {
-    const payload = this.getPayload();
-
-    if (!payload) {
-      return undefined;
-    }
+    const userName = this.getUserName();
 
     return (
-      payload.userName
+      userName
         ?.split(' ')
         .map(n => (n?.length > 0 ? n[0].toLocaleUpperCase() : ''))
         .slice(0, 2)

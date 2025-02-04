@@ -24,7 +24,8 @@
   "Header": {
     "Menu": {
       "Login": "Zaloguj się",
-      "Logout": "Wyloguj się"
+      "Logout": "Wyloguj się",
+      "RefreshSession": "Odśwież sesję"
     }
   },
   "Footer": {},

@@ -7,6 +7,7 @@ import {
   Inject,
   Input,
   OnInit,
+  signal,
   viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -22,6 +23,7 @@ import { AuthTokenService } from 'src/services/auth/auth-token.service';
 import { AuthService } from 'src/services/auth/auth.service';
 import { DialogService } from 'src/services/dialog/dialog.service';
 import { ThemeService } from '../../../services/theme/theme.service';
+import { ILoginDialogOptions } from '../static/login/login-dialog/login-dialog.options';
 
 @Component({
   selector: 'app-header',
@@ -33,9 +35,10 @@ import { ThemeService } from '../../../services/theme/theme.service';
 export class HeaderComponent implements OnInit, AfterViewInit {
   @Input() public sidenav: MatSidenav | undefined;
 
-  public headerImageName = 'logo_black';
-  public userName: string | undefined = undefined;
-  public initials: string | undefined = undefined;
+  public readonly headerImageName = signal<string>('logo_black');
+  public readonly userName = signal<string | undefined>(undefined);
+  public readonly initials = signal<string | undefined>(undefined);
+  public readonly isSessionValid = signal<boolean>(false);
 
   private readonly _menuTrigger = viewChild.required(MatMenuTrigger);
 
@@ -47,11 +50,12 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     private _authService: AuthService,
     private _dialogService: DialogService
   ) {
-    const tokenIsSet = toSignal<ITokenChangedEvent>(this._authTokenService.tokenChanged);
+    const tokenChanged = toSignal<ITokenChangedEvent>(this._authTokenService.tokenChanged);
+    this.isSessionValid.set(_authService.isSessionValid());
 
     effect(() => {
-      if (tokenIsSet()) {
-        this.setUserName();
+      if (tokenChanged()) {
+        this.setViewData();
       }
     });
   }
@@ -65,33 +69,40 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   public ngOnInit(): void {
     this._themeService.onThemeChanged$().subscribe(() => {
       if (this._themeService.isDarkMode()) {
-        this.headerImageName = 'logo_white';
+        this.headerImageName.set('logo_white');
       } else {
-        this.headerImageName = 'logo_black';
+        this.headerImageName.set('logo_black');
       }
-      this._changeDetectorRef.detectChanges();
     });
 
-    this.setUserName();
+    this.setViewData();
   }
 
   public openSidenav(): void {
     this.sidenav?.open();
   }
 
-  public showLoginDialog(): void {
-    const dialogRef = this._dialogService.openLoginComponent();
+  public showLoginDialog(options?: ILoginDialogOptions): void {
+    const dialogRef = this._dialogService.openLoginComponent(options);
 
     dialogRef.afterClosed().subscribe(() => this._menuTrigger().focus());
+  }
+
+  public refreshSession(): void {
+    this.showLoginDialog({ setLoginData: true });
   }
 
   public logOut(): void {
     this._authService.logout();
   }
 
-  private setUserName(): void {
-    this.userName = this._authTokenService.getUserName();
-    this.initials = this._authTokenService.getUserInitialLetters();
-    this._changeDetectorRef.detectChanges();
+  public refreshMenu(): void {
+    this.isSessionValid.set(this._authService.isSessionValid());
+  }
+
+  private setViewData(): void {
+    this.userName.set(this._authTokenService.getUserName());
+    this.initials.set(this._authTokenService.getUserInitialLetters());
+    this.refreshMenu();
   }
 }
