@@ -19,7 +19,7 @@ export { RequestResetPasswordResponseDto } from './dtos/request-reset-password.d
 export { ResetPasswordDto, ResetPasswordReqDto, ResetPasswordResponseDto, type ResetPasswordResultDto } from './dtos/reset-password.dto';
 export { GetUserInfoBeforeLogInResponseDto, UserTryingToLogInDto, type IUserInfoBeforeLogInResultDto } from './dtos/user-trying-to-log-in.dto';
 
-export type { DataStoredInToken } from './models/DataStoredInToken';
+export type { IDataStoredInToken } from './interfaces/data-stored-in-token.interface';
 export { Identity } from './models/Identity';
 
 export type { ILoginResult } from './interfaces/login.interfaces';

@@ -8,10 +8,10 @@ import {
   CheckResetPasswordTokenReqDto,
   CheckResetPasswordTokenResultDto,
   CryptoService,
-  DataStoredInToken,
   FailedLoginAttemptEvent,
   GetUserToActivateReqDto,
   IActivateAccountResultDto,
+  IDataStoredInToken,
   ILoginResult,
   InactiveUserTriesToLogInEvent,
   IUserInfoBeforeLogInResultDto,
@@ -371,8 +371,10 @@ export class AuthService extends BaseService {
   private createAccessToken(user: User, permissions: SystemPermission[]): string {
     const dataStoredInToken = {
       permissions,
-      userName: user.firstName + ' ' + user.lastName,
-    } satisfies DataStoredInToken;
+      userName: user.getFullName(),
+      email: user.email,
+      phone: user.phone,
+    } satisfies IDataStoredInToken;
 
     return sign(dataStoredInToken, getAccessTokenSecret(), {
       expiresIn: getAccessTokenExpiration(),

@@ -1,6 +1,8 @@
 import { SystemPermission } from '@modules/permissions';
 
-export interface DataStoredInToken {
+export interface IDataStoredInToken {
   permissions: SystemPermission[] | undefined;
-  userName: string | undefined;
+  userName: string | null;
+  email: string;
+  phone: string;
 }
