@@ -57,6 +57,10 @@ body {
       row-item-label-text-size: calc(0.875rem * var(--font-size)),
     )
   );
+  .mat-mdc-header-row {
+    --mat-table-header-container-height: calc(42px * var(--font-size));
+  }
+
   @include mat.button-overrides(
     (
       filled-label-text-size: calc(0.875rem * var(--font-size)),
