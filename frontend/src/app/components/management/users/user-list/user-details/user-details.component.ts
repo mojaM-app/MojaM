@@ -4,8 +4,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
+import { UserDetailsService } from '../../services/user-details.service';
 import { IUserDetails } from '../interfaces/user-details.interfaces';
-import { UserDetailsService } from '../services/user-details.service';
 
 @Component({
   selector: 'app-user-details',

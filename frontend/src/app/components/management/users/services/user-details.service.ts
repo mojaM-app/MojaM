@@ -3,7 +3,7 @@ import { map, Observable } from 'rxjs';
 import { BaseService } from 'src/services/common/base.service';
 import { HttpClientService } from 'src/services/common/httpClient.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
-import { IUserDetails } from '../interfaces/user-details.interfaces';
+import { IUserDetails } from '../user-list/interfaces/user-details.interfaces';
 import { transformUser } from './transform-user';
 
 @Injectable({

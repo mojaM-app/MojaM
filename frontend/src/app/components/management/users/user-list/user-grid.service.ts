@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { SortDirection } from '@angular/material/sort';
 import { Router } from '@angular/router';
 import { firstValueFrom, Observable } from 'rxjs';
+import { UserListService } from 'src/app/components/management/users/services/user-list.service';
 import { IUserGridItemDto } from 'src/app/components/management/users/user-list/interfaces/user-list.interfaces';
-import { UserListService } from 'src/app/components/management/users/user-list/services/user-list.service';
 import { BaseGridService } from 'src/app/components/static/grid/grid/services/base-grid.service';
 import {
   COLUMN_NAMES,
@@ -23,7 +23,7 @@ import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { CultureService } from 'src/services/translate/culture.service';
 import { TranslationService } from 'src/services/translate/translation.service';
 import { ManagementMenuEditUser } from '../../management.menu';
-import { UserService } from './services/user.service';
+import { UserService } from '../services/user.service';
 import { UserListColumns } from './user-list.columns';
 
 @Injectable({

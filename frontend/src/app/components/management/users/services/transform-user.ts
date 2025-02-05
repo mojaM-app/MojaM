@@ -1,6 +1,6 @@
 import { BooleanUtils } from 'src/utils/boolean.utils';
-import { IUserDetails } from '../interfaces/user-details.interfaces';
-import { IUserGridItemDto } from '../interfaces/user-list.interfaces';
+import { IUserDetails } from '../user-list/interfaces/user-details.interfaces';
+import { IUserGridItemDto } from '../user-list/interfaces/user-list.interfaces';
 
 export function transformUser<TUserToTransform extends IUserGridItemDto | IUserDetails>(
   user: TUserToTransform

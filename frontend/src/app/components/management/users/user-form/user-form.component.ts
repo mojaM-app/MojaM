@@ -35,7 +35,7 @@ import { AuthService } from 'src/services/auth/auth.service';
 import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { GuidUtils } from 'src/utils/guid.utils';
 import { ManagementMenuUserList } from '../../management.menu';
-import { UserService } from '../user-list/services/user.service';
+import { UserService } from '../services/user.service';
 import { AddUserDto } from './models/add-user.model';
 import { EditUserDto } from './models/edit-user.model';
 import { UserDto } from './models/user.model';
