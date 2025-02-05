@@ -8,9 +8,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { PipesModule } from 'src/pipes/pipes.module';
-import { WysiwygPreviewComponent } from '../static/wysiwyg-editor/wysiwyg-preview/wysiwyg-preview.component';
 import { AnnouncementsRoutingModule } from './announcements.routing';
 import { CurrentAnnouncementsComponent } from './current-announcements.component';
+import { AnnouncementsItemComponent } from './preview-announcements/announcement-item/announcements-item.component';
 
 @NgModule({
   declarations: [CurrentAnnouncementsComponent],
@@ -25,7 +25,7 @@ import { CurrentAnnouncementsComponent } from './current-announcements.component
     RouterModule,
     PipesModule,
     DirectivesModule,
-    WysiwygPreviewComponent,
+    AnnouncementsItemComponent,
   ],
 })
 export class AnnouncementsModule {}

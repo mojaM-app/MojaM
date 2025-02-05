@@ -14,9 +14,9 @@ import { AuthService } from 'src/services/auth/auth.service';
 import { CultureService } from 'src/services/translate/culture.service';
 import { TranslationService } from 'src/services/translate/translation.service';
 import { GuidUtils } from 'src/utils/guid.utils';
-import { WysiwygPreviewComponent } from '../../static/wysiwyg-editor/wysiwyg-preview/wysiwyg-preview.component';
 import { IAnnouncements } from '../interfaces/announcements';
 import { AnnouncementsService } from '../services/announcements.service';
+import { AnnouncementsItemComponent } from './announcement-item/announcements-item.component';
 import { BasePreviewAnnouncementComponent } from './base-preview-announcement.component';
 
 @Component({
@@ -29,7 +29,7 @@ import { BasePreviewAnnouncementComponent } from './base-preview-announcement.co
     MatInputModule,
     MatFormFieldModule,
     MatDatepickerModule,
-    WysiwygPreviewComponent,
+    AnnouncementsItemComponent,
     PipesModule,
     DirectivesModule,
     FormsModule,

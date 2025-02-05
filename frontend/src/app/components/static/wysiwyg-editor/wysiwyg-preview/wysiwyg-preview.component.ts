@@ -1,4 +1,4 @@
-import { Component, model, ModelSignal } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-wysiwyg-preview',
@@ -7,5 +7,5 @@ import { Component, model, ModelSignal } from '@angular/core';
   styleUrl: './wysiwyg-preview.component.scss',
 })
 export class WysiwygPreviewComponent {
-  public readonly content: ModelSignal<string> = model.required<string>();
+  public readonly content = input.required<string>();
 }

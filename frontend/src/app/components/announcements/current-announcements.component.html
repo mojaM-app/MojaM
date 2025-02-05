@@ -41,25 +41,7 @@
             }
           </div>
           @for (item of announcements()!.items; track item; let i = $index) {
-            <div class="alert alert-light" role="alert">
-              <app-wysiwyg-preview [content]="item.content"></app-wysiwyg-preview>
-              <div class="row lh-1 mt-2 opacity-50">
-                <div class="col d-flex flex-wrap">
-                  <div>
-                    <mat-icon class="align-middle">person</mat-icon>
-                    <span
-                      >{{ 'Announcements/CreatedBy' | gmessage }} {{ item.getAuthorName() }}&nbsp;
-                    </span>
-                  </div>
-                  <div class="text-nowrap">
-                    <mat-icon class="align-middle">calendar_month</mat-icon>
-                    <span>{{ item.getCreationDateTime() | gdate }} </span>
-                    <mat-icon class="align-middle">schedule</mat-icon>
-                    <span>{{ item.getCreationDateTime() | gtime }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <app-announcements-item [item]="item"></app-announcements-item>
           }
         } @else {
           @if (showButtonAddAnnouncement()) {

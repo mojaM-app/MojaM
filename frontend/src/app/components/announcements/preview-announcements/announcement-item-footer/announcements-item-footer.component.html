@@ -1,0 +1,14 @@
+<div class="row lh-1 mt-2 opacity-50">
+  <div class="col d-flex justify-content-end flex-wrap">
+    <div>
+      <mat-icon class="align-middle">person</mat-icon>
+      <span>{{ 'Announcements/CreatedBy' | gmessage }} {{ item().getAuthorName() }}&nbsp; </span>
+    </div>
+    <div class="text-nowrap">
+      <mat-icon class="align-middle">calendar_month</mat-icon>
+      <span>{{ item().getCreationDateTime() | gdate }} </span>
+      <mat-icon class="align-middle">schedule</mat-icon>
+      <span>{{ item().getCreationDateTime() | gtime }}</span>
+    </div>
+  </div>
+</div>
