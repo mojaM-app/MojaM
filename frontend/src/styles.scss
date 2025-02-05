@@ -26,6 +26,7 @@ body {
   --mat-toolbar-standard-height: 64px;
   --mat-toolbar-mobile-height: 56px;
   --mat-paginator-container-height: 56px;
+  --mdc-filled-button-container-height: 40px;
   --mat-toolbar-title-text-line-height: #{var(--mat-sys-title-large-line-height)};
   //override mat variables
   @include mat.sidenav-overrides(
@@ -311,7 +312,7 @@ body {
 
 .card-header {
   &.with-buttons {
-    padding: 0.25rem 1rem;
+    padding: 0.125rem 1rem;
 
     .d-grid {
       display: grid;
