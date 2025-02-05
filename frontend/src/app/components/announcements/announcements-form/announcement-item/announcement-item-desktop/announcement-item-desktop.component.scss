@@ -39,7 +39,13 @@
       .buttons-container {
         display: flex;
         flex-direction: row;
-        background: rgb(from var(--mat-app-text-color) r g b / 40%);
+        background: rgb(from var(--mat-sys-on-background) r g b / 30%);
+
+        .mat-mdc-icon-button {
+          color: var(--mdc-protected-button-label-text-color, var(--mat-sys-primary));
+          background-color: var(--mdc-protected-button-container-color, var(--mat-sys-surface));
+          margin: 0.125rem 0.25rem;
+        }
       }
     }
   }
