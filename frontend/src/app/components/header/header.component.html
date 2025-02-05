@@ -28,15 +28,14 @@
       }
 
       <mat-menu #menu="matMenu">
-        @if (isSessionValid()) {
-          <button mat-menu-item (click)="logOut()">
-            <mat-icon>logout</mat-icon>{{ 'Header/Menu/Logout' | gmessage }}
-          </button>
-        } @else {
+        @if (!isSessionValid()) {
           <button mat-menu-item (click)="refreshSession()">
             <mat-icon>lock_reset</mat-icon>{{ 'Header/Menu/RefreshSession' | gmessage }}
           </button>
         }
+        <button mat-menu-item (click)="logOut()">
+          <mat-icon>logout</mat-icon>{{ 'Header/Menu/Logout' | gmessage }}
+        </button>
       </mat-menu>
     } @else {
       <button mat-icon-button [matMenuTriggerFor]="menu">
