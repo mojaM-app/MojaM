@@ -49,7 +49,7 @@ export class DialogService {
 
     dialogRef
       .afterOpened()
-      .pipe(tap(() => this._location.go(`${currentUrl}/${GuidUtils.create()}`)))
+      .pipe(tap(() => this._location.go(`${currentUrl}/dialog/${GuidUtils.create()}`)))
       .subscribe();
 
     dialogRef
