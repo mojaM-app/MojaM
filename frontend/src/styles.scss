@@ -25,7 +25,7 @@ body {
   padding: 0 var(--sar) 0 var(--sal);
   --mat-toolbar-standard-height: 3rem;
   --mat-toolbar-mobile-height: 56px;
-  --mat-paginator-container-height: 56px;
+  --mat-paginator-container-size: 56px;
   --mdc-filled-button-container-height: 40px;
   --mat-toolbar-title-text-line-height: #{var(--mat-sys-title-large-line-height)};
   //override mat variables
@@ -254,7 +254,7 @@ body {
           ) *
           var(--is-mobile) * var(--footer-is-visible) - var(--bs-card-cap-padding-y) *
           2 - var(--mat-toolbar-title-text-line-height) - var(--bs-card-border-width) - var(
-            --mat-paginator-container-height
+            --mat-paginator-container-size
           )
       );
       @media (max-width: 599px) {
@@ -264,7 +264,7 @@ body {
             ) *
             var(--is-mobile) * var(--footer-is-visible) - var(--bs-card-cap-padding-y) *
             2 - var(--mat-toolbar-title-text-line-height) - var(--bs-card-border-width) - var(
-              --mat-paginator-container-height
+              --mat-paginator-container-size
             )
         );
       }
