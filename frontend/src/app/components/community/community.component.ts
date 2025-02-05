@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, model, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, viewChild } from '@angular/core';
 import { MatTabGroup, MatTabsModule } from '@angular/material/tabs';
+import { DirectivesModule } from 'src/directives/directives.module';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { InfoComponent } from './components/info/info.component';
@@ -13,13 +14,18 @@ import { CommunityService } from './services/community.service';
   templateUrl: './community.component.html',
   styleUrls: ['./community.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatTabsModule, PipesModule, TabComponent, InfoComponent],
+  imports: [
+    CommonModule,
+    MatTabsModule,
+    PipesModule,
+    TabComponent,
+    InfoComponent,
+    DirectivesModule,
+  ],
 })
 export class CommunityComponent extends WithUnsubscribe() implements OnInit {
-  @ViewChild('tabGroup', { static: true })
-  public tabGroup: MatTabGroup | null = null;
-
-  public readonly model = model<ICommunity>();
+  public readonly model = signal<ICommunity | undefined>(undefined);
+  private readonly tabGroup = viewChild<MatTabGroup>('tabGroup');
 
   public selectedTab = 0;
 
@@ -34,7 +40,7 @@ export class CommunityComponent extends WithUnsubscribe() implements OnInit {
   }
 
   public selectNextTab(): void {
-    if (this.selectedTab < (this.tabGroup?._tabs?.length ?? 0) - 1) {
+    if (this.selectedTab < (this.tabGroup()?._tabs?.length ?? 0) - 1) {
       this.selectedTab++;
     }
   }
@@ -50,7 +56,7 @@ export class CommunityComponent extends WithUnsubscribe() implements OnInit {
   }
 
   private scrollTab(): void {
-    const ntvEl = this.tabGroup?._elementRef?.nativeElement;
+    const ntvEl = this.tabGroup()?._elementRef?.nativeElement;
 
     if (ntvEl) {
       ntvEl.scrollIntoView();
