@@ -23,7 +23,7 @@ body {
   min-height: -webkit-fill-available;
   width: 100vw;
   padding: 0 var(--sar) 0 var(--sal);
-  --mat-toolbar-standard-height: 64px;
+  --mat-toolbar-standard-height: 3rem;
   --mat-toolbar-mobile-height: 56px;
   --mat-paginator-container-height: 56px;
   --mdc-filled-button-container-height: 40px;
@@ -97,19 +97,6 @@ body {
       header-text-line-height: calc(1.5rem * var(--font-size)),
     )
   );
-
-  //left side active element radius
-  //--mat-list-active-indicator-shape: 0.5rem;
-  //size of icon in left menu
-  // --mdc-list-list-item-leading-icon-size: 1.25rem;
-  // .mdc-list-item--with-leading-icon .mdc-list-item__start {
-  //   width: auto;
-  //   height: auto;
-  // }
-  //padding of dialog header title
-  //--mat-dialog-headline-padding: 0 0 0.25rem 24px;
-  //dialog header font size
-  //--mdc-dialog-subhead-size: 1.25rem;
 
   //slider thumb labe
   .mdc-slider__value-indicator-text {
