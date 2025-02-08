@@ -97,6 +97,12 @@ body {
       header-text-line-height: calc(1.5rem * var(--font-size)),
     )
   );
+  @include mat.dialog-overrides(
+    (
+      subhead-size: calc(1.5rem * var(--font-size)),
+      supporting-text-size: calc(0.875rem * var(--font-size)),
+    )
+  );
 
   //slider thumb labe
   .mdc-slider__value-indicator-text {

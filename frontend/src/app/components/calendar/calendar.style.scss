@@ -20,4 +20,18 @@
     opacity: 1;
     font-size: 1rem;
   }
+
+  mwl-calendar-week-view-event {
+    .cal-event-title {
+      white-space: wrap;
+      word-wrap: break-word;
+    }
+  }
+
+  mwl-calendar-week-view-event,
+  mwl-calendar-month-cell {
+    .cal-event-title {
+      font-size: calc(0.875rem * var(--font-size));
+    }
+  }
 }

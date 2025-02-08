@@ -103,8 +103,8 @@ body {
   //override calendar colors
   @include cal-theme(
     (
-      bg-primary: mat.get-theme-color($light-theme, surface),
-      bg-secondary: mat.get-theme-color($light-theme, on-secondary),
+      bg-primary: mat.get-theme-color($light-theme, on-primary),
+      bg-secondary: mat.get-theme-color($light-theme, surface),
       weekend-color: mat.get-theme-color($light-theme, error),
       bg-active: mat.get-theme-color($light-theme, secondary-container),
       border-color: mat.get-theme-color($light-theme, primary-container),
@@ -304,7 +304,7 @@ body {
     //override calendar colors
     @include cal-theme(
       (
-        bg-primary: mat.get-theme-color($dark-theme, surface),
+        bg-primary: transparent,
         bg-secondary: mat.get-theme-color($dark-theme, on-secondary),
         weekend-color: mat.get-theme-color($dark-theme, error),
         bg-active: mat.get-theme-color($dark-theme, secondary-container),
@@ -314,6 +314,10 @@ body {
         event-color-primary: mat.get-theme-color($dark-theme, primary-container),
       )
     );
+    .cal-cell-row.cal-header,
+    .cal-day-headers {
+      background-color: mat.get-theme-color($dark-theme, background);
+    }
 
     //bootstrap overrides
     .alert-light {
