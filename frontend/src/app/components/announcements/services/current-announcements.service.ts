@@ -46,6 +46,12 @@ export class CurrentAnnouncementsService extends BaseService {
                   return item.updatedAt ?? item.createdAt;
                 };
               });
+              resp.currentAnnouncements.getPublisherName = (): string => {
+                return resp.currentAnnouncements!.publishedBy ?? '';
+              };
+              resp.currentAnnouncements.getPublishDateTime = (): Date | undefined | null => {
+                return resp.currentAnnouncements!.publishedAt;
+              };
             }
           }
 

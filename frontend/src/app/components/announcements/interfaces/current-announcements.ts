@@ -20,6 +20,9 @@ export interface ICurrentAnnouncements {
   publishedAt: Date;
   publishedBy: string | null;
   items: ICurrentAnnouncementsItem[];
+
+  getPublisherName(): string;
+  getPublishDateTime(): Date | undefined | null;
 }
 
 export interface IGetCurrentAnnouncements {

@@ -43,6 +43,12 @@ export class AnnouncementsService extends BaseService {
                 return item.updatedAt ?? item.createdAt;
               };
             });
+            resp.getPublisherName = (): string => {
+              return resp.publishedBy ?? '';
+            };
+            resp.getPublishDateTime = (): Date | undefined | null => {
+              return resp.publishedAt;
+            };
           }
 
           return resp;

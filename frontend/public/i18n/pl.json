@@ -51,7 +51,8 @@
   "Announcements": {
     "Title": "Ogłoszenia",
     "AnnouncementsOfTheDay": "Ogłoszenia od {date}",
-    "CreatedBy": "Utworzone przez",
+    "CreatedBy": "Utworzył(a)",
+    "PublishedBy": "Opublikował(a)",
     "NoAnnouncements": "Brak ogłoszeń",
     "NoPublishedAnnouncements": "Brak opublikowanych ogłoszeń, przejdź do listy ogłoszeń aby dodać, zmienić lub opublikować ogłoszenia.",
     "BtnAdd": "Dodaj ogłoszenia",
@@ -126,7 +127,8 @@
     "Theme": "Motyw",
     "LightTheme": "Jasny",
     "DarkTheme": "Ciemny",
-    "ThemeDescription": "Włącz tryb ciemny"
+    "ThemeDescription": "Włącz tryb ciemny",
+    "FontSize": "Rozmiar czcionki"
   },
   "Login": {
     "Title": "Logowanie",

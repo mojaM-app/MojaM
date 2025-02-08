@@ -77,7 +77,6 @@ export class AnnouncementsGridService
       {
         propertyName: AnnouncementsListColumns.state,
         title: this._translationService.get('Announcements/List/GridColumns/State'),
-        calcColumnCssClass: (): string => 'text-center',
         transform: (value: string): string =>
           this._translationService.get(`Announcements/State/${value}`),
       },

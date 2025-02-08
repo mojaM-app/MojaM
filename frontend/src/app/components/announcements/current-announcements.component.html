@@ -43,6 +43,23 @@
           @for (item of announcements()!.items; track item; let i = $index) {
             <app-announcements-item [item]="item"></app-announcements-item>
           }
+          <div class="row lh-1 published-by mt-2 opacity-50">
+            <div class="col d-flex justify-content-end flex-wrap">
+              <div>
+                <mat-icon class="align-middle">person</mat-icon>
+                <span
+                  >{{ 'Announcements/PublishedBy' | gmessage }}
+                  {{ announcements()!.getPublisherName() }}&nbsp;
+                </span>
+              </div>
+              <div class="text-nowrap">
+                <mat-icon class="align-middle">calendar_month</mat-icon>
+                <span>{{ announcements()!.getPublishDateTime() | gdate }} </span>
+                <mat-icon class="align-middle">schedule</mat-icon>
+                <span>{{ announcements()!.getPublishDateTime() | gtime }}</span>
+              </div>
+            </div>
+          </div>
         } @else {
           @if (showButtonAddAnnouncement()) {
             <div class="row mb-2">

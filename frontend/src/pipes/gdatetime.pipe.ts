@@ -13,7 +13,7 @@ export class GdatetimePipe implements PipeTransform {
     private _translationService: TranslationService
   ) {}
 
-  public transform(value: Date, style?: string): string | null {
+  public transform(value: Date | null | undefined, style?: string): string | null {
     if (value instanceof Date) {
       const format: Globalize.DateFormatterOptions = {};
       if (style) {

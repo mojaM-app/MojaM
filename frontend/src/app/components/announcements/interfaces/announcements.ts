@@ -18,7 +18,10 @@ export interface IAnnouncements {
   createdAt: Date;
   createdBy: string | null;
   updatedAt: Date;
-  publishedAt?: Date;
+  publishedAt?: Date | null;
   publishedBy?: string | null;
   items: IAnnouncementItem[];
+
+  getPublisherName(): string;
+  getPublishDateTime(): Date | undefined | null;
 }
