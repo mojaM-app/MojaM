@@ -38,15 +38,15 @@ export class SideMenuComponent {
 
   private readonly _menuItems: ISideMenuItem[] = [
     {
-      name: NewsMenu.Label,
-      icon: NewsMenu.Icon,
-      route: NewsMenu.Path,
+      name: CommunityMenu.Label,
+      icon: CommunityMenu.Icon,
+      route: CommunityMenu.Path,
       isVisible: (): boolean => true,
     },
     {
-      name: CalendarMenu.Label,
-      icon: CalendarMenu.Icon,
-      route: CalendarMenu.Path,
+      name: NewsMenu.Label,
+      icon: NewsMenu.Icon,
+      route: NewsMenu.Path,
       isVisible: (): boolean => true,
     },
     {
@@ -62,9 +62,9 @@ export class SideMenuComponent {
       isVisible: (): boolean => true,
     },
     {
-      name: CommunityMenu.Label,
-      icon: CommunityMenu.Icon,
-      route: CommunityMenu.Path,
+      name: CalendarMenu.Label,
+      icon: CalendarMenu.Icon,
+      route: CalendarMenu.Path,
       isVisible: (): boolean => true,
     },
     {
