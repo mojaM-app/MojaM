@@ -6,8 +6,8 @@
   .footer-button {
     display: flex;
     flex-direction: column;
-    font-size: small;
     border-radius: 0.5rem;
+    font-weight: 400;
   }
 }
 
@@ -15,8 +15,6 @@
   .mat-toolbar {
     .footer-button {
       flex-direction: row;
-      font-size: medium;
-      font-weight: 300;
     }
   }
 }
@@ -24,8 +22,7 @@
 @include media-breakpoint-up(md) {
   .mat-toolbar {
     .footer-button {
-      font-size: large;
-      font-weight: 400;
+      font-weight: 700;
     }
   }
 }

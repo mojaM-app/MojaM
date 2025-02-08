@@ -7,6 +7,8 @@ import { PipesModule } from 'src/pipes/pipes.module';
 import { AnnouncementsMenu } from '../announcements/announcements.menu';
 import { BulletinMenu } from '../bulletin/bulletin.menu';
 import { CalendarMenu } from '../calendar/calendar.menu';
+import { CommunityMenu } from '../community/community.menu';
+import { NewsMenu } from '../news/news.menu';
 
 @Component({
   selector: 'app-footer',
@@ -19,6 +21,8 @@ export class FooterComponent {
   public AnnouncementsMenu = AnnouncementsMenu;
   public BulletinMenu = BulletinMenu;
   public CalendarMenu = CalendarMenu;
+  public CommunityMenu = CommunityMenu;
+  public NewsMenu = NewsMenu;
 
   public constructor(private _router: Router) {}
 
