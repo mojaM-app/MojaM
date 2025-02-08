@@ -41,10 +41,10 @@ export class AnnouncementsListService extends BaseService {
         map((resp: AnnouncementsGridData) => {
           if (resp.items?.length > 0) {
             resp.items.forEach((item: IAnnouncementsGridItemDto) => {
-              item.validFromDate = item.validFromDate ? new Date(item.validFromDate) : undefined;
-              item.createdAt = new Date(item.createdAt);
-              item.updatedAt = item.updatedAt ? new Date(item.updatedAt) : undefined;
-              item.publishedAt = item.publishedAt ? new Date(item.publishedAt) : undefined;
+              item.validFromDate = this.toDateTime(item.validFromDate);
+              item.createdAt = this.toDateTime(item.createdAt)!;
+              item.updatedAt = this.toDateTime(item.updatedAt);
+              item.publishedAt = this.toDateTime(item.publishedAt);
               item.itemsCount = parseInt(item.itemsCount as any);
             });
           }

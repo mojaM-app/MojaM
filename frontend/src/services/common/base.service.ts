@@ -79,6 +79,10 @@ export class BaseService {
       return undefined;
     }
 
+    if (date instanceof Date) {
+      return date;
+    }
+
     return new Date(date);
   }
 }

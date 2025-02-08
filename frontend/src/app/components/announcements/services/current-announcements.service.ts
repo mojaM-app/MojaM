@@ -28,17 +28,21 @@ export class CurrentAnnouncementsService extends BaseService {
           if (resp) {
             resp.currentAnnouncements = resp.currentAnnouncements ?? null;
             if (resp.currentAnnouncements) {
-              resp.currentAnnouncements.validFromDate = new Date(
+              resp.currentAnnouncements.validFromDate = this.toDateTime(
                 resp.currentAnnouncements.validFromDate
-              );
-              resp.currentAnnouncements.createdAt = new Date(resp.currentAnnouncements.createdAt);
-              resp.currentAnnouncements.updatedAt = new Date(resp.currentAnnouncements.updatedAt);
-              resp.currentAnnouncements.publishedAt = new Date(
+              )!;
+              resp.currentAnnouncements.createdAt = this.toDateTime(
+                resp.currentAnnouncements.createdAt
+              )!;
+              resp.currentAnnouncements.updatedAt = this.toDateTime(
+                resp.currentAnnouncements.updatedAt
+              )!;
+              resp.currentAnnouncements.publishedAt = this.toDateTime(
                 resp.currentAnnouncements.publishedAt
-              );
+              )!;
               resp.currentAnnouncements.items?.forEach(item => {
-                item.createdAt = new Date(item.createdAt);
-                item.updatedAt = new Date(item.updatedAt);
+                item.createdAt = this.toDateTime(item.createdAt)!;
+                item.updatedAt = this.toDateTime(item.updatedAt)!;
                 item.getAuthorName = (): string => {
                   return item.updatedBy ?? item.createdBy ?? '';
                 };

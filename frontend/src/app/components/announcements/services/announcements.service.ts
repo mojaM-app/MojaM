@@ -29,13 +29,13 @@ export class AnnouncementsService extends BaseService {
         this._spinnerService.waitForSubscription(),
         map((resp: IAnnouncements) => {
           if (resp) {
-            resp.validFromDate = resp.validFromDate ? new Date(resp.validFromDate) : null;
-            resp.createdAt = new Date(resp.createdAt);
-            resp.updatedAt = new Date(resp.updatedAt);
-            resp.publishedAt = resp.publishedAt ? new Date(resp.publishedAt) : undefined;
+            resp.validFromDate = this.toDateTime(resp.validFromDate);
+            resp.createdAt = this.toDateTime(resp.createdAt)!;
+            resp.updatedAt = this.toDateTime(resp.updatedAt)!;
+            resp.publishedAt = this.toDateTime(resp.publishedAt);
             resp.items?.forEach(item => {
-              item.createdAt = new Date(item.createdAt);
-              item.updatedAt = item.updatedAt ? new Date(item.updatedAt) : undefined;
+              item.createdAt = this.toDateTime(item.createdAt)!;
+              item.updatedAt = this.toDateTime(item.updatedAt);
               item.getAuthorName = (): string => {
                 return item.updatedBy ?? item.createdBy ?? '';
               };

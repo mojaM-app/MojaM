@@ -26,7 +26,7 @@ export class ActivateAccountService extends BaseService {
         this._spinnerService.waitForSubscription(),
         map((resp: IUserToActivate) => {
           if (resp) {
-            resp.joiningDate = resp.joiningDate ? new Date(resp.joiningDate) : null;
+            resp.joiningDate = this.toDateTime(resp.joiningDate);
           }
 
           return resp;
