@@ -88,6 +88,7 @@
     .footer {
       grid-area: footer;
       height: var(--mat-toolbar-standard-height);
+      max-width: calc(var(--main-container-width) - var(--sar) - var(--sal));
       @media (max-width: 599px) {
         height: var(--mat-toolbar-mobile-height);
       }

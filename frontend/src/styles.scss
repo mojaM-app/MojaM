@@ -189,7 +189,6 @@ body {
   footer {
     grid-area: footer;
     height: calc(var(--mat-toolbar-mobile-height) + var(--bs-card-border-width));
-    max-width: 100vw;
   }
 }
 
