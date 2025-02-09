@@ -5,3 +5,31 @@ $fontSizes: 80, 90, 100, 110, 120, 130, 140, 150;
     line-height: normal;
   }
 }
+
+.display-4 {
+  font-size: calc(calc(1.475rem + 2.7vw) * var(--font-size));
+}
+.display-3 {
+  font-size: calc(calc(1.525rem + 3.3vw) * var(--font-size));
+}
+.display-2 {
+  font-size: calc(calc(1.575rem + 3.9vw) * var(--font-size));
+}
+.display-1 {
+  font-size: calc(calc(1.625rem + 4.5vw) * var(--font-size));
+}
+
+@media (min-width: 1200px) {
+  .display-4 {
+    font-size: calc(3.5rem * var(--font-size));
+  }
+  .display-3 {
+    font-size: calc(4rem * var(--font-size));
+  }
+  .display-2 {
+    font-size: calc(4.5rem * var(--font-size));
+  }
+  .display-1 {
+    font-size: calc(5rem * var(--font-size));
+  }
+}
