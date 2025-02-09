@@ -23,6 +23,7 @@ import { MatInputModule } from '@angular/material/input';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IS_MOBILE } from 'src/app/app.config';
 import { NewsMenu } from 'src/app/components/news/news.menu';
+import { CardHeaderComponent } from 'src/app/components/static/card-header/card-header.component';
 import { VALIDATOR_SETTINGS } from 'src/core/consts';
 import { FormMode } from 'src/core/form-mode.enum';
 import { DirectivesModule } from 'src/directives/directives.module';
@@ -54,6 +55,7 @@ import { IUserForm, UserFormControlNames } from './user.form';
     FormsModule,
     PipesModule,
     DirectivesModule,
+    CardHeaderComponent,
   ],
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.scss',

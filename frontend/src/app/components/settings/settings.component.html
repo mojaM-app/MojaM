@@ -2,9 +2,7 @@
   <form [formGroup]="formGroup">
     <div class="d-grid-with-header-and-footer">
       <header class="mat-toolbar">
-        <div class="card-header">
-          {{ 'Settings/Title' | gmessage }}
-        </div>
+        <app-card-header [title]="'Settings/Title'"> </app-card-header>
       </header>
       <main>
         <div class="card-body">

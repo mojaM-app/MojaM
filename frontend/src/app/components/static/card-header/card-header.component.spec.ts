@@ -1,18 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GridToolbarComponent } from './grid-toolbar.component';
+import { CardHeaderComponent } from './card-header.component';
 
 describe('GridToolbarComponent', () => {
-  let component: GridToolbarComponent;
-  let fixture: ComponentFixture<GridToolbarComponent>;
+  let component: CardHeaderComponent;
+  let fixture: ComponentFixture<CardHeaderComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GridToolbarComponent]
-    })
-    .compileComponents();
+      imports: [CardHeaderComponent],
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(GridToolbarComponent);
+    fixture = TestBed.createComponent(CardHeaderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -2,14 +2,13 @@
   <div class="card border-0">
     <div class="d-grid-with-header-and-footer">
       <header class="mat-toolbar">
-        <div class="card-header">
-          {{
-            (formMode() === formModeTypes.Add
+        <app-card-header
+          [title]="
+            formMode() === formModeTypes.Add
               ? 'Management/UserForm/AddTitle'
               : 'Management/UserForm/EditTitle'
-            ) | gmessage
-          }}
-        </div>
+          ">
+        </app-card-header>
       </header>
       <main>
         <div class="card-body">

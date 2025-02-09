@@ -1,14 +1,14 @@
 <div class="card card-with-grid border-0">
   <div class="d-grid-with-header">
     <header class="mat-toolbar">
-      <app-grid-toolbar [title]="'Management/UserList/Title'">
+      <app-card-header [title]="'Management/UserList/Title'">
         <ng-container slot="buttons">
           <button mat-flat-button type="button" [routerLink]="'/' + ManagementMenuAddUser.Path">
             <mat-icon>add</mat-icon>
             <span class="d-none d-sm-block">{{ 'Shared/BtnAdd' | gmessage }}</span>
           </button>
         </ng-container>
-      </app-grid-toolbar>
+      </app-card-header>
     </header>
     <main>
       <div class="card-body p-0">

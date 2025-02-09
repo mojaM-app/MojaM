@@ -26,6 +26,7 @@ import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthService } from 'src/services/auth/auth.service';
 import { FontSizeService } from 'src/services/theme/font-size.service';
 import { ThemeService } from 'src/services/theme/theme.service';
+import { CardHeaderComponent } from '../static/card-header/card-header.component';
 import { ISettingsForm, SettingsFormControlNames } from './settings.form';
 
 @Component({
@@ -38,6 +39,7 @@ import { ISettingsForm, SettingsFormControlNames } from './settings.form';
     MatInputModule,
     MatButtonModule,
     MatSliderModule,
+    CardHeaderComponent,
   ],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',

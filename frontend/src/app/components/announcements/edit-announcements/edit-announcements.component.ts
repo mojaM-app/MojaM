@@ -7,6 +7,7 @@ import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthService } from 'src/services/auth/auth.service';
 import { GuidUtils } from 'src/utils/guid.utils';
+import { CardHeaderComponent } from '../../static/card-header/card-header.component';
 import { AnnouncementsFormComponent } from '../announcements-form/announcements-form.component';
 import { AnnouncementsListMenu, AnnouncementsMenu } from '../announcements.menu';
 import { IAnnouncements } from '../interfaces/announcements';
@@ -15,7 +16,14 @@ import { AnnouncementsService } from '../services/announcements.service';
 
 @Component({
   selector: 'app-edit-announcements',
-  imports: [CommonModule, MatButtonModule, MatIconModule, AnnouncementsFormComponent, PipesModule],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatIconModule,
+    AnnouncementsFormComponent,
+    PipesModule,
+    CardHeaderComponent,
+  ],
   templateUrl: './edit-announcements.component.html',
   styleUrl: './edit-announcements.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
