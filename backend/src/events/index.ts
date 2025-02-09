@@ -38,6 +38,7 @@ export const events = {
   permissions: {
     permissionAdded: 'onPermissionAdded',
     permissionDeleted: 'onPermissionDeleted',
+    permissionsRetrieved: 'onPermissionsRetrieved',
   },
 };
 

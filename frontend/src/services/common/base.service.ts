@@ -72,6 +72,10 @@ export class BaseService {
       deactivate: (uuid: string): string =>
         `${environment.backendUrl}/${this.API_ROUTES.user.path}/${uuid}/deactivate`,
     },
+    permissions: {
+      path: 'permissions',
+      get: (): string => `${environment.backendUrl}/${this.API_ROUTES.permissions.path}`,
+    },
   };
 
   protected toDateTime(date: string | null | undefined | Date): Date | undefined {

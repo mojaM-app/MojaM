@@ -14,7 +14,11 @@ import { AnnouncementsMenu } from '../announcements/announcements.menu';
 import { BulletinMenu } from '../bulletin/bulletin.menu';
 import { CalendarMenu } from '../calendar/calendar.menu';
 import { CommunityMenu } from '../community/community.menu';
-import { ManagementMenu, ManagementMenuUserList } from '../management/management.menu';
+import {
+  ManagementMenu,
+  ManagementMenuPermissions,
+  ManagementMenuUserList,
+} from '../management/management.menu';
 import { NewsMenu } from '../news/news.menu';
 import { SettingsMenu } from '../settings/settings.menu';
 
@@ -91,6 +95,18 @@ export class SideMenuComponent {
           isVisible: (): boolean => {
             return this._permissionService.hasAnyPermission([
               SystemPermissionValue.PreviewUserList,
+            ]);
+          },
+        },
+
+        {
+          name: ManagementMenuPermissions.Label,
+          icon: ManagementMenuPermissions.Icon,
+          route: ManagementMenuPermissions.Path,
+          isVisible: (): boolean => {
+            return this._permissionService.hasAnyPermission([
+              SystemPermissionValue.AddPermission,
+              SystemPermissionValue.DeletePermission,
             ]);
           },
         },

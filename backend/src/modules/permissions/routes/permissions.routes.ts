@@ -16,19 +16,30 @@ export class PermissionsRoute implements IRoutes {
   }
 
   private initializeRoutes(): void {
+    this.router.get(`${this.path}`, [setIdentity, this.checkGet], this._permissionsController.get);
     this.router.post(
       `${this.path}/:userId(${REGEX_GUID_PATTERN})/:permissionId(${REGEX_INT_PATTERN})`,
-      [setIdentity, this.checkAddPermission],
+      [setIdentity, this.checkAdd],
       this._permissionsController.add,
     );
     this.router.delete(
       `${this.path}/:userId(${REGEX_GUID_PATTERN})/:permissionId(${REGEX_INT_PATTERN})?`,
-      [setIdentity, this.checkDeletePermission],
+      [setIdentity, this.checkDelete],
       this._permissionsController.delete,
     );
   }
 
-  private readonly checkAddPermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  private readonly checkGet = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+    if (!req.identity?.isAuthenticated()) {
+      next(new UnauthorizedException());
+    } else if (!req.identity.hasPermissionToAddPermission() && !req.identity.hasPermissionToDeletePermission()) {
+      next(new ForbiddenException());
+    } else {
+      next();
+    }
+  };
+
+  private readonly checkAdd = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     if (!req.identity?.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToAddPermission()) {
@@ -38,7 +49,7 @@ export class PermissionsRoute implements IRoutes {
     }
   };
 
-  private readonly checkDeletePermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  private readonly checkDelete = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     if (!req.identity?.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToDeletePermission()) {

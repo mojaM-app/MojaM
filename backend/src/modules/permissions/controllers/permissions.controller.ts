@@ -1,4 +1,3 @@
-import { events } from '@events';
 import { IRequestWithIdentity } from '@interfaces';
 import { BaseController } from '@modules/common';
 import {
@@ -6,6 +5,8 @@ import {
   AddPermissionsResponseDto,
   DeletePermissionsReqDto,
   DeletePermissionsResponseDto,
+  GetPermissionsReqDto,
+  GetPermissionsResponseDto,
   PermissionsService,
 } from '@modules/permissions';
 import { isGuid, toNumber } from '@utils';
@@ -19,13 +20,23 @@ export class PermissionsController extends BaseController {
     this._permissionService = Container.get(PermissionsService);
   }
 
+  public get = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const reqDto = new GetPermissionsReqDto(this.getCurrentUserId(req));
+      const result = await this._permissionService.get(reqDto);
+      res.status(200).json(new GetPermissionsResponseDto(result));
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public add = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { userGuid, permissionId, currentUserId } = this.getRequestParams(req);
       const reqDto = new AddPermissionReqDto(userGuid, permissionId, currentUserId);
       const result = await this._permissionService.add(reqDto);
       if (result) {
-        res.status(201).json(new AddPermissionsResponseDto(result, events.permissions.permissionAdded));
+        res.status(201).json(new AddPermissionsResponseDto(result));
       } else {
         res.status(400).json(new AddPermissionsResponseDto(result));
       }
@@ -40,7 +51,7 @@ export class PermissionsController extends BaseController {
       const reqDto = new DeletePermissionsReqDto(userGuid, permissionId, currentUserId);
       const result = await this._permissionService.delete(reqDto);
       if (result) {
-        res.status(200).json(new DeletePermissionsResponseDto(result, events.permissions.permissionDeleted));
+        res.status(200).json(new DeletePermissionsResponseDto(result));
       } else {
         res.status(400).json(new DeletePermissionsResponseDto(result));
       }

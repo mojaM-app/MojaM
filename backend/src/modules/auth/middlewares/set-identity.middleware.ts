@@ -2,7 +2,7 @@ import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_EXPIRE_IN, REFRESH_TOKEN_SECRET, SEC
 import { UnauthorizedException, errorKeys } from '@exceptions';
 import { IRequestWithIdentity } from '@interfaces';
 import { Identity } from '@modules/auth';
-import { PermissionsRepository } from '@modules/permissions';
+import { UserPermissionsRepository } from '@modules/permissions';
 import { UserRepository } from '@modules/users';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { NextFunction, Request, Response } from 'express';
@@ -104,8 +104,8 @@ export const setIdentity = async (req: IRequestWithIdentity, res: Response, next
       if (isNullOrUndefined(user)) {
         next(new UnauthorizedException(errorKeys.login.Wrong_Authentication_Token));
       } else {
-        const permissionRepository = Container.get(PermissionsRepository);
-        const permissions = await permissionRepository.getUserPermissions(user!.id);
+        const permissionRepository = Container.get(UserPermissionsRepository);
+        const permissions = await permissionRepository.get(user!.id);
         req.identity = new Identity(user, permissions);
         next();
       }

@@ -271,6 +271,9 @@
       "JoiningDate": "Data dołączenia do wspólnoty",
       "JoiningDatePlaceholder": "Wprowadź datę",
       "JoiningDateHint": "Proszę podać datę dołączenia użytkownika do wspólnoty."
+    },
+    "Permissions": {
+      "Title": "Uprawnienia"
     }
   },
   "Error404": {

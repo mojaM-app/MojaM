@@ -6,6 +6,7 @@ import { PermissionGuard } from 'src/services/auth/permission.guard';
 import {
   ManagementMenuAddUser,
   ManagementMenuEditUser,
+  ManagementMenuPermissions,
   ManagementMenuUserList,
 } from './management.menu';
 
@@ -40,6 +41,17 @@ const routes: Routes = [
       checkSession: true,
       hideFooter: true,
       permissions: [SystemPermissionValue.EditUser],
+    } satisfies IPermissionRouteData,
+  },
+  {
+    path: ManagementMenuPermissions.Route,
+    loadComponent: () =>
+      import('./permissions/permissions.component').then(m => m.PermissionsComponent),
+    canActivate: [PermissionGuard],
+    data: {
+      checkSession: true,
+      hideFooter: true,
+      permissions: [SystemPermissionValue.AddPermission, SystemPermissionValue.DeletePermission],
     } satisfies IPermissionRouteData,
   },
   { path: '**', redirectTo: ManagementMenuUserList.Route, pathMatch: 'full' },

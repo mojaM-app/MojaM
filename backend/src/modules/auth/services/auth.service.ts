@@ -39,7 +39,7 @@ import {
 } from '@modules/auth/middlewares/set-identity.middleware';
 import { BaseService, userToIUser } from '@modules/common';
 import { EmailService, LinkHelper } from '@modules/notifications';
-import { PermissionsRepository, SystemPermission } from '@modules/permissions';
+import { SystemPermission, UserPermissionsRepository } from '@modules/permissions';
 import { UpdateUserModel, UserActivatedEvent, UserRepository } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
 import { IUpdateUser } from '@modules/users/interfaces/update-user.interfaces';
@@ -52,7 +52,7 @@ import { ResetPasswordTokensRepository } from '../repositories/reset-password-to
 @Service()
 export class AuthService extends BaseService {
   private readonly _userRepository: UserRepository;
-  private readonly _permissionRepository: PermissionsRepository;
+  private readonly _permissionRepository: UserPermissionsRepository;
   private readonly _resetPasswordTokensRepository: ResetPasswordTokensRepository;
   private readonly _cryptoService: CryptoService;
   private readonly _passwordService: PasswordService;
@@ -61,7 +61,7 @@ export class AuthService extends BaseService {
   public constructor() {
     super();
     this._userRepository = Container.get(UserRepository);
-    this._permissionRepository = Container.get(PermissionsRepository);
+    this._permissionRepository = Container.get(UserPermissionsRepository);
     this._resetPasswordTokensRepository = Container.get(ResetPasswordTokensRepository);
     this._cryptoService = Container.get(CryptoService);
     this._passwordService = Container.get(PasswordService);
@@ -222,7 +222,7 @@ export class AuthService extends BaseService {
       await this._userRepository.updateAfterLogin(user.id);
     }
 
-    const userPermissions = await this._permissionRepository.getUserPermissions(user.id);
+    const userPermissions = await this._permissionRepository.get(user.id);
     const accessToken = this.createAccessToken(user, userPermissions);
     const refreshToken = this.createRefreshToken(user);
 
@@ -267,7 +267,7 @@ export class AuthService extends BaseService {
       },
     );
 
-    const userPermissions = await this._permissionRepository.getUserPermissions(user!.id);
+    const userPermissions = await this._permissionRepository.get(user!.id);
     const accessToken = this.createAccessToken(user!, userPermissions);
 
     this._eventDispatcher.dispatch(events.users.userRefreshedToken, new UserRefreshedTokenEvent(user!));

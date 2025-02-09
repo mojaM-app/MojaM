@@ -20,3 +20,10 @@ export class ManagementMenuEditUser {
   public static Route = 'user/edit';
   public static Path = ManagementMenu.Path + '/' + ManagementMenuEditUser.Route;
 }
+
+export class ManagementMenuPermissions {
+  public static Label = 'Management/Permissions/Title';
+  public static Icon = 'vpn_key';
+  public static Route = 'permissions';
+  public static Path = ManagementMenu.Path + '/' + ManagementMenuPermissions.Route;
+}

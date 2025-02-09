@@ -1,3 +1,4 @@
+import { events } from '@events';
 import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
 
@@ -14,10 +15,10 @@ export class AddPermissionReqDto extends BaseReqDto {
 
 export class AddPermissionsResponseDto implements IResponse<boolean> {
   public readonly data: boolean;
-  public readonly message?: string | undefined;
+  public readonly message: string;
 
-  constructor(data: boolean, message?: string) {
+  constructor(data: boolean) {
     this.data = data;
-    this.message = message;
+    this.message = events.permissions.permissionAdded;
   }
 }
