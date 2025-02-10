@@ -18,14 +18,15 @@
                     class="w-100"
                     [placeholder]="'Management/Permissions/UsersFilterPlaceholder' | gmessage"
                     inputChanged
-                    (inputChanged)="handleFilterChanged($event)" />
+                    (inputChanged)="handleFilterChanged($event)"
+                    [disabled]="!filteredUsers()" />
                   <button
                     mat-icon-button
                     matSuffix
                     [attr.aria-label]="'Management/Permissions/BtnClearLabel' | gmessage"
                     [matTooltip]="'Management/Permissions/BtnClearLabel' | gmessage"
                     (click)="filterInput.value = ''; handleFilterChanged('')"
-                    [disabled]="!filterInput.value">
+                    [disabled]="!filteredUsers() || !filterInput.value">
                     <mat-icon>close</mat-icon>
                   </button>
                 </mat-form-field>
