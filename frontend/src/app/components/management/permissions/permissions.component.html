@@ -24,7 +24,8 @@
                     matSuffix
                     [attr.aria-label]="'Management/Permissions/BtnClearLabel' | gmessage"
                     [matTooltip]="'Management/Permissions/BtnClearLabel' | gmessage"
-                    (click)="filterInput.value = ''; handleFilterChanged('')">
+                    (click)="filterInput.value = ''; handleFilterChanged('')"
+                    [disabled]="!filterInput.value">
                     <mat-icon>close</mat-icon>
                   </button>
                 </mat-form-field>
