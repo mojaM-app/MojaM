@@ -1,8 +1,5 @@
 export interface IUserPermissions {
   id: string;
-  email: string;
-  phone: string;
-  firstName?: string;
-  lastName?: string;
+  name: string;
   permissions: number[];
 }

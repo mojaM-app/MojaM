@@ -4,10 +4,7 @@ import { BaseReqDto } from '@modules/common';
 
 export interface IUserPermissionsDto {
   id: string;
-  firstName?: string | null;
-  lastName?: string | null;
-  email: string;
-  phone: string;
+  name: string;
   permissions: string;
 }
 

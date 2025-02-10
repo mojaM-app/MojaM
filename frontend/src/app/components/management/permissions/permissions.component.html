@@ -5,9 +5,62 @@
     </header>
     <main>
       <div class="card-body p-0">
-        <div class="row m-0 p-0">
-          <div class="col-7"></div>
-          <div class="col-5"></div>
+        <div class="row m-0">
+          <div class="col col-6 col-lg-5 col-xl-4 border-end px-0">
+            <div class="list-with-title">
+              <div class="title">
+                <h6 class="ps-2">{{ 'Management/Permissions/Users' | gmessage }}</h6>
+                <mat-form-field class="w-100 d-none d-md-block">
+                  <input
+                    #filterInput
+                    matInput
+                    type="text"
+                    class="w-100"
+                    [placeholder]="'Management/Permissions/UsersFilterPlaceholder' | gmessage"
+                    inputChanged
+                    (inputChanged)="handleFilterChanged($event)" />
+                  <button
+                    mat-icon-button
+                    matSuffix
+                    [attr.aria-label]="'Management/Permissions/BtnClearLabel' | gmessage"
+                    [matTooltip]="'Management/Permissions/BtnClearLabel' | gmessage"
+                    (click)="filterInput.value = ''; handleFilterChanged('')">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+              <div class="list">
+                @if (filteredUsers()) {
+                  <mat-selection-list
+                    [multiple]="false"
+                    (selectionChange)="onUserSelected($event)"
+                    class="hide-list-item-end">
+                    @for (user of filteredUsers(); track user) {
+                      <mat-list-option [value]="user.id">{{ user.name }}</mat-list-option>
+                    }
+                  </mat-selection-list>
+                } @else {
+                  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="col col-6 col-lg-7 col-xl-8">
+            <div class="list-with-title">
+              <div class="title">
+                <h6 class="ps-2">{{ 'Management/Permissions/Permissions' | gmessage }}</h6>
+              </div>
+              <div class="list">
+                @if (selectedUser()) {
+                  <app-permissions-tree [user]="selectedUser()!"></app-permissions-tree>
+                } @else {
+                  <div class="alert alert-secondary" role="alert">
+                    {{ 'Management/Permissions/SelectUserHint' | gmessage }}
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </main>

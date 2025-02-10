@@ -39,6 +39,7 @@ body {
       list-item-label-text-size: calc(1rem * var(--font-size)),
       list-item-label-text-line-height: calc(1.5rem * var(--font-size)),
       active-indicator-shape: 0.5rem,
+      list-item-container-shape: 0.5rem,
     )
   );
   .material-icons {
@@ -404,4 +405,10 @@ body {
   text-align: justify;
   text-justify: inter-word;
   text-align-last: start;
+}
+
+.hide-list-item-end {
+  .mdc-list-item__end {
+    display: none;
+  }
 }

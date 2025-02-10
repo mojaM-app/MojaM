@@ -1,7 +1,22 @@
 .card-body {
   height: 100%;
 
-  .row {
+  & > .row {
     height: 100%;
+
+    & > .col {
+      height: 100%;
+
+      & > .list-with-title {
+        height: 100%;
+        display: grid;
+        grid-template-rows: auto 1fr;
+        padding-top: 0.25rem;
+
+        .list {
+          overflow: auto;
+        }
+      }
+    }
   }
 }

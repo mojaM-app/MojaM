@@ -23,10 +23,7 @@ export class PermissionsRepository extends BaseRepository {
     return user.map(u => {
       return {
         id: u.uuid,
-        firstName: u.firstName,
-        lastName: u.lastName,
-        email: u.email,
-        phone: u.phone,
+        name: u.getFullNameOrEmail(),
         permissions: (u.systemPermissions ?? []).map(sp => sp.systemPermission).join(','),
       } satisfies IUserPermissionsDto;
     });
