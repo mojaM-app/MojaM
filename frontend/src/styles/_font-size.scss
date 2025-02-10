@@ -6,30 +6,94 @@ $fontSizes: 80, 90, 100, 110, 120, 130, 140, 150;
   }
 }
 
-.display-4 {
-  font-size: calc(calc(1.475rem + 2.7vw) * var(--font-size));
-}
-.display-3 {
-  font-size: calc(calc(1.525rem + 3.3vw) * var(--font-size));
+.display-1 {
+  font-size: calc(calc(1.625rem + 4.5vw) * var(--font-size));
 }
 .display-2 {
   font-size: calc(calc(1.575rem + 3.9vw) * var(--font-size));
 }
-.display-1 {
-  font-size: calc(calc(1.625rem + 4.5vw) * var(--font-size));
+.display-3 {
+  font-size: calc(calc(1.525rem + 3.3vw) * var(--font-size));
+}
+.display-4 {
+  font-size: calc(calc(1.475rem + 2.7vw) * var(--font-size));
+}
+.display-5 {
+  font-size: calc(calc(1.425rem + 2.1vw) * var(--font-size));
+}
+.display-6 {
+  font-size: calc(calc(1.375rem + 1.5vw) * var(--font-size));
 }
 
 @media (min-width: 1200px) {
-  .display-4 {
-    font-size: calc(3.5rem * var(--font-size));
-  }
-  .display-3 {
-    font-size: calc(4rem * var(--font-size));
+  .display-1 {
+    font-size: calc(5rem * var(--font-size));
   }
   .display-2 {
     font-size: calc(4.5rem * var(--font-size));
   }
-  .display-1 {
-    font-size: calc(5rem * var(--font-size));
+  .display-3 {
+    font-size: calc(4rem * var(--font-size));
+  }
+  .display-4 {
+    font-size: calc(3.5rem * var(--font-size));
+  }
+  .display-5 {
+    font-size: calc(3rem * var(--font-size));
+  }
+  .display-6 {
+    font-size: calc(2.5rem * var(--font-size));
+  }
+}
+
+h1,
+.h1 {
+  font-size: calc(calc(1.375rem + 1.5vw) * var(--font-size));
+}
+
+h2,
+.h2 {
+  font-size: calc(calc(1.325rem + 0.9vw) * var(--font-size));
+}
+
+h3,
+.h3 {
+  font-size: calc(calc(1.3rem + 0.6vw) * var(--font-size));
+}
+
+h4,
+.h4 {
+  font-size: calc(calc(1.275rem + 0.3vw) * var(--font-size));
+}
+
+h5,
+.h5 {
+  font-size: calc(1.25rem * var(--font-size));
+}
+
+h6,
+.h6 {
+  font-size: calc(1rem * var(--font-size));
+}
+
+@media (min-width: 1200px) {
+  h1,
+  .h1 {
+    font-size: calc(2.5rem * var(--font-size));
+  }
+
+  h2,
+  .h2 {
+    font-size: calc(2rem * var(--font-size));
+  }
+
+  h3,
+  .h3 {
+    font-size: calc(1.75rem * var(--font-size));
+  }
+
+  h4,
+  .h4 {
+    font-size: calc(1.5rem * var(--font-size));
   }
 }
