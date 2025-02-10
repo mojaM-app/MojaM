@@ -160,6 +160,12 @@ body {
     }
   }
 
+  .mat-mdc-selection-list {
+    .mat-mdc-list-item[aria-selected='true'] {
+      background-color: #{mat.get-theme-color($light-theme, secondary-container)};
+    }
+  }
+
   //bootstrap overrides
   .alert-light {
     --bs-alert-color: #{mat.get-theme-color($light-theme, on-background)};
@@ -299,6 +305,12 @@ body {
 
     .mat-accent.mat-mdc-checkbox {
       --mat-checkbox-label-text-color: #{mat.get-theme-color($dark-theme, on-background)};
+    }
+
+    .mat-mdc-selection-list {
+      .mat-mdc-list-item[aria-selected='true'] {
+        background-color: #{mat.get-theme-color($dark-theme, secondary-container)};
+      }
     }
 
     //override calendar colors
