@@ -17,8 +17,7 @@
         [(selectedIndex)]="selectedTab"
         swipe
         (swipeNext)="selectNextTab()"
-        (swipePrev)="selectPrevTab()"
-        (selectedTabChange)="selectedTabChange()">
+        (swipePrev)="selectPrevTab()">
         @for (tab of model()!.tabs; track tab) {
           <mat-tab [label]="tab.title">
             <app-tab [content]="tab.content"></app-tab>

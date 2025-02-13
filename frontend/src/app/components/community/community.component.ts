@@ -50,16 +50,4 @@ export class CommunityComponent extends WithUnsubscribe() implements OnInit {
       this.selectedTab--;
     }
   }
-
-  public selectedTabChange(): void {
-    this.scrollTab();
-  }
-
-  private scrollTab(): void {
-    const ntvEl = this.tabGroup()?._elementRef?.nativeElement;
-
-    if (ntvEl) {
-      ntvEl.scrollIntoView();
-    }
-  }
 }
