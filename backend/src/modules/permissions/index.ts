@@ -15,6 +15,7 @@ export { UserPermissionsRepository } from './repositories/user-permissions.repos
 
 export { PermissionsRoute } from './routes/permissions.routes';
 
+export { PermissionsCacheService } from './services/permissions-cache.service';
 export { PermissionsService } from './services/permissions.service';
 
 export type { IPermissionId } from './interfaces/IPermissionId';

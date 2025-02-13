@@ -1,5 +1,5 @@
 import { BaseRepository } from '@modules/common';
-import { AddPermissionReqDto, DeletePermissionsReqDto, SystemPermission } from '@modules/permissions';
+import { AddPermissionReqDto, DeletePermissionsReqDto, PermissionsCacheService, SystemPermission } from '@modules/permissions';
 import { UserRepository } from '@modules/users';
 import { IAddUserSystemPermission } from '@modules/users/interfaces/add-user-system-permission.interfaces';
 import { getDateTimeNow, isArrayEmpty, isEnumValue, isNullOrUndefined, isPositiveNumber } from '@utils';
@@ -8,15 +8,22 @@ import Container, { Service } from 'typedi';
 @Service()
 export class UserPermissionsRepository extends BaseRepository {
   private readonly _userRepository: UserRepository;
+  private readonly _permissionsCacheService: PermissionsCacheService;
 
   public constructor() {
     super();
     this._userRepository = Container.get(UserRepository);
+    this._permissionsCacheService = Container.get(PermissionsCacheService);
   }
 
   public async get(userId: number): Promise<SystemPermission[]> {
     if (!isPositiveNumber(userId)) {
       return [];
+    }
+
+    let userPermissions = await this._permissionsCacheService.readAsync(userId);
+    if (!isNullOrUndefined(userPermissions)) {
+      return userPermissions!;
     }
 
     const permissions = await this._dbContext.userSystemPermissions
@@ -26,10 +33,14 @@ export class UserPermissionsRepository extends BaseRepository {
       .getMany();
 
     if (isArrayEmpty(permissions)) {
-      return [];
+      userPermissions = [];
+    } else {
+      userPermissions = permissions.map(m => (m as any)?.systemPermission);
     }
 
-    return permissions.map(m => (m as any)?.systemPermission);
+    await this._permissionsCacheService.saveAsync(userId, userPermissions);
+
+    return userPermissions;
   }
 
   public async add(reqDto: AddPermissionReqDto): Promise<boolean> {
@@ -56,6 +67,8 @@ export class UserPermissionsRepository extends BaseRepository {
       assignedBy: { id: reqDto.currentUserId! },
     } satisfies IAddUserSystemPermission);
 
+    await this._permissionsCacheService.removeAsync(userId!);
+
     return true;
   }
 
@@ -79,6 +92,9 @@ export class UserPermissionsRepository extends BaseRepository {
     }
 
     const deleteResult = await queryBuilder.delete().execute();
+
+    await this._permissionsCacheService.removeAsync(userId!);
+
     return !isNullOrUndefined(deleteResult);
   }
 }
