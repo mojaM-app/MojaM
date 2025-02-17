@@ -1,1 +1,41 @@
-<p>permissions-tree works!</p>
+@if (user()) {
+  <mat-tree #tree [dataSource]="permissions()" [childrenAccessor]="childrenAccessor">
+    <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
+      <div class="d-flex align-items-center mb-2-fs">
+        <mat-slide-toggle
+          class="me-2"
+          [checked]="user().permissions.includes(node.value)"
+          [disabled]="
+            !node.value || user().readonlyPermissions.includes(node.value)
+          "></mat-slide-toggle>
+        <div class="row">
+          <span [innerHtml]="node.title"></span>
+          <span class="mat-mdc-form-field-subscript-wrapper" [innerHtml]="node.description"></span>
+        </div>
+      </div>
+    </mat-tree-node>
+
+    <mat-tree-node
+      *matTreeNodeDef="let node; when: hasChild"
+      matTreeNodePadding
+      matTreeNodeToggle
+      [cdkTreeNodeTypeaheadLabel]="node.title"
+      isExpandable>
+      <div class="d-flex align-items-center mt-3-fs">
+        <button mat-icon-button class="me-2">
+          <mat-icon class="mat-icon-rtl-mirror">
+            {{ tree.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+          </mat-icon>
+        </button>
+
+        <div class="row">
+          <span role="button" [innerHtml]="node.title"></span>
+          <span
+            role="button"
+            class="mat-mdc-form-field-subscript-wrapper"
+            [innerHtml]="node.description"></span>
+        </div>
+      </div>
+    </mat-tree-node>
+  </mat-tree>
+}

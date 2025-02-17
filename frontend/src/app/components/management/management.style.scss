@@ -1,0 +1,15 @@
+app-permissions {
+  .mat-mdc-form-field-infix {
+    width: 100%;
+  }
+
+  .list-with-title {
+    .list.user-list {
+      .mdc-list-item__primary-text {
+        width: 100%;
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+}

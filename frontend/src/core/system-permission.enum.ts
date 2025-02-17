@@ -1,4 +1,8 @@
-enum SystemPermissionValue {
+/**
+ * Enum for system permission values.
+ * If you add a new permission, you should add it here and in the PermissionsTree class.
+ */
+export enum SystemPermissionValue {
   PreviewUserList = 100,
   PreviewUserDetails = 101,
   AddUser = 102,
@@ -18,4 +22,37 @@ enum SystemPermissionValue {
   PublishAnnouncements = 304,
 }
 
-export { SystemPermissionValue };
+/**
+ * The key is the permission group name and the value is the list of permissions.
+ * The key should be the same as the permission group name from translation file.
+ * If you add a new permission group or a new permission, you should update translations frontend\public\i18n\pl.json
+ */
+export class PermissionsTree {
+  public static getPermissionsTree(): Record<any, SystemPermissionValue[]> {
+    const tree: Record<any, SystemPermissionValue[]> = {
+      AnnouncementsAdministration: [
+        SystemPermissionValue.PreviewAnnouncementsList,
+        SystemPermissionValue.AddAnnouncements,
+        SystemPermissionValue.EditAnnouncements,
+        SystemPermissionValue.DeleteAnnouncements,
+        SystemPermissionValue.PublishAnnouncements,
+      ],
+      UsersAdministration: [
+        SystemPermissionValue.PreviewUserList,
+        SystemPermissionValue.PreviewUserDetails,
+        SystemPermissionValue.AddUser,
+        SystemPermissionValue.EditUser,
+        SystemPermissionValue.DeactivateUser,
+        SystemPermissionValue.ActivateUser,
+        SystemPermissionValue.DeleteUser,
+        SystemPermissionValue.UnlockUser,
+      ],
+      PermissionsAdministration: [
+        SystemPermissionValue.AddPermission,
+        SystemPermissionValue.DeletePermission,
+      ],
+    };
+
+    return tree;
+  }
+}

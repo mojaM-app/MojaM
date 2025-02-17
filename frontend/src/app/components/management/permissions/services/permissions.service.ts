@@ -28,26 +28,25 @@ export class PermissionsService extends BaseService {
         map((resp: IUserPermissions[]) => {
           if (resp?.length > 0) {
             resp.forEach(user => {
-              if (
-                !StringUtils.isString(user.permissions) ||
-                StringUtils.isEmpty(user.permissions)
-              ) {
-                user.permissions = [];
-                return;
-              }
-
-              const splittedPermissions = (user.permissions as unknown as string).split(',');
-              if (splittedPermissions.length > 0) {
-                user.permissions = splittedPermissions.map(
-                  permission => NumbersUtils.parse(permission) ?? 0
-                );
-              } else {
-                user.permissions = [];
-              }
+              user.permissions = this.parsePermissions(user.permissions);
+              user.readonlyPermissions = this.parsePermissions(user.readonlyPermissions);
             });
           }
           return resp;
         })
       );
+  }
+
+  private parsePermissions(value: unknown): number[] {
+    if (!StringUtils.isString(value) || StringUtils.isEmpty(value)) {
+      return [];
+    }
+
+    const splittedPermissions = (value as string).split(',');
+    if (splittedPermissions.length > 0) {
+      return splittedPermissions.map(permission => NumbersUtils.parse(permission) ?? 0);
+    } else {
+      return [];
+    }
   }
 }

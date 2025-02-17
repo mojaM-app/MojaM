@@ -6,6 +6,7 @@ export interface IUserPermissionsDto {
   id: string;
   name: string;
   permissions: string;
+  readonlyPermissions: string;
 }
 
 export class GetPermissionsReqDto extends BaseReqDto {}

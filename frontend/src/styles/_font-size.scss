@@ -101,3 +101,43 @@ h6,
     font-size: calc(1.5rem * var(--font-size));
   }
 }
+
+.mb-1-fs {
+  margin-bottom: calc(0.25rem * var(--font-size)) !important;
+}
+
+.mt-1-fs {
+  margin-top: calc(0.25rem * var(--font-size)) !important;
+}
+
+.mb-2-fs {
+  margin-bottom: calc(0.5rem * var(--font-size)) !important;
+}
+
+.mt-2-fs {
+  margin-top: calc(0.5rem * var(--font-size)) !important;
+}
+
+.mb-3-fs {
+  margin-bottom: calc(1rem * var(--font-size)) !important;
+}
+
+.mt-3-fs {
+  margin-top: calc(1rem * var(--font-size)) !important;
+}
+
+.mb-4-fs {
+  margin-bottom: calc(1.5rem * var(--font-size)) !important;
+}
+
+.mt-4-fs {
+  margin-top: calc(1.5rem * var(--font-size)) !important;
+}
+
+.mb-5-fs {
+  margin-bottom: calc(3rem * var(--font-size)) !important;
+}
+
+.mt-5-fs {
+  margin-top: calc(3rem * var(--font-size)) !important;
+}

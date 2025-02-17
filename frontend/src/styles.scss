@@ -104,6 +104,11 @@ body {
       supporting-text-size: calc(0.875rem * var(--font-size)),
     )
   );
+  @include mat.tree-overrides(
+    (
+      node-text-size: calc(1rem * var(--font-size)),
+    )
+  );
 
   //slider thumb labe
   .mdc-slider__value-indicator-text {
@@ -357,6 +362,7 @@ body {
 @import url('./app/components/announcements/announcements.style.scss');
 @import url('./app/components/static/wysiwyg-editor/wysiwyg-editor.style.scss');
 @import url('./app/components/static/grid/grid.style.scss');
+@import url('./app/components/management/management.style.scss');
 @import url('./styles/_font-size.scss');
 
 .swipe-animation-container {

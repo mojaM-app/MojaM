@@ -72,4 +72,8 @@ export class PermissionsComponent extends WithUnsubscribe() {
       this._users()!.filter(u => (u.name ?? '').toLowerCase().includes((value ?? '').toLowerCase()))
     );
   }
+
+  protected showUserPermissions(userId: string): void {
+    console.log(`User permissions for user with id: ${userId}`);
+  }
 }
