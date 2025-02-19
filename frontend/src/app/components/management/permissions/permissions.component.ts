@@ -66,7 +66,7 @@ export class PermissionsComponent extends WithUnsubscribe() {
     );
   }
 
-  public onUserSelected(value: MatSelectionListChange): void {
+  protected onUserSelected(value: MatSelectionListChange): void {
     const userid =
       typeof value.source._value === 'string'
         ? value.source._value
