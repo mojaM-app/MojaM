@@ -1,3 +1,4 @@
+import { SystemPermissionValue } from 'src/core/system-permission.enum';
 import { environment } from 'src/environments/environment';
 
 export class BaseService {
@@ -75,6 +76,8 @@ export class BaseService {
     permissions: {
       path: 'permissions',
       get: (): string => `${environment.backendUrl}/${this.API_ROUTES.permissions.path}`,
+      save: (uuid: string, permissionId: SystemPermissionValue): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.permissions.path}/${uuid}/${permissionId}`,
     },
   };
 

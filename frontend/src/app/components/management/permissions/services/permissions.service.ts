@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
+import { SystemPermissionValue } from 'src/core/system-permission.enum';
+import { PermissionService } from 'src/services/auth/permission.service';
 import { BaseService } from 'src/services/common/base.service';
 import { HttpClientService } from 'src/services/common/httpClient.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
@@ -13,7 +15,8 @@ import { IUserPermissions } from '../interfaces/user-permissions.interface';
 export class PermissionsService extends BaseService {
   public constructor(
     private _httpClient: HttpClientService,
-    private _spinnerService: SpinnerService
+    private _spinnerService: SpinnerService,
+    private _permissionService: PermissionService
   ) {
     super();
   }
@@ -47,6 +50,34 @@ export class PermissionsService extends BaseService {
       return splittedPermissions.map(permission => NumbersUtils.parse(permission) ?? 0);
     } else {
       return [];
+    }
+  }
+
+  public save(
+    userId: string,
+    permission: SystemPermissionValue,
+    checked: boolean
+  ): Observable<boolean> {
+    if (checked) {
+      if (this._permissionService.hasPermission(SystemPermissionValue.AddPermission)) {
+        return this._httpClient
+          .request()
+          .withUrl(this.API_ROUTES.permissions.save(userId, permission))
+          .post<boolean>()
+          .pipe(this._spinnerService.waitForSubscription());
+      } else {
+        throw Error('Errors/User_Not_Authorized');
+      }
+    } else {
+      if (this._permissionService.hasPermission(SystemPermissionValue.DeletePermission)) {
+        return this._httpClient
+          .request()
+          .withUrl(this.API_ROUTES.permissions.save(userId, permission))
+          .delete<boolean>()
+          .pipe(this._spinnerService.waitForSubscription());
+      } else {
+        throw Error('Errors/User_Not_Authorized');
+      }
     }
   }
 }

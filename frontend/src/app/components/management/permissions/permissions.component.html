@@ -68,7 +68,9 @@
               </div>
               <div class="list">
                 @if (selectedUser()) {
-                  <app-permissions-tree [user]="selectedUser()!"></app-permissions-tree>
+                  <app-permissions-tree
+                    [user]="selectedUser()!"
+                    (afterPermissionsSaved)="handlePermissionsSaved()"></app-permissions-tree>
                 } @else {
                   <div class="alert alert-secondary" role="alert">
                     {{ 'Management/Permissions/SelectUserHint' | gmessage }}

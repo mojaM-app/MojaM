@@ -181,7 +181,7 @@
     "Steps": {
       "Welcome": {
         "Title": "Witaj!",
-        "Description": "<b>Jeszcze kilka kliknięć i twoje konto będzie aktywne.</b><br><br>Specjalnie dla ciebie został przygotowany niniejszy kreator, który szybko i bez problemów przeprowadzi Cię przez proces aktywacji konta.",
+        "Description": "<b>Jeszcze kilka kliknięć i twoje konto będzie aktywne.</b><br><br>Specjalnie dla ciebie został przygotowany niniejszy kreator, który szybko i bez problemów przeprowadzi Cię przez proces aktywowania konta.",
         "BtnNext": "Rozpocznij"
       },
       "Identity": {
@@ -279,7 +279,9 @@
       "Permissions": "Uprawnienia",
       "BtnClearLabel": "Kliknij, aby wyczyścić",
       "UsersFilterPlaceholder": "Znajdź użytkownika",
-      "SelectUserHint": "Prosze wybrać użytkownika z listy po lewej, aby przypisać mu uprawnienia"
+      "SelectUserHint": "Prosze wybrać użytkownika z listy po lewej, aby przypisać mu uprawnienia",
+      "MsgPermissionSavedSuccessfully": "Uprawnienia dla użytkownika '{userName}' zostały zapisane.",
+      "MsgPermissionSaveFailed": "Nie udało się zapisać uprawnień dla użytkownika '{userName}'."
     }
   },
   "Error404": {
@@ -355,43 +357,81 @@
   },
   "Permissions": {
     "AnnouncementsAdministration": {
-      "Title": "Zestaw uprawnień do zarządzanie ogłoszeniami",
+      "Title": "Uprawnienia do zarządzanie ogłoszeniami",
       "Description": "Zestaw uprawnień do podglądu, dodawania, edycji, usuwania i publikowania ogłoszeń.",
       "Permissions": {
         "PreviewAnnouncementsList": {
-          "Title": "Podgląd listy ogłoszeń",
-          "Description": "Użytkownik mający to uprawnienie może wyświetlić listę wszystkich ogłoszeń oraz może podglądnąć każde z nich. Uzyska w ten sposób dostęp do szczegółów ogłoszenia: kto i kiedy utworzył ogłoszenia oraz kto je publikował. Jeżeli chcesz aby użytkownik miał możliwości dodawania, edycji, usuwania i publikowania ogłoszeń musi on mieć dostęp do podglądu listy ogłoszeń."
+          "Title": "Dostęp do listy i podgląd ogłoszeń",
+          "Description": "Uprawnienie pozwalające na wyświetlenie listy wszystkich ogłoszeń oraz pozwalające na podgląd każdego z nich. Użytkownik mający to uprawnienie uzyska dostęp do szczegółów ogłoszenia: kto i kiedy utworzył ogłoszenia oraz kto je opublikował. Jeżeli chcesz aby użytkownik miał możliwości dodawania, edycji, usuwania i publikowania ogłoszeń musi on mieć dostęp do podglądu listy ogłoszeń."
         },
         "AddAnnouncements": {
           "Title": "Dodawanie ogłoszeń",
-          "Description": "Uprawnienie do dodawania ogłoszeń pozwala użytkownikowi tylko i wyłącznie na dodanie nowych ogłoszeń. Użytkownik z tym uprawnieniem nie ma możliwości edycji, usuwania i publikowania ogłoszeń (nawet dodanych przez siebie)."
+          "Description": "Uprawnienie do dodawania ogłoszeń pozwala tylko i wyłącznie na dodanie nowych ogłoszeń."
         },
         "EditAnnouncements": {
           "Title": "Edycja ogłoszeń",
-          "Description": "Uprawnienie do edycji ogłoszeń pozwala użytkownikowi na edycję dowolnych ogłoszeń, nawet ogłoszeń dodanych przez innych użytkowników. Użytkownik z tym uprawnieniem nie ma możliwości dodawania, usuwania ani publikowania ogłoszeń."
+          "Description": "Uprawnienie do edycji ogłoszeń pozwala na edycję dowolnych ogłoszeń, nawet ogłoszeń dodanych przez innych użytkowników."
         },
         "DeleteAnnouncements": {
           "Title": "Usuwanie ogłoszeń",
-          "Description": "Uprawnienie do usuwania ogłoszeń pozwala użytkownikowi na usunięcie dowolnych ogłoszeń, nawet ogłoszeń dodanych przez innych użytkowników. Uprawnienie to pozwala również na usunięcie opublikowanych ogłoszeń. Użytkownik z tym uprawnieniem nie ma możliwości dodawania, edycji ani publikowania ogłoszeń."
+          "Description": "Uprawnienie do usuwania ogłoszeń pozwala na usunięcie dowolnych ogłoszeń, nawet ogłoszeń dodanych przez innych użytkowników. Uprawnienie to pozwala również na usunięcie opublikowanych ogłoszeń."
         },
         "PublishAnnouncements": {
           "Title": "Publikowanie ogłoszeń",
-          "Description": "Uprawnienie do publikowania ogłoszeń pozwala użytkownikowi na opublikowanie dowolnych ogłoszeń. Aby ogłoszenia mogły zostać opublikowane, konieczne jest ustawienie daty od której ogłoszenia będą obowiązywać. Użytkownik z tym uprawnieniem nie ma możliwości dodawania, edycji ani usuwania ogłoszeń. Tylko opublikowane ogłoszenia wyświetlane są wszystkim użytkownikom aplikacji."
+          "Description": "Uprawnienie do publikowania ogłoszeń pozwala na opublikowanie dowolnych ogłoszeń. Tylko opublikowane ogłoszenia wyświetlane są wszystkim użytkownikom aplikacji."
         }
       }
     },
     "UsersAdministration": {
-      "Title": "Zarządzanie użytkownikami",
-      "Description": "Uprawnienia do zarządzania użytkownikami w aplikacji.",
+      "Title": "Uprawnienia do zarządzania użytkownikami",
+      "Description": "Zestaw uprawnień do podglądu, dodawania, edycji, usuwania, odblokowywania, aktywowania i dezaktywowania użytkowników.",
       "Permissions": {
-        "PreviewUserList": "Podgląd listy użytkowników",
-        "PreviewUserDetails": "Podgląd szczegółów użytkownika",
-        "AddUser": "Dodawanie użytkownika",
-        "EditUser": "Edycja użytkownika",
-        "DeactivateUser": "Dezaktywacja użytkownika",
-        "ActivateUser": "Aktywacja użytkownika",
-        "DeleteUser": "Usuwanie użytkownika",
-        "UnlockUser": "Odblokowanie użytkownika"
+        "PreviewUserList": {
+          "Title": "Dostęp do listy użytkowników",
+          "Description": "Uprawnienie pozwalające na wyświetlenie listy wszystkich użytkowników. Użytkownik mający to uprawnienie uzyska dostęp do informacji takich jak: imię i nazwisko, e-mail, telefon, data dołączenia do wspólnoty, czy konto jest aktywne, czy zablokowane. Jeżeli chcesz aby użytkownik miał możliwości dodawania, edycji, usuwania, odblokowywania, aktywowania i dezaktywowania użytkowników musi on mieć dostęp do podglądu listy użytkowników."
+        },
+        "PreviewUserDetails": {
+          "Title": "Podgląd dodatkowych informacji użytkowników",
+          "Description": "Uprawnienie pozwalające na wyświetlenie dodatkowych informacji o użytkownikach, informacje te wyświetlane są na liście użytkowników w formie rozwijanego wiersza. Użytkownik mający to uprawnienie uzyska dostęp do informacji takich jak: imię i nazwisko, e-mail, telefon, data dołączenia do wspólnoty, czy konto jest aktywne, czy zablokowane."
+        },
+        "AddUser": {
+          "Title": "Dodawanie użytkowników",
+          "Description": "Uprawnienie do dodawania użytkowników pozwala tylko i wyłącznie na dodanie nowych użytkowników."
+        },
+        "EditUser": {
+          "Title": "Edycja użytkowników",
+          "Description": "Uprawnienie do edycji użytkowników pozwala na edycję dowolnych użytkowników, nawet użytkowników dodanych przez innych użytkowników. Użytkownik z tym uprawnieniem może zmienić imie, nazwisko, e-mail, telefon, data dołączenia do wspólnoty."
+        },
+        "DeleteUser": {
+          "Title": "Usuwanie użytkowników",
+          "Description": "Uprawnienie do usuwania użytkowników pozwala na usunięcie dowolnych użytkowników, nawet użytkowników dodanych przez innych użytkowników."
+        },
+        "DeactivateUser": {
+          "Title": "Dezaktywacja użytkowników",
+          "Description": "Uprawnienie do dezaktywowania użytkowników pozwala na dezaktywację dowolnych użytkowników. Dezaktywowane konto staje się nieaktywne co oznacza, że taki użytkownik nie może się zalogować. Użytkownik z tym uprawnieniem nie ma możliwości aktywowania użytkowników."
+        },
+        "ActivateUser": {
+          "Title": "Aktywacja użytkowników",
+          "Description": "Uprawnienie do aktywowania użytkowników pozwala na aktywację użytkowników, którzy są nieaktywni. Użytkownik z tym uprawnieniem nie ma możliwości dezaktywowania użytkowników."
+        },
+        "UnlockUser": {
+          "Title": "Odblokowywanie użytkowników",
+          "Description": "Uprawnienie do odblokowywania użytkowników pozwala na odblokowanie użytkowników, którzy się zablokowali. Zablokowany użytkownik to taki, który minimum trzy razy podał błędne hasło podczas próby zalogowania do aplikacji. Po trzech nieudanych próbach jego konto zostaje zablokowane."
+        }
+      }
+    },
+    "PermissionsAdministration": {
+      "Title": "Uprawnienia do nadawania uprawnień",
+      "Description": "Zestaw uprawnień pozwalający nadawać i odbierać uprawnienia innym użytkownikom.",
+      "Permissions": {
+        "AddPermission": {
+          "Title": "Nadawanie uprawnień",
+          "Description": "Uprawnienie do nadawania uprawnień daje dostęp do niniejszej listy uprawnień i pozwala na nadawanie dowolnych uprawnień innym użytkownikom. Użytkownik mający to uprawnienie może nadawać uprawnienia innym użytkownikom, ma również dostęp do lisy wszystkich użytkowników w formie \"imię nazwisko\" (lub email gdy imię i nazwisko nie jest podane)."
+        },
+        "DeletePermission": {
+          "Title": "Usuwanie uprawnień",
+          "Description": "Uprawnienie do usuwania uprawnień daje dostęp do niniejszej listy uprawnień i pozwala na odbieranie dowolnych uprawnień innym użytkownikom. Użytkownik mający to uprawnienie może odbierać uprawnienia innym użytkownikom, ma również dostęp do lisy wszystkich użytkowników w formie \"imię nazwisko\" (lub email gdy imię i nazwisko nie jest podane)."
+        }
       }
     }
   }

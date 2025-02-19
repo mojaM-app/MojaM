@@ -1,4 +1,4 @@
-enum SystemPermission {
+export enum SystemPermission {
   PreviewUserList = 100,
   PreviewUserDetails = 101,
   AddUser = 102,
@@ -17,5 +17,3 @@ enum SystemPermission {
   DeleteAnnouncements = 303,
   PublishAnnouncements = 304,
 }
-
-export { SystemPermission };

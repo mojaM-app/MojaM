@@ -1,7 +1,8 @@
 import { IGridPageResponseDto, IPageData, ISortData } from '@interfaces';
 import { BaseRepository } from '@modules/common';
+import { getAdminLoginData } from '@utils/tests.utils';
 import { Service } from 'typedi';
-import { FindOptionsWhere } from 'typeorm';
+import { FindOptionsWhere, Not } from 'typeorm';
 import { vUser } from '../entities/vUser.entity';
 
 @Service()
@@ -13,6 +14,7 @@ export class UserListRepository extends BaseRepository {
   public async get(paginator: IPageData, sort: ISortData): Promise<IGridPageResponseDto<vUser>> {
     const where: FindOptionsWhere<vUser> = {
       isDeleted: false,
+      id: Not(getAdminLoginData().uuid),
     };
 
     const result = await this._dbContext.vUsers.findAndCount({

@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { NewsMenu } from 'src/app/components/news/news.menu';
 import { GridModule } from 'src/app/components/static/grid/grid.module';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { AuthService } from 'src/services/auth/auth.service';
-import { BrowserWindowService } from 'src/services/browser/browser-window.service';
 import { ManagementMenuAddUser } from '../../management.menu';
 import { UserDetailsComponent } from './user-details/user-details.component';
 import { UserGridService } from './user-grid.service';
@@ -21,18 +21,18 @@ export class UserListComponent extends WithUnsubscribe() {
 
   public constructor(
     authService: AuthService,
-    private _browserWindowService: BrowserWindowService
+    private _router: Router
   ) {
     super();
 
     this.addSubscription(
       authService.onAuthStateChanged.subscribe(() => {
-        this.refreshPage();
+        this.navigateToHomePage();
       })
     );
   }
 
-  private refreshPage(): void {
-    this._browserWindowService.refreshWindow();
+  private navigateToHomePage(): void {
+    this._router.navigateByUrl(NewsMenu.Path);
   }
 }

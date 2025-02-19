@@ -5,9 +5,8 @@
         <mat-slide-toggle
           class="me-2"
           [checked]="user().permissions.includes(node.value)"
-          [disabled]="
-            !node.value || user().readonlyPermissions.includes(node.value)
-          "></mat-slide-toggle>
+          [disabled]="isToggleDisabled(node)"
+          (change)="handleChangePermission($event, node.value)"></mat-slide-toggle>
         <div class="row">
           <span [innerHtml]="node.title"></span>
           <span class="mat-mdc-form-field-subscript-wrapper" [innerHtml]="node.description"></span>

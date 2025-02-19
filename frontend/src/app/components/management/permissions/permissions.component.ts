@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -6,10 +6,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule, MatSelectionListChange } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router } from '@angular/router';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
+import { AuthService } from 'src/services/auth/auth.service';
 import { GuidUtils } from 'src/utils/guid.utils';
+import { NewsMenu } from '../../news/news.menu';
 import { CardHeaderComponent } from '../../static/card-header/card-header.component';
 import { IUserPermissions } from './interfaces/user-permissions.interface';
 import { PermissionsTreeComponent } from './permissions-tree/permissions-tree.component';
@@ -39,8 +42,19 @@ export class PermissionsComponent extends WithUnsubscribe() {
   public readonly filteredUsers = signal<IUserPermissions[] | undefined>(undefined);
   private readonly _users = signal<IUserPermissions[] | undefined>(undefined);
 
-  public constructor(private _permissionsService: PermissionsService) {
+  public constructor(
+    private _permissionsService: PermissionsService,
+    private _changeDetectorRef: ChangeDetectorRef,
+    authService: AuthService,
+    router: Router
+  ) {
     super();
+
+    this.addSubscription(
+      authService.onAuthStateChanged.subscribe(() => {
+        router.navigateByUrl(NewsMenu.Path);
+      })
+    );
   }
 
   public ngOnInit(): void {
@@ -75,5 +89,9 @@ export class PermissionsComponent extends WithUnsubscribe() {
 
   protected showUserPermissions(userId: string): void {
     console.log(`User permissions for user with id: ${userId}`);
+  }
+
+  protected handlePermissionsSaved(): void {
+    this._changeDetectorRef.detectChanges();
   }
 }
