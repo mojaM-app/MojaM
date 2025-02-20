@@ -367,7 +367,7 @@ export class AuthService extends BaseService {
   }
 
   private async createAccessTokenAsync(user: User): Promise<string> {
-    const userPermissions = await this._permissionRepository.get(user.id);
+    const userPermissions = await this._permissionRepository.get(user);
 
     const dataStoredInToken = {
       permissions: userPermissions,

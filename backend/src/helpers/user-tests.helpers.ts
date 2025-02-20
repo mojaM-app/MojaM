@@ -11,6 +11,7 @@ const generateValidUser = (): CreateUserDto & IUser => {
     phone: '88' + generateRandomNumber(7),
     getFullName: () => 'John Doe',
     getFullNameOrEmail: () => 'John Doe',
+    isAdmin: () => true,
   } satisfies CreateUserDto & IUser;
 };
 

@@ -8,7 +8,7 @@ import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { AnnouncementsRout, CreateAnnouncementsResponseDto, GetAnnouncementsResponseDto, UpdateAnnouncementsDto } from '@modules/announcements';
 import { generateValidAnnouncements } from '@modules/announcements/tests/announcements-tests.helpers';
 import { AuthRoute, LoginDto, UserTryingToLogInDto } from '@modules/auth';
-import { AddPermissionsResponseDto, PermissionsRoute, SystemPermission } from '@modules/permissions';
+import { AddPermissionsResponseDto, PermissionsRoute, SystemPermissions } from '@modules/permissions';
 import { CreateUserResponseDto, DeleteUserResponseDto, UserRoute } from '@modules/users';
 import { isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
@@ -95,7 +95,7 @@ describe('DELETE /user', () => {
       expect(user?.email).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.PreviewUserList.toString();
+      const path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.PreviewUserList.toString();
       const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(addPermissionResponse.statusCode).toBe(201);
       expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -149,7 +149,7 @@ describe('DELETE /user', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.AddPermission.toString();
+      let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.AddPermission.toString();
       let addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(addPermissionResponse.statusCode).toBe(201);
       expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -161,7 +161,7 @@ describe('DELETE /user', () => {
 
       const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
 
-      path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.PreviewUserList.toString();
+      path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.PreviewUserList.toString();
       addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(addPermissionResponse.statusCode).toBe(201);
       expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -359,11 +359,11 @@ describe('DELETE /user', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const systemPermissions = Object.values(SystemPermission);
+      const systemPermissions = Object.values(SystemPermissions);
       systemPermissions.forEach(async permission => {
         if (isNumber(permission)) {
           const value = permission as number;
-          if (value !== SystemPermission.DeleteUser) {
+          if (value !== SystemPermissions.DeleteUser) {
             const path = permissionsRoute.path + '/' + user.id + '/' + permission.toString();
             const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
@@ -460,7 +460,7 @@ describe('DELETE /user', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
 
-      let path = permissionsRoute.path + '/' + user1.id + '/' + SystemPermission.AddPermission.toString();
+      let path = permissionsRoute.path + '/' + user1.id + '/' + SystemPermissions.AddPermission.toString();
       const user1AddPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(user1AddPermissionResponse.statusCode).toBe(201);
       expect(user1AddPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -490,7 +490,7 @@ describe('DELETE /user', () => {
       const user1AccessToken = (await loginAs(app, { email: user1RequestData.email, password: user1RequestData.password } satisfies LoginDto))
         ?.accessToken;
 
-      path = permissionsRoute.path + '/' + user2.id + '/' + SystemPermission.PreviewUserList.toString();
+      path = permissionsRoute.path + '/' + user2.id + '/' + SystemPermissions.PreviewUserList.toString();
       const user2AddPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${user1AccessToken}`);
       expect(user2AddPermissionResponse.statusCode).toBe(201);
       expect(user2AddPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -571,7 +571,7 @@ describe('DELETE /user', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
 
-      let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.AddAnnouncements.toString();
+      let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.AddAnnouncements.toString();
       const addUserPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(addUserPermissionResponse.statusCode).toBe(201);
       expect(addUserPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -670,7 +670,7 @@ describe('DELETE /user', () => {
       const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
       expect(announcementsId).toBeDefined();
 
-      let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.PublishAnnouncements.toString();
+      let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.PublishAnnouncements.toString();
       const addUserPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(addUserPermissionResponse.statusCode).toBe(201);
       expect(addUserPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -773,7 +773,7 @@ describe('DELETE /user', () => {
       body = getAnnouncementsResponse.body;
       const { data: announcementsBeforeUpdate }: GetAnnouncementsResponseDto = body;
 
-      let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.EditAnnouncements.toString();
+      let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.EditAnnouncements.toString();
       const addUserPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(addUserPermissionResponse.statusCode).toBe(201);
       expect(addUserPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -893,7 +893,7 @@ describe('DELETE /user', () => {
       body = getAnnouncementsResponse.body;
       const { data: announcementsBeforeUpdate }: GetAnnouncementsResponseDto = body;
 
-      let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.EditAnnouncements.toString();
+      let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.EditAnnouncements.toString();
       const addUserPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(addUserPermissionResponse.statusCode).toBe(201);
       expect(addUserPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));

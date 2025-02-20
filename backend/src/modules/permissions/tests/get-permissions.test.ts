@@ -5,7 +5,7 @@ import { errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
-import { GetPermissionsResponseDto, PermissionsRoute, SystemPermission } from '@modules/permissions';
+import { GetPermissionsResponseDto, PermissionsRoute, SystemPermissions } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
 import { isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
@@ -150,11 +150,11 @@ describe('GET /permissions', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const systemPermissions = Object.values(SystemPermission);
+      const systemPermissions = Object.values(SystemPermissions);
       systemPermissions.forEach(async permission => {
         if (isNumber(permission)) {
           const value = permission as number;
-          if (value !== SystemPermission.AddPermission && value !== SystemPermission.DeletePermission) {
+          if (value !== SystemPermissions.AddPermission && value !== SystemPermissions.DeletePermission) {
             const path = permissionsRoute.path + '/' + user.id + '/' + permission.toString();
             const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
@@ -221,7 +221,7 @@ describe('GET /permissions', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.AddPermission.toString();
+      const path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.AddPermission.toString();
       const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(addPermissionResponse.statusCode).toBe(201);
 
@@ -287,7 +287,7 @@ describe('GET /permissions', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const path = permissionsRoute.path + '/' + user.id + '/' + SystemPermission.DeletePermission.toString();
+      const path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.DeletePermission.toString();
       const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(addPermissionResponse.statusCode).toBe(201);
 

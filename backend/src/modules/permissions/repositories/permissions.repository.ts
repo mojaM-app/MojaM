@@ -1,44 +1,39 @@
 import { BaseRepository } from '@modules/common';
-import { IUserPermissionsDto, SystemPermission } from '@modules/permissions';
-import { User } from '@modules/users/entities/user.entity';
-import { isArrayEmpty } from '@utils';
+import { IUserPermissionsDto, UserPermissionsRepository } from '@modules/permissions';
 import { getAdminLoginData } from '@utils/tests.utils';
-import { Service } from 'typedi';
+import Container, { Service } from 'typedi';
+import { Not } from 'typeorm';
 
 @Service()
 export class PermissionsRepository extends BaseRepository {
+  private readonly _userPermissionsRepository: UserPermissionsRepository;
   private readonly _adminUserUuid: string;
   public constructor() {
     super();
+    this._userPermissionsRepository = Container.get(UserPermissionsRepository);
     this._adminUserUuid = getAdminLoginData().uuid;
   }
 
   public async get(): Promise<IUserPermissionsDto[]> {
-    const user = await this._dbContext.users
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.systemPermissions', 'systemPermission')
-      .where('user.Uuid != :uuid', { uuid: this._adminUserUuid })
-      .getMany();
-
-    if (isArrayEmpty(user)) {
-      return [];
-    }
-
-    return user.map(u => {
-      return {
-        id: u.uuid,
-        name: u.getFullNameOrEmail(),
-        permissions: (u.systemPermissions ?? []).map(sp => sp.systemPermission).join(','),
-        readonlyPermissions: this.getReadonlyPermissions(u),
-      } satisfies IUserPermissionsDto;
+    const users = await this._dbContext.users.find({
+      where: {
+        uuid: Not(this._adminUserUuid),
+      },
     });
-  }
 
-  private getReadonlyPermissions(user: User): string | undefined {
-    if (user.uuid === this._adminUserUuid) {
-      return (Object.values(SystemPermission).filter(value => typeof value === 'number') as number[]).join(',');
-    }
+    const result = await Promise.all(
+      users.map(async user => {
+        const userPermissions = await this._userPermissionsRepository.get(user);
+        const readonlyPermissions = await this._userPermissionsRepository.getByAttributes(user);
+        return {
+          id: user.uuid,
+          name: user.getFullNameOrEmail(),
+          permissions: userPermissions.join(','),
+          readonlyPermissions: readonlyPermissions.join(','),
+        } satisfies IUserPermissionsDto;
+      }),
+    );
 
-    return undefined;
+    return result;
   }
 }

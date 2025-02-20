@@ -7,7 +7,7 @@ import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-han
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { EmailService } from '@modules/notifications';
-import { PermissionsRoute, SystemPermission } from '@modules/permissions';
+import { PermissionsRoute, SystemPermissions } from '@modules/permissions';
 import { CreateUserDto, CreateUserResponseDto, IUserDto, UserRoute } from '@modules/users';
 import { isGuid, isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
@@ -376,11 +376,11 @@ describe('POST /user', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const systemPermissions = Object.values(SystemPermission);
+      const systemPermissions = Object.values(SystemPermissions);
       systemPermissions.forEach(async permission => {
         if (isNumber(permission)) {
           const value = permission as number;
-          if (value !== SystemPermission.AddUser) {
+          if (value !== SystemPermissions.AddUser) {
             const path = permissionsRoute.path + '/' + user.id + '/' + permission.toString();
             const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);

@@ -2,8 +2,8 @@ import { App } from '@/app';
 import { DbConnection } from '@db';
 import { loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
-import { SystemPermission } from '@modules/permissions';
-import { UserRoute } from '@modules/users';
+import { SystemPermissions } from '@modules/permissions';
+import { IUser, UserRoute } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
 import { getAdminLoginData } from '@utils/tests.utils';
 import request from 'supertest';
@@ -23,9 +23,17 @@ describe('Cache user data tests', () => {
         _is_from_mock_: true,
         id: 1,
         uuid: adminUuid,
+        email: 'admin@domain.com',
+        phone: '123456789',
         isActive: true,
         getFullName: () => 'John Doe',
         getFullNameOrEmail: () => 'John Doe',
+        isAdmin: () => true,
+      } satisfies IUser & {
+        _is_from_mock_: boolean;
+        id: number;
+        uuid?: string;
+        isActive: boolean;
       } as unknown as Promise<User>);
     });
 
@@ -46,8 +54,19 @@ describe('Cache user data tests', () => {
               password:
                 '0054475aec0228265ef119a559090cf84fe6a986ce5fa6a621ea22d965087408aaab71efcb84eff4df5106bdd8304b0b8e446ff3ebdd555b588549e586df5c52',
               isActive: true,
+              email: 'admin@domain.com',
+              phone: '123456789',
               getFullName: () => 'John Doe',
               getFullNameOrEmail: () => 'John Doe',
+              isAdmin: () => true,
+            } satisfies IUser & {
+              _is_from_mock_: boolean;
+              id: number;
+              uuid: string;
+              salt: string;
+              refreshTokenKey: string;
+              password: string;
+              isActive: boolean;
             },
           ];
         },
@@ -61,11 +80,11 @@ describe('Cache user data tests', () => {
       userSystemPermissions: {
         createQueryBuilder: () => {
           return {
-            where: () => {
+            innerJoinAndSelect: () => {
               return {
-                select: () => {
+                where: () => {
                   return {
-                    getMany: () => [{ _is_from_mock_: true, userId: 1, systemPermission: SystemPermission.EditUser }],
+                    getMany: () => [{ _is_from_mock_: true, userId: 1, systemPermission: { id: SystemPermissions.EditUser } }],
                   };
                 },
               };

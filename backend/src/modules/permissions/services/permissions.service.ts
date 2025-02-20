@@ -9,7 +9,7 @@ import {
   PermissionDeletedEvent,
   PermissionsRepository,
   PermissionsRetrievedEvent,
-  SystemPermission,
+  SystemPermissions,
   UserPermissionsRepository,
 } from '@modules/permissions';
 import { isEnumValue, isGuid, isNullOrUndefined } from '@utils';
@@ -35,7 +35,7 @@ export class PermissionsService extends BaseService {
   }
 
   public async add(reqDto: AddPermissionReqDto): Promise<boolean> {
-    if (!isGuid(reqDto.userGuid) || !isEnumValue(SystemPermission, reqDto.permissionId)) {
+    if (!isGuid(reqDto.userGuid) || !isEnumValue(SystemPermissions, reqDto.permissionId)) {
       return false;
     }
 
@@ -52,7 +52,7 @@ export class PermissionsService extends BaseService {
   }
 
   public async delete(reqDto: DeletePermissionsReqDto): Promise<boolean> {
-    if (!isGuid(reqDto.userGuid) || (!isNullOrUndefined(reqDto.permissionId) && !isEnumValue(SystemPermission, reqDto.permissionId))) {
+    if (!isGuid(reqDto.userGuid) || (!isNullOrUndefined(reqDto.permissionId) && !isEnumValue(SystemPermissions, reqDto.permissionId))) {
       return false;
     }
 

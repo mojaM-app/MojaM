@@ -1,5 +1,5 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
-import { SystemPermission } from '../../modules/permissions/enums/system-permission.enum';
+import { SystemPermissions } from '../../modules/permissions/enums/system-permissions.enum';
 
 export class CreateTableAnnouncements1729890701959 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -30,27 +30,27 @@ export class CreateTableAnnouncements1729890701959 implements MigrationInterface
     );
     await queryRunner.query(
       'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
-        SystemPermission.PreviewAnnouncementsList +
+        SystemPermissions.PreviewAnnouncementsList +
         ", 'PreviewAnnouncementsList', 'Permission that allows preview announcements list', 30)",
     );
     await queryRunner.query(
       'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
-        SystemPermission.AddAnnouncements +
+        SystemPermissions.AddAnnouncements +
         ", 'AddAnnouncements', 'Permission that allows add announcements', 30)",
     );
     await queryRunner.query(
       'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
-        SystemPermission.EditAnnouncements +
+        SystemPermissions.EditAnnouncements +
         ", 'EditAnnouncements', 'Permission that allows edit announcements', 30)",
     );
     await queryRunner.query(
       'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
-        SystemPermission.DeleteAnnouncements +
+        SystemPermissions.DeleteAnnouncements +
         ", 'DeleteAnnouncements', 'Permission that allows delete announcements', 30)",
     );
     await queryRunner.query(
       'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
-        SystemPermission.PublishAnnouncements +
+        SystemPermissions.PublishAnnouncements +
         ", 'PublishAnnouncements', 'Permission that allows publish announcements', 30)",
     );
   }

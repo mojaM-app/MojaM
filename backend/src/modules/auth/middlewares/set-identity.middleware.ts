@@ -105,7 +105,7 @@ export const setIdentity = async (req: IRequestWithIdentity, res: Response, next
         next(new UnauthorizedException(errorKeys.login.Wrong_Authentication_Token));
       } else {
         const permissionRepository = Container.get(UserPermissionsRepository);
-        const permissions = await permissionRepository.get(user!.id);
+        const permissions = await permissionRepository.get(user);
         req.identity = new Identity(user, permissions);
         next();
       }

@@ -6,7 +6,7 @@ import { errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
-import { PermissionsRoute, SystemPermission } from '@modules/permissions';
+import { PermissionsRoute, SystemPermissions } from '@modules/permissions';
 import { CreateUserResponseDto, GetUserListResponseDto, UserListRetrievedEvent, UserListRoute, UserRoute } from '@modules/users';
 import { isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
@@ -182,11 +182,11 @@ describe('GET/user-list', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const systemPermissions = Object.values(SystemPermission);
+      const systemPermissions = Object.values(SystemPermissions);
       systemPermissions.forEach(async permission => {
         if (isNumber(permission)) {
           const value = permission as number;
-          if (value !== SystemPermission.PreviewUserList) {
+          if (value !== SystemPermissions.PreviewUserList) {
             const path = permissionsRoute.path + '/' + newUserDto.id + '/' + permission.toString();
             const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);

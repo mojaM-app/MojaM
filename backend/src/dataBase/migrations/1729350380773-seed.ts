@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
+import { SystemPermissions } from '../../modules/permissions/enums/system-permissions.enum';
 import { PasswordService } from './../../modules/auth/services/password.service';
-import { SystemPermission } from './../../modules/permissions/enums/system-permission.enum';
 import { getAdminLoginData } from './../../utils/tests.utils';
 
 export class Seed1729350380773 implements MigrationInterface {
@@ -10,42 +10,42 @@ export class Seed1729350380773 implements MigrationInterface {
     );
     await queryRunner.query(
       'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
-        SystemPermission.PreviewUserList +
+        SystemPermissions.PreviewUserList +
         ", 'PreviewUserList', 'Permission that allows preview User list', 10)",
     );
     await queryRunner.query(
       'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
-        SystemPermission.PreviewUserDetails +
+        SystemPermissions.PreviewUserDetails +
         ", 'PreviewUserDetails', 'Permission that allows preview details of any User from User list', 10)",
     );
     await queryRunner.query(
       'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
-        SystemPermission.AddUser +
+        SystemPermissions.AddUser +
         ", 'AddUser', 'Permission that allows add new User (without password) from User list', 10)",
     );
     await queryRunner.query(
       'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
-        SystemPermission.EditUser +
+        SystemPermissions.EditUser +
         ", 'EditUser', 'Permission that allows edit any User (without password) from User list', 10)",
     );
     await queryRunner.query(
       'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
-        SystemPermission.DeactivateUser +
+        SystemPermissions.DeactivateUser +
         ", 'DeactivateUser', 'Permission that allows deactivate User', 10)",
     );
     await queryRunner.query(
       'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
-        SystemPermission.ActivateUser +
+        SystemPermissions.ActivateUser +
         ", 'ActivateUser', 'Permission that allows activate User', 10)",
     );
     await queryRunner.query(
       'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
-        SystemPermission.DeleteUser +
+        SystemPermissions.DeleteUser +
         ", 'DeleteUser', 'Permission that allows delete User (user is not deleted, is anonymized)', 10)",
     );
     await queryRunner.query(
       'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
-        SystemPermission.UnlockUser +
+        SystemPermissions.UnlockUser +
         ", 'UnlockUser', 'Permission that allows unlock User (when user locks his profile by entering the wrong login or password several times)', 10)",
     );
     await queryRunner.query(
@@ -53,12 +53,12 @@ export class Seed1729350380773 implements MigrationInterface {
     );
     await queryRunner.query(
       'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
-        SystemPermission.AddPermission +
+        SystemPermissions.AddPermission +
         ", 'AddPermission', 'Permission that allows to add permissions to other users', 20)",
     );
     await queryRunner.query(
       'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
-        SystemPermission.DeletePermission +
+        SystemPermissions.DeletePermission +
         ", 'DeletePermission', 'Permission that allows to remove permissions from other users', 20)",
     );
 

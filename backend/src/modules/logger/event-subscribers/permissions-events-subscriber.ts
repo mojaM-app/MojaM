@@ -1,5 +1,5 @@
-import { PermissionsRetrievedEvent } from '@/modules/permissions';
 import { events } from '@events';
+import { PermissionsRetrievedEvent } from '@modules/permissions';
 import { EventSubscriber, On } from 'event-dispatch';
 import { PermissionAddedEvent } from '../../permissions/events/permission-added-event';
 import { PermissionDeletedEvent } from '../../permissions/events/permission-deleted-event';

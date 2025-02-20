@@ -17,6 +17,7 @@ import { IUpdateUser } from '../interfaces/update-user.interfaces';
 import { IHasGuidId } from './../../../interfaces/IHasGuidId';
 import { AnnouncementItem } from './../../../modules/announcements/entities/announcement-item.entity';
 import { Announcement } from './../../../modules/announcements/entities/announcement.entity';
+import { getAdminLoginData } from './../../../utils/tests.utils';
 import { UserResetPasswordToken } from './../../auth/entities/user-reset-password-tokens.entity';
 import { UserSystemPermission } from './user-system-permission.entity';
 
@@ -206,5 +207,9 @@ export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser, IUse
 
   public getFullNameOrEmail(): string {
     return this.getFullName() ?? this.email;
+  }
+
+  public isAdmin(): boolean {
+    return this.uuid === getAdminLoginData().uuid;
   }
 }

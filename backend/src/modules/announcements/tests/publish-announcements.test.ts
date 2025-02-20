@@ -13,7 +13,7 @@ import {
   PublishAnnouncementsResponseDto,
 } from '@modules/announcements';
 import { LoginDto } from '@modules/auth';
-import { PermissionsRoute, SystemPermission } from '@modules/permissions';
+import { PermissionsRoute, SystemPermissions } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
 import { isGuid, isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
@@ -415,11 +415,11 @@ describe('POST /announcements/publish', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const systemPermissions = Object.values(SystemPermission);
+      const systemPermissions = Object.values(SystemPermissions);
       systemPermissions.forEach(async permission => {
         if (isNumber(permission)) {
           const value = permission as number;
-          if (value !== SystemPermission.PublishAnnouncements) {
+          if (value !== SystemPermissions.PublishAnnouncements) {
             const path = permissionsRoute.path + '/' + user.id + '/' + permission.toString();
             const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);

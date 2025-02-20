@@ -6,7 +6,7 @@ import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
-import { PermissionsRoute, SystemPermission } from '@modules/permissions';
+import { PermissionsRoute, SystemPermissions } from '@modules/permissions';
 import { CreateUserResponseDto, GetUserDetailsResponseDto, UserDetailsRetrievedEvent, UserDetailsRoute, UserRoute } from '@modules/users';
 import { isGuid, isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
@@ -193,11 +193,11 @@ describe('GET/user/:id', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const systemPermissions = Object.values(SystemPermission);
+      const systemPermissions = Object.values(SystemPermissions);
       systemPermissions.forEach(async permission => {
         if (isNumber(permission)) {
           const value = permission as number;
-          if (value !== SystemPermission.PreviewUserDetails) {
+          if (value !== SystemPermissions.PreviewUserDetails) {
             const path = permissionsRoute.path + '/' + newUserDto.id + '/' + permission.toString();
             const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);

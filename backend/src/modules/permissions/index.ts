@@ -8,7 +8,7 @@ export { PermissionAddedEvent } from './events/permission-added-event';
 export { PermissionDeletedEvent } from './events/permission-deleted-event';
 export { PermissionsRetrievedEvent } from './events/permissions-retrieved-event';
 
-export { SystemPermission } from './enums/system-permission.enum';
+export { SystemPermissions } from './enums/system-permissions.enum';
 
 export { PermissionsRepository } from './repositories/permissions.repository';
 export { UserPermissionsRepository } from './repositories/user-permissions.repository';

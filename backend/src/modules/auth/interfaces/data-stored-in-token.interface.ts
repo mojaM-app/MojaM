@@ -1,7 +1,7 @@
-import { SystemPermission } from '@modules/permissions';
+import { SystemPermissions } from '@modules/permissions';
 
 export interface IDataStoredInToken {
-  permissions: SystemPermission[] | undefined;
+  permissions: SystemPermissions[] | undefined;
   userName: string | null;
   email: string;
   phone: string;

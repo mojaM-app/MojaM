@@ -1,6 +1,7 @@
 import { BaseRepository } from '@modules/common';
-import { AddPermissionReqDto, DeletePermissionsReqDto, PermissionsCacheService, SystemPermission } from '@modules/permissions';
+import { AddPermissionReqDto, DeletePermissionsReqDto, PermissionsCacheService, SystemPermissions } from '@modules/permissions';
 import { UserRepository } from '@modules/users';
+import { User } from '@modules/users/entities/user.entity';
 import { IAddUserSystemPermission } from '@modules/users/interfaces/add-user-system-permission.interfaces';
 import { getDateTimeNow, isArrayEmpty, isEnumValue, isNullOrUndefined, isPositiveNumber } from '@utils';
 import Container, { Service } from 'typedi';
@@ -16,37 +17,37 @@ export class UserPermissionsRepository extends BaseRepository {
     this._permissionsCacheService = Container.get(PermissionsCacheService);
   }
 
-  public async get(userId: number): Promise<SystemPermission[]> {
-    if (!isPositiveNumber(userId)) {
+  public async get(user: User | null | undefined): Promise<SystemPermissions[]> {
+    if (isNullOrUndefined(user)) {
       return [];
     }
 
-    let userPermissions = await this._permissionsCacheService.readAsync(userId);
-    if (!isNullOrUndefined(userPermissions)) {
-      return userPermissions!;
+    const permissionsByUserAttr = await this.getByAttributes(user);
+
+    const cachedPermissions = await this._permissionsCacheService.readAsync(user!.id);
+    if (!isNullOrUndefined(cachedPermissions)) {
+      return Array.from(new Set([...cachedPermissions!, ...permissionsByUserAttr]));
     }
 
-    const permissions = await this._dbContext.userSystemPermissions
+    const systemPermissions = await this._dbContext.userSystemPermissions
       .createQueryBuilder('u_to_p')
-      .where('u_to_p.UserId = :userId', { userId })
-      .select(['u_to_p.systemPermission'])
+      .innerJoinAndSelect('u_to_p.systemPermission', 'systemPermission')
+      .where('u_to_p.UserId = :userId', { userId: user!.id })
       .getMany();
 
-    if (isArrayEmpty(permissions)) {
-      userPermissions = [];
-    } else {
-      userPermissions = permissions.map(m => (m as any)?.systemPermission);
-    }
+    const permissions = isArrayEmpty(systemPermissions) ? [] : systemPermissions.map(m => m.systemPermission.id);
 
-    await this._permissionsCacheService.saveAsync(userId, userPermissions);
+    const result = Array.from(new Set([...permissions, ...permissionsByUserAttr]));
 
-    return userPermissions;
+    await this._permissionsCacheService.saveAsync(user!.id, result);
+
+    return result;
   }
 
   public async add(reqDto: AddPermissionReqDto): Promise<boolean> {
     const userId = await this._userRepository.getIdByUuid(reqDto.userGuid);
 
-    if (!isPositiveNumber(userId) || !isEnumValue(SystemPermission, reqDto.permissionId)) {
+    if (!isPositiveNumber(userId) || !isEnumValue(SystemPermissions, reqDto.permissionId)) {
       return false;
     }
 
@@ -75,13 +76,13 @@ export class UserPermissionsRepository extends BaseRepository {
   public async delete(reqDto: DeletePermissionsReqDto): Promise<boolean> {
     const userId = await this._userRepository.getIdByUuid(reqDto.userGuid);
 
-    if (!isPositiveNumber(userId) || (!isNullOrUndefined(reqDto.permissionId) && !isEnumValue(SystemPermission, reqDto.permissionId))) {
+    if (!isPositiveNumber(userId) || (!isNullOrUndefined(reqDto.permissionId) && !isEnumValue(SystemPermissions, reqDto.permissionId))) {
       return false;
     }
 
     const queryBuilder = this._dbContext.userSystemPermissions.createQueryBuilder().where('UserId = :userId', { userId });
 
-    if (isEnumValue(SystemPermission, reqDto.permissionId)) {
+    if (isEnumValue(SystemPermissions, reqDto.permissionId)) {
       queryBuilder.andWhere('PermissionId = :permissionId', { permissionId: reqDto.permissionId });
     }
 
@@ -96,5 +97,17 @@ export class UserPermissionsRepository extends BaseRepository {
     await this._permissionsCacheService.removeAsync(userId!);
 
     return !isNullOrUndefined(deleteResult);
+  }
+
+  public async getByAttributes(user: User | null | undefined): Promise<SystemPermissions[]> {
+    if (user?.isAdmin() === true) {
+      return this.getAllPermissions();
+    }
+
+    return [];
+  }
+
+  private getAllPermissions(): SystemPermissions[] {
+    return (Object.values(SystemPermissions).filter(value => typeof value === 'number') as number[]).map(m => m as SystemPermissions);
   }
 }

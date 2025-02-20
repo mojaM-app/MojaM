@@ -5,4 +5,5 @@ export interface IUser {
   lastName?: string | null;
   getFullName: () => string | null;
   getFullNameOrEmail: () => string | null;
+  isAdmin: () => boolean;
 }
