@@ -1,9 +1,7 @@
-import { Guid } from 'guid-typescript';
 import { MigrationInterface, QueryRunner } from 'typeorm';
-import { CryptoService } from './../../modules/auth/services/crypto.service';
 import { PasswordService } from './../../modules/auth/services/password.service';
 import { SystemPermission } from './../../modules/permissions/enums/system-permission.enum';
-import { generateRandomNumber, getAdminLoginData } from './../../utils/tests.utils';
+import { getAdminLoginData } from './../../utils/tests.utils';
 
 export class Seed1729350380773 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -64,12 +62,11 @@ export class Seed1729350380773 implements MigrationInterface {
         ", 'DeletePermission', 'Permission that allows to remove permissions from other users', 20)",
     );
 
-    const cryptoService = new CryptoService();
     const passwordService = new PasswordService();
     const adminLoginData = getAdminLoginData();
-    let salt = '22fae28a2abbb54a638cb5b7f1acb2e9';
-    let password = passwordService.hashPassword(salt, adminLoginData.password);
-    let refreshTokenKey = 'aedc7970d693ea6e4d71e39bffa7dc4034bae8e858b1ad2bb65a5ffd8356db41';
+    const salt = '22fae28a2abbb54a638cb5b7f1acb2e9';
+    const password = passwordService.hashPassword(salt, adminLoginData.password);
+    const refreshTokenKey = 'aedc7970d693ea6e4d71e39bffa7dc4034bae8e858b1ad2bb65a5ffd8356db41';
     await queryRunner.query(
       "INSERT INTO `users` (`Uuid`,`Email`,`Phone`,`Password`,`Salt`,`RefreshTokenKey`,`FirstName`,`LastName`,`IsActive`) VALUES ('" +
         adminLoginData.uuid +
@@ -91,36 +88,6 @@ export class Seed1729350380773 implements MigrationInterface {
         "'), (SELECT `Id` FROM `users` WHERE `Uuid` = '" +
         adminLoginData.uuid +
         "'), `Id` FROM `system_permissions` WHERE `ParentId` IS NOT NULL",
-    );
-
-    const uuid = Guid.create().toString();
-    const phone = generateRandomNumber(9);
-    salt = cryptoService.generateSalt();
-    password = passwordService.hashPassword(salt, 'p@ss');
-    refreshTokenKey = cryptoService.generateUserRefreshTokenKey();
-    await queryRunner.query(
-      "INSERT INTO `users` (`Uuid`,`Email`,`Phone`,`Password`,`Salt`,`RefreshTokenKey`,`FirstName`,`LastName`,`IsActive`) VALUES ('" +
-        uuid +
-        "', 'user1@email.com', '" +
-        phone +
-        "', '" +
-        password +
-        "', '" +
-        salt +
-        "', '" +
-        refreshTokenKey +
-        "', 'only for tests', 'only for tests', 1)",
-    );
-    await queryRunner.query(
-      "INSERT INTO `user_to_systempermissions` (`UserId`,`AssignedById`,`PermissionId`) SELECT (SELECT `Id` FROM `users` WHERE `Uuid` = '" +
-        uuid +
-        "'), (SELECT `Id` FROM `users` WHERE `Uuid` = '" +
-        adminLoginData.uuid +
-        "'), `Id` FROM `system_permissions` WHERE `Id` IN(" +
-        SystemPermission.PreviewUserList +
-        ',' +
-        SystemPermission.PreviewUserDetails +
-        ')',
     );
   }
 
