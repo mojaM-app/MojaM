@@ -8,8 +8,10 @@ users;
 
 DROP VIEW IF EXISTS
 vusers,
+vannouncements;
+
+DROP VIEW IF EXISTS
 vUsers,
-vannouncements,
 vAnnouncements;
 
 DROP TABLE IF EXISTS _prisma_migrations,

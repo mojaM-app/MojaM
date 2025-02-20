@@ -82,13 +82,6 @@ export class Seed1729350380773 implements MigrationInterface {
         refreshTokenKey +
         "', 'Admin', 'Admin', 1)",
     );
-    await queryRunner.query(
-      "INSERT INTO `user_to_systempermissions` (`UserId`,`AssignedById`,`PermissionId`) SELECT (SELECT `Id` FROM `users` WHERE `Uuid` = '" +
-        adminLoginData.uuid +
-        "'), (SELECT `Id` FROM `users` WHERE `Uuid` = '" +
-        adminLoginData.uuid +
-        "'), `Id` FROM `system_permissions` WHERE `ParentId` IS NOT NULL",
-    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {}
