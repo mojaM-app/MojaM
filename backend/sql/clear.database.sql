@@ -16,5 +16,3 @@ DROP TABLE IF EXISTS _prisma_migrations,
 typeorm_metadata,
 _typeorm_metadata,
 _migrations_history;
-
-DROP PROCEDURE IF EXISTS SP_update_admin_permissions;
