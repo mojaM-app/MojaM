@@ -129,10 +129,6 @@ export class UsersService extends BaseService {
       throw new BadRequestException(errorKeys.users.User_Does_Not_Exist, { id: reqDto.userGuid });
     }
 
-    if (user!.isDeleted) {
-      return true;
-    }
-
     const relatedData: string[] = await this._userRepository.checkIfCanBeDeleted(user!.id);
 
     if (relatedData.length > 0) {

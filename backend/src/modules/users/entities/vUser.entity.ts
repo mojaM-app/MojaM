@@ -28,7 +28,6 @@ export const UserListViewColumns: { [K in keyof IUserGridItemDto]: string } = {
       .addSelect('user.LastLoginAt', UserListViewColumns.lastLoginAt)
       .addSelect('user.IsActive', UserListViewColumns.isActive)
       .addSelect('user.IsLockedOut', UserListViewColumns.isLockedOut)
-      .addSelect('user.IsDeleted', 'IsDeleted')
       .addSelect('(select count(0) from user_to_systempermissions as perm where user.Id = perm.UserId)', UserListViewColumns.permissionCount)
       .from(User, 'user'),
   name: 'vUsers',
@@ -61,9 +60,6 @@ export class vUser implements IUserGridItemDto {
 
   @ViewColumn()
   public isLockedOut: boolean;
-
-  @ViewColumn()
-  public isDeleted: boolean;
 
   @ViewColumn()
   public permissionCount: number;

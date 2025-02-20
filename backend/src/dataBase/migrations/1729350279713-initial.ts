@@ -9,7 +9,7 @@ export class Initial1729350279713 implements MigrationInterface {
       'CREATE TABLE `user_to_systempermissions` (`UserId` int NOT NULL, `PermissionId` int NOT NULL, `AssignedById` int NOT NULL, `AssignedAt` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`UserId`, `PermissionId`)) ENGINE=InnoDB',
     );
     await queryRunner.query(
-      "CREATE TABLE `users` (`Id` int NOT NULL AUTO_INCREMENT, `Uuid` varchar(36) NOT NULL, `Email` varchar(320) NOT NULL, `EmailConfirmed` tinyint NOT NULL DEFAULT 0, `Phone` varchar(30) NOT NULL, `PhoneConfirmed` tinyint NOT NULL DEFAULT 0, `Password` varchar(1024) NULL, `Salt` varchar(64) NOT NULL, `RefreshTokenKey` varchar(128) NOT NULL, `FirstName` varchar(255) NULL, `LastName` varchar(255) NULL, `JoiningDate` date NULL, `IsActive` tinyint NOT NULL DEFAULT 0, `CreatedAt` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP, `UpdatedAt` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `LastLoginAt` timestamp NULL, `FailedLoginAttempts` int NOT NULL DEFAULT '0', `IsLockedOut` tinyint NOT NULL DEFAULT 0, `IsDeleted` tinyint NOT NULL DEFAULT 0, UNIQUE INDEX `UQ_User_Uuid` (`Uuid`), UNIQUE INDEX `UQ_User_Email_Phone` (`Email`, `Phone`), PRIMARY KEY (`Id`)) ENGINE=InnoDB",
+      "CREATE TABLE `users` (`Id` int NOT NULL AUTO_INCREMENT, `Uuid` varchar(36) NOT NULL, `Email` varchar(320) NOT NULL, `EmailConfirmed` tinyint NOT NULL DEFAULT 0, `Phone` varchar(30) NOT NULL, `PhoneConfirmed` tinyint NOT NULL DEFAULT 0, `Password` varchar(1024) NULL, `Salt` varchar(64) NOT NULL, `RefreshTokenKey` varchar(128) NOT NULL, `FirstName` varchar(255) NULL, `LastName` varchar(255) NULL, `JoiningDate` date NULL, `IsActive` tinyint NOT NULL DEFAULT 0, `CreatedAt` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP, `UpdatedAt` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `LastLoginAt` timestamp NULL, `FailedLoginAttempts` int NOT NULL DEFAULT '0', `IsLockedOut` tinyint NOT NULL DEFAULT 0, UNIQUE INDEX `UQ_User_Uuid` (`Uuid`), UNIQUE INDEX `UQ_User_Email_Phone` (`Email`, `Phone`), PRIMARY KEY (`Id`)) ENGINE=InnoDB",
     );
     await queryRunner.query(
       'CREATE TABLE `user_reset_password_tokens` (`UserId` int NOT NULL, `Token` varchar(64) NOT NULL, `CreatedAt` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`UserId`)) ENGINE=InnoDB',
@@ -30,14 +30,14 @@ export class Initial1729350279713 implements MigrationInterface {
       'ALTER TABLE `user_reset_password_tokens` ADD CONSTRAINT `FK_UserResetPasswordToken_UserId_To_User` FOREIGN KEY (`UserId`) REFERENCES `users`(`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT',
     );
     await queryRunner.query(
-      'CREATE VIEW `vUsers` AS SELECT `user`.`Uuid` AS `Id`, `user`.`FirstName` AS `FirstName`, `user`.`LastName` AS `LastName`, `user`.`Email` AS `Email`, `user`.`Phone` AS `Phone`, `user`.`JoiningDate` AS `JoiningDate`, `user`.`LastLoginAt` AS `LastLoginAt`, `user`.`IsActive` AS `IsActive`, `user`.`IsLockedOut` AS `IsLockedOut`, `user`.`IsDeleted` AS `IsDeleted`, (select count(0) from user_to_systempermissions as perm where `user`.`Id` = perm.UserId) AS `PermissionCount` FROM `users` `user`',
+      'CREATE VIEW `vUsers` AS SELECT `user`.`Uuid` AS `Id`, `user`.`FirstName` AS `FirstName`, `user`.`LastName` AS `LastName`, `user`.`Email` AS `Email`, `user`.`Phone` AS `Phone`, `user`.`JoiningDate` AS `JoiningDate`, `user`.`LastLoginAt` AS `LastLoginAt`, `user`.`IsActive` AS `IsActive`, `user`.`IsLockedOut` AS `IsLockedOut`, (select count(0) from user_to_systempermissions as perm where `user`.`Id` = perm.UserId) AS `PermissionCount` FROM `users` `user`',
     );
     await queryRunner.query(
       'INSERT INTO `_typeorm_metadata`(`database`, `schema`, `table`, `type`, `name`, `value`) VALUES (DEFAULT, DEFAULT, DEFAULT, ?, ?, ?)',
       [
         'VIEW',
         'vUsers',
-        'SELECT `user`.`Uuid` AS `Id`, `user`.`FirstName` AS `FirstName`, `user`.`LastName` AS `LastName`, `user`.`Email` AS `Email`, `user`.`Phone` AS `Phone`, `user`.`JoiningDate` AS `JoiningDate`, `user`.`LastLoginAt` AS `LastLoginAt`, `user`.`IsActive` AS `IsActive`, `user`.`IsLockedOut` AS `IsLockedOut`, `user`.`IsDeleted` AS `IsDeleted`, (select count(0) from user_to_systempermissions as perm where `user`.`Id` = perm.UserId) AS `PermissionCount` FROM `users` `user`',
+        'SELECT `user`.`Uuid` AS `Id`, `user`.`FirstName` AS `FirstName`, `user`.`LastName` AS `LastName`, `user`.`Email` AS `Email`, `user`.`Phone` AS `Phone`, `user`.`JoiningDate` AS `JoiningDate`, `user`.`LastLoginAt` AS `LastLoginAt`, `user`.`IsActive` AS `IsActive`, `user`.`IsLockedOut` AS `IsLockedOut`, (select count(0) from user_to_systempermissions as perm where `user`.`Id` = perm.UserId) AS `PermissionCount` FROM `users` `user`',
       ],
     );
   }

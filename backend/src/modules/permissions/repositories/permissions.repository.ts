@@ -17,8 +17,7 @@ export class PermissionsRepository extends BaseRepository {
     const user = await this._dbContext.users
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.systemPermissions', 'systemPermission')
-      .where('user.IsDeleted = :isDeleted', { isDeleted: false })
-      .andWhere('user.Uuid != :uuid', { uuid: this._adminUserUuid })
+      .where('user.Uuid != :uuid', { uuid: this._adminUserUuid })
       .getMany();
 
     if (isArrayEmpty(user)) {

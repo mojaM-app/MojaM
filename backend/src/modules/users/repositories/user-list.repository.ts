@@ -13,7 +13,6 @@ export class UserListRepository extends BaseRepository {
 
   public async get(paginator: IPageData, sort: ISortData): Promise<IGridPageResponseDto<vUser>> {
     const where: FindOptionsWhere<vUser> = {
-      isDeleted: false,
       id: Not(getAdminLoginData().uuid),
     };
 

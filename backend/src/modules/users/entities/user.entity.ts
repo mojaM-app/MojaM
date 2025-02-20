@@ -171,14 +171,6 @@ export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser, IUse
   })
   public isLockedOut: boolean;
 
-  @Column({
-    name: 'IsDeleted',
-    type: 'boolean',
-    nullable: false,
-    default: false,
-  })
-  public isDeleted: boolean;
-
   @OneToMany(() => UserSystemPermission, (permissions: UserSystemPermission) => permissions.user)
   public systemPermissions: Relation<UserSystemPermission[]>;
 
