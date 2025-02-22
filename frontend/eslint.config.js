@@ -100,6 +100,7 @@ module.exports = tseslint.config(
       'no-debugger': 'warn',
       'prefer-spread': 'off',
       '@angular-eslint/no-output-native': 'error',
+      '@angular-eslint/prefer-standalone': 'off',
     },
   },
   {

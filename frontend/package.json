@@ -35,7 +35,7 @@
     "ngx-resize-observer": "^3.0.0",
     "quill-magic-url": "^4.2.0",
     "quill-mention": "^6.0.2",
-    "rxjs": "~7.8.1",
+    "rxjs": "~7.8.2",
     "tslib": "^2.7.0",
     "zone.js": "~0.15.0"
   },
@@ -46,8 +46,8 @@
     "@types/globalize": "^1.5.5",
     "@types/jasmine": "~5.1.5",
     "@types/node": "^22.5.1",
-    "angular-eslint": "19.0.2",
-    "eslint": "^9.9.1",
+    "angular-eslint": "19.1.0",
+    "eslint": "^9.21.0",
     "jasmine-core": "~5.2.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
@@ -55,9 +55,9 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "npm-check-updated": "^6.0.4",
-    "prettier": "^3.3.3",
+    "prettier": "^3.5.2",
     "prettier-plugin-tailwindcss": "^0.6.6",
     "typescript": "~5.7.3",
-    "typescript-eslint": "8.3.0"
+    "typescript-eslint": "8.24.1"
   }
 }
