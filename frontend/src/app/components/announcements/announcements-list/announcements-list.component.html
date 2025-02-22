@@ -3,10 +3,12 @@
     <header class="mat-toolbar">
       <app-card-header [title]="'Announcements/List/Title'">
         <ng-container slot="buttons">
-          <button mat-flat-button type="button" [routerLink]="'/' + AddAnnouncementsMenu.Path">
-            <mat-icon>add</mat-icon>
-            <span class="d-none d-sm-block">{{ 'Shared/BtnAdd' | gmessage }}</span>
-          </button>
+          @if (showAddButton()) {
+            <button mat-flat-button type="button" [routerLink]="'/' + AddAnnouncementsMenu.Path">
+              <mat-icon>add</mat-icon>
+              <span class="d-none d-sm-block">{{ 'Shared/BtnAdd' | gmessage }}</span>
+            </button>
+          }
         </ng-container>
       </app-card-header>
     </header>
