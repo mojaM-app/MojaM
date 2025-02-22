@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Component, inject, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, model } from '@angular/core';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,6 +11,7 @@ import { IMenuItem } from 'src/interfaces/menu/menu-item';
   imports: [MatListModule, MatButtonModule, MatIconModule],
   templateUrl: './bottom-sheet.component.html',
   styleUrl: './bottom-sheet.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BottomSheetComponent {
   private readonly _bottomSheetRef =

@@ -1,4 +1,4 @@
-import { Component, effect, input, model, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, input, model, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -12,6 +12,7 @@ import { IUserDetails } from '../interfaces/user-details.interfaces';
   imports: [PipesModule, MatInputModule, MatFormFieldModule, FormsModule],
   templateUrl: './user-details.component.html',
   styleUrl: './user-details.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserDetailsComponent extends WithUnsubscribe() {
   public userId = input.required<string | null>();

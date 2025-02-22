@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { CalendarEvent, CalendarEventTitleFormatter } from 'angular-calendar';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class CustomEventTitleFormatter extends CalendarEventTitleFormatter {
   public override monthTooltip(event: CalendarEvent, title: string): string {
     return '';

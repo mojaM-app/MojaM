@@ -6,7 +6,9 @@ import { distinctUntilChanged } from 'rxjs';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { CultureService } from 'src/services/translate/culture.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class CustomDateFormatter
   extends WithUnsubscribe(CalendarDateFormatter)
   implements OnDestroy

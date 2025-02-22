@@ -7,9 +7,9 @@ export class StringUtils {
     return StringUtils.isString(value) && (value as string).trim().length === 0;
   }
 
-  public static ciEquals(a: unknown, b: unknown) : boolean {
+  public static ciEquals(a: unknown, b: unknown): boolean {
     return typeof a === 'string' && typeof b === 'string'
-        ? a.localeCompare(b, undefined, { sensitivity: 'accent' }) === 0
-        : a === b;
-}
+      ? a.localeCompare(b, undefined, { sensitivity: 'accent' }) === 0
+      : a === b;
+  }
 }

@@ -2,7 +2,9 @@ import { ErrorHandler, Injectable } from '@angular/core';
 import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { StringUtils } from 'src/utils/string.utils';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class GlobalErrorHandler implements ErrorHandler {
   public constructor(private _snackBarService: SnackBarService) {}
 

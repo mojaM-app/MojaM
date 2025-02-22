@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import {
   MAT_BOTTOM_SHEET_DATA,
   MatBottomSheetModule,
@@ -23,6 +23,7 @@ import { PermissionsTreeComponent } from '../permissions-tree/permissions-tree.c
   ],
   templateUrl: './bottom-sheet-permissions.component.html',
   styleUrl: './bottom-sheet-permissions.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BottomSheetPermissionsComponent {
   protected readonly data = inject<{ user: IUserPermissions }>(MAT_BOTTOM_SHEET_DATA);
