@@ -1,5 +1,7 @@
 <quill-editor
-  [(ngModel)]="content"
+  [(ngModel)]="model"
   format="html"
-  [placeholder]="'WysiwygEditor/Placeholder' | gmessage">
+  [placeholder]="'WysiwygEditor/Placeholder' | gmessage"
+  [preserveWhitespace]="true"
+  (onContentChanged)="handleContentChange($event)">
 </quill-editor>

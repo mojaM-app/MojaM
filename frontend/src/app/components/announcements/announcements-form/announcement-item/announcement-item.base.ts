@@ -75,8 +75,6 @@ export abstract class AnnouncementItemBase {
   }
 
   protected setNewContent(content: string): void {
-    content = (content ?? '').replace(/(<p><\/p>\s*)+$/, '');
-
     const formGroup = this.itemFormGroup() as FormGroup<IAnnouncementsItemForm>;
     formGroup.patchValue({
       content: content,
