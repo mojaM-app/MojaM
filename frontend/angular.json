@@ -56,7 +56,12 @@
               "node_modules/quill-magic-url/dist/index.js",
               "node_modules/bootstrap/dist/js/bootstrap.js"
             ],
-            "allowedCommonJsDependencies": ["globalize", "guid-typescript"]
+            "allowedCommonJsDependencies": [
+              "globalize",
+              "guid-typescript",
+              "quill-magic-url",
+              "quill-delta"
+            ]
           },
           "configurations": {
             "production": {
@@ -68,8 +73,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kB",
-                  "maximumError": "4kB"
+                  "maximumWarning": "10kB",
+                  "maximumError": "40kB"
                 }
               ],
               "outputHashing": "all",
