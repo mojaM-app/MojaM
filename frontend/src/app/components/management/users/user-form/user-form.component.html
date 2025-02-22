@@ -13,108 +13,110 @@
       <main>
         <div class="card-body">
           <form [formGroup]="formGroup" (ngSubmit)="save()">
-            <div class="row">
-              <div class="col-12">
-                <div
-                  class="alert alert-light"
-                  role="alert"
-                  [innerHTML]="'Management/UserForm/RequiredFieldsHint' | gmessage"></div>
-              </div>
-              <div class="col-12 col-sm-6 mb-3">
-                <mat-form-field class="w-100">
-                  <mat-icon matPrefix>alternate_email</mat-icon>
-                  <mat-label>{{ 'Management/UserForm/Email' | gmessage }}</mat-label>
-                  <input
-                    matInput
-                    required
-                    type="email"
-                    [placeholder]="'Management/UserForm/EmailPlaceholder' | gmessage"
-                    [formControlName]="formControlNames.email" />
-                  @if (control(formControlNames.email).errors) {
-                    <mat-error>{{
-                      'Management/UserForm/EmailHint'
-                        | gmessage: { maxLength: maxLengths.EMAIL_MAX_LENGTH }
-                    }}</mat-error>
-                  }
-                </mat-form-field>
-              </div>
-              <div class="col-12 col-sm-6 mb-3">
-                <mat-form-field class="w-100">
-                  <mat-icon matPrefix>phone</mat-icon>
-                  <mat-label>{{ 'Management/UserForm/Phone' | gmessage }}</mat-label>
-                  <input
-                    matInput
-                    required
-                    type="tel"
-                    [placeholder]="'Management/UserForm/PhonePlaceholder' | gmessage"
-                    [formControlName]="formControlNames.phone" />
-                  @if (control(formControlNames.phone).errors) {
-                    <mat-error>{{
-                      'Management/UserForm/PhoneHint'
-                        | gmessage: { maxLength: maxLengths.PHONE_MAX_LENGTH }
-                    }}</mat-error>
-                  }
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-12 mt-4">
-                <div class="alert alert-light" role="alert">
-                  {{ 'Management/UserForm/OptionalFieldsHint' | gmessage }}
+            <div class="container p-0">
+              <div class="row">
+                <div class="col-12">
+                  <div
+                    class="alert alert-light"
+                    role="alert"
+                    [innerHTML]="'Management/UserForm/RequiredFieldsHint' | gmessage"></div>
+                </div>
+                <div class="col-12 col-sm-6 mb-3">
+                  <mat-form-field class="w-100">
+                    <mat-icon matPrefix>alternate_email</mat-icon>
+                    <mat-label>{{ 'Management/UserForm/Email' | gmessage }}</mat-label>
+                    <input
+                      matInput
+                      required
+                      type="email"
+                      [placeholder]="'Management/UserForm/EmailPlaceholder' | gmessage"
+                      [formControlName]="formControlNames.email" />
+                    @if (control(formControlNames.email).errors) {
+                      <mat-error>{{
+                        'Management/UserForm/EmailHint'
+                          | gmessage: { maxLength: maxLengths.EMAIL_MAX_LENGTH }
+                      }}</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+                <div class="col-12 col-sm-6 mb-3">
+                  <mat-form-field class="w-100">
+                    <mat-icon matPrefix>phone</mat-icon>
+                    <mat-label>{{ 'Management/UserForm/Phone' | gmessage }}</mat-label>
+                    <input
+                      matInput
+                      required
+                      type="tel"
+                      [placeholder]="'Management/UserForm/PhonePlaceholder' | gmessage"
+                      [formControlName]="formControlNames.phone" />
+                    @if (control(formControlNames.phone).errors) {
+                      <mat-error>{{
+                        'Management/UserForm/PhoneHint'
+                          | gmessage: { maxLength: maxLengths.PHONE_MAX_LENGTH }
+                      }}</mat-error>
+                    }
+                  </mat-form-field>
                 </div>
               </div>
-              <div class="col-12 col-sm-6 mb-3">
-                <mat-form-field class="w-100">
-                  <mat-label>{{ 'Management/UserForm/FirstName' | gmessage }}</mat-label>
-                  <input
-                    matInput
-                    [placeholder]="'Management/UserForm/FirstNamePlaceholder' | gmessage"
-                    [formControlName]="formControlNames.firstName" />
-                  @if (control(formControlNames.firstName).errors) {
-                    <mat-error>{{
-                      'Management/UserForm/FirstNameHint'
-                        | gmessage: { maxLength: maxLengths.NAME_MAX_LENGTH }
-                    }}</mat-error>
-                  }
-                </mat-form-field>
+              <div class="row">
+                <div class="col-12 mt-4">
+                  <div class="alert alert-light" role="alert">
+                    {{ 'Management/UserForm/OptionalFieldsHint' | gmessage }}
+                  </div>
+                </div>
+                <div class="col-12 col-sm-6 mb-3">
+                  <mat-form-field class="w-100">
+                    <mat-label>{{ 'Management/UserForm/FirstName' | gmessage }}</mat-label>
+                    <input
+                      matInput
+                      [placeholder]="'Management/UserForm/FirstNamePlaceholder' | gmessage"
+                      [formControlName]="formControlNames.firstName" />
+                    @if (control(formControlNames.firstName).errors) {
+                      <mat-error>{{
+                        'Management/UserForm/FirstNameHint'
+                          | gmessage: { maxLength: maxLengths.NAME_MAX_LENGTH }
+                      }}</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+                <div class="col-12 col-sm-6 mb-3">
+                  <mat-form-field class="w-100">
+                    <mat-label>{{ 'Management/UserForm/LastName' | gmessage }}</mat-label>
+                    <input
+                      matInput
+                      [placeholder]="'Management/UserForm/LastNamePlaceholder' | gmessage"
+                      [formControlName]="formControlNames.lastName" />
+                    @if (control(formControlNames.lastName).errors) {
+                      <mat-error>{{
+                        'Management/UserForm/LastNameHint'
+                          | gmessage: { maxLength: maxLengths.NAME_MAX_LENGTH }
+                      }}</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
               </div>
-              <div class="col-12 col-sm-6 mb-3">
-                <mat-form-field class="w-100">
-                  <mat-label>{{ 'Management/UserForm/LastName' | gmessage }}</mat-label>
-                  <input
-                    matInput
-                    [placeholder]="'Management/UserForm/LastNamePlaceholder' | gmessage"
-                    [formControlName]="formControlNames.lastName" />
-                  @if (control(formControlNames.lastName).errors) {
-                    <mat-error>{{
-                      'Management/UserForm/LastNameHint'
-                        | gmessage: { maxLength: maxLengths.NAME_MAX_LENGTH }
-                    }}</mat-error>
-                  }
-                </mat-form-field>
+              <div class="row">
+                <div class="col-12 col-sm-6 mb-3">
+                  <mat-form-field class="w-100">
+                    <mat-label>{{ 'Management/UserForm/JoiningDate' | gmessage }}</mat-label>
+                    <input
+                      matInput
+                      [matDatepicker]="picker"
+                      [placeholder]="'Management/UserForm/JoiningDatePlaceholder' | gmessage"
+                      [formControlName]="formControlNames.joiningDate" />
+                    @if (control(formControlNames.joiningDate).errors) {
+                      <mat-error>{{ 'Management/UserForm/JoiningDateHint' | gmessage }}</mat-error>
+                    }
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>
+                </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-12 col-sm-6 mb-3">
-                <mat-form-field class="w-100">
-                  <mat-label>{{ 'Management/UserForm/JoiningDate' | gmessage }}</mat-label>
-                  <input
-                    matInput
-                    [matDatepicker]="picker"
-                    [placeholder]="'Management/UserForm/JoiningDatePlaceholder' | gmessage"
-                    [formControlName]="formControlNames.joiningDate" />
-                  @if (control(formControlNames.joiningDate).errors) {
-                    <mat-error>{{ 'Management/UserForm/JoiningDateHint' | gmessage }}</mat-error>
-                  }
-                  <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                  <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-12 mt-4">
-                <div class="alert alert-secondary" role="alert">
-                  {{ 'Management/UserForm/NewUserHint' | gmessage }}
+              <div class="row">
+                <div class="col-12 mt-4">
+                  <div class="alert alert-secondary" role="alert">
+                    {{ 'Management/UserForm/NewUserHint' | gmessage }}
+                  </div>
                 </div>
               </div>
             </div>
