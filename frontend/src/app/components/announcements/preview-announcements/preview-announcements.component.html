@@ -6,9 +6,30 @@
     <main>
       <div class="card-body">
         @if (announcements()) {
-          @for (item of announcements()!.items; track item; let i = $index) {
-            <app-announcements-item [item]="item"></app-announcements-item>
-          }
+          <div class="row">
+            @for (item of announcements()!.items; track item; let i = $index) {
+              <div class="col-12 col-xl-6">
+                <app-announcements-item [item]="item"></app-announcements-item>
+              </div>
+            }
+          </div>
+          <div class="row lh-1 published-by opacity-50">
+            <div class="col d-flex justify-content-end flex-wrap">
+              <div>
+                <mat-icon class="align-middle">person</mat-icon>
+                <span
+                  >{{ 'Announcements/PublishedBy' | gmessage }}
+                  {{ announcements()!.getPublisherName() }}&nbsp;
+                </span>
+              </div>
+              <div class="text-nowrap">
+                <mat-icon class="align-middle">calendar_month</mat-icon>
+                <span>{{ announcements()!.getPublishDateTime() | gdate }} </span>
+                <mat-icon class="align-middle">schedule</mat-icon>
+                <span>{{ announcements()!.getPublishDateTime() | gtime }}</span>
+              </div>
+            </div>
+          </div>
         }
       </div>
     </main>

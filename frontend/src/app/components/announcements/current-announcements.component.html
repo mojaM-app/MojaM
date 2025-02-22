@@ -10,7 +10,9 @@
         @if (announcements()) {
           <div
             class="row"
-            [ngClass]="{ 'mb-3': showButtonAddAnnouncement() || showButtonGoToAnnouncementList() }">
+            [ngClass]="{
+              'mb-3': showButtonAddAnnouncement() || showButtonGoToAnnouncementList(),
+            }">
             @if (showButtonAddAnnouncement()) {
               <div class="col-4 col-sm-5 text-center">
                 <button mat-raised-button [matMenuTriggerFor]="addMenu">
@@ -40,10 +42,14 @@
               </div>
             }
           </div>
-          @for (item of announcements()!.items; track item; let i = $index) {
-            <app-announcements-item [item]="item"></app-announcements-item>
-          }
-          <div class="row lh-1 published-by mt-2 opacity-50">
+          <div class="row">
+            @for (item of announcements()!.items; track item; let i = $index) {
+              <div class="col-12 col-xl-6">
+                <app-announcements-item [item]="item"></app-announcements-item>
+              </div>
+            }
+          </div>
+          <div class="row lh-1 published-by opacity-50">
             <div class="col d-flex justify-content-end flex-wrap">
               <div>
                 <mat-icon class="align-middle">person</mat-icon>
