@@ -6,17 +6,24 @@ export class Translation {
     private init: (() => string) | null
   ) {}
 
-  public static FromString(value: string): Translation {
+  public static fromString(value: string): Translation {
     return new Translation(value, null);
   }
 
-  public static FromFormatter(formatter: (...args: unknown[]) => string, params?: unknown | (() => unknown)): Translation {
+  public static fromFormatter(
+    formatter: (...args: unknown[]) => string,
+    params?: unknown | (() => unknown)
+  ): Translation {
     return new Translation(null, () => {
       return typeof params === 'function' ? formatter(params()) : formatter(params);
     });
   }
 
-  public static FromService(translate: TranslationService, key: string, params?: unknown | (() => unknown)): Translation {
+  public static fromService(
+    translate: TranslationService,
+    key: string,
+    params?: unknown | (() => unknown)
+  ): Translation {
     return new Translation(null, () => {
       const formatter = translate.getFormatter(key);
       return typeof params === 'function' ? formatter(params()) : formatter(params);

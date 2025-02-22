@@ -12,9 +12,6 @@ interface ThemeData {
 })
 export class ThemeService {
   public static readonly LightThemeName = 'light';
-  private static readonly DarkThemeName = 'dark';
-  private static readonly StorageKey = 'theme';
-
   public readonly themes: ThemeData[] = [
     {
       label: 'Light',
@@ -25,6 +22,9 @@ export class ThemeService {
       class: ThemeService.DarkThemeName,
     },
   ];
+
+  private static readonly DarkThemeName = 'dark';
+  private static readonly StorageKey = 'theme';
 
   private _currentTheme: string | null = null;
   private readonly _renderer: Renderer2;

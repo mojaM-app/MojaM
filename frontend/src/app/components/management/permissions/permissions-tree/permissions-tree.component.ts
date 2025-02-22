@@ -24,7 +24,7 @@ interface PermissionNode {
   title: string;
   description?: string;
   value: SystemPermissionValue | undefined;
-  children?: Array<PermissionNode>;
+  children?: PermissionNode[];
   autoExpand?: boolean;
   groupName?: string;
 }
@@ -37,12 +37,10 @@ interface PermissionNode {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PermissionsTreeComponent extends WithUnsubscribe() {
-  private readonly matTree = viewChildren(MatTree);
-  protected readonly permissions = signal<PermissionNode[]>([]);
-
   public readonly user = input.required<IUserPermissions>();
   public readonly afterPermissionsSaved = output<boolean>();
-
+  protected readonly permissions = signal<PermissionNode[]>([]);
+  private readonly _matTree = viewChildren(MatTree);
   private readonly _autoCollapsedPermissionGroups: string[] = ['PermissionsAdministration'];
 
   public constructor(
@@ -55,8 +53,8 @@ export class PermissionsTreeComponent extends WithUnsubscribe() {
     this.permissions.set(this.getTreeDataSource());
 
     effect(() => {
-      if (this.matTree()?.length > 0) {
-        for (const tree of this.matTree()) {
+      if (this._matTree()?.length > 0) {
+        for (const tree of this._matTree()) {
           tree.expandAll();
           for (const groupName of this._autoCollapsedPermissionGroups) {
             const node = this.permissions().find(n => n.groupName === groupName);
@@ -135,7 +133,7 @@ export class PermissionsTreeComponent extends WithUnsubscribe() {
             value: permission,
           } satisfies PermissionNode;
 
-          (node.children as Array<PermissionNode>).push(childNode);
+          (node.children as PermissionNode[]).push(childNode);
         }
 
         result.push(node);

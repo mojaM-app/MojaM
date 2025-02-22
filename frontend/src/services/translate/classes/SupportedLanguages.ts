@@ -4,7 +4,7 @@ import { ILanguageData } from '../interfaces/ILanguageData';
 export class SupportedLanguages {
   private static _supportedLanguages: ILanguageData[] | null = null;
 
-  public static Get(): ILanguageData[] {
+  public static get(): ILanguageData[] {
     if (this._supportedLanguages === null) {
       this._supportedLanguages = [
         {

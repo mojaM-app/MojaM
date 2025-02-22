@@ -40,19 +40,6 @@ export class PermissionsService extends BaseService {
       );
   }
 
-  private parsePermissions(value: unknown): number[] {
-    if (!StringUtils.isString(value) || StringUtils.isEmpty(value)) {
-      return [];
-    }
-
-    const splittedPermissions = (value as string).split(',');
-    if (splittedPermissions.length > 0) {
-      return splittedPermissions.map(permission => NumbersUtils.parse(permission) ?? 0);
-    } else {
-      return [];
-    }
-  }
-
   public save(
     userId: string,
     permission: SystemPermissionValue,
@@ -78,6 +65,19 @@ export class PermissionsService extends BaseService {
       } else {
         throw Error('Errors/User_Not_Authorized');
       }
+    }
+  }
+
+  private parsePermissions(value: unknown): number[] {
+    if (!StringUtils.isString(value) || StringUtils.isEmpty(value)) {
+      return [];
+    }
+
+    const splittedPermissions = (value as string).split(',');
+    if (splittedPermissions.length > 0) {
+      return splittedPermissions.map(permission => NumbersUtils.parse(permission) ?? 0);
+    } else {
+      return [];
     }
   }
 }

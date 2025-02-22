@@ -23,11 +23,11 @@ export class CardHeaderComponent {
   public readonly title = input.required<string>();
   public readonly hasButtons = signal<boolean>(false);
 
-  private buttonsContainer = viewChild<ElementRef<HTMLDivElement>>('buttonsContainer');
+  private _buttonsContainer = viewChild<ElementRef<HTMLDivElement>>('buttonsContainer');
 
   public constructor() {
     effect(() => {
-      if ((this.buttonsContainer()?.nativeElement.children.length ?? 0) > 0) {
+      if ((this._buttonsContainer()?.nativeElement.children.length ?? 0) > 0) {
         this.hasButtons.set(true);
       }
     });

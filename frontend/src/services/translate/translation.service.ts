@@ -9,12 +9,12 @@ import { ILanguageData } from './interfaces/ILanguageData';
   providedIn: 'root',
 })
 export class TranslationService {
-  private static readonly _storageKey = 'lang';
-  private static readonly _defaultLang = 'pl';
-
   public currentLang: string | null = null;
 
-  public readonly langs: ILanguageData[] = SupportedLanguages.Get();
+  public readonly langs: ILanguageData[] = SupportedLanguages.get();
+
+  private static readonly _storageKey = 'lang';
+  private static readonly _defaultLang = 'pl';
 
   public constructor(private _localStorageService: LocalStorageService) {
     this.currentLang = this._localStorageService.loadString(TranslationService._storageKey);
@@ -36,7 +36,7 @@ export class TranslationService {
   }
 
   public getTranslation(key: string, params?: unknown | (() => unknown)): Translation {
-    return Translation.FromService(this, key, params);
+    return Translation.fromService(this, key, params);
   }
 
   public getFormatter(key: string): (...args: any[]) => string {

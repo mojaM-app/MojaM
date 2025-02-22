@@ -13,18 +13,18 @@ interface CldrPackData {
 }
 
 class CldrPackAdapter implements CldrPack {
-  public constructor(private readonly data: CldrPackData) {}
+  public constructor(private readonly _data: CldrPackData) {}
 
   public get langId(): string {
-    return this.data.langId;
+    return this._data.langId;
   }
 
   public get cldrDataId(): string {
-    return this.data.cldrDataId;
+    return this._data.cldrDataId;
   }
 
   public cldrDataLanguagesJson(): Promise<unknown> {
-    return fetch(this.data.cldrDataLanguagesJson).then(response => response.json());
+    return fetch(this._data.cldrDataLanguagesJson).then(response => response.json());
   }
 }
 
@@ -32,20 +32,20 @@ class CldrPackAdapter implements CldrPack {
   providedIn: 'root',
 })
 export class CldrLocaleService {
-  private cldrLocaleIds: string[];
-  private cldrLocaleDict: Record<string, CldrPack>;
+  private _cldrLocaleIds: string[];
+  private _cldrLocaleDict: Record<string, CldrPack>;
 
   public constructor() {
-    this.cldrLocaleIds = [];
-    this.cldrLocaleDict = {};
+    this._cldrLocaleIds = [];
+    this._cldrLocaleDict = {};
     for (const data of this.getAvailableLocales()) {
-      this.cldrLocaleIds.push(data.langId);
-      this.cldrLocaleDict[data.langId] = new CldrPackAdapter(data);
+      this._cldrLocaleIds.push(data.langId);
+      this._cldrLocaleDict[data.langId] = new CldrPackAdapter(data);
     }
   }
 
   public getCldrLocale(langId: string): CldrPack {
-    return this.cldrLocaleDict[langId];
+    return this._cldrLocaleDict[langId];
   }
 
   private getAvailableLocales(): CldrPackData[] {

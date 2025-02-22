@@ -6,13 +6,13 @@ import { debounceTime, fromEvent } from 'rxjs';
   standalone: false,
 })
 export class InputChangedDirective {
-  @Output() inputChanged = new EventEmitter<string>();
+  @Output() public inputChanged = new EventEmitter<string>();
 
-  constructor(private el: ElementRef) {
-    fromEvent(this.el.nativeElement, 'input')
+  public constructor(el: ElementRef) {
+    fromEvent(el.nativeElement, 'input')
       .pipe(debounceTime(1000))
       .subscribe(() => {
-        this.inputChanged.emit(this.el.nativeElement.value);
+        this.inputChanged.emit(el.nativeElement.value);
       });
   }
 }

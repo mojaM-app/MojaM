@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -37,7 +37,7 @@ import { PermissionsService } from './services/permissions.service';
   templateUrl: './permissions.component.html',
   styleUrl: './permissions.component.scss',
 })
-export class PermissionsComponent extends WithUnsubscribe() {
+export class PermissionsComponent extends WithUnsubscribe() implements OnInit {
   public readonly selectedUser = signal<IUserPermissions | undefined>(undefined);
 
   public readonly filteredUsers = signal<IUserPermissions[] | undefined>(undefined);

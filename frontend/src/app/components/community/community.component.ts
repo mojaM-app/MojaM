@@ -25,9 +25,10 @@ import { CommunityService } from './services/community.service';
 })
 export class CommunityComponent extends WithUnsubscribe() implements OnInit {
   public readonly model = signal<ICommunity | undefined>(undefined);
-  private readonly tabGroup = viewChild<MatTabGroup>('tabGroup');
 
-  public selectedTab = 0;
+  protected selectedTab = 0;
+
+  private readonly _tabGroup = viewChild<MatTabGroup>('tabGroup');
 
   public constructor(private _service: CommunityService) {
     super();
@@ -40,7 +41,7 @@ export class CommunityComponent extends WithUnsubscribe() implements OnInit {
   }
 
   public selectNextTab(): void {
-    if (this.selectedTab < (this.tabGroup()?._tabs?.length ?? 0) - 1) {
+    if (this.selectedTab < (this._tabGroup()?._tabs?.length ?? 0) - 1) {
       this.selectedTab++;
     }
   }

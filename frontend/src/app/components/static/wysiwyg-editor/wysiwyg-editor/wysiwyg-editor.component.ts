@@ -22,7 +22,7 @@ import { PipesModule } from 'src/pipes/pipes.module';
 export class WysiwygEditorComponent {
   public readonly content: ModelSignal<string> = model.required<string>();
 
-  public model: string = '';
+  public model: string | null = null;
 
   public constructor() {
     const effectRef = effect(
