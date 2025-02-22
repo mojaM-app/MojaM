@@ -113,11 +113,17 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
       userInfo: formBuilder.group({
         firstName: new FormControl<string | null>(null, {
           nonNullable: true,
-          validators: [Validators.maxLength(VALIDATOR_SETTINGS.NAME_MAX_LENGTH)],
+          validators: [
+            Validators.required,
+            Validators.maxLength(VALIDATOR_SETTINGS.NAME_MAX_LENGTH),
+          ],
         }),
         lastName: new FormControl<string | null>(null, {
           nonNullable: true,
-          validators: [Validators.maxLength(VALIDATOR_SETTINGS.NAME_MAX_LENGTH)],
+          validators: [
+            Validators.required,
+            Validators.maxLength(VALIDATOR_SETTINGS.NAME_MAX_LENGTH),
+          ],
         }),
         joiningDate: new FormControl<Date | null>(null, {
           nonNullable: true,

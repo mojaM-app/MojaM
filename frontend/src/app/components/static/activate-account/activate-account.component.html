@@ -23,7 +23,7 @@
                 </div>
               </div>
             </mat-step>
-            <mat-step
+            <!-- <mat-step
               [label]="'ActivateAccount/Steps/Identity/Title' | gmessage"
               [stepControl]="group(formGroupNames.identity)"
               [errorMessage]="'ActivateAccount/Steps/Identity/TitleErrorMessage' | gmessage">
@@ -91,7 +91,7 @@
                   </div>
                 </div>
               </div>
-            </mat-step>
+            </mat-step> -->
             <mat-step
               [label]="'ActivateAccount/Steps/UserInfo/Title' | gmessage"
               [stepControl]="group(formGroupNames.userInfo)"
@@ -110,6 +110,7 @@
                       <mat-label>{{ 'Management/UserForm/FirstName' | gmessage }}</mat-label>
                       <input
                         matInput
+                        required
                         [placeholder]="'Management/UserForm/FirstNamePlaceholder' | gmessage"
                         [formControlName]="userInfoFormGroupControlNames.firstName" />
                       @if (
@@ -129,6 +130,7 @@
                       <mat-label>{{ 'Management/UserForm/LastName' | gmessage }}</mat-label>
                       <input
                         matInput
+                        required
                         [placeholder]="'Management/UserForm/LastNamePlaceholder' | gmessage"
                         [formControlName]="userInfoFormGroupControlNames.lastName" />
                       @if (
