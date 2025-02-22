@@ -9,8 +9,10 @@ const generateValidUser = (): CreateUserDto & IUser => {
     email: generateRandomEmail(),
     password: generateRandomPassword(),
     phone: '88' + generateRandomNumber(7),
-    getFullName: () => 'John Doe',
-    getFullNameOrEmail: () => 'John Doe',
+    getFirstLastName: () => 'John Doe',
+    getFirstLastNameOrEmail: () => 'John Doe',
+    getLastFirstName: () => 'Doe John',
+    getLastFirstNameOrEmail: () => 'Doe John',
     isAdmin: () => true,
   } satisfies CreateUserDto & IUser;
 };

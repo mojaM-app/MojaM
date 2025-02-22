@@ -193,7 +193,7 @@ export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser, IUse
   @OneToMany(() => AnnouncementItem, (announcementItem: AnnouncementItem) => announcementItem.updatedBy)
   public updatedAnnouncementItems: Relation<AnnouncementItem[]>;
 
-  public getFullName(): string | null {
+  public getFirstLastName(): string | null {
     if ((this.firstName?.length ?? 0) > 0 && (this.lastName?.length ?? 0) > 0) {
       return `${this.firstName} ${this.lastName}`;
     } else if ((this.firstName?.length ?? 0) > 0) {
@@ -205,8 +205,24 @@ export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser, IUse
     }
   }
 
-  public getFullNameOrEmail(): string {
-    return this.getFullName() ?? this.email;
+  public getFirstLastNameOrEmail(): string {
+    return this.getFirstLastName() ?? this.email;
+  }
+
+  public getLastFirstName(): string | null {
+    if ((this.lastName?.length ?? 0) > 0 && (this.firstName?.length ?? 0) > 0) {
+      return `${this.lastName} ${this.firstName}`;
+    } else if ((this.lastName?.length ?? 0) > 0) {
+      return this.lastName!;
+    } else if ((this.firstName?.length ?? 0) > 0) {
+      return this.firstName!;
+    } else {
+      return null;
+    }
+  }
+
+  public getLastFirstNameOrEmail(): string {
+    return this.getLastFirstName() ?? this.email;
   }
 
   public isAdmin(): boolean {

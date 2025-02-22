@@ -27,7 +27,7 @@ export class PermissionsRepository extends BaseRepository {
         const readonlyPermissions = await this._userPermissionsRepository.getByAttributes(user);
         return {
           id: user.uuid,
-          name: user.getFullNameOrEmail(),
+          name: user.getLastFirstNameOrEmail(),
           permissions: userPermissions.join(','),
           readonlyPermissions: readonlyPermissions.join(','),
         } satisfies IUserPermissionsDto;

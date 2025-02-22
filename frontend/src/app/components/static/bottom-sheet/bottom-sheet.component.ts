@@ -28,7 +28,7 @@ export class BottomSheetComponent {
     event.preventDefault();
   }
 
-  public close(): void {
+  protected close(): void {
     this._bottomSheetRef.dismiss();
   }
 }

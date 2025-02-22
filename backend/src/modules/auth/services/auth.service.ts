@@ -371,7 +371,7 @@ export class AuthService extends BaseService {
 
     const dataStoredInToken = {
       permissions: userPermissions,
-      userName: user.getFullName(),
+      userName: user.getFirstLastName(),
       email: user.email,
       phone: user.phone,
     } satisfies IDataStoredInToken;

@@ -1,0 +1,15 @@
+<div class="d-grid">
+  <div class="d-flex align-items-center">
+    <div class="flex-grow-1">
+      @if (data && data.user) {
+        {{ 'Management/Permissions/UserPermissions' | gmessage: { userName: data.user!.name } }}
+      }
+    </div>
+    <button mat-icon-button (click)="close()"><mat-icon>close</mat-icon></button>
+  </div>
+  <div class="row permissions-tree">
+    @if (data && data.user) {
+      <app-permissions-tree [user]="data.user"></app-permissions-tree>
+    }
+  </div>
+</div>

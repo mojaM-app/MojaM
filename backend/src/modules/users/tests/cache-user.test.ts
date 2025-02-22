@@ -26,8 +26,10 @@ describe('Cache user data tests', () => {
         email: 'admin@domain.com',
         phone: '123456789',
         isActive: true,
-        getFullName: () => 'John Doe',
-        getFullNameOrEmail: () => 'John Doe',
+        getFirstLastName: () => 'John Doe',
+        getFirstLastNameOrEmail: () => 'John Doe',
+        getLastFirstName: () => 'Doe John',
+        getLastFirstNameOrEmail: () => 'Doe John',
         isAdmin: () => true,
       } satisfies IUser & {
         _is_from_mock_: boolean;
@@ -56,8 +58,10 @@ describe('Cache user data tests', () => {
               isActive: true,
               email: 'admin@domain.com',
               phone: '123456789',
-              getFullName: () => 'John Doe',
-              getFullNameOrEmail: () => 'John Doe',
+              getFirstLastName: () => 'John Doe',
+              getFirstLastNameOrEmail: () => 'John Doe',
+              getLastFirstName: () => 'Doe John',
+              getLastFirstNameOrEmail: () => 'Doe John',
               isAdmin: () => true,
             } satisfies IUser & {
               _is_from_mock_: boolean;

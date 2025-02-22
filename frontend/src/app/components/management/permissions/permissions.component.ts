@@ -13,6 +13,7 @@ import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthService } from 'src/services/auth/auth.service';
 import { GuidUtils } from 'src/utils/guid.utils';
 import { NewsMenu } from '../../news/news.menu';
+import { BottomSheetService } from '../../static/bottom-sheet/bottom-sheet.service';
 import { CardHeaderComponent } from '../../static/card-header/card-header.component';
 import { IUserPermissions } from './interfaces/user-permissions.interface';
 import { PermissionsTreeComponent } from './permissions-tree/permissions-tree.component';
@@ -45,6 +46,7 @@ export class PermissionsComponent extends WithUnsubscribe() {
   public constructor(
     private _permissionsService: PermissionsService,
     private _changeDetectorRef: ChangeDetectorRef,
+    private _bottomSheetService: BottomSheetService,
     authService: AuthService,
     router: Router
   ) {
@@ -67,15 +69,15 @@ export class PermissionsComponent extends WithUnsubscribe() {
   }
 
   protected onUserSelected(value: MatSelectionListChange): void {
-    const userid =
+    const userId =
       typeof value.source._value === 'string'
         ? value.source._value
         : Array.isArray(value.source._value)
           ? value.source._value[0]
           : undefined;
 
-    const user = GuidUtils.isValidGuid(userid)
-      ? this._users()!.find(u => u.id === userid)
+    const user = GuidUtils.isValidGuid(userId)
+      ? this._users()!.find(u => u.id === userId)
       : undefined;
 
     this.selectedUser.set(user);
@@ -88,7 +90,15 @@ export class PermissionsComponent extends WithUnsubscribe() {
   }
 
   protected showUserPermissions(userId: string): void {
-    console.log(`User permissions for user with id: ${userId}`);
+    this.selectedUser.set(undefined);
+
+    const user = GuidUtils.isValidGuid(userId)
+      ? this._users()!.find(u => u.id === userId)
+      : undefined;
+
+    this._bottomSheetService.openUserPermissions(user).then(() => {
+      this._changeDetectorRef.detectChanges();
+    });
   }
 
   protected handlePermissionsSaved(): void {

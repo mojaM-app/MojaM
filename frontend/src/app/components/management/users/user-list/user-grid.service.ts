@@ -65,12 +65,12 @@ export class UserGridService
   public getDisplayedColumns(): IGridColumn[] {
     const result: IGridColumn[] = [
       {
-        propertyName: UserListColumns.firstName!,
-        title: this._translationService.get('Management/UserList/GridColumns/FirstName'),
-      },
-      {
         propertyName: UserListColumns.lastName!,
         title: this._translationService.get('Management/UserList/GridColumns/LastName'),
+      },
+      {
+        propertyName: UserListColumns.firstName!,
+        title: this._translationService.get('Management/UserList/GridColumns/FirstName'),
       },
       {
         propertyName: UserListColumns.email,
@@ -101,7 +101,7 @@ export class UserGridService
           value === true ? 'text-success' : 'text-danger',
         type: ColumnType.MatIcon,
         transform: (value: boolean): string => {
-          return value === true ? 'check' : 'close';
+          return 'how_to_reg';
         },
       },
     ];

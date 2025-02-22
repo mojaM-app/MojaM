@@ -160,20 +160,20 @@ export class AnnouncementsService extends BaseService {
       title: announcement.title ?? undefined,
       state: announcement.state,
       validFromDate: announcement.validFromDate,
-      createdBy: announcement.createdBy.getFullName()!,
+      createdBy: announcement.createdBy.getFirstLastName()!,
       createdAt: announcement.createdAt,
       updatedAt: announcement.updatedAt ?? announcement.createdAt,
       publishedAt: announcement.publishedAt ?? undefined,
-      publishedBy: announcement.publishedBy?.getFullName() ?? undefined,
+      publishedBy: announcement.publishedBy?.getFirstLastName() ?? undefined,
       items: (announcement.items ?? []).map(
         item =>
           ({
             id: item.id,
             content: item.content,
             createdAt: item.createdAt,
-            createdBy: item.createdBy.getFullName()!,
+            createdBy: item.createdBy.getFirstLastName()!,
             updatedAt: item.updatedAt ?? item.createdAt,
-            updatedBy: item.updatedBy?.getFullName() ?? undefined,
+            updatedBy: item.updatedBy?.getFirstLastName() ?? undefined,
           }) satisfies IAnnouncementItemDto,
       ),
     } satisfies IAnnouncementsDto;

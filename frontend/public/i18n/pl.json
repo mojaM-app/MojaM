@@ -276,7 +276,7 @@
       "Title": "Uprawnienia",
       "Users_LargeScreen": "Użytkownicy",
       "Users_NarrowScreen": "Aby nadać uprawnienia kliknij w kluczyk",
-      "Permissions": "Uprawnienia",
+      "UserPermissions": "Uprawnienia użytkownika '{userName}'",
       "BtnClearLabel": "Kliknij, aby wyczyścić",
       "UsersFilterPlaceholder": "Znajdź użytkownika",
       "SelectUserHint": "Prosze wybrać użytkownika z listy po lewej, aby przypisać mu uprawnienia",

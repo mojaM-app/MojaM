@@ -63,9 +63,16 @@
           </div>
           <div class="col col-md-6 col-lg-7 col-xl-8 d-none d-md-block">
             <div class="list-with-title">
-              <div class="title">
-                <h6 class="ps-2">{{ 'Management/Permissions/Permissions' | gmessage }}</h6>
-              </div>
+              @if (selectedUser()) {
+                <div class="title">
+                  <h6 class="ps-2">
+                    {{
+                      'Management/Permissions/UserPermissions'
+                        | gmessage: { userName: selectedUser()!.name }
+                    }}
+                  </h6>
+                </div>
+              }
               <div class="list">
                 @if (selectedUser()) {
                   <app-permissions-tree

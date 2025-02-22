@@ -4,6 +4,8 @@ import { MatBottomSheet, MatBottomSheetConfig } from '@angular/material/bottom-s
 import { firstValueFrom, map, tap } from 'rxjs';
 import { GuidUtils } from 'src/utils/guid.utils';
 import { MenuItemClickResult } from '../../../../interfaces/menu/menu.enum';
+import { BottomSheetPermissionsComponent } from '../../management/permissions/bottom-sheet-permissions/bottom-sheet-permissions.component';
+import { IUserPermissions } from '../../management/permissions/interfaces/user-permissions.interface';
 import { BottomSheetComponent } from './bottom-sheet.component';
 
 @Injectable({
@@ -34,6 +36,37 @@ export class BottomSheetService {
         }),
         map(result => {
           return result;
+        })
+      )
+    );
+  }
+
+  public openUserPermissions(user: IUserPermissions | null | undefined): Promise<void> {
+    if (!user) {
+      return Promise.resolve();
+    }
+
+    const currentUrl = this._location.path();
+    const newPath = currentUrl + `/permissions-tree/${user.id}`;
+
+    const bottomSheetRef = this._bottomSheet.open(BottomSheetPermissionsComponent, {
+      data: {
+        user: user,
+      },
+      height: '80vh',
+    });
+
+    bottomSheetRef
+      .afterOpened()
+      .pipe(tap(() => this._location.go(newPath)))
+      .subscribe();
+
+    return firstValueFrom(
+      bottomSheetRef.afterDismissed().pipe(
+        tap(() => {
+          if (this._location.path() === newPath) {
+            this._location.go(currentUrl);
+          }
         })
       )
     );

@@ -34,7 +34,7 @@ export class EmailService {
 
         const templateVariables = {
           link,
-          name: user.getFullNameOrEmail(),
+          name: user.getFirstLastNameOrEmail(),
         };
 
         const options = (): Mail.Options => {
@@ -66,7 +66,7 @@ export class EmailService {
 
         const templateVariables = {
           link,
-          name: user.getFullNameOrEmail(),
+          name: user.getFirstLastNameOrEmail(),
         };
 
         const options = (): Mail.Options => {

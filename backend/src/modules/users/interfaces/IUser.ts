@@ -3,7 +3,9 @@ export interface IUser {
   phone: string;
   firstName?: string | null;
   lastName?: string | null;
-  getFullName: () => string | null;
-  getFullNameOrEmail: () => string | null;
+  getFirstLastName: () => string | null;
+  getFirstLastNameOrEmail: () => string | null;
+  getLastFirstName: () => string | null;
+  getLastFirstNameOrEmail: () => string | null;
   isAdmin: () => boolean;
 }
