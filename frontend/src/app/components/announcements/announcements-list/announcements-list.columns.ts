@@ -1,7 +1,6 @@
 import { IAnnouncementsGridItemColumns } from 'src/app/components/announcements/interfaces/announcements-list.interfaces';
 
 export const AnnouncementsListColumns: { [K in keyof IAnnouncementsGridItemColumns]: string } = {
-  id: 'id',
   state: 'state',
   validFromDate: 'validFromDate',
   createdAt: 'createdAt',

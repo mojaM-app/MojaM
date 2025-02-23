@@ -1,7 +1,6 @@
 import { IGridData } from '../../../../../../interfaces/common/grid.data';
 
 export interface IUserGridItemColumns {
-  id: string;
   email: string;
   phone: string;
   firstName?: string;
@@ -11,6 +10,7 @@ export interface IUserGridItemColumns {
 }
 
 export interface IUserGridItemDto extends IUserGridItemColumns {
+  id: string;
   joiningDate?: Date;
   lastLoginAt?: Date;
   permissionCount: number;

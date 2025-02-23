@@ -1,9 +1,8 @@
 import { IGridData } from '../../../../interfaces/common/grid.data';
 
 export interface IAnnouncementsGridItemColumns {
-  id: string;
-  state: number;
   validFromDate?: Date;
+  state: number;
   createdAt: Date;
   createdBy?: string | null;
   updatedAt?: Date;
@@ -12,6 +11,8 @@ export interface IAnnouncementsGridItemColumns {
   itemsCount: number;
 }
 
-export interface IAnnouncementsGridItemDto extends IAnnouncementsGridItemColumns {}
+export interface IAnnouncementsGridItemDto extends IAnnouncementsGridItemColumns {
+  id: string;
+}
 
 export type AnnouncementsGridData = IGridData<IAnnouncementsGridItemDto>;
