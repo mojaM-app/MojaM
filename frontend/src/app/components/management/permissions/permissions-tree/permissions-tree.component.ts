@@ -12,10 +12,10 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTree, MatTreeModule } from '@angular/material/tree';
+import { SnackBarService } from 'src/app/components/static/snackbar/snack-bar.service';
 import { PermissionsTree, SystemPermissionValue } from 'src/core/system-permission.enum';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PermissionService } from 'src/services/auth/permission.service';
-import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { TranslationService } from 'src/services/translate/translation.service';
 import { IUserPermissions } from '../interfaces/user-permissions.interface';
 import { PermissionsService } from '../services/permissions.service';
@@ -83,15 +83,16 @@ export class PermissionsTreeComponent extends WithUnsubscribe() {
           }
 
           if (response) {
-            this._snackBarService.translateAndShowSuccess(
-              'Management/Permissions/MsgPermissionSavedSuccessfully',
-              { userName: this.user().name }
-            );
+            this._snackBarService.translateAndShowSuccess({
+              message: 'Management/Permissions/MsgPermissionSavedSuccessfully',
+              interpolateParams: { userName: this.user().name },
+              options: { duration: 1000 },
+            });
           } else {
-            this._snackBarService.translateAndShowError(
-              'Management/Permissions/MsgPermissionSaveFailed',
-              { userName: this.user().name }
-            );
+            this._snackBarService.translateAndShowError({
+              message: 'Management/Permissions/MsgPermissionSaveFailed',
+              interpolateParams: { userName: this.user().name },
+            });
           }
 
           this.afterPermissionsSaved.emit(response);

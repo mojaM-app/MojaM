@@ -201,7 +201,9 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
         next: () => {
           this.loginError.set('');
           this.goToStepEnterPassword();
-          this._snackBarService.translateAndShowSuccess('Login/RequestResetPasswordSent');
+          this._snackBarService.translateAndShowSuccess({
+            message: 'Login/RequestResetPasswordSent',
+          });
         },
         error: (error: unknown) => {
           if ((error as IResponseError)?.errorMessage) {

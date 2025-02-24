@@ -241,9 +241,9 @@ export class AnnouncementsGridService
     announcements: IAnnouncementsGridItemDto
   ): Promise<MenuItemClickResult | undefined> {
     if (announcements.state === AnnouncementStateValue.ARCHIVED) {
-      this._snackBarService.translateAndShowError(
-        'Errors/Announcements_Archived_Announcements_Cant_Be_Edited'
-      );
+      this._snackBarService.translateAndShowError({
+        message: 'Errors/Announcements_Archived_Announcements_Cant_Be_Edited',
+      });
       return;
     }
 
@@ -280,9 +280,9 @@ export class AnnouncementsGridService
     }
 
     if (result === DeleteResult.DbFkConstraintError) {
-      this._snackBarService.translateAndShowError(
-        'Errors/Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted'
-      );
+      this._snackBarService.translateAndShowError({
+        message: 'Errors/Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted',
+      });
       return MenuItemClickResult.NONE;
     }
 

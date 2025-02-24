@@ -103,9 +103,13 @@ export class ResetPasswordComponent extends WithForm<IResetPasswordForm>() imple
       .resetPassword(userId, new ResetPasswordDto(token, this.controls.password.value))
       .subscribe(response => {
         if (response.isPasswordSet) {
-          this._snackBarService.translateAndShowSuccess('Login/ResetPasswordSuccess');
+          this._snackBarService.translateAndShowSuccess({
+            message: 'Login/ResetPasswordSuccess',
+          });
         } else {
-          this._snackBarService.translateAndShowError('Login/ResetPasswordFailed');
+          this._snackBarService.translateAndShowError({
+            message: 'Login/ResetPasswordFailed',
+          });
         }
 
         this._router.navigateByUrl('/');

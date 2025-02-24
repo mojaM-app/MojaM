@@ -193,20 +193,26 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
 
     if (!GuidUtils.isValidGuid(userUuid)) {
       this._router.navigate(['/' + PATHS.NotFound]);
-      this._snackBarService.translateAndShowError('Errors/Invalid_Activated_Account_Identifier');
+      this._snackBarService.translateAndShowError({
+        message: 'Errors/Invalid_Activated_Account_Identifier',
+      });
       return;
     }
 
     this._activateAccountService.get(userUuid).subscribe((result: IUserToActivate) => {
       if (result?.isLockedOut ?? false) {
         this.navigateToHomePage();
-        this._snackBarService.translateAndShowError('Errors/Cannot_Activate_Locked_Account');
+        this._snackBarService.translateAndShowError({
+          message: 'Errors/Cannot_Activate_Locked_Account',
+        });
         return;
       }
 
       if (result?.isActive ?? true) {
         this.navigateToHomePage();
-        this._snackBarService.translateAndShowSuccess('Login/AccountActivatedSuccessfully');
+        this._snackBarService.translateAndShowSuccess({
+          message: 'Login/AccountActivatedSuccessfully',
+        });
         return;
       }
 
@@ -229,9 +235,13 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
       .subscribe((result: IActivateAccountResult) => {
         if (result?.isActive ?? true) {
           this.navigateToHomePage();
-          this._snackBarService.translateAndShowSuccess('Login/AccountActivatedSuccessfully');
+          this._snackBarService.translateAndShowSuccess({
+            message: 'Login/AccountActivatedSuccessfully',
+          });
         } else {
-          this._snackBarService.translateAndShowError('Errors/Failed_To_Activate_Account');
+          this._snackBarService.translateAndShowError({
+            message: 'Errors/Failed_To_Activate_Account',
+          });
         }
       });
   }

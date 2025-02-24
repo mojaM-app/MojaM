@@ -38,38 +38,68 @@ export class SnackBarService {
       .subscribe();
   }
 
-  public showError(message: string): void {
+  public showError({
+    message,
+    options = {},
+  }: {
+    message: string;
+    options?: { duration?: number };
+  }): void {
     this._emitToast.next({
       message: message,
       action: 'OK',
       timeStamp: new Date().getTime(),
       config: {
         panelClass: ['error'],
+        duration: options?.duration,
       } satisfies MatSnackBarConfig,
     } satisfies IToast);
   }
 
-  public showSuccess(message: string): void {
+  public showSuccess({
+    message,
+    options = {},
+  }: {
+    message: string;
+    options?: { duration?: number };
+  }): void {
     this._emitToast.next({
       message: message,
       action: 'OK',
       timeStamp: new Date().getTime(),
       config: {
         panelClass: ['success'],
+        duration: options?.duration,
       } satisfies MatSnackBarConfig,
     } satisfies IToast);
   }
 
-  public translateAndShowSuccess(message: string, interpolateParams?: unknown): void {
+  public translateAndShowSuccess({
+    message,
+    interpolateParams = {},
+    options = {},
+  }: {
+    message: string;
+    interpolateParams?: unknown;
+    options?: { duration?: number };
+  }): void {
     message = this._translationService.get(message, interpolateParams);
 
-    return this.showSuccess(message);
+    return this.showSuccess({ message, options });
   }
 
-  public translateAndShowError(message: string, interpolateParams?: unknown): void {
+  public translateAndShowError({
+    message,
+    interpolateParams = {},
+    options = {},
+  }: {
+    message: string;
+    interpolateParams?: unknown;
+    options?: { duration?: number };
+  }): void {
     message = this._translationService.get(message, interpolateParams);
 
-    return this.showError(message);
+    return this.showError({ message, options });
   }
 
   public showSessionExpired(): void {

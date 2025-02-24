@@ -120,9 +120,9 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
     const items = this.array(this.formControlNames.items);
 
     if ((items?.length ?? 0) === 0) {
-      this._snackBarService.translateAndShowError(
-        'Announcements/Form/Errors/AtLeastOneItemIsRequired'
-      );
+      this._snackBarService.translateAndShowError({
+        message: 'Announcements/Form/Errors/AtLeastOneItemIsRequired',
+      });
       return false;
     }
 
@@ -132,18 +132,20 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
       if (controls.content.errors) {
         const isRequired = controls.content.errors[this.errorNames.required];
         if (isRequired) {
-          this._snackBarService.translateAndShowError(
-            'Announcements/Form/Errors/ContentIsRequired'
-          );
+          this._snackBarService.translateAndShowError({
+            message: 'Announcements/Form/Errors/ContentIsRequired',
+          });
           return false;
         }
 
         const tooLength = controls.content.errors[this.errorNames.maxLength];
         if (tooLength) {
-          this._snackBarService.translateAndShowError(
-            'Announcements/Form/Errors/ContentIsTooLong',
-            { maxLength: VALIDATOR_SETTINGS.ANNOUNCEMENT_ITEM_CONTENT_MAX_LENGTH }
-          );
+          this._snackBarService.translateAndShowError({
+            message: 'Announcements/Form/Errors/ContentIsTooLong',
+            interpolateParams: {
+              maxLength: VALIDATOR_SETTINGS.ANNOUNCEMENT_ITEM_CONTENT_MAX_LENGTH,
+            },
+          });
           return false;
         }
       }

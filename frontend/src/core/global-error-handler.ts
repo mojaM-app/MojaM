@@ -41,7 +41,7 @@ export class GlobalErrorHandler implements ErrorHandler {
       message = 'Errors/Unhandled_Error';
     }
 
-    this._snackBarService.translateAndShowError(message);
+    this._snackBarService.translateAndShowError({ message });
     console?.error(error);
   }
 }
