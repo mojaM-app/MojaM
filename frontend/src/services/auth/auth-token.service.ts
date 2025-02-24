@@ -51,6 +51,10 @@ export class AuthTokenService extends TokenService<IAuthTokenPayload> {
     return payload.permissions;
   }
 
+  public override getUserId(): string | undefined {
+    return super.getUserId();
+  }
+
   public getUserInitialLetters(): string | undefined {
     const userName = this.getUserName();
 

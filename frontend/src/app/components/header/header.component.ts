@@ -16,6 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatSidenav } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { Router } from '@angular/router';
 import { IS_MOBILE } from 'src/app/app.config';
 import { ITokenChangedEvent } from 'src/interfaces/auth/auth.events';
 import { PipesModule } from 'src/pipes/pipes.module';
@@ -23,7 +24,10 @@ import { AuthTokenService } from 'src/services/auth/auth-token.service';
 import { AuthService } from 'src/services/auth/auth.service';
 import { DialogService } from 'src/services/dialog/dialog.service';
 import { ThemeService } from '../../../services/theme/theme.service';
+import { ManagementMenuMyProfile } from '../management/management.menu';
 import { ILoginDialogOptions } from '../static/login/login-dialog/login-dialog.options';
+import { SnackBarService } from '../static/snackbar/snack-bar.service';
+import { SnackBarActionTyp } from '../static/snackbar/snackbar-action-typ.enum';
 
 @Component({
   selector: 'app-header',
@@ -48,7 +52,9 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     private _themeService: ThemeService,
     private _authTokenService: AuthTokenService,
     private _authService: AuthService,
-    private _dialogService: DialogService
+    private _dialogService: DialogService,
+    private _router: Router,
+    private _snackBarService: SnackBarService
   ) {
     const tokenChanged = toSignal<ITokenChangedEvent>(this._authTokenService.tokenChanged);
     this.isSessionValid.set(_authService.isSessionValid());
@@ -75,6 +81,14 @@ export class HeaderComponent implements OnInit, AfterViewInit {
       }
     });
 
+    this._snackBarService.onActionCalled.subscribe(action => {
+      switch (action.type) {
+        case SnackBarActionTyp.CallRefreshSession:
+          this.refreshSession();
+          break;
+      }
+    });
+
     this.setViewData();
   }
 
@@ -82,22 +96,26 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     this.sidenav?.open();
   }
 
-  public showLoginDialog(options?: ILoginDialogOptions): void {
+  protected showLoginDialog(options?: ILoginDialogOptions): void {
     const dialogRef = this._dialogService.openLoginComponent(options);
 
     dialogRef.afterClosed().subscribe(() => this._menuTrigger().focus());
   }
 
-  public refreshSession(): void {
+  protected refreshSession(): void {
     this.showLoginDialog({ setLoginData: true });
   }
 
-  public logOut(): void {
+  protected logOut(): void {
     this._authService.logout();
   }
 
-  public refreshMenu(): void {
+  protected refreshMenu(): void {
     this.isSessionValid.set(this._authService.isSessionValid());
+  }
+
+  protected showUserProfile(): void {
+    this._router.navigateByUrl(ManagementMenuMyProfile.Path);
   }
 
   private setViewData(): void {

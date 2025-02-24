@@ -1,5 +1,4 @@
 import { SystemPermissions } from '@modules/permissions';
-import { User } from '@modules/users/entities/user.entity';
 
 export class Identity {
   public get userId(): number | undefined {
@@ -13,7 +12,7 @@ export class Identity {
   private readonly _user: { id: number | undefined; uuid: string | undefined };
   private readonly _permissions: SystemPermissions[];
 
-  public constructor(user: User | undefined | null, permissions: SystemPermissions[]) {
+  public constructor(user: { id?: number; uuid?: string } | undefined | null, permissions: SystemPermissions[]) {
     this._user = {
       id: user?.id,
       uuid: user?.uuid,

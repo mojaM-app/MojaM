@@ -61,6 +61,16 @@ export abstract class TokenService<TPayload extends IAuthTokenPayload | ITokenPa
     return JSON.parse(atob(token.split('.')[1]));
   }
 
+  protected getUserId(): string | undefined {
+    const payload = this.getPayload();
+
+    if (!payload) {
+      return undefined;
+    }
+
+    return payload.sub;
+  }
+
   protected abstract getKeyName(): string;
 
   private getExpirationTime(): Date | null {
@@ -71,16 +81,6 @@ export abstract class TokenService<TPayload extends IAuthTokenPayload | ITokenPa
     }
 
     return payload.exp > 0 ? new Date(payload.exp * 1000) : null;
-  }
-
-  private getUserId(): string | undefined {
-    const payload = this.getPayload();
-
-    if (!payload) {
-      return undefined;
-    }
-
-    return payload.sub;
   }
 
   private getTokenChangedEventData(): ITokenChangedEvent {

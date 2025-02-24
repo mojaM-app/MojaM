@@ -253,7 +253,7 @@
     "UserForm": {
       "AddTitle": "Dodaj użytkownika",
       "EditTitle": "Edytuj użytkownika",
-      "RequiredFieldsHint": "<b>E-mail i telefon są danymi wymaganymi.</b><br>Służą do identyfikacji użytkownika, są niezbędne do zalogowania się do aplikacji.",
+      "RequiredFieldsHint": "<b>E-mail i telefon są danymi wymaganymi.</b><br>Służą do identyfikacji użytkownika, są niezbędne do zalogowania się do aplikacji.<br>Są to również dane kontaktowe, dobrze by było gdyby były to dane prawdziwe.",
       "OptionalFieldsHint": "Dane opcjonalne.",
       "NewUserHint": "Po utworzeniu nowego konta domyślnie nowy użytkownik jest nieaktywny i nie będzie w stanie się zalogować. W chwili dodania użytkownika do aplikacji zostanie wysłany do niego e-mail z instrukcją, jak aktywować swoje konto. Instrukcja zostanie wysłana na adres podany w polu \"E-mail\".",
       "Email": "E-mail",
@@ -282,6 +282,15 @@
       "SelectUserHint": "Prosze wybrać użytkownika z listy po lewej, aby przypisać mu uprawnienia",
       "MsgPermissionSavedSuccessfully": "Uprawnienia dla użytkownika '{userName}' zostały zapisane.",
       "MsgPermissionSaveFailed": "Nie udało się zapisać uprawnień dla użytkownika '{userName}'."
+    },
+    "UserProfile": {
+      "Title": "Mój profil"
+    },
+    "UserProfileForm": {
+      "Title": "Mój profil",
+      "EmailPhoneHint": "<strong>E-mail i telefon są danymi wymaganymi</strong>.<br>Są to dane kontaktowe oraz służą do identyfikacji użytkownika podczas logowania się do aplikacji.<br>Jeżeli chcesz zmienić e-mail lub telefon, skontaktuj się z liderem wspólnoty lub z animatorem diakonii do której należysz i poproś o zmianę.",
+      "UpdatedSuccessfully": "Dane zostały zaktualizowane poprawnie.",
+      "UpdateFailed": "Wystąpił błąd podczas aktualizacji danych."
     }
   },
   "Error404": {
@@ -316,8 +325,9 @@
     "User_Is_Not_Active": "Twoje konto nie zostało aktywowane.",
     "User_Already_Exists": "Istnieje już użytkownik o podanym adresie e-mail i numerze telefonu.",
     "User_Is_Locked_Out": "Twoje konto zostało zablokowane. Skontaktuj się z liderem.",
-    "Session_Expired": "Twoja sesja wygasła. Zaloguj się ponownie.",
+    "Session_Expired": "<b>Twoja sesja wygasła!</b><br>Zaloguj się ponownie lub kliknij przycisk 'Odśwież sesję'.",
     "Invalid_Activated_Account_Identifier": "Nie udało się aktywować konta, link aktywujący konto jest nieprawidłowy.",
+    "Invalid_User_Profile_Identifier": "Wystąpił błąd podczas próby pobierania danych. Przekazano nieprawidłowy identyfikator profilu użytkownika.",
     "Announcements_Does_Not_Exist": "Ogłoszenia nie istnieje.",
     "Announcements_With_Given_ValidFromDate_Already_Exists": "Istnieją już ogłoszenia z wprowadzoną datą rozpoczęcia obowiązywania.",
     "Announcements_Published_Announcements_Cant_Be_Deleted": "Nie można usunąć opublikowanych ogłoszeń. Można przenieść je do archiwum.",

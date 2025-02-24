@@ -1,7 +1,7 @@
 import { events } from '@events';
 import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
-import { IUserDetailsDto } from '../interfaces/get-user-details.interfaces';
+import { IUserDetailsDto } from '../interfaces/user-details.interfaces';
 
 export class GetUserDetailsReqDto extends BaseReqDto {
   public readonly userGuid: string | undefined;

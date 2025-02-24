@@ -28,6 +28,9 @@
       }
 
       <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="showUserProfile()">
+          <mat-icon>person</mat-icon>{{ 'Management/UserProfile/Title' | gmessage }}
+        </button>
         @if (!isSessionValid()) {
           <button mat-menu-item (click)="refreshSession()">
             <mat-icon>lock_reset</mat-icon>{{ 'Header/Menu/RefreshSession' | gmessage }}

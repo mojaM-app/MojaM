@@ -73,6 +73,11 @@ export class BaseService {
       deactivate: (uuid: string): string =>
         `${environment.backendUrl}/${this.API_ROUTES.user.path}/${uuid}/deactivate`,
     },
+    userProfile: {
+      path: 'user-profile',
+      get: (): string => `${environment.backendUrl}/${this.API_ROUTES.userProfile.path}`,
+      update: (): string => `${environment.backendUrl}/${this.API_ROUTES.userProfile.path}`,
+    },
     permissions: {
       path: 'permissions',
       get: (): string => `${environment.backendUrl}/${this.API_ROUTES.permissions.path}`,

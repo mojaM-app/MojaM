@@ -21,6 +21,12 @@ export class ManagementMenuEditUser {
   public static Path = ManagementMenu.Path + '/' + ManagementMenuEditUser.Route;
 }
 
+export class ManagementMenuMyProfile {
+  public static Label = 'Management/UserProfile/Title';
+  public static Route = 'my-profile';
+  public static Path = ManagementMenu.Path + '/' + ManagementMenuMyProfile.Route;
+}
+
 export class ManagementMenuPermissions {
   public static Label = 'Management/Permissions/Title';
   public static Icon = 'vpn_key';

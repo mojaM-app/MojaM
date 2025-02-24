@@ -8,6 +8,11 @@ import { ManagementMenu } from './components/management/management.menu';
 import { NewsMenu } from './components/news/news.menu';
 import { SettingsMenu } from './components/settings/settings.menu';
 
+export const PATHS = {
+  NotFound: 'not-found',
+  NoPermission: 'no-permission',
+};
+
 export const routes: Routes = [
   { path: '', redirectTo: NewsMenu.Path, pathMatch: 'full' },
   {
@@ -51,7 +56,7 @@ export const routes: Routes = [
     data: { closeSideNav: true, hideFooter: true } satisfies IRouteData,
   },
   {
-    path: 'not-found',
+    path: PATHS.NotFound,
     loadComponent: () =>
       import('./components/static/not-found/not-found.component').then(m => m.NotFoundComponent),
   },
@@ -70,5 +75,5 @@ export const routes: Routes = [
       ),
     data: { closeSideNav: true, hideFooter: true } satisfies IRouteData,
   },
-  { path: '**', redirectTo: '/not-found' },
+  { path: '**', redirectTo: '/' + PATHS.NotFound },
 ];

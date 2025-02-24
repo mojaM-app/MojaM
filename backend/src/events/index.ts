@@ -34,6 +34,8 @@ export const events = {
     userActivated: 'onUserActivated',
     userDeactivated: 'onUserDeactivated',
     userPasswordChanged: 'onUserPasswordChanged',
+    userProfileRetrieved: 'onUserProfileRetrieved',
+    userProfileUpdated: 'onUserProfileUpdated',
   },
   permissions: {
     permissionAdded: 'onPermissionAdded',

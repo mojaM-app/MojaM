@@ -6,6 +6,8 @@ import {
   UserDeletedEvent,
   UserDetailsRetrievedEvent,
   UserListRetrievedEvent,
+  UserProfileRetrievedEvent,
+  UserProfileUpdatedEvent,
   UserRetrievedEvent,
   UserUnlockedEvent,
   UserUpdatedEvent,
@@ -58,5 +60,15 @@ export class UserEventsSubscriber {
   @On(events.users.userListRetrieved)
   public onUserListRetrieved(data: UserListRetrievedEvent): void {
     logger.debug(`User list retrieved by user with id: '${data?.currentUserId}'`);
+  }
+
+  @On(events.users.userProfileRetrieved)
+  public onUserProfileRetrieved(data: UserProfileRetrievedEvent): void {
+    logger.debug(`User profile ${data?.user?.email} (phone: ${data?.user?.phone}) retrieved by user with id: '${data?.currentUserId}'`);
+  }
+
+  @On(events.users.userProfileUpdated)
+  public onUserProfileUpdated(data: UserProfileUpdatedEvent): void {
+    logger.debug(`User profile ${data?.user?.email} (phone: ${data?.user?.phone}) updated by user with id: '${data?.currentUserId}'`);
   }
 }

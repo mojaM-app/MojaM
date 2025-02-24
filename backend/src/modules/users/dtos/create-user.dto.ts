@@ -4,7 +4,7 @@ import { errorKeys } from '@exceptions';
 import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
 import { isNullOrEmptyString } from '@utils';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsDate,
   IsEmail,
@@ -81,6 +81,7 @@ export class CreateUserDto {
   @MaxLength(VALIDATOR_SETTINGS.NAME_MAX_LENGTH, {
     message: errorKeys.users.FirstName_Too_Long,
   })
+  @Transform(({ value }) => (value === '' ? null : value))
   public firstName?: string | null;
 
   @IsOptional()
@@ -90,6 +91,7 @@ export class CreateUserDto {
   @MaxLength(VALIDATOR_SETTINGS.NAME_MAX_LENGTH, {
     message: errorKeys.users.LastName_Too_Long,
   })
+  @Transform(({ value }) => (value === '' ? null : value))
   public lastName?: string | null;
 
   @IsOptional()
@@ -101,6 +103,7 @@ export class CreateUserDto {
   @IsPasswordEmptyOrValid({
     message: errorKeys.users.Invalid_Password,
   })
+  @Transform(({ value }) => (value === '' ? null : value))
   public password?: string;
 }
 

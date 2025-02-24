@@ -3,7 +3,7 @@ import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsDate, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MaxLength } from 'class-validator';
 import { IUserDto } from '../interfaces/IUser.dto';
 
@@ -48,6 +48,7 @@ export class UpdateUserDto {
   @MaxLength(VALIDATOR_SETTINGS.NAME_MAX_LENGTH, {
     message: errorKeys.users.FirstName_Too_Long,
   })
+  @Transform(({ value }) => (value === '' ? null : value))
   public firstName?: string | null;
 
   @IsOptional()
@@ -57,6 +58,7 @@ export class UpdateUserDto {
   @MaxLength(VALIDATOR_SETTINGS.NAME_MAX_LENGTH, {
     message: errorKeys.users.LastName_Too_Long,
   })
+  @Transform(({ value }) => (value === '' ? null : value))
   public lastName?: string | null;
 
   @IsOptional()
