@@ -22,12 +22,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatStepperModule, StepperOrientation } from '@angular/material/stepper';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PATHS } from 'src/app/app.routes';
+import { SnackBarService } from 'src/app/components/static/snackbar/snack-bar.service';
 import { VALIDATOR_SETTINGS } from 'src/core/consts';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { BrowserWindowService } from 'src/services/browser/browser-window.service';
-import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { GuidUtils } from 'src/utils/guid.utils';
 import { ControlValidators } from 'src/validators/control.validators';
 import { PasswordValidator } from 'src/validators/password.validator';
@@ -191,7 +192,7 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
     const userUuid = params['userId'];
 
     if (!GuidUtils.isValidGuid(userUuid)) {
-      this._router.navigate(['/not-found']);
+      this._router.navigate(['/' + PATHS.NotFound]);
       this._snackBarService.translateAndShowError('Errors/Invalid_Activated_Account_Identifier');
       return;
     }

@@ -1,5 +1,5 @@
 import { ErrorHandler, Injectable } from '@angular/core';
-import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
+import { SnackBarService } from 'src/app/components/static/snackbar/snack-bar.service';
 import { StringUtils } from 'src/utils/string.utils';
 
 @Injectable({

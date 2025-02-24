@@ -11,6 +11,7 @@ import {
   IGridColumn,
   IGridService,
 } from 'src/app/components/static/grid/grid/services/grid-service.interface';
+import { SnackBarService } from 'src/app/components/static/snackbar/snack-bar.service';
 import { DeleteResult } from 'src/core/delete-result.enum';
 import { SystemPermissionValue } from 'src/core/system-permission.enum';
 import { IDialogSettings } from 'src/interfaces/common/dialog.settings';
@@ -19,7 +20,6 @@ import { IMenuItem } from 'src/interfaces/menu/menu-item';
 import { MenuItemClickResult } from 'src/interfaces/menu/menu.enum';
 import { PermissionService } from 'src/services/auth/permission.service';
 import { DialogService } from 'src/services/dialog/dialog.service';
-import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { CultureService } from 'src/services/translate/culture.service';
 import { TranslationService } from 'src/services/translate/translation.service';
 import { ManagementMenuEditUser } from '../../management.menu';

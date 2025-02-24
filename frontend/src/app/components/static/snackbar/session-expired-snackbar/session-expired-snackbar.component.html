@@ -1,0 +1,21 @@
+<div class="container">
+  <div class="row mb-2">
+    <div class="col" [innerHtml]="'Errors/Session_Expired' | gmessage"></div>
+  </div>
+  <div matSnackBarActions>
+    <button
+      mat-button
+      matSnackBarAction
+      (click)="snackBarRef.dismiss()"
+      class="on-error col-auto me-auto">
+      {{ 'Shared/BtnClose' | gmessage }}
+    </button>
+    <button
+      mat-button
+      matSnackBarAction
+      (click)="snackBarRef.dismissWithAction()"
+      class="on-error col-auto">
+      <mat-icon>lock_reset</mat-icon>{{ 'Header/Menu/RefreshSession' | gmessage }}
+    </button>
+  </div>
+</div>

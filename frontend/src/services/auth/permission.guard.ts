@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { SystemPermissionValue } from 'src/core/system-permission.enum';
-import { SnackBarService } from '../snackbar/snack-bar.service';
+import { SnackBarService } from '../../app/components/static/snackbar/snack-bar.service';
 import { AuthService } from './auth.service';
 import { PermissionService } from './permission.service';
 
@@ -26,7 +26,7 @@ export class PermissionGuard {
     // when no permissions explicitly set for this route, check for parents permissions
     const checkSession = route.data?.['checkSession'] || this.getParentCheckSession(route);
     if (checkSession === true && this._authService.isSessionValid() !== true) {
-      this._snackBarService.translateAndShowError('Errors/Session_Expired');
+      this._snackBarService.showSessionExpired();
       return false;
     }
 

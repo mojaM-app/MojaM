@@ -1,10 +1,10 @@
 import { Router } from '@angular/router';
+import { SnackBarService } from 'src/app/components/static/snackbar/snack-bar.service';
 import { GdatePipe } from 'src/pipes/gdate.pipe';
 import { GdatetimePipe } from 'src/pipes/gdatetime.pipe';
 import { GtimePipe } from 'src/pipes/gtime.pipe';
 import { PermissionService } from 'src/services/auth/permission.service';
 import { DialogService } from 'src/services/dialog/dialog.service';
-import { SnackBarService } from 'src/services/snackbar/snack-bar.service';
 import { CultureService } from 'src/services/translate/culture.service';
 import { TranslationService } from 'src/services/translate/translation.service';
 

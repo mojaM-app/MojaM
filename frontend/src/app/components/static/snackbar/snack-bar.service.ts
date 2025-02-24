@@ -2,7 +2,10 @@ import { inject, Injectable } from '@angular/core';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { concatMap, distinctUntilChanged, map, Observable, of, Subject, tap } from 'rxjs';
 import { StringUtils } from 'src/utils/string.utils';
-import { TranslationService } from '../translate/translation.service';
+import { TranslationService } from '../../../../services/translate/translation.service';
+import { ISnackbarAction } from './interfaces/ISnackbarAction';
+import { SessionExpiredSnackbarComponent } from './session-expired-snackbar/session-expired-snackbar.component';
+import { SnackBarActionTyp } from './snackbar-action-typ.enum';
 
 export interface IToast {
   message: string;
@@ -15,8 +18,10 @@ export interface IToast {
   providedIn: 'root',
 })
 export class SnackBarService {
-  private _snackBar = inject(MatSnackBar);
-  private _emitToast = new Subject<IToast>();
+  public readonly onActionCalled = new Subject<ISnackbarAction>();
+
+  private readonly _snackBar = inject(MatSnackBar);
+  private readonly _emitToast = new Subject<IToast>();
 
   public constructor(private _translationService: TranslationService) {
     this._emitToast
@@ -65,6 +70,17 @@ export class SnackBarService {
     message = this._translationService.get(message, interpolateParams);
 
     return this.showError(message);
+  }
+
+  public showSessionExpired(): void {
+    const snackBarRef = this._snackBar.openFromComponent(SessionExpiredSnackbarComponent, {
+      duration: 5000,
+      panelClass: ['error'],
+    });
+
+    snackBarRef.onAction().subscribe(() => {
+      this.onActionCalled.next({ type: SnackBarActionTyp.CallRefreshSession });
+    });
   }
 
   private waitForSnackbarDismiss(message: IToast): Observable<IToast> {
