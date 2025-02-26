@@ -10,6 +10,7 @@
     "mike-co.import-sorter",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
-    "eamodio.gitlens"
+    "eamodio.gitlens",
+    "infinity1207.angular2-switcher",
   ]
 }
