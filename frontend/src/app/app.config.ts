@@ -11,9 +11,19 @@ import {
   provideAppInitializer,
   provideZoneChangeDetection,
 } from '@angular/core';
+import {
+  MAT_MOMENT_DATE_ADAPTER_OPTIONS,
+  MAT_MOMENT_DATE_FORMATS,
+  MomentDateAdapter,
+} from '@angular/material-moment-adapter';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
+import {
+  DateAdapter,
+  MAT_DATE_FORMATS,
+  MAT_DATE_LOCALE,
+  MatDateFormats,
+} from '@angular/material/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorIntl } from '@angular/material/paginator';
@@ -39,6 +49,22 @@ import { TranslationService } from 'src/services/translate/translation.service';
 import { routes } from './app.routes';
 
 export const IS_MOBILE = new InjectionToken<boolean>('isMobile');
+
+export const DATE_FORMATS = {
+  ...MAT_MOMENT_DATE_FORMATS,
+  parse: {
+    dateInput: 'DD.MM.YYYY',
+    timeInput: 'HH:mm',
+  },
+  display: {
+    dateInput: 'DD.MM.YYYY',
+    timeInput: 'HH:mm',
+    monthLabel: 'MMMM',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+} satisfies MatDateFormats;
 
 const q = Quill;
 q.register({ 'modules/mention': QuillMention }, true);
@@ -87,12 +113,18 @@ export const appConfig: ApplicationConfig = {
       provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
       useValue: { subscriptSizing: 'dynamic' },
     },
-    provideNativeDateAdapter(),
     { provide: LOCALE_ID, useValue: 'pl-PL' },
     {
       provide: MAT_DATE_LOCALE,
       useValue: 'pl-PL',
     },
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
+    },
+    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
+    { provide: MAT_DATE_FORMATS, useValue: DATE_FORMATS },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthorizationHeaderInterceptor,
