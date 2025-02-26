@@ -7,6 +7,7 @@ import {
   inject,
   InjectionToken,
   isDevMode,
+  LOCALE_ID,
   provideAppInitializer,
   provideZoneChangeDetection,
 } from '@angular/core';
@@ -87,6 +88,7 @@ export const appConfig: ApplicationConfig = {
       useValue: { subscriptSizing: 'dynamic' },
     },
     provideNativeDateAdapter(),
+    { provide: LOCALE_ID, useValue: 'pl-PL' },
     {
       provide: MAT_DATE_LOCALE,
       useValue: 'pl-PL',
