@@ -12,5 +12,6 @@
     "esbenp.prettier-vscode",
     "eamodio.gitlens",
     "infinity1207.angular2-switcher",
+    "yoavbls.pretty-ts-errors"
   ]
 }
