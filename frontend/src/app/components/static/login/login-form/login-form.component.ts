@@ -31,7 +31,7 @@ import { AuthService } from 'src/services/auth/auth.service';
 import { conditionalValidator } from 'src/validators/conditional.validator';
 import { phoneValidator } from 'src/validators/phone.validator';
 import { RequestResetPasswordDto } from '../../reset-password/models/reset-password.models';
-import { ILoginForm, LoginFormControlNames, LoginFormSteps } from './login.form';
+import { ILoginForm, LoginFormSteps } from './login.form';
 
 @Component({
   selector: 'app-login-form',
@@ -50,13 +50,12 @@ import { ILoginForm, LoginFormControlNames, LoginFormSteps } from './login.form'
 })
 export class LoginFormComponent extends WithForm<ILoginForm>() {
   public afterLogIn = output<boolean>();
-  public readonly formControlNames = LoginFormControlNames;
-  public readonly formSteps = LoginFormSteps;
 
-  public showStep = signal<LoginFormSteps>(LoginFormSteps.EnterEmail);
-  public loginError = signal<string | undefined>(undefined);
-  public showResetPasswordButton = signal<boolean>(false);
-  public hidePassword = signal(true);
+  protected readonly formSteps = LoginFormSteps;
+  protected showStep = signal<LoginFormSteps>(LoginFormSteps.EnterEmail);
+  protected loginError = signal<string | undefined>(undefined);
+  protected showResetPasswordButton = signal<boolean>(false);
+  protected hidePassword = signal(true);
 
   private _emailInput = viewChild('emailInput', { read: ElementRef });
   private _phoneInput = viewChild('phoneInput', { read: ElementRef });

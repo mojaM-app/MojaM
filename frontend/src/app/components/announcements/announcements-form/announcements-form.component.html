@@ -8,7 +8,7 @@
             [matDatepicker]="picker"
             matInput
             [placeholder]="'Announcements/Form/ValidFromPlaceholder' | gmessage"
-            [formControlName]="formControlNames.validFromDate" />
+            [formControl]="formGroup.controls.validFromDate" />
           <mat-hint>{{ 'Announcements/Form/ValidFromHint' | gmessage }}</mat-hint>
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
@@ -20,8 +20,8 @@
         <mat-label>{{ 'Announcements/Form/Announcements' | gmessage }}</mat-label>
       </div>
     </div>
-    <ng-container [formArrayName]="formControlNames.items">
-      @for (item of array(formControlNames.items).controls; track item; let i = $index) {
+    <ng-container [formArrayName]="getName(controls.items)">
+      @for (item of formGroup.controls.items.controls; track item; let i = $index) {
         <ng-container [formGroupName]="i">
           @if (isMobile) {
             <app-announcement-item-mobile

@@ -7,11 +7,3 @@ export interface IUserProfileForm {
   lastName: FormControl<string | null>;
   joiningDate: FormControl<Date | null>;
 }
-
-export const UserProfileFormControlNames: { [K in keyof IUserProfileForm]: string } = {
-  email: 'email',
-  phone: 'phone',
-  firstName: 'firstName',
-  lastName: 'lastName',
-  joiningDate: 'joiningDate',
-} as const;

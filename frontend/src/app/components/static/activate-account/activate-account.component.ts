@@ -30,19 +30,16 @@ import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { BrowserWindowService } from 'src/services/browser/browser-window.service';
 import { GuidUtils } from 'src/utils/guid.utils';
+import { ObjectUtils } from 'src/utils/object.utils';
 import { ControlValidators } from 'src/validators/control.validators';
 import { PasswordValidator } from 'src/validators/password.validator';
 import { NewsMenu } from '../../news/news.menu';
 import { ResetPasswordControlComponent } from '../reset-password/reset-password-control/reset-password-control.component';
 import {
-  ActivateAccountFormGroupNames,
   IActivateAccountForm,
-  IdentityFormGroupControlNames,
   IIdentityFormGroup,
   ISetPasswordFormGroup,
   IUserInfoFormGroup,
-  SetPasswordFormGroupControlNames,
-  UserInfoFormGroupControlNames,
 } from './activate-account.form';
 import { IActivateAccountResult, IUserToActivate } from './interfaces/activate-account';
 import { ActivateUserDto } from './models/user.model';
@@ -70,13 +67,9 @@ import { ActivateAccountService } from './services/activate-account.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() implements OnInit {
-  public readonly formGroupNames = ActivateAccountFormGroupNames;
-  public readonly identityFormGroupControlNames = IdentityFormGroupControlNames;
-  public readonly userInfoFormGroupControlNames = UserInfoFormGroupControlNames;
-  public readonly setPasswordFormGroupControlNames = SetPasswordFormGroupControlNames;
-  public readonly maxLengths = VALIDATOR_SETTINGS;
-  public readonly user = model<IUserToActivate>();
-  public readonly stepperOrientation: WritableSignal<StepperOrientation> =
+  protected readonly maxLengths = VALIDATOR_SETTINGS;
+  protected readonly user = model<IUserToActivate>();
+  protected readonly stepperOrientation: WritableSignal<StepperOrientation> =
     model<StepperOrientation>('horizontal');
 
   public constructor(
@@ -87,8 +80,8 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
     private _activateAccountService: ActivateAccountService,
     private _browserWindowService: BrowserWindowService
   ) {
-    const formGroup = formBuilder.group<IActivateAccountForm>({
-      identity: formBuilder.group({
+    const form = formBuilder.group<IActivateAccountForm>({
+      identity: formBuilder.group<IIdentityFormGroup>({
         email: new FormControl<string | null>(null, {
           nonNullable: true,
           validators: [
@@ -111,7 +104,7 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
           nonNullable: true,
         }),
       }),
-      userInfo: formBuilder.group({
+      userInfo: formBuilder.group<IUserInfoFormGroup>({
         firstName: new FormControl<string | null>(null, {
           nonNullable: true,
           validators: [
@@ -130,7 +123,7 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
           nonNullable: true,
         }),
       }),
-      setPassword: formBuilder.group(
+      setPassword: formBuilder.group<ISetPasswordFormGroup>(
         {
           password: new FormControl<string | null>(null, {
             nonNullable: true,
@@ -149,20 +142,20 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
         {
           validators: [
             ControlValidators.matchControlsValue(
-              SetPasswordFormGroupControlNames.password,
-              SetPasswordFormGroupControlNames.confirmPassword
+              ObjectUtils.nameOf<ISetPasswordFormGroup>(p => p.password),
+              ObjectUtils.nameOf<ISetPasswordFormGroup>(p => p.confirmPassword)
             ),
           ],
         }
       ),
     } satisfies IActivateAccountForm);
 
-    super(formGroup);
+    super(form);
 
     effect(() => {
       const model = this.user();
       if (model) {
-        formGroup.patchValue({
+        this.formGroup.patchValue({
           identity: {
             email: model.email,
             emailConfirmed: false,
@@ -220,7 +213,7 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
     });
   }
 
-  public save(): void {
+  protected save(): void {
     const params = this._route.snapshot.params;
     const userId = params['userId'];
 
@@ -229,7 +222,7 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
       return;
     }
 
-    const dto = new ActivateUserDto(this.controls as unknown as IActivateAccountForm);
+    const dto = new ActivateUserDto(this.formGroup);
     this._activateAccountService
       .activate(userId, dto)
       .subscribe((result: IActivateAccountResult) => {
@@ -246,7 +239,7 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
       });
   }
 
-  public cancel(): void {
+  protected cancel(): void {
     this.navigateToHomePage();
   }
 

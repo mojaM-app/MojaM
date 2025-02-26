@@ -18,7 +18,7 @@
               <mat-slide-toggle
                 #darkModeSwitch
                 id="is-dark-mode-input"
-                [formControlName]="formControlNames.isDarkMode"
+                [formControl]="formGroup.controls.isDarkMode"
                 aria-labelledby="is-dark-mode-input-label"></mat-slide-toggle>
               {{ 'Settings/DarkTheme' | gmessage }}
             </div>
@@ -41,7 +41,7 @@
                 <input
                   matSliderThumb
                   id="font-size-slider"
-                  [formControlName]="formControlNames.fontSize"
+                  [formControl]="formGroup.controls.fontSize"
                   aria-labelledby="font-size-slider-label" />
               </mat-slider>
             </div>

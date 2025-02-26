@@ -9,9 +9,9 @@
             type="text"
             matInput
             [placeholder]="'Login/EmailPlaceholder' | gmessage"
-            [formControlName]="formControlNames.email" />
+            [formControl]="formGroup.controls.email" />
           <mat-hint>{{ 'Login/EmailHint' | gmessage }}</mat-hint>
-          @if (control(formControlNames.email).errors) {
+          @if (formGroup.controls.email.errors) {
             <mat-error>{{ 'Login/EmailHint' | gmessage }}</mat-error>
           }
         </mat-form-field>
@@ -33,9 +33,9 @@
             type="text"
             matInput
             [placeholder]="'Login/PhonePlaceholder' | gmessage"
-            [formControlName]="formControlNames.phone" />
+            [formControl]="formGroup.controls.phone" />
           <mat-hint>{{ 'Login/PhoneHint' | gmessage }}</mat-hint>
-          @if (control(formControlNames.phone).errors) {
+          @if (formGroup.controls.phone.errors) {
             <mat-error>{{ 'Login/PhoneHint' | gmessage }}</mat-error>
           }
         </mat-form-field>
@@ -77,7 +77,7 @@
             matInput
             [type]="hidePassword() ? 'password' : 'text'"
             [placeholder]="'Login/PasswordPlaceholder' | gmessage"
-            [formControlName]="formControlNames.password" />
+            [formControl]="formGroup.controls.password" />
           <button
             mat-icon-button
             matSuffix

@@ -23,11 +23,11 @@
                 </div>
               </div>
             </mat-step>
-            <!-- <mat-step
+            <mat-step
               [label]="'ActivateAccount/Steps/Identity/Title' | gmessage"
-              [stepControl]="group(formGroupNames.identity)"
+              [stepControl]="formGroup.controls.identity"
               [errorMessage]="'ActivateAccount/Steps/Identity/TitleErrorMessage' | gmessage">
-              <div [formGroupName]="formGroupNames.identity" class="mt-3">
+              <div [formGroup]="formGroup.controls.identity" class="mt-3">
                 <div class="row">
                   <div class="col-12">
                     <p
@@ -43,12 +43,12 @@
                         matInput
                         readonly
                         type="email"
-                        [formControlName]="identityFormGroupControlNames.email" />
+                        [formControl]="formGroup.controls.identity.controls.email" />
                     </mat-form-field>
                   </div>
                   <div class="col-12 mb-3">
                     <mat-checkbox
-                      [formControlName]="identityFormGroupControlNames.emailConfirmed"
+                      [formControl]="formGroup.controls.identity.controls.emailConfirmed"
                       >{{
                         'ActivateAccount/Steps/Identity/EmailConfirmed' | gmessage
                       }}</mat-checkbox
@@ -63,12 +63,12 @@
                         matInput
                         readonly
                         type="tel"
-                        [formControlName]="identityFormGroupControlNames.phone" />
+                        [formControl]="formGroup.controls.identity.controls.phone" />
                     </mat-form-field>
                   </div>
                   <div class="col-12 mb-3">
                     <mat-checkbox
-                      [formControlName]="identityFormGroupControlNames.phoneConfirmed"
+                      [formControl]="formGroup.controls.identity.controls.phoneConfirmed"
                       >{{
                         'ActivateAccount/Steps/Identity/PhoneConfirmed' | gmessage
                       }}</mat-checkbox
@@ -91,12 +91,12 @@
                   </div>
                 </div>
               </div>
-            </mat-step> -->
+            </mat-step>
             <mat-step
               [label]="'ActivateAccount/Steps/UserInfo/Title' | gmessage"
-              [stepControl]="group(formGroupNames.userInfo)"
+              [stepControl]="formGroup.controls.userInfo"
               [errorMessage]="'ActivateAccount/Steps/UserInfo/TitleErrorMessage' | gmessage">
-              <div [formGroupName]="formGroupNames.userInfo" class="mt-3">
+              <div [formGroup]="formGroup.controls.userInfo" class="mt-3">
                 <div class="row">
                   <div class="col-12">
                     <p
@@ -112,12 +112,8 @@
                         matInput
                         required
                         [placeholder]="'Management/UserForm/FirstNamePlaceholder' | gmessage"
-                        [formControlName]="userInfoFormGroupControlNames.firstName" />
-                      @if (
-                        group(formGroupNames.userInfo).controls[
-                          userInfoFormGroupControlNames.firstName
-                        ].errors
-                      ) {
+                        [formControl]="formGroup.controls.userInfo.controls.firstName" />
+                      @if (formGroup.controls.userInfo.controls.firstName.errors) {
                         <mat-error>{{
                           'Management/UserForm/FirstNameHint'
                             | gmessage: { maxLength: maxLengths.NAME_MAX_LENGTH }
@@ -132,12 +128,8 @@
                         matInput
                         required
                         [placeholder]="'Management/UserForm/LastNamePlaceholder' | gmessage"
-                        [formControlName]="userInfoFormGroupControlNames.lastName" />
-                      @if (
-                        group(formGroupNames.userInfo).controls[
-                          userInfoFormGroupControlNames.lastName
-                        ].errors
-                      ) {
+                        [formControl]="formGroup.controls.userInfo.controls.lastName" />
+                      @if (formGroup.controls.userInfo.controls.lastName.errors) {
                         <mat-error>{{
                           'Management/UserForm/LastNameHint'
                             | gmessage: { maxLength: maxLengths.NAME_MAX_LENGTH }
@@ -159,12 +151,8 @@
                         matInput
                         [matDatepicker]="picker"
                         [placeholder]="'Management/UserForm/JoiningDatePlaceholder' | gmessage"
-                        [formControlName]="userInfoFormGroupControlNames.joiningDate" />
-                      @if (
-                        group(formGroupNames.userInfo).controls[
-                          userInfoFormGroupControlNames.joiningDate
-                        ].errors
-                      ) {
+                        [formControl]="formGroup.controls.userInfo.controls.joiningDate" />
+                      @if (formGroup.controls.userInfo.controls.joiningDate.errors) {
                         <mat-error>{{ 'Management/UserForm/JoiningDateHint' }}</mat-error>
                       }
                       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -186,9 +174,9 @@
             </mat-step>
             <mat-step
               [label]="'ActivateAccount/Steps/SetPassword/Title' | gmessage"
-              [stepControl]="group(formGroupNames.setPassword)"
+              [stepControl]="formGroup.controls.setPassword"
               [errorMessage]="'ActivateAccount/Steps/SetPassword/TitleErrorMessage' | gmessage">
-              <div [formGroupName]="formGroupNames.setPassword" class="mt-3">
+              <div [formGroup]="formGroup.controls.setPassword" class="mt-3">
                 <div class="row">
                   <div class="col-12">
                     <p
@@ -197,7 +185,7 @@
                   </div>
                 </div>
                 <div class="row mb-3">
-                  <app-reset-password-control [formGroup]="group(formGroupNames.setPassword)">
+                  <app-reset-password-control [formGroup]="formGroup.controls.setPassword">
                   </app-reset-password-control>
                 </div>
                 <div class="row">

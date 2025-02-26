@@ -40,7 +40,7 @@ import { UserService } from '../services/user.service';
 import { AddUserDto } from './models/add-user.model';
 import { EditUserDto } from './models/edit-user.model';
 import { UserDto } from './models/user.model';
-import { IUserForm, UserFormControlNames } from './user.form';
+import { IUserForm } from './user.form';
 
 @Component({
   selector: 'app-user-form',
@@ -62,11 +62,10 @@ import { IUserForm, UserFormControlNames } from './user.form';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserFormComponent extends WithUnsubscribe(WithForm<IUserForm>()) implements OnInit {
-  public readonly formControlNames = UserFormControlNames;
-  public readonly formModeTypes = FormMode;
-  public readonly maxLengths = VALIDATOR_SETTINGS;
-  public readonly user = model<IUser>();
-  public readonly formMode = signal<FormMode>(FormMode.Add);
+  protected readonly formModeTypes = FormMode;
+  protected readonly maxLengths = VALIDATOR_SETTINGS;
+  protected readonly user = model<IUser>();
+  protected readonly formMode = signal<FormMode>(FormMode.Add);
 
   public constructor(
     @Inject(IS_MOBILE) public isMobile: boolean,
@@ -157,7 +156,7 @@ export class UserFormComponent extends WithUnsubscribe(WithForm<IUserForm>()) im
     }
   }
 
-  public save(): void {
+  protected save(): void {
     if (!this.isReadyToSubmit()) {
       this.showErrors();
       return;
@@ -176,7 +175,7 @@ export class UserFormComponent extends WithUnsubscribe(WithForm<IUserForm>()) im
     }
   }
 
-  public cancel(): void {
+  protected cancel(): void {
     this.navigateToUserList();
   }
 

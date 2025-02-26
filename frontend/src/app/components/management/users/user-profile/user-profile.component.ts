@@ -28,7 +28,7 @@ import { GuidUtils } from 'src/utils/guid.utils';
 import { UserProfileService } from '../services/user-profile.service';
 import { IUserProfile } from './interfaces/user-profile.interfaces';
 import { UpdateUserProfileDto } from './models/update-user-profile.model';
-import { IUserProfileForm, UserProfileFormControlNames } from './user-profile.form';
+import { IUserProfileForm } from './user-profile.form';
 
 @Component({
   selector: 'app-user-profile',
@@ -54,7 +54,6 @@ export class UserProfileComponent
   implements OnInit
 {
   protected readonly isLoaded = signal<boolean>(false);
-  protected readonly formControlNames = UserProfileFormControlNames;
   protected readonly maxLengths = VALIDATOR_SETTINGS;
   private readonly _userId: string | undefined = undefined;
 

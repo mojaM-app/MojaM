@@ -30,7 +30,7 @@ import { AddAnnouncementsDto } from '../models/add-announcements.model';
 export class AddAnnouncementsComponent extends WithUnsubscribe() implements OnInit {
   public readonly announcements = model<AddAnnouncementsDto>();
 
-  private _formComponent = viewChild(AnnouncementsFormComponent);
+  private readonly _formComponent = viewChild(AnnouncementsFormComponent);
 
   public constructor(
     authService: AuthService,

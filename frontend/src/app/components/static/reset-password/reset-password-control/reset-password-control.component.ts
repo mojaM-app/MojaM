@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
 import {
-  FormControl,
+  AbstractControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
@@ -12,7 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { errorNames } from 'src/validators/error-names.const';
-import { IResetPasswordForm, ResetPasswordFormControlNames } from '../reset-password.form';
+import { IResetPasswordForm } from '../reset-password.form';
 
 @Component({
   selector: 'app-reset-password-control',
@@ -30,34 +30,26 @@ import { IResetPasswordForm, ResetPasswordFormControlNames } from '../reset-pass
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetPasswordControlComponent {
-  public readonly errorNames = errorNames;
-  public readonly formControlNames = ResetPasswordFormControlNames;
-  public readonly hideConfirmPassword = signal(true);
-  public readonly hidePassword = signal(true);
-  public formGroup = input.required<FormGroup<IResetPasswordForm>>();
+  public readonly formGroup = input.required<FormGroup<IResetPasswordForm>>();
 
-  public get controls(): IResetPasswordForm {
-    return this.formGroup().controls;
-  }
+  protected readonly errorNames = errorNames;
+  protected readonly hideConfirmPassword = signal(true);
+  protected readonly hidePassword = signal(true);
 
-  public control(name: string): FormControl<any> {
-    return (this.controls as any)[name] as FormControl<any>;
-  }
-
-  public getErrors(name: string): ValidationErrors {
-    return this.control(name)?.errors || {};
+  public getControlErrors(control: AbstractControl): ValidationErrors {
+    return control?.errors ?? {};
   }
 
   public getFormGroupErrors(): ValidationErrors {
-    return this.formGroup().errors || {};
+    return this.formGroup().errors ?? {};
   }
 
-  public togglePasswordVisibility(event: MouseEvent): void {
+  protected togglePasswordVisibility(event: MouseEvent): void {
     this.hidePassword.set(!this.hidePassword());
     event.stopPropagation();
   }
 
-  public toggleConfirmPasswordVisibility(event: MouseEvent): void {
+  protected toggleConfirmPasswordVisibility(event: MouseEvent): void {
     this.hideConfirmPassword.set(!this.hideConfirmPassword());
     event.stopPropagation();
   }

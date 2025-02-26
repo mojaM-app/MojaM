@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-import { FormArray, FormControl, FormGroup, ValidationErrors } from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+} from '@angular/forms';
 import { errorNames } from 'src/validators/error-names.const';
 import { Constructor, Empty, IForm } from './shared.mixin';
 
@@ -39,32 +45,46 @@ export function WithForm<
       return this.formGroup.errors != null;
     }
 
-    public control<K extends keyof TFormType>(name: K | string): FormControl<any> {
-      return this.formGroup.controls[name] as FormControl<any>;
+    public showErrors(): void {
+      this.formGroup.markAllAsTouched();
     }
 
-    public group<K extends keyof TFormType>(name: K | string): FormGroup<any> {
-      return this.formGroup.controls[name] as FormGroup<any>;
-    }
-
-    public array<K extends keyof TFormType>(name: K | string): FormArray<any> {
-      return this.formGroup.controls[name] as FormArray<any>;
-    }
-
-    public getErrors<K extends keyof TFormType>(name: K | string): ValidationErrors {
-      return this.control(name)?.errors || {};
-    }
-
-    public getFormGroupErrors(): ValidationErrors {
-      return this.formGroup.errors || {};
-    }
-
-    public isReadyToSubmit(): boolean {
+    protected isReadyToSubmit(): boolean {
       return this.isValid && !this.hasErrors;
     }
 
-    public showErrors(): void {
-      this.formGroup.markAllAsTouched();
+    protected getFormGroupErrors(): ValidationErrors {
+      return this.formGroup.errors || {};
+    }
+
+    protected getName(control: AbstractControl): string {
+      const group = control.parent as FormGroup;
+
+      if (!group) {
+        throw new Error('Control must have a parent FormGroup.');
+      }
+
+      for (const key of Object.keys(group.controls)) {
+        const childControl = group.get(key);
+
+        if (childControl === control) {
+          return key;
+        }
+      }
+
+      throw new Error('Control must be a child of the parent FormGroup.');
+    }
+
+    private control<K extends keyof TFormType>(name: K | string): FormControl<any> {
+      return this.formGroup.controls[name] as FormControl<any>;
+    }
+
+    private group<K extends keyof TFormType>(name: K | string): FormGroup<any> {
+      return this.formGroup.controls[name] as FormGroup<any>;
+    }
+
+    private array<K extends keyof TFormType>(name: K | string): FormArray<any> {
+      return this.formGroup.controls[name] as FormArray<any>;
     }
   };
 }

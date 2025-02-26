@@ -16,12 +16,13 @@ import { SnackBarService } from 'src/app/components/static/snackbar/snack-bar.se
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { GuidUtils } from 'src/utils/guid.utils';
+import { ObjectUtils } from 'src/utils/object.utils';
 import { ControlValidators } from 'src/validators/control.validators';
 import { PasswordValidator } from 'src/validators/password.validator';
 import { ICheckResetPasswordTokenResult } from './interfaces/reset-password.interfaces';
 import { ResetPasswordDto } from './models/reset-password.models';
 import { ResetPasswordControlComponent } from './reset-password-control/reset-password-control.component';
-import { IResetPasswordForm, ResetPasswordFormControlNames } from './reset-password.form';
+import { IResetPasswordForm } from './reset-password.form';
 
 @Component({
   selector: 'app-reset-password',
@@ -40,9 +41,8 @@ import { IResetPasswordForm, ResetPasswordFormControlNames } from './reset-passw
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetPasswordComponent extends WithForm<IResetPasswordForm>() implements OnInit {
-  public readonly isTokenValid = signal<boolean | null>(null);
-  public readonly userEmail = signal<string | undefined>(undefined);
-  public readonly formControlNames = ResetPasswordFormControlNames;
+  protected readonly isTokenValid = signal<boolean | null>(null);
+  protected readonly userEmail = signal<string | undefined>(undefined);
 
   public constructor(
     formBuilder: FormBuilder,
@@ -66,8 +66,8 @@ export class ResetPasswordComponent extends WithForm<IResetPasswordForm>() imple
       {
         validators: [
           ControlValidators.matchControlsValue(
-            ResetPasswordFormControlNames.password,
-            ResetPasswordFormControlNames.confirmPassword
+            ObjectUtils.nameOf<IResetPasswordForm>(p => p.password),
+            ObjectUtils.nameOf<IResetPasswordForm>(p => p.confirmPassword)
           ),
         ],
       }

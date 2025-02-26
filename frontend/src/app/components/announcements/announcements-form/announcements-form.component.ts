@@ -23,12 +23,7 @@ import { PipesModule } from 'src/pipes/pipes.module';
 import { AnnouncementsDto } from '../models/announcements.model';
 import { AnnouncementItemDesktopComponent } from './announcement-item/announcement-item-desktop/announcement-item-desktop.component';
 import { AnnouncementItemMobileComponent } from './announcement-item/announcement-item-mobile/announcement-item-mobile.component';
-import {
-  AnnouncementItemFormControlNames,
-  AnnouncementsFormControlNames,
-  IAnnouncementsForm,
-  IAnnouncementsItemForm,
-} from './announcements.form';
+import { IAnnouncementsForm, IAnnouncementsItemForm } from './announcements.form';
 
 @Component({
   selector: 'app-announcements-form',
@@ -51,9 +46,6 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
-  public readonly formControlNames = AnnouncementsFormControlNames;
-  public readonly itemsFormControlNames = AnnouncementItemFormControlNames;
-
   public readonly announcements = input.required<AnnouncementsDto>();
 
   public constructor(
@@ -61,19 +53,19 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
     formBuilder: FormBuilder,
     private _snackBarService: SnackBarService
   ) {
-    const formGroup = formBuilder.group<IAnnouncementsForm>({
-      validFromDate: new FormControl<Date | null>(null, {
-        nonNullable: true,
-      }),
-      items: new FormArray<FormGroup<IAnnouncementsItemForm>>([]),
-    } satisfies IAnnouncementsForm);
-
-    super(formGroup);
+    super(
+      formBuilder.group<IAnnouncementsForm>({
+        validFromDate: new FormControl<Date | null>(null, {
+          nonNullable: true,
+        }),
+        items: new FormArray<FormGroup<IAnnouncementsItemForm>>([]),
+      } satisfies IAnnouncementsForm)
+    );
 
     effect(() => {
       const model = this.announcements();
       if (model) {
-        formGroup.patchValue({
+        this.formGroup.patchValue({
           validFromDate: model.validFromDate ?? null,
         } satisfies AnnouncementsDto);
 
@@ -84,40 +76,8 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
     });
   }
 
-  public addItem(id?: string, content?: string): void {
-    this.array(this.formControlNames.items).push(
-      new FormGroup<IAnnouncementsItemForm>({
-        id: new FormControl<string | undefined>(id, {
-          nonNullable: true,
-        }),
-        content: new FormControl<string | null>(content ?? null, {
-          validators: [
-            Validators.required,
-            Validators.maxLength(VALIDATOR_SETTINGS.ANNOUNCEMENT_ITEM_CONTENT_MAX_LENGTH),
-          ],
-        }),
-      } satisfies IAnnouncementsItemForm)
-    );
-  }
-
-  public removeItem(index: number): void {
-    const items = this.array(this.formControlNames.items);
-    items.removeAt(index);
-  }
-
-  public moveItem({ index, direction }: { index: number; direction: 'up' | 'down' }): void {
-    const items = this.array(this.formControlNames.items);
-    const newIndex = direction === 'up' ? index - 1 : index + 1;
-    if (newIndex < 0 || newIndex >= items.length) {
-      return;
-    }
-    const item = items.at(index);
-    items.removeAt(index);
-    items.insert(newIndex, item);
-  }
-
   public containsValidData(): boolean {
-    const items = this.array(this.formControlNames.items);
+    const items = this.formGroup.controls.items;
 
     if ((items?.length ?? 0) === 0) {
       this._snackBarService.translateAndShowError({
@@ -152,5 +112,36 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
     }
 
     return this.isReadyToSubmit();
+  }
+
+  protected addItem(id?: string, content?: string): void {
+    this.formGroup.controls.items.push(
+      new FormGroup<IAnnouncementsItemForm>({
+        id: new FormControl<string | undefined>(id, {
+          nonNullable: true,
+        }),
+        content: new FormControl<string | null>(content ?? null, {
+          validators: [
+            Validators.required,
+            Validators.maxLength(VALIDATOR_SETTINGS.ANNOUNCEMENT_ITEM_CONTENT_MAX_LENGTH),
+          ],
+        }),
+      } satisfies IAnnouncementsItemForm)
+    );
+  }
+
+  protected removeItem(index: number): void {
+    this.formGroup.controls.items.removeAt(index);
+  }
+
+  protected moveItem({ index, direction }: { index: number; direction: 'up' | 'down' }): void {
+    const items = this.formGroup.controls.items;
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= items.length) {
+      return;
+    }
+    const item = items.at(index);
+    items.removeAt(index);
+    items.insert(newIndex, item);
   }
 }

@@ -15,8 +15,8 @@
                     <input
                       matInput
                       [placeholder]="'Management/UserForm/FirstNamePlaceholder' | gmessage"
-                      [formControlName]="formControlNames.firstName" />
-                    @if (control(formControlNames.firstName).errors) {
+                      [formControl]="formGroup.controls.firstName" />
+                    @if (formGroup.controls.firstName.errors) {
                       <mat-error>{{
                         'Management/UserForm/FirstNameHint'
                           | gmessage: { maxLength: maxLengths.NAME_MAX_LENGTH }
@@ -30,8 +30,8 @@
                     <input
                       matInput
                       [placeholder]="'Management/UserForm/LastNamePlaceholder' | gmessage"
-                      [formControlName]="formControlNames.lastName" />
-                    @if (control(formControlNames.lastName).errors) {
+                      [formControl]="formGroup.controls.lastName" />
+                    @if (formGroup.controls.lastName.errors) {
                       <mat-error>{{
                         'Management/UserForm/LastNameHint'
                           | gmessage: { maxLength: maxLengths.NAME_MAX_LENGTH }
@@ -48,8 +48,8 @@
                       matInput
                       [matDatepicker]="picker"
                       [placeholder]="'Management/UserForm/JoiningDatePlaceholder' | gmessage"
-                      [formControlName]="formControlNames.joiningDate" />
-                    @if (control(formControlNames.joiningDate).errors) {
+                      [formControl]="formGroup.controls.joiningDate" />
+                    @if (formGroup.controls.joiningDate.errors) {
                       <mat-error>{{ 'Management/UserForm/JoiningDateHint' | gmessage }}</mat-error>
                     }
                     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
@@ -74,8 +74,8 @@
                       required
                       type="email"
                       [placeholder]="'Management/UserForm/EmailPlaceholder' | gmessage"
-                      [formControlName]="formControlNames.email" />
-                    @if (control(formControlNames.email).errors) {
+                      [formControl]="formGroup.controls.email" />
+                    @if (formGroup.controls.email.errors) {
                       <mat-error>{{
                         'Management/UserForm/EmailHint'
                           | gmessage: { maxLength: maxLengths.EMAIL_MAX_LENGTH }
@@ -92,8 +92,8 @@
                       required
                       type="tel"
                       [placeholder]="'Management/UserForm/PhonePlaceholder' | gmessage"
-                      [formControlName]="formControlNames.phone" />
-                    @if (control(formControlNames.phone).errors) {
+                      [formControl]="formGroup.controls.phone" />
+                    @if (formGroup.controls.phone.errors) {
                       <mat-error>{{
                         'Management/UserForm/PhoneHint'
                           | gmessage: { maxLength: maxLengths.PHONE_MAX_LENGTH }
