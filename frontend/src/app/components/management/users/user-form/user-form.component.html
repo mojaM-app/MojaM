@@ -103,7 +103,8 @@
                       matInput
                       [matDatepicker]="picker"
                       [placeholder]="'Management/UserForm/JoiningDatePlaceholder' | gmessage"
-                      [formControl]="formGroup.controls.joiningDate" />
+                      [formControl]="formGroup.controls.joiningDate"
+                      (click)="picker.open()" />
                     @if (formGroup.controls.joiningDate.errors) {
                       <mat-error>{{ 'Management/UserForm/JoiningDateHint' | gmessage }}</mat-error>
                     }

@@ -1,5 +1,4 @@
 import { FormArray, FormControl } from '@angular/forms';
-import { DateUtils } from 'src/utils/date.utils';
 import { IAnnouncementsForm } from '../announcements-form/announcements.form';
 import { IAnnouncements } from '../interfaces/announcements';
 import { AnnouncementItemDto, AnnouncementsDto } from './announcements.model';
@@ -11,10 +10,6 @@ export class AddAnnouncementsDto extends AnnouncementsDto {
 
     if (formControls) {
       this.validFromDate = formControls.validFromDate?.value ?? null;
-      if (this.validFromDate) {
-        this.validFromDate = DateUtils.toUtcDate(this.validFromDate);
-      }
-
       const items = formControls.items as any as FormArray;
       items?.controls?.forEach((item: any) => {
         this.items!.push({

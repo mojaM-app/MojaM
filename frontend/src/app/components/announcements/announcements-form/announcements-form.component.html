@@ -8,7 +8,8 @@
             [matDatepicker]="picker"
             matInput
             [placeholder]="'Announcements/Form/ValidFromPlaceholder' | gmessage"
-            [formControl]="formGroup.controls.validFromDate" />
+            [formControl]="formGroup.controls.validFromDate"
+            (click)="picker.open()" />
           <mat-hint>{{ 'Announcements/Form/ValidFromHint' | gmessage }}</mat-hint>
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
