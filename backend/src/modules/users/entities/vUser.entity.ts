@@ -1,5 +1,6 @@
 import { DataSource, PrimaryColumn, ViewColumn, ViewEntity } from 'typeorm';
 import { IUserGridItemDto } from '../dtos/get-user-list.dto';
+import { toNumber } from './../../../utils/numbers.utils';
 import { User } from './user.entity';
 
 export const UserListViewColumns: { [K in keyof IUserGridItemDto]: string } = {
@@ -38,10 +39,10 @@ export class vUser implements IUserGridItemDto {
   public id: string;
 
   @ViewColumn()
-  public firstName?: string;
+  public firstName: string | null;
 
   @ViewColumn()
-  public lastName?: string;
+  public lastName: string | null;
 
   @ViewColumn()
   public email: string;
@@ -50,10 +51,10 @@ export class vUser implements IUserGridItemDto {
   public phone: string;
 
   @ViewColumn()
-  public joiningDate?: Date;
+  public joiningDate: Date | null;
 
   @ViewColumn()
-  public lastLoginAt?: Date;
+  public lastLoginAt: Date | null;
 
   @ViewColumn()
   public isActive: boolean;
@@ -61,6 +62,11 @@ export class vUser implements IUserGridItemDto {
   @ViewColumn()
   public isLockedOut: boolean;
 
-  @ViewColumn()
+  @ViewColumn({
+    transformer: {
+      from: (value: string) => toNumber(value) ?? 0,
+      to: (value: number) => value,
+    },
+  })
   public permissionCount: number;
 }

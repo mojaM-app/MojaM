@@ -1,6 +1,7 @@
 import { DataSource, PrimaryColumn, ViewColumn, ViewEntity } from 'typeorm';
 import { IAnnouncementGridItemDto } from '../dtos/get-announcement-list.dto';
 import { User } from './../../../modules/users/entities/user.entity';
+import { toNumber } from './../../../utils/numbers.utils';
 import { Announcement } from './announcement.entity';
 
 export const AnnouncementListViewColumns: { [K in keyof IAnnouncementGridItemDto]: string } = {
@@ -64,6 +65,11 @@ export class vAnnouncement implements IAnnouncementGridItemDto {
   @ViewColumn()
   public publishedBy: string | null;
 
-  @ViewColumn()
+  @ViewColumn({
+    transformer: {
+      from: (value: string) => toNumber(value) ?? 0,
+      to: (value: number) => value,
+    },
+  })
   public itemsCount: number;
 }
