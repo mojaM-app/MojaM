@@ -120,7 +120,7 @@ export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser, IUse
     type: 'date',
     nullable: true,
   })
-  public joiningDate?: Date | null;
+  public joiningDate: Date | null;
 
   @Column({
     name: 'IsActive',
@@ -147,14 +147,14 @@ export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser, IUse
     default: () => 'CURRENT_TIMESTAMP',
     onUpdate: 'CURRENT_TIMESTAMP',
   })
-  public updatedAt?: Date;
+  public updatedAt: Date;
 
   @Column({
     name: 'LastLoginAt',
     type: 'timestamp',
     nullable: true,
   })
-  public lastLoginAt?: Date | null;
+  public lastLoginAt: Date | null;
 
   @Column({
     name: 'FailedLoginAttempts',
