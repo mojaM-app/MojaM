@@ -7,7 +7,7 @@ import { NextFunction, Request, Response } from 'express';
 export const ErrorMiddleware = async (error: HttpException, req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const data: IResponseError = {
-      message: error.message ?? 'Something went wrong',
+      message: error?.message ?? 'Something went wrong',
     };
 
     if (error instanceof TranslatableHttpException) {
