@@ -54,7 +54,7 @@ export class UsersService extends BaseService {
   public async create(reqDto: CreateUserReqDto): Promise<IUserDto> {
     const userData: CreateUserDto = reqDto.userData;
 
-    const userExists = await this._userRepository.checkIfExists({ email: userData?.email, phone: userData?.phone });
+    const userExists = await this._userRepository.checkIfExists({ email: userData.email, phone: userData.phone });
 
     if (userExists) {
       throw new BadRequestException(errorKeys.users.User_Already_Exists, {
