@@ -38,7 +38,9 @@ export class ActivateAccountDto {
 
   @IsOptional()
   @Type(() => Date)
-  @IsDate()
+  @IsDate({
+    message: errorKeys.users.Invalid_JoiningDate,
+  })
   public joiningDate?: Date | null;
 }
 

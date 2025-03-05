@@ -28,4 +28,5 @@ export const AppDataSource = new DbContext({
   migrationsTransactionMode: 'each',
   metadataTableName: '_typeorm_metadata',
   migrations: [DATABASE_MIGRATIONS_PATH!],
+  dateStrings: ['DATE'],
 });

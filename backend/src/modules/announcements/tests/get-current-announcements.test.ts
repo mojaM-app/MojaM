@@ -6,6 +6,7 @@ import { loginAs } from '@helpers/user-tests.helpers';
 import {
   AnnouncementsRout,
   CreateAnnouncementsResponseDto,
+  CurrentAnnouncementsService,
   GetCurrentAnnouncementsResponseDto,
   IGetCurrentAnnouncementsDto,
   PublishAnnouncementsResponseDto,
@@ -381,6 +382,25 @@ describe('GET /announcements/current', () => {
       expect(testEventHandlers.onAnnouncementsPublished).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onCurrentAnnouncementsRetrieved).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('GET should handle error', () => {
+    test('when error occurs in the process', async () => {
+      jest.spyOn(CurrentAnnouncementsService.prototype, 'get').mockImplementation(async (currentUserId: number | undefined) => {
+        throw new Error('Test error');
+      });
+
+      const getAnnouncementsListResponse = await request(app.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
+      expect(getAnnouncementsListResponse.statusCode).toBe(500);
+      const body = getAnnouncementsListResponse.body;
+      expect(typeof body).toBe('object');
+      expect(body.data.message).toBe('Test error');
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
     });
   });
 

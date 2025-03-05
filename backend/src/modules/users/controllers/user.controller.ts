@@ -104,6 +104,6 @@ export class UserController extends BaseController {
   };
 
   private getUserGuid(req: Request): string | undefined {
-    return isGuid(req?.params?.id) ? req.params.id : undefined;
+    return isGuid(req.params?.id) ? req.params.id : undefined;
   }
 }

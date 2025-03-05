@@ -47,7 +47,12 @@ export class vAnnouncement implements IAnnouncementGridItemDto {
   @ViewColumn()
   public state: number;
 
-  @ViewColumn()
+  @ViewColumn({
+    transformer: {
+      from: (value: string) => (value?.length > 0 ? new Date(value + 'T00:00:00Z') : null),
+      to: (value: any) => value,
+    },
+  })
   public validFromDate: Date | null;
 
   @ViewColumn()

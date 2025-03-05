@@ -4,17 +4,20 @@ import { plainToInstance } from 'class-transformer';
 import { validateOrReject, ValidationError } from 'class-validator';
 import { NextFunction, Request, Response } from 'express';
 
-const getErrorConstraints = (error: ValidationError): string[] => {
+const getErrorConstraints = (error: ValidationError | null | undefined): string[] => {
   const constraints: string[] = [];
-  if (error?.constraints !== undefined && error.constraints !== null) {
-    constraints.push(...Object.values(error.constraints));
-  }
 
-  if ((error.children?.length ?? 0) > 0) {
-    error.children!.forEach((child: ValidationError) => {
-      const childConstraints = getErrorConstraints(child);
-      constraints.push(...childConstraints);
-    });
+  if (error !== undefined && error !== null) {
+    if (error.constraints !== undefined && error.constraints !== null) {
+      constraints.push(...Object.values(error.constraints));
+    }
+
+    if ((error.children?.length ?? 0) > 0) {
+      error.children!.forEach((child: ValidationError) => {
+        const childConstraints = getErrorConstraints(child);
+        constraints.push(...childConstraints);
+      });
+    }
   }
 
   return [...new Set(constraints)];
@@ -38,3 +41,8 @@ export const validateData = (type: any, skipMissingProperties = false, whitelist
       });
   };
 };
+
+export let exportsForTesting: any;
+if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
+  exportsForTesting = { getErrorConstraints };
+}

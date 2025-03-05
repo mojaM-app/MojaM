@@ -1,5 +1,5 @@
 import { events } from '@events';
-import { BadRequestException, ConflictException, errorKeys } from '@exceptions';
+import { BadRequestException, errorKeys } from '@exceptions';
 import {
   AnnouncementsCreatedEvent,
   AnnouncementsDeletedEvent,
@@ -106,14 +106,19 @@ export class AnnouncementsService extends BaseService {
       });
     }
 
-    const relatedData: string[] = await this._announcementsRepository.checkIfCanBeDeleted(announcements!.id);
+    /**
+     * Check if the announcement is connected with another data
+     * currently, there is no related data
+     * if there will be related data in the future, this part should be uncommented
+      const relatedData: string[] = await this._announcementsRepository.checkIfCanBeDeleted(announcements!.id);
 
-    if (relatedData.length > 0) {
-      throw new ConflictException(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted, {
-        id: announcements?.uuid,
-        relatedData,
-      });
-    }
+      if (relatedData.length > 0) {
+        throw new ConflictException(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted, {
+          id: announcements!.uuid,
+          relatedData,
+        });
+      }
+     */
 
     const result = await this._announcementsRepository.delete(announcements!.id, reqDto);
 
@@ -134,7 +139,7 @@ export class AnnouncementsService extends BaseService {
       });
     }
 
-    if (isNullOrUndefined(announcements?.validFromDate)) {
+    if (isNullOrUndefined(announcements!.validFromDate)) {
       throw new BadRequestException(errorKeys.announcements.Announcements_Without_ValidFromDate_Can_Not_Be_Published, {
         id: reqDto.announcementsId,
       });

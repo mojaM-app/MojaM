@@ -468,6 +468,10 @@ describe('POST /login', () => {
         { ...model, email: null } satisfies LoginDto,
         { ...model, email: undefined } satisfies LoginDto,
         { ...model, email: '' } satisfies LoginDto,
+        { ...model, email: 123 as any } satisfies LoginDto,
+        { ...model, email: true as any } satisfies LoginDto,
+        { ...model, email: [] as any } satisfies LoginDto,
+        { ...model, email: {} as any } satisfies LoginDto,
       ];
 
       for (const body of bodyData) {
@@ -500,6 +504,10 @@ describe('POST /login', () => {
         { ...model, password: undefined } satisfies LoginDto,
         { ...model, password: '' } satisfies LoginDto,
         { ...model, password: 'V3ry looooooooooooooooooooong passwooooooooooord!12' } satisfies LoginDto,
+        { ...model, password: 1 as any } satisfies LoginDto,
+        { ...model, password: true as any } satisfies LoginDto,
+        { ...model, password: [] as any } satisfies LoginDto,
+        { ...model, password: {} as any } satisfies LoginDto,
       ];
 
       for (const body of bodyData) {

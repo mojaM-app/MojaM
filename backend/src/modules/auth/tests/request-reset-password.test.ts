@@ -340,8 +340,8 @@ describe('POST /auth/request-reset-password', () => {
       expect(deleteResponse.statusCode).toBe(200);
     });
 
-    it('when e-mail is empty or null', async () => {
-      const testData: any[] = [null, ''];
+    it('when e-mail is empty or null or not-string', async () => {
+      const testData: any[] = [null, '', true, undefined, 0, {}, []];
 
       for (const email of testData) {
         const response = await request(app.getServer())

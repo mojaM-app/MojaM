@@ -31,15 +31,15 @@ export class AnnouncementsListController extends BaseController {
 
   private getPageData(req: IRequestWithIdentity): IPageData {
     return {
-      pageIndex: toNumber(req?.query?.pageIndex) ?? 0,
-      pageSize: toNumber(req?.query?.pageSize) ?? 10,
+      pageIndex: toNumber(req.query?.pageIndex) ?? 0,
+      pageSize: toNumber(req.query?.pageSize) ?? 10,
     } satisfies IPageData;
   }
 
   private getSortData(req: IRequestWithIdentity): ISortData {
     return {
-      column: req?.query?.column?.toString() ?? AnnouncementListViewColumns.validFromDate,
-      direction: req?.query?.direction?.toString() ?? 'asc',
+      column: req.query?.column?.toString() ?? AnnouncementListViewColumns.validFromDate,
+      direction: req.query?.direction?.toString() ?? 'asc',
     } satisfies ISortData;
   }
 }

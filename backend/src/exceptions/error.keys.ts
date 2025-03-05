@@ -29,6 +29,7 @@ export const errorKeys = {
     Invalid_User_Id: 'Invalid_User_Id',
     Invalid_FirstName: 'Invalid_FirstName',
     Invalid_LastName: 'Invalid_LastName',
+    Invalid_JoiningDate: 'Invalid_JoiningDate',
   },
   announcements: {
     Announcements_With_Given_ValidFromDate_Already_Exists: 'Announcements_With_Given_ValidFromDate_Already_Exists',

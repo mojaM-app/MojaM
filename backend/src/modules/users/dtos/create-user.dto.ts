@@ -104,7 +104,7 @@ export class CreateUserDto {
     message: errorKeys.users.Invalid_Password,
   })
   @Transform(({ value }) => (value === '' ? null : value))
-  public password?: string;
+  public password?: string | null;
 }
 
 export class CreateUserReqDto extends BaseReqDto {

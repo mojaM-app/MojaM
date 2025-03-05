@@ -16,6 +16,9 @@ module.exports = {
   openHandlesTimeout: 0,
   testTimeout: 30_000,
   coveragePathIgnorePatterns: [
+    'index.js',
+    'index.jsx',
+    'index.ts',
     '<rootDir>/src/dataBase/pascal-naming.strategy.ts',
     '<rootDir>/src/dataBase/migrations/',
     '<rootDir>/src/utils/tests.utils.ts',

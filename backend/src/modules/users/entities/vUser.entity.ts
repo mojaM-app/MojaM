@@ -50,22 +50,37 @@ export class vUser implements IUserGridItemDto {
   @ViewColumn()
   public phone: string;
 
-  @ViewColumn()
+  @ViewColumn({
+    transformer: {
+      from: (value: string) => (value?.length > 0 ? new Date(value + 'T00:00:00Z') : null),
+      to: (value: any) => value,
+    },
+  })
   public joiningDate: Date | null;
 
   @ViewColumn()
   public lastLoginAt: Date | null;
 
-  @ViewColumn()
+  @ViewColumn({
+    transformer: {
+      from: (value: any) => value === 1,
+      to: (value: any) => value,
+    },
+  })
   public isActive: boolean;
 
-  @ViewColumn()
+  @ViewColumn({
+    transformer: {
+      from: (value: any) => value === 1,
+      to: (value: any) => value,
+    },
+  })
   public isLockedOut: boolean;
 
   @ViewColumn({
     transformer: {
-      from: (value: string) => toNumber(value) ?? 0,
-      to: (value: number) => value,
+      from: (value: any) => toNumber(value) ?? 0,
+      to: (value: any) => value,
     },
   })
   public permissionCount: number;

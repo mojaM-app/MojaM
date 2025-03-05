@@ -9,7 +9,7 @@ import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermissions } from '@modules/permissions';
 import { CreateUserResponseDto, GetUserDetailsResponseDto, UserDetailsRetrievedEvent, UserDetailsRoute, UserRoute } from '@modules/users';
 import { isGuid, isNumber } from '@utils';
-import { getAdminLoginData } from '@utils/tests.utils';
+import { generateRandomDate, getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import { Guid } from 'guid-typescript';
 import nodemailer from 'nodemailer';
@@ -48,7 +48,12 @@ describe('GET/user/:id', () => {
 
   describe('GET should respond with a status code of 200', () => {
     test('when data are valid and user has permission', async () => {
-      const newUser = generateValidUser();
+      const newUser = {
+        ...generateValidUser(),
+        firstName: 'John',
+        lastName: 'Doe',
+        joiningDate: generateRandomDate(),
+      };
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
@@ -69,11 +74,21 @@ describe('GET/user/:id', () => {
       expect(userDetails!.id).toBeDefined();
       expect(isGuid(userDetails!.id)).toBe(true);
       expect(userDetails!.id).toBe(newUserDto.id);
-      expect(userDetails?.email).toBeDefined();
-      expect(userDetails!.email).toBe(newUserDto.email);
-      expect(userDetails?.phone).toBeDefined();
-      expect(userDetails!.phone).toBe(newUserDto.phone);
       expect(userDetails!.hasOwnProperty('uuid')).toBe(false);
+      expect(userDetails!.email).toBeDefined();
+      expect(userDetails!.email).toBe(newUserDto.email);
+      expect(userDetails!.phone).toBeDefined();
+      expect(userDetails!.phone).toBe(newUserDto.phone);
+      userDetails!.joiningDate = new Date(userDetails!.joiningDate!);
+      expect(userDetails!.joiningDate).toEqual(newUser.joiningDate);
+      expect(userDetails!.isActive).toBe(false);
+      expect(userDetails!.isLockedOut).toBe(false);
+      expect(userDetails!.permissionCount).toBe(0);
+      expect(userDetails!.firstName).toBeDefined();
+      expect(userDetails!.firstName).toBe(newUser.firstName);
+      expect(userDetails!.lastName).toBeDefined();
+      expect(userDetails!.lastName).toBe(newUser.lastName);
+      expect(userDetails!.lastLoginAt).toBeNull();
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + userDetails!.id)

@@ -119,6 +119,10 @@ export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser, IUse
     name: 'JoiningDate',
     type: 'date',
     nullable: true,
+    transformer: {
+      from: (value: string) => (value?.length > 0 ? new Date(value + 'T00:00:00Z') : null),
+      to: (value: Date | null) => value?.toISOString().slice(0, 10), // format the Date to YYYY-MM-DD
+    },
   })
   public joiningDate: Date | null;
 

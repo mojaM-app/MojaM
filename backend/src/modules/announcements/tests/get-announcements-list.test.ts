@@ -14,10 +14,11 @@ import { EventDispatcher } from 'event-dispatch';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
 import { CreateAnnouncementsResponseDto } from '../dtos/create-announcements.dto';
-import { GetAnnouncementListResponseDto } from '../dtos/get-announcement-list.dto';
+import { GetAnnouncementListReqDto, GetAnnouncementListResponseDto } from '../dtos/get-announcement-list.dto';
 import { AnnouncementsListRetrievedEvent } from '../events/announcements-list-retrieved-event';
 import { AnnouncementsListRoute } from '../routes/announcements-list.routes';
 import { AnnouncementsRout } from '../routes/announcements.routes';
+import { AnnouncementsListService } from '../services/announcements-list.service';
 import { generateValidAnnouncements } from './announcements-tests.helpers';
 
 describe('GET/announcements-list', () => {
@@ -83,6 +84,11 @@ describe('GET/announcements-list', () => {
       expect(gridPage.items).toBeDefined();
       expect(Array.isArray(gridPage.items)).toBe(true);
       expect(gridPage.items.length).toBeGreaterThan(0);
+
+      const announcements = gridPage.items[0];
+      expect(new Date(announcements.validFromDate!)).toEqual(newAnnouncements.validFromDate);
+      expect(announcements.itemsCount).toBeDefined();
+      expect(announcements.itemsCount).toBe(newAnnouncements.items!.length);
 
       const deleteResponse = await request(app.getServer())
         .delete(announcementRoute.path + '/' + announcementsId)
@@ -267,6 +273,28 @@ describe('GET/announcements-list', () => {
       const body = getListResponse.body;
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('GET should handle error', () => {
+    test('when error occurs in the process', async () => {
+      jest.spyOn(AnnouncementsListService.prototype, 'get').mockImplementation((reqDto: GetAnnouncementListReqDto) => {
+        throw new Error('Test error');
+      });
+
+      const getAnnouncementsListResponse = await request(app.getServer())
+        .get(announcementsListRoute.path)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(getAnnouncementsListResponse.statusCode).toBe(500);
+      const body = getAnnouncementsListResponse.body;
+      expect(typeof body).toBe('object');
+      expect(body.data.message).toBe('Test error');
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {

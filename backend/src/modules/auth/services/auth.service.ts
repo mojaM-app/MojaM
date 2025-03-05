@@ -278,8 +278,7 @@ export class AuthService extends BaseService {
       isActive: true,
     } satisfies IUserToActivateResultDto;
 
-    const userId = await this._userRepository.getIdByUuid(data.userGuid);
-    const user = await this._userRepository.getById(userId);
+    const user = await this._userRepository.getByUuid(data.userGuid);
 
     if (isNullOrUndefined(user)) {
       return result;

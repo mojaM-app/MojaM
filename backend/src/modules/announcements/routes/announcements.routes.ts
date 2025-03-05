@@ -46,7 +46,7 @@ export class AnnouncementsRout implements IRoutes {
   }
 
   private readonly checkGetPermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity?.isAuthenticated()) {
+    if (!req.identity.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToGetAnnouncements()) {
       next(new ForbiddenException());
@@ -56,7 +56,7 @@ export class AnnouncementsRout implements IRoutes {
   };
 
   private readonly checkPublishPermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity?.isAuthenticated()) {
+    if (!req.identity.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToPublishAnnouncements()) {
       next(new ForbiddenException());
@@ -66,7 +66,7 @@ export class AnnouncementsRout implements IRoutes {
   };
 
   private readonly checkCreatePermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity?.isAuthenticated()) {
+    if (!req.identity.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToAddAnnouncements()) {
       next(new ForbiddenException());
@@ -76,7 +76,7 @@ export class AnnouncementsRout implements IRoutes {
   };
 
   private readonly checkUpdatePermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity?.isAuthenticated()) {
+    if (!req.identity.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToEditAnnouncements()) {
       next(new ForbiddenException());
@@ -86,7 +86,7 @@ export class AnnouncementsRout implements IRoutes {
   };
 
   private readonly checkDeletePermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity?.isAuthenticated()) {
+    if (!req.identity.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToDeleteAnnouncements()) {
       next(new ForbiddenException());

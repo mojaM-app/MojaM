@@ -46,7 +46,7 @@ export class UserRoute implements IRoutes {
   }
 
   private readonly checkCreatePermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity?.isAuthenticated()) {
+    if (!req.identity.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToAddUser()) {
       next(new ForbiddenException());
@@ -56,7 +56,7 @@ export class UserRoute implements IRoutes {
   };
 
   private readonly checkUpdatePermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity?.isAuthenticated()) {
+    if (!req.identity.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToEditUser()) {
       next(new ForbiddenException());
@@ -66,7 +66,7 @@ export class UserRoute implements IRoutes {
   };
 
   private readonly checkGetPermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity?.isAuthenticated()) {
+    if (!req.identity.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToEditUser()) {
       next(new ForbiddenException());
@@ -76,7 +76,7 @@ export class UserRoute implements IRoutes {
   };
 
   private readonly checkDeactivatePermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity?.isAuthenticated()) {
+    if (!req.identity.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToDeactivateUser()) {
       next(new ForbiddenException());
@@ -86,7 +86,7 @@ export class UserRoute implements IRoutes {
   };
 
   private readonly checkActivatePermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity?.isAuthenticated()) {
+    if (!req.identity.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToActivateUser()) {
       next(new ForbiddenException());
@@ -96,7 +96,7 @@ export class UserRoute implements IRoutes {
   };
 
   private readonly checkDeletePermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity?.isAuthenticated()) {
+    if (!req.identity.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToDeleteUser()) {
       next(new ForbiddenException());
@@ -106,7 +106,7 @@ export class UserRoute implements IRoutes {
   };
 
   private readonly checkUnlockPermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity?.isAuthenticated()) {
+    if (!req.identity.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToUnlockUser()) {
       next(new ForbiddenException());

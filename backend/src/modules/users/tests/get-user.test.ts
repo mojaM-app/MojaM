@@ -9,7 +9,7 @@ import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermissions } from '@modules/permissions';
 import { CreateUserResponseDto, UserRetrievedEvent, UserRoute } from '@modules/users';
 import { isGuid, isNumber } from '@utils';
-import { getAdminLoginData } from '@utils/tests.utils';
+import { generateRandomDate, getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import { Guid } from 'guid-typescript';
 import nodemailer from 'nodemailer';
@@ -48,7 +48,12 @@ describe('GET/user/:id', () => {
 
   describe('GET should respond with a status code of 200', () => {
     test('when data are valid and user has permission', async () => {
-      const newUser = generateValidUser();
+      const newUser = {
+        ...generateValidUser(),
+        firstName: 'John',
+        lastName: 'Doe',
+        joiningDate: generateRandomDate(),
+      };
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
@@ -74,6 +79,12 @@ describe('GET/user/:id', () => {
       expect(user?.phone).toBeDefined();
       expect(user!.phone).toBe(newUserDto.phone);
       expect(user!.hasOwnProperty('uuid')).toBe(false);
+      user!.joiningDate = new Date(user!.joiningDate!);
+      expect(user!.joiningDate).toEqual(newUser.joiningDate);
+      expect(user?.firstName).toBeDefined();
+      expect(user!.firstName).toBe(newUser.firstName);
+      expect(user?.lastName).toBeDefined();
+      expect(user!.lastName).toBe(newUser.lastName);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + user!.id)

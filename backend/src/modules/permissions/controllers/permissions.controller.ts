@@ -65,8 +65,8 @@ export class PermissionsController extends BaseController {
     permissionId: number | undefined;
     currentUserId: number | undefined;
   } {
-    const userGuid = isGuid(req?.params?.userId) ? req.params.userId : undefined;
-    const permissionId = toNumber(req?.params?.permissionId) ?? undefined;
+    const userGuid = isGuid(req.params?.userId) ? req.params.userId : undefined;
+    const permissionId = toNumber(req.params?.permissionId) ?? undefined;
     const currentUserId = this.getCurrentUserId(req);
     return { userGuid, permissionId, currentUserId };
   }

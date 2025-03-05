@@ -17,7 +17,7 @@ const generateValidUser = (): CreateUserDto & IUser => {
   } satisfies CreateUserDto & IUser;
 };
 
-const loginAs = async (app: App, user: { email?: string; phone?: string; password?: string }): Promise<TLoginResult | null> => {
+const loginAs = async (app: App, user: { email?: string; phone?: string; password?: string | null }): Promise<TLoginResult | null> => {
   const loginDto = { email: user.email, phone: user.phone, password: user.password } satisfies LoginDto;
   try {
     const loginResponse = await request(app.getServer()).post(new AuthRoute().loginPath).send(loginDto);

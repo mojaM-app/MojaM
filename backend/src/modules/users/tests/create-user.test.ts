@@ -8,7 +8,7 @@ import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { EmailService } from '@modules/notifications';
 import { PermissionsRoute, SystemPermissions } from '@modules/permissions';
-import { CreateUserDto, CreateUserResponseDto, IUserDto, UserRoute } from '@modules/users';
+import { CreateUserDto, CreateUserReqDto, CreateUserResponseDto, IUserDto, UserRoute, UsersService } from '@modules/users';
 import { isGuid, isNumber } from '@utils';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
@@ -22,8 +22,12 @@ describe('POST /user', () => {
   let mockSendMail: any;
   let adminAccessToken: string | undefined;
   let sendWelcomeEmailSpy: any;
+  let originalCreate: (reqDto: CreateUserReqDto) => Promise<IUserDto>;
 
   beforeAll(async () => {
+    const usersService = new UsersService();
+    originalCreate = usersService.create.bind(usersService);
+
     await app.initialize([userRoute, permissionsRoute]);
     const { email, password } = getAdminLoginData();
 
@@ -152,47 +156,73 @@ describe('POST /user', () => {
     });
 
     test('when email is invalid', async () => {
-      const requestData = { password: 'strongPassword1@', phone: '123456789', email: 'invalid email' } satisfies CreateUserDto;
-      const createUserResponse = await request(app.getServer())
-        .post(userRoute.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(createUserResponse.statusCode).toBe(400);
-      const body = createUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { message: createUserResponseMessage } = body.data as BadRequestException;
-      const errors = createUserResponseMessage.split(',');
-      expect(errors.filter(x => !x.includes('Email')).length).toBe(0);
+      const model = { password: 'strongPassword1@', phone: '123456789' };
+      const bodyData = [
+        { ...model, email: null as any } satisfies CreateUserDto,
+        { ...model, email: undefined as any } satisfies CreateUserDto,
+        { ...model, email: '' } satisfies CreateUserDto,
+        { ...model, email: 'invalid email' } satisfies CreateUserDto,
+        { ...model, email: 123 as any } satisfies CreateUserDto,
+        { ...model, email: true as any } satisfies CreateUserDto,
+        { ...model, email: [] as any } satisfies CreateUserDto,
+        { ...model, email: {} as any } satisfies CreateUserDto,
+      ];
 
-      expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
-      expect(mockSendMail).not.toHaveBeenCalled();
+      for (const requestData of bodyData) {
+        const createUserResponse = await request(app.getServer())
+          .post(userRoute.path)
+          .send(requestData)
+          .set('Authorization', `Bearer ${adminAccessToken}`);
+        expect(createUserResponse.statusCode).toBe(400);
+        const body = createUserResponse.body;
+        expect(typeof body).toBe('object');
+        const { message: createUserResponseMessage } = body.data as BadRequestException;
+        const errors = createUserResponseMessage.split(',');
+        expect(errors.filter(x => !x.includes('Email')).length).toBe(0);
 
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
+        expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
+        expect(mockSendMail).not.toHaveBeenCalled();
+
+        // checking events running via eventDispatcher
+        Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      }
     });
 
     test('when phone is invalid', async () => {
-      const requestData = { email: 'email@domain.com', password: 'strongPassword1@', phone: 'invalid phone' } satisfies CreateUserDto;
-      const createUserResponse = await request(app.getServer())
-        .post(userRoute.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(createUserResponse.statusCode).toBe(400);
-      const body = createUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { message: createUserResponseMessage } = body.data as BadRequestException;
-      const errors = createUserResponseMessage.split(',');
-      expect(errors.filter(x => !x.includes('Phone')).length).toBe(0);
+      const model = { email: 'email@domain.com', password: 'strongPassword1@' };
+      const bodyData = [
+        { ...model, phone: null as any } satisfies CreateUserDto,
+        { ...model, phone: undefined as any } satisfies CreateUserDto,
+        { ...model, phone: '' } satisfies CreateUserDto,
+        { ...model, phone: 'invalid phone' } satisfies CreateUserDto,
+        { ...model, phone: 123 as any } satisfies CreateUserDto,
+        { ...model, phone: true as any } satisfies CreateUserDto,
+        { ...model, phone: [] as any } satisfies CreateUserDto,
+        { ...model, phone: {} as any } satisfies CreateUserDto,
+      ];
 
-      expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
-      expect(mockSendMail).not.toHaveBeenCalled();
+      for (const requestData of bodyData) {
+        const createUserResponse = await request(app.getServer())
+          .post(userRoute.path)
+          .send(requestData)
+          .set('Authorization', `Bearer ${adminAccessToken}`);
+        expect(createUserResponse.statusCode).toBe(400);
+        const body = createUserResponse.body;
+        expect(typeof body).toBe('object');
+        const { message: createUserResponseMessage } = body.data as BadRequestException;
+        const errors = createUserResponseMessage.split(',');
+        expect(errors.filter(x => !x.includes('Phone')).length).toBe(0);
 
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
+        expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
+        expect(mockSendMail).not.toHaveBeenCalled();
+
+        // checking events running via eventDispatcher
+        Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      }
     });
 
     test('when exist user with same email and phone', async () => {
@@ -274,6 +304,87 @@ describe('POST /user', () => {
 
       expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
       expect(mockSendMail).toHaveBeenCalledTimes(1);
+    });
+
+    test('when data send to service is invalid (email)', async () => {
+      jest.spyOn(UsersService.prototype, 'create').mockImplementation(async (reqDto: CreateUserReqDto) => {
+        reqDto.userData.email = null as any;
+        return await originalCreate(reqDto);
+      });
+
+      const requestData = generateValidUser();
+      const createUserResponse = await request(app.getServer())
+        .post(userRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(400);
+      const body = createUserResponse.body;
+      expect(typeof body).toBe('object');
+      const { message: createUserResponseMessage } = body.data as BadRequestException;
+      const errors = createUserResponseMessage.split(',');
+      expect(errors.filter(x => !x.includes('Email')).length).toBe(0);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+
+      expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
+      expect(mockSendMail).not.toHaveBeenCalled();
+    });
+
+    test('when data send to service is invalid (phone)', async () => {
+      jest.spyOn(UsersService.prototype, 'create').mockImplementation(async (reqDto: CreateUserReqDto) => {
+        reqDto.userData.phone = null as any;
+        return await originalCreate(reqDto);
+      });
+
+      const requestData = generateValidUser();
+      const createUserResponse = await request(app.getServer())
+        .post(userRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(400);
+      const body = createUserResponse.body;
+      expect(typeof body).toBe('object');
+      const { message: createUserResponseMessage } = body.data as BadRequestException;
+      const errors = createUserResponseMessage.split(',');
+      expect(errors.filter(x => !x.includes('Phone')).length).toBe(0);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+
+      expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
+      expect(mockSendMail).not.toHaveBeenCalled();
+    });
+
+    test('when data send to service is invalid (password)', async () => {
+      jest.spyOn(UsersService.prototype, 'create').mockImplementation(async (reqDto: CreateUserReqDto) => {
+        reqDto.userData.password = 'invalid-password' as any;
+        return await originalCreate(reqDto);
+      });
+
+      const requestData = generateValidUser();
+      const createUserResponse = await request(app.getServer())
+        .post(userRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(400);
+      const body = createUserResponse.body;
+      expect(typeof body).toBe('object');
+      const { message: createUserResponseMessage } = body.data as BadRequestException;
+      const errors = createUserResponseMessage.split(',');
+      expect(errors.filter(x => !x.includes('Password')).length).toBe(0);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+
+      expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
+      expect(mockSendMail).not.toHaveBeenCalled();
     });
   });
 

@@ -59,8 +59,8 @@ export class AuthController extends BaseController {
 
   public checkResetPasswordToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userGuid = isGuid(req?.params?.userId) ? req.params.userId : undefined;
-      const resetPasswordToken = req?.params?.token?.length > 0 ? req.params.token : undefined;
+      const userGuid = isGuid(req.params?.userId) ? req.params.userId : undefined;
+      const resetPasswordToken = req.params?.token?.length > 0 ? req.params.token : undefined;
       const reqDto = new CheckResetPasswordTokenReqDto(userGuid, resetPasswordToken);
       const result: CheckResetPasswordTokenResultDto = await this._authService.checkResetPasswordToken(reqDto);
       res.status(200).json(new CheckResetPasswordTokenResponseDto(result));
@@ -71,7 +71,7 @@ export class AuthController extends BaseController {
 
   public resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userGuid = isGuid(req?.params?.userId) ? req.params.userId : undefined;
+      const userGuid = isGuid(req.params?.userId) ? req.params.userId : undefined;
       const model: ResetPasswordDto = req.body;
       const result: ResetPasswordResultDto = await this._authService.resetPassword(new ResetPasswordReqDto(userGuid, model));
       res.status(200).json(new ResetPasswordResponseDto(result));
@@ -110,7 +110,7 @@ export class AuthController extends BaseController {
 
   public getUserToActivate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userGuid = isGuid(req?.params?.userId) ? req.params.userId : undefined;
+      const userGuid = isGuid(req.params?.userId) ? req.params.userId : undefined;
       const reqDto = new GetUserToActivateReqDto(userGuid);
       const result: IUserToActivateResultDto = await this._authService.getUserToActivate(reqDto);
       res.status(200).json(new GetUserToActivateResponseDto(result));
@@ -121,7 +121,7 @@ export class AuthController extends BaseController {
 
   public activateAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userGuid = isGuid(req?.params?.userId) ? req.params.userId : undefined;
+      const userGuid = isGuid(req.params?.userId) ? req.params.userId : undefined;
       const model: ActivateAccountDto = req.body;
       const result: IActivateAccountResultDto = await this._authService.activateAccount(new ActivateAccountReqDto(userGuid, model));
       res.status(200).json(new ActivateAccountResponseDto(result));

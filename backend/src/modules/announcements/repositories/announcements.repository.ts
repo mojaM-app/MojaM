@@ -73,7 +73,7 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
         });
       }
 
-      if (announcements!.state === AnnouncementStateValue.PUBLISHED && (reqDto.announcements.validFromDate ?? null) === null) {
+      if (announcements!.state === AnnouncementStateValue.PUBLISHED && isNullOrUndefined(reqDto.announcements.validFromDate)) {
         throw new BadRequestException(errorKeys.announcements.Cannot_Save_Published_Announcements_Without_ValidFromDate);
       }
 
@@ -87,7 +87,7 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
         );
       }
 
-      if ((reqDto.announcements.items ?? []).length > 0) {
+      if ((reqDto.announcements.items?.length ?? 0) > 0) {
         const announcementItemsRepository = transactionalEntityManager.getRepository(AnnouncementItem);
         const announcementItems = await announcementItemsRepository.find({
           where: {
@@ -107,7 +107,7 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
         } satisfies FindManyOptions<AnnouncementItem>);
 
         let order = 1;
-        for await (const itemDto of reqDto.announcements.items ?? []) {
+        for await (const itemDto of reqDto.announcements.items!) {
           const existingItem = announcementItems.find(x => x.id === itemDto.id);
 
           if (existingItem === undefined) {
@@ -135,7 +135,7 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
         }
 
         for await (const item of announcementItems) {
-          const existingItem = reqDto.announcements.items?.find(x => x.id === item.id);
+          const existingItem = reqDto.announcements.items!.find(x => x.id === item.id);
 
           if (existingItem === undefined) {
             await announcementItemsRepository.delete({ id: item.id });
@@ -200,11 +200,16 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
     return true;
   }
 
+  /**
+     * Check if the announcement is connected with another data
+     * currently, there is no related data
+     * if there will be related data in the future, this part should be uncommented
   public async checkIfCanBeDeleted(announcementsId: number): Promise<string[]> {
     const relatedData: string[] = [];
 
     return relatedData;
   }
+  */
 
   public async publish(announcements: Announcement, reqDto: PublishAnnouncementsReqDto): Promise<boolean> {
     return await this._dbContext.transaction(async transactionalEntityManager => {
