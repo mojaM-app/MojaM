@@ -142,15 +142,15 @@ export class AuthService extends BaseService {
   }
 
   public async resetPassword(data: ResetPasswordReqDto): Promise<ResetPasswordResultDto> {
-    if (isNullOrEmptyString(data?.userGuid)) {
+    if (isNullOrEmptyString(data.userGuid)) {
       throw new BadRequestException(errorKeys.users.Invalid_User_Id);
     }
 
-    if (isNullOrEmptyString(data?.model?.token)) {
+    if (isNullOrEmptyString(data.model?.token)) {
       throw new BadRequestException(errorKeys.login.Invalid_Reset_Password_Token);
     }
 
-    if (!this._passwordService.isPasswordValid(data?.model?.password)) {
+    if (!this._passwordService.isPasswordValid(data.model?.password)) {
       throw new BadRequestException(errorKeys.users.Invalid_Password);
     }
 
