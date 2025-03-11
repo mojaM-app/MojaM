@@ -1,4 +1,5 @@
 import {
+  AccountTryingToLogInDto,
   ActivateAccountDto,
   ActivateAccountReqDto,
   ActivateAccountResponseDto,
@@ -6,13 +7,14 @@ import {
   CheckResetPasswordTokenReqDto,
   CheckResetPasswordTokenResponseDto,
   CheckResetPasswordTokenResultDto,
-  GetUserInfoBeforeLogInResponseDto,
-  GetUserToActivateReqDto,
-  GetUserToActivateResponseDto,
+  GetAccountBeforeLogInResponseDto,
+  GetAccountToActivateReqDto,
+  GetAccountToActivateResponseDto,
+  IAccountToActivateResultDto,
   IActivateAccountResultDto,
+  IGetAccountBeforeLogInResultDto,
   ILoginResult,
-  IUserInfoBeforeLogInResultDto,
-  IUserToActivateResultDto,
+  IResetPasswordResultDto,
   LoginDto,
   LoginResponseDto,
   RefreshTokenDto,
@@ -21,8 +23,6 @@ import {
   ResetPasswordDto,
   ResetPasswordReqDto,
   ResetPasswordResponseDto,
-  ResetPasswordResultDto,
-  UserTryingToLogInDto,
 } from '@modules/auth';
 import { BaseController } from '@modules/common';
 import { isGuid } from '@utils';
@@ -37,11 +37,11 @@ export class AuthController extends BaseController {
     this._authService = Container.get(AuthService);
   }
 
-  public getUserInfoBeforeLogIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getAccountBeforeLogIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const model: UserTryingToLogInDto = req.body;
-      const result: IUserInfoBeforeLogInResultDto = await this._authService.getUserInfoBeforeLogIn(model);
-      res.status(200).json(new GetUserInfoBeforeLogInResponseDto(result));
+      const model: AccountTryingToLogInDto = req.body;
+      const result: IGetAccountBeforeLogInResultDto = await this._authService.getAccountBeforeLogIn(model);
+      res.status(200).json(new GetAccountBeforeLogInResponseDto(result));
     } catch (error) {
       next(error);
     }
@@ -49,7 +49,7 @@ export class AuthController extends BaseController {
 
   public requestResetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const model: UserTryingToLogInDto = req.body;
+      const model: AccountTryingToLogInDto = req.body;
       const result = await this._authService.requestResetPassword(model);
       res.status(200).json(new RequestResetPasswordResponseDto(result));
     } catch (error) {
@@ -73,7 +73,7 @@ export class AuthController extends BaseController {
     try {
       const userGuid = isGuid(req.params?.userId) ? req.params.userId : undefined;
       const model: ResetPasswordDto = req.body;
-      const result: ResetPasswordResultDto = await this._authService.resetPassword(new ResetPasswordReqDto(userGuid, model));
+      const result: IResetPasswordResultDto = await this._authService.resetPassword(new ResetPasswordReqDto(userGuid, model));
       res.status(200).json(new ResetPasswordResponseDto(result));
     } catch (error) {
       next(error);
@@ -108,12 +108,12 @@ export class AuthController extends BaseController {
     }
   };
 
-  public getUserToActivate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getAccountToActivate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userGuid = isGuid(req.params?.userId) ? req.params.userId : undefined;
-      const reqDto = new GetUserToActivateReqDto(userGuid);
-      const result: IUserToActivateResultDto = await this._authService.getUserToActivate(reqDto);
-      res.status(200).json(new GetUserToActivateResponseDto(result));
+      const reqDto = new GetAccountToActivateReqDto(userGuid);
+      const result: IAccountToActivateResultDto = await this._authService.getAccountToActivate(reqDto);
+      res.status(200).json(new GetAccountToActivateResponseDto(result));
     } catch (error) {
       next(error);
     }

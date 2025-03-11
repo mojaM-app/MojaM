@@ -41,7 +41,7 @@ import {
   ISetPasswordFormGroup,
   IUserInfoFormGroup,
 } from './activate-account.form';
-import { IActivateAccountResult, IUserToActivate } from './interfaces/activate-account';
+import { IAccountToActivate, IActivateAccountResult } from './interfaces/activate-account';
 import { ActivateUserDto } from './models/user.model';
 import { ActivateAccountService } from './services/activate-account.service';
 
@@ -68,7 +68,7 @@ import { ActivateAccountService } from './services/activate-account.service';
 })
 export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() implements OnInit {
   protected readonly maxLengths = VALIDATOR_SETTINGS;
-  protected readonly user = model<IUserToActivate>();
+  protected readonly user = model<IAccountToActivate>();
   protected readonly stepperOrientation: WritableSignal<StepperOrientation> =
     model<StepperOrientation>('horizontal');
 
@@ -192,7 +192,7 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
       return;
     }
 
-    this._activateAccountService.get(userUuid).subscribe((result: IUserToActivate) => {
+    this._activateAccountService.get(userUuid).subscribe((result: IAccountToActivate) => {
       if (result?.isLockedOut ?? false) {
         this.navigateToHomePage();
         this._snackBarService.translateAndShowError({

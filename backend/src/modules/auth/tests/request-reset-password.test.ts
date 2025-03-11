@@ -5,12 +5,12 @@ import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import {
+  AccountTryingToLogInDto,
   AuthRoute,
   LoginDto,
   RequestResetPasswordResponseDto,
   ResetPasswordDto,
   ResetPasswordResponseDto,
-  UserTryingToLogInDto,
 } from '@modules/auth';
 import { EmailService } from '@modules/notifications';
 import { PermissionsRoute } from '@modules/permissions';
@@ -98,7 +98,7 @@ describe('POST /auth/request-reset-password', () => {
 
       const response = await request(app.getServer())
         .post(authRoute.requestResetPasswordPath)
-        .send({ email } satisfies UserTryingToLogInDto);
+        .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
       const body: RequestResetPasswordResponseDto = response.body;
       expect(typeof body).toBe('object');
@@ -151,7 +151,7 @@ describe('POST /auth/request-reset-password', () => {
 
       const response = await request(app.getServer())
         .post(authRoute.requestResetPasswordPath)
-        .send({ email } satisfies UserTryingToLogInDto);
+        .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
       const body: RequestResetPasswordResponseDto = response.body;
       expect(typeof body).toBe('object');
@@ -198,7 +198,7 @@ describe('POST /auth/request-reset-password', () => {
 
       const response = await request(app.getServer())
         .post(authRoute.requestResetPasswordPath)
-        .send({ email } satisfies UserTryingToLogInDto);
+        .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
       const body: RequestResetPasswordResponseDto = response.body;
       expect(typeof body).toBe('object');
@@ -258,7 +258,7 @@ describe('POST /auth/request-reset-password', () => {
 
       const response = await request(app.getServer())
         .post(authRoute.requestResetPasswordPath)
-        .send({ email } satisfies UserTryingToLogInDto);
+        .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
       const body: RequestResetPasswordResponseDto = response.body;
       expect(typeof body).toBe('object');
@@ -319,7 +319,7 @@ describe('POST /auth/request-reset-password', () => {
 
       const response = await request(app.getServer())
         .post(authRoute.requestResetPasswordPath)
-        .send({ email } satisfies UserTryingToLogInDto);
+        .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
       const body: RequestResetPasswordResponseDto = response.body;
       expect(typeof body).toBe('object');
@@ -346,7 +346,7 @@ describe('POST /auth/request-reset-password', () => {
       for (const email of testData) {
         const response = await request(app.getServer())
           .post(authRoute.requestResetPasswordPath)
-          .send({ email } satisfies UserTryingToLogInDto);
+          .send({ email } satisfies AccountTryingToLogInDto);
         expect(response.statusCode).toBe(400);
         const data = response.body.data as BadRequestException;
         const errors = data.message.split(',');
@@ -377,7 +377,7 @@ describe('POST /auth/request-reset-password', () => {
 
       const response = await request(app.getServer())
         .post(authRoute.requestResetPasswordPath)
-        .send({ email: newUserDto.email } satisfies UserTryingToLogInDto);
+        .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
       const body: RequestResetPasswordResponseDto = response.body;
       expect(typeof body).toBe('object');
@@ -406,7 +406,7 @@ describe('POST /auth/request-reset-password', () => {
 
       const response = await request(app.getServer())
         .post(authRoute.requestResetPasswordPath)
-        .send({ email: newUserDto.email } satisfies UserTryingToLogInDto);
+        .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
       const body: RequestResetPasswordResponseDto = response.body;
       expect(typeof body).toBe('object');
@@ -427,7 +427,7 @@ describe('POST /auth/request-reset-password', () => {
       for (const email of testData) {
         const response = await request(app.getServer())
           .post(authRoute.requestResetPasswordPath)
-          .send({ email } satisfies UserTryingToLogInDto);
+          .send({ email } satisfies AccountTryingToLogInDto);
         expect(response.statusCode).toBe(200);
         const body: RequestResetPasswordResponseDto = response.body;
         expect(typeof body).toBe('object');
@@ -456,7 +456,7 @@ describe('POST /auth/request-reset-password', () => {
 
       let response = await request(app.getServer())
         .post(authRoute.requestResetPasswordPath)
-        .send({ email: user.email } satisfies UserTryingToLogInDto);
+        .send({ email: user.email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
       let body: RequestResetPasswordResponseDto = response.body;
       expect(typeof body).toBe('object');
@@ -464,7 +464,7 @@ describe('POST /auth/request-reset-password', () => {
 
       response = await request(app.getServer())
         .post(authRoute.requestResetPasswordPath)
-        .send({ email: user.email } satisfies UserTryingToLogInDto);
+        .send({ email: user.email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
       body = response.body;
       expect(typeof body).toBe('object');
@@ -491,7 +491,7 @@ describe('POST /auth/request-reset-password', () => {
       const { email, uuid: userId, password } = getAdminLoginData();
       let response = await request(app.getServer())
         .post(authRoute.requestResetPasswordPath)
-        .send({ email } satisfies UserTryingToLogInDto);
+        .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
       const resetPasswordBody: RequestResetPasswordResponseDto = response.body;
       expect(typeof resetPasswordBody).toBe('object');
@@ -554,7 +554,7 @@ describe('POST /auth/request-reset-password', () => {
 
       let response = await request(app.getServer())
         .post(authRoute.requestResetPasswordPath)
-        .send({ email: user.email, phone: user.phone } satisfies UserTryingToLogInDto);
+        .send({ email: user.email, phone: user.phone } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
       const resetPasswordBody: RequestResetPasswordResponseDto = response.body;
       expect(typeof resetPasswordBody).toBe('object');

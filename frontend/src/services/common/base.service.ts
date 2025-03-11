@@ -33,8 +33,8 @@ export class BaseService {
       path: 'auth',
       login: (): string => `${environment.backendUrl}/login`,
       logout: (): string => `${environment.backendUrl}/logout`,
-      getUserInfoBeforeLogIn: (): string =>
-        `${environment.backendUrl}/${this.API_ROUTES.auth.path}/get-user-info-before-log-in`,
+      getAccountBeforeLogIn: (): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.auth.path}/get-account-before-log-in`,
       requestResetPassword: (): string =>
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/request-reset-password`,
       checkResetPasswordToken: (uuid: string, token: string): string =>
@@ -43,8 +43,8 @@ export class BaseService {
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/reset-password/${uuid}`,
       refreshToken: (): string =>
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/refresh-token`,
-      getUserToActivate: (uuid: string): string =>
-        `${environment.backendUrl}/${this.API_ROUTES.auth.path}/get-user-to-activate/${uuid}`,
+      getAccountToActivate: (uuid: string): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.auth.path}/get-account-to-activate/${uuid}`,
       activateAccount: (uuid: string): string =>
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/activate-account/${uuid}`,
     },

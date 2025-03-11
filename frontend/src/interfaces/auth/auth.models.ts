@@ -1,6 +1,6 @@
 import { IUser } from '../users/user.interfaces';
 
-export interface IUserInfoBeforeLogInDto {
+export interface IAccountBeforeLogInDto {
   isPhoneRequired?: boolean;
   isActive?: boolean;
   isPasswordSet?: boolean;

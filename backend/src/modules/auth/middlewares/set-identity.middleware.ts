@@ -10,10 +10,10 @@ import { JwtPayload, verify } from 'jsonwebtoken';
 import Container from 'typedi';
 
 const getAuthorization = (req: Request): string | null => {
-  let header: string | string[] | undefined = req.headers.Authorization;
+  let header: string | string[] | undefined = req?.headers?.Authorization;
 
   if (isNullOrUndefined(header)) {
-    header = req.headers.authorization;
+    header = req?.headers?.authorization;
   }
 
   if (Array.isArray(header) && header.length > 0) {
@@ -115,3 +115,8 @@ export const setIdentity = async (req: IRequestWithIdentity, res: Response, next
     next();
   }
 };
+
+export let exportsForTesting: any;
+if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
+  exportsForTesting = { getAuthorization };
+}

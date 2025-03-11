@@ -3,7 +3,7 @@ import { errorKeys } from '@exceptions';
 import { IResponse } from '@interfaces';
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
-export class UserTryingToLogInDto {
+export class AccountTryingToLogInDto {
   @IsNotEmpty({
     message: errorKeys.users.Invalid_Email,
   })
@@ -18,17 +18,17 @@ export class UserTryingToLogInDto {
   public phone?: string;
 }
 
-export interface IUserInfoBeforeLogInResultDto {
+export interface IGetAccountBeforeLogInResultDto {
   isPhoneRequired?: boolean;
   isActive?: boolean;
   isPasswordSet?: boolean;
   shouldConfirmEmail?: boolean;
 }
 
-export class GetUserInfoBeforeLogInResponseDto implements IResponse<IUserInfoBeforeLogInResultDto> {
-  public readonly data: IUserInfoBeforeLogInResultDto;
+export class GetAccountBeforeLogInResponseDto implements IResponse<IGetAccountBeforeLogInResultDto> {
+  public readonly data: IGetAccountBeforeLogInResultDto;
 
-  public constructor(userInfo: IUserInfoBeforeLogInResultDto) {
-    this.data = userInfo;
+  public constructor(account: IGetAccountBeforeLogInResultDto) {
+    this.data = account;
   }
 }

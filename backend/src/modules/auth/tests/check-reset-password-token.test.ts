@@ -31,7 +31,7 @@ describe('POST /auth/check-reset-password-token/:userId/:token', () => {
     jest.resetAllMocks();
   });
 
-  describe('request should end with status code od 200', () => {
+  describe('request should end with status code of 200', () => {
     it('when user with given id not exist', async () => {
       const response = await request(app.getServer())
         .post(authRoute.checkResetPasswordTokenPath + '/' + Guid.EMPTY + '/validToken')
@@ -50,7 +50,7 @@ describe('POST /auth/check-reset-password-token/:userId/:token', () => {
     });
   });
 
-  describe('request should end with status code od 404', () => {
+  describe('request should end with status code of 404', () => {
     it('when user id is invalid', async () => {
       const response = await request(app.getServer())
         .post(authRoute.checkResetPasswordTokenPath + '/invalidUserId/validToken')

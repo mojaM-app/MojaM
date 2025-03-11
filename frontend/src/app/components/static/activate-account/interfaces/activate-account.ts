@@ -1,4 +1,4 @@
-export interface IUserToActivate {
+export interface IAccountToActivate {
   email?: string;
   phone?: string;
   firstName?: string | null;

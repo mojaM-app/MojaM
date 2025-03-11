@@ -3,7 +3,7 @@ import { map, Observable } from 'rxjs';
 import { BaseService } from 'src/services/common/base.service';
 import { HttpClientService } from 'src/services/common/httpClient.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
-import { IActivateAccountResult, IUserToActivate } from '../interfaces/activate-account';
+import { IAccountToActivate, IActivateAccountResult } from '../interfaces/activate-account';
 import { ActivateUserDto } from '../models/user.model';
 
 @Injectable({
@@ -17,14 +17,14 @@ export class ActivateAccountService extends BaseService {
     super();
   }
 
-  public get(userUuid: string): Observable<IUserToActivate> {
+  public get(userUuid: string): Observable<IAccountToActivate> {
     return this._httpClient
       .request()
-      .withUrl(this.API_ROUTES.auth.getUserToActivate(userUuid))
-      .post<IUserToActivate>()
+      .withUrl(this.API_ROUTES.auth.getAccountToActivate(userUuid))
+      .post<IAccountToActivate>()
       .pipe(
         this._spinnerService.waitForSubscription(),
-        map((resp: IUserToActivate) => {
+        map((resp: IAccountToActivate) => {
           if (resp) {
             resp.joiningDate = this.toDateTime(resp.joiningDate);
           }

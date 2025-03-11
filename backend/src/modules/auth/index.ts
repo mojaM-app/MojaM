@@ -12,12 +12,16 @@ export {
   CheckResetPasswordTokenResponseDto,
   type CheckResetPasswordTokenResultDto,
 } from './dtos/check-reset-password-token.dto';
-export { GetUserToActivateReqDto, GetUserToActivateResponseDto, type IUserToActivateResultDto } from './dtos/get-user-to-activate.dto';
+export {
+  AccountTryingToLogInDto,
+  GetAccountBeforeLogInResponseDto,
+  type IGetAccountBeforeLogInResultDto,
+} from './dtos/get-account-before-log-in.dto';
+export { GetAccountToActivateReqDto, GetAccountToActivateResponseDto, type IAccountToActivateResultDto } from './dtos/get-account-to-activate.dto';
 export { LoginDto, LoginResponseDto } from './dtos/login.dto';
 export { RefreshTokenDto, RefreshTokenResponseDto } from './dtos/refresh-token.dto';
 export { RequestResetPasswordResponseDto } from './dtos/request-reset-password.dto';
-export { ResetPasswordDto, ResetPasswordReqDto, ResetPasswordResponseDto, type ResetPasswordResultDto } from './dtos/reset-password.dto';
-export { GetUserInfoBeforeLogInResponseDto, UserTryingToLogInDto, type IUserInfoBeforeLogInResultDto } from './dtos/user-trying-to-log-in.dto';
+export { ResetPasswordDto, ResetPasswordReqDto, ResetPasswordResponseDto, type IResetPasswordResultDto } from './dtos/reset-password.dto';
 
 export type { IDataStoredInToken } from './interfaces/data-stored-in-token.interface';
 export { Identity } from './models/Identity';

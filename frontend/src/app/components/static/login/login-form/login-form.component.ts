@@ -22,7 +22,7 @@ import { IS_MOBILE } from 'src/app/app.config';
 import { ResetPasswordService } from 'src/app/components/static/reset-password/services/reset-password.service';
 import { SnackBarService } from 'src/app/components/static/snackbar/snack-bar.service';
 import { environment } from 'src/environments/environment';
-import { IUserInfoBeforeLogInDto } from 'src/interfaces/auth/auth.models';
+import { IAccountBeforeLogInDto } from 'src/interfaces/auth/auth.models';
 import { IResponseError } from 'src/interfaces/errors/response.error';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
@@ -128,28 +128,26 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
       return;
     }
 
-    this._authService
-      .getUserInfoBeforeLogIn(email)
-      .subscribe((response: IUserInfoBeforeLogInDto) => {
-        if (response?.isActive === false) {
-          this.goToStepUserNotActive();
-          return;
-        }
+    this._authService.getAccountBeforeLogIn(email).subscribe((response: IAccountBeforeLogInDto) => {
+      if (response?.isActive === false) {
+        this.goToStepUserNotActive();
+        return;
+      }
 
-        this.showResetPasswordButton.set(response.isPasswordSet === true);
+      this.showResetPasswordButton.set(response.isPasswordSet === true);
 
-        if (response.isPhoneRequired === true) {
-          this.showStep.set(LoginFormSteps.EnterPhone);
-          this.focusPhoneInput();
-          return;
-        }
+      if (response.isPhoneRequired === true) {
+        this.showStep.set(LoginFormSteps.EnterPhone);
+        this.focusPhoneInput();
+        return;
+      }
 
-        if (response.isPasswordSet === true) {
-          this.goToStepEnterPassword();
-        } else {
-          this.goToStepResetPassword();
-        }
-      });
+      if (response.isPasswordSet === true) {
+        this.goToStepEnterPassword();
+      } else {
+        this.goToStepResetPassword();
+      }
+    });
   }
 
   public goToStepEnterPassword(): void {
@@ -166,8 +164,8 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
       }
 
       this._authService
-        .getUserInfoBeforeLogIn(this.controls.email.value, phone)
-        .subscribe((response: IUserInfoBeforeLogInDto) => {
+        .getAccountBeforeLogIn(this.controls.email.value, phone)
+        .subscribe((response: IAccountBeforeLogInDto) => {
           if (response?.isActive === false) {
             this.goToStepUserNotActive();
             return;

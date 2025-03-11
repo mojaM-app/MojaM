@@ -1,6 +1,6 @@
 import { IResponse } from '@interfaces';
 
-export class GetUserToActivateReqDto {
+export class GetAccountToActivateReqDto {
   public readonly userGuid: string | undefined;
 
   public constructor(userGuid: string | undefined) {
@@ -8,7 +8,7 @@ export class GetUserToActivateReqDto {
   }
 }
 
-export interface IUserToActivateResultDto {
+export interface IAccountToActivateResultDto {
   isActive: boolean;
   isLockedOut?: boolean;
   email?: string;
@@ -18,10 +18,10 @@ export interface IUserToActivateResultDto {
   joiningDate?: Date | null;
 }
 
-export class GetUserToActivateResponseDto implements IResponse<IUserToActivateResultDto> {
-  public readonly data: IUserToActivateResultDto;
+export class GetAccountToActivateResponseDto implements IResponse<IAccountToActivateResultDto> {
+  public readonly data: IAccountToActivateResultDto;
 
-  public constructor(result: IUserToActivateResultDto) {
+  public constructor(result: IAccountToActivateResultDto) {
     this.data = result;
   }
 }

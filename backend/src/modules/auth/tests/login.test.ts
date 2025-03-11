@@ -815,7 +815,7 @@ describe('POST /login', () => {
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
-    test('login should response with status code od 400 when user has no password', async () => {
+    test('login should response with status code of 400 when user has no password', async () => {
       const requestData = generateValidUser();
       requestData.password = undefined;
       const createUserResponse = await request(app.getServer())

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, skip, tap } from 'rxjs';
 import {
+  IAccountBeforeLogInDto,
   ILoginModel,
   ILoginResponse,
-  IUserInfoBeforeLogInDto,
 } from 'src/interfaces/auth/auth.models';
 import { BaseService } from '../common/base.service';
 import { HttpClientService } from '../common/httpClient.service';
@@ -33,15 +33,12 @@ export class AuthService extends BaseService {
     this.onAuthStateChanged = this._isAuthenticated$.asObservable().pipe(skip(1));
   }
 
-  public getUserInfoBeforeLogIn(
-    email: string,
-    phone?: string
-  ): Observable<IUserInfoBeforeLogInDto> {
+  public getAccountBeforeLogIn(email: string, phone?: string): Observable<IAccountBeforeLogInDto> {
     return this._httpClient
       .request()
-      .withUrl(this.API_ROUTES.auth.getUserInfoBeforeLogIn())
+      .withUrl(this.API_ROUTES.auth.getAccountBeforeLogIn())
       .withBody({ email, phone })
-      .post<IUserInfoBeforeLogInDto>();
+      .post<IAccountBeforeLogInDto>();
   }
 
   public login(

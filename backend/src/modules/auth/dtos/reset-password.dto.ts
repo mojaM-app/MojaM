@@ -35,16 +35,16 @@ export class ResetPasswordReqDto {
   }
 }
 
-export interface ResetPasswordResultDto {
+export interface IResetPasswordResultDto {
   isPasswordSet: boolean;
 }
 
-export class ResetPasswordResponseDto implements IResponse<ResetPasswordResultDto> {
-  public readonly data: ResetPasswordResultDto;
+export class ResetPasswordResponseDto implements IResponse<IResetPasswordResultDto> {
+  public readonly data: IResetPasswordResultDto;
   public readonly message: string;
 
-  public constructor(userInfo: ResetPasswordResultDto) {
-    this.data = userInfo;
+  public constructor(result: IResetPasswordResultDto) {
+    this.data = result;
     this.message = events.users.userPasswordChanged;
   }
 }

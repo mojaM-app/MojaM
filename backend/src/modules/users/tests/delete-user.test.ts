@@ -7,7 +7,7 @@ import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-han
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { AnnouncementsRout, CreateAnnouncementsResponseDto, GetAnnouncementsResponseDto, UpdateAnnouncementsDto } from '@modules/announcements';
 import { generateValidAnnouncements } from '@modules/announcements/tests/announcements-tests.helpers';
-import { AuthRoute, LoginDto, UserTryingToLogInDto } from '@modules/auth';
+import { AccountTryingToLogInDto, AuthRoute, LoginDto } from '@modules/auth';
 import { AddPermissionsResponseDto, PermissionsRoute, SystemPermissions } from '@modules/permissions';
 import { CreateUserResponseDto, DeleteUserResponseDto, UserRoute } from '@modules/users';
 import { isNumber } from '@utils';
@@ -218,7 +218,7 @@ describe('DELETE /user', () => {
 
       const requestResetPasswordResponse = await request(app.getServer())
         .post(authRoute.requestResetPasswordPath)
-        .send({ email: requestData.email } satisfies UserTryingToLogInDto);
+        .send({ email: requestData.email } satisfies AccountTryingToLogInDto);
       expect(requestResetPasswordResponse.statusCode).toBe(200);
       body = requestResetPasswordResponse.body;
       expect(typeof body).toBe('object');

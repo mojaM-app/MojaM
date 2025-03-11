@@ -5,7 +5,7 @@ import { EventDispatcherService } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
-import { AuthRoute, GetUserToActivateResponseDto, LoginDto } from '@modules/auth';
+import { AuthRoute, GetAccountToActivateResponseDto, LoginDto } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
 import { getAdminLoginData } from '@utils/tests.utils';
@@ -14,7 +14,7 @@ import { Guid } from 'guid-typescript';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
 
-describe('POST /auth/get-user-to-activate/:userId/', () => {
+describe('POST /auth/get-account-to-activate/:userId/', () => {
   const userRoute = new UserRoute();
   const authRoute = new AuthRoute();
   const permissionsRoute = new PermissionsRoute();
@@ -45,16 +45,16 @@ describe('POST /auth/get-user-to-activate/:userId/', () => {
     } as any);
   });
 
-  describe('request should end with status code od 200', () => {
+  describe('request should end with status code of 200', () => {
     it('when user with given id not exist', async () => {
       const response = await request(app.getServer())
-        .post(authRoute.getUserToActivatePath + '/' + Guid.EMPTY)
+        .post(authRoute.getAccountToActivatePath + '/' + Guid.EMPTY)
         .send();
       expect(response.statusCode).toBe(200);
-      const body = response.body as GetUserToActivateResponseDto;
+      const body = response.body as GetAccountToActivateResponseDto;
       expect(typeof body).toBe('object');
-      const { data: userToActivateResult } = body;
-      expect(userToActivateResult).toStrictEqual({
+      const { data: toActivateResult } = body;
+      expect(toActivateResult).toStrictEqual({
         isActive: true,
       });
 
@@ -67,13 +67,13 @@ describe('POST /auth/get-user-to-activate/:userId/', () => {
     it('when user with given id is active', async () => {
       const { uuid } = getAdminLoginData();
       const response = await request(app.getServer())
-        .post(authRoute.getUserToActivatePath + '/' + uuid)
+        .post(authRoute.getAccountToActivatePath + '/' + uuid)
         .send();
       expect(response.statusCode).toBe(200);
-      const body = response.body as GetUserToActivateResponseDto;
+      const body = response.body as GetAccountToActivateResponseDto;
       expect(typeof body).toBe('object');
-      const { data: userToActivateResult } = body;
-      expect(userToActivateResult).toStrictEqual({
+      const { data: toActivateResult } = body;
+      expect(toActivateResult).toStrictEqual({
         isActive: true,
       });
 
@@ -111,14 +111,14 @@ describe('POST /auth/get-user-to-activate/:userId/', () => {
         expect(loginArgs).toBeUndefined();
       }
 
-      const getUserToActivateResponse = await request(app.getServer())
-        .post(authRoute.getUserToActivatePath + '/' + newUserDto.id)
+      const toActivateResponse = await request(app.getServer())
+        .post(authRoute.getAccountToActivatePath + '/' + newUserDto.id)
         .send();
-      expect(getUserToActivateResponse.statusCode).toBe(200);
-      const body = getUserToActivateResponse.body as GetUserToActivateResponseDto;
+      expect(toActivateResponse.statusCode).toBe(200);
+      const body = toActivateResponse.body as GetAccountToActivateResponseDto;
       expect(typeof body).toBe('object');
-      const { data: userToActivateResult } = body;
-      expect(userToActivateResult).toStrictEqual({
+      const { data: toActivateResult } = body;
+      expect(toActivateResult).toStrictEqual({
         isActive: true,
       });
 
@@ -180,14 +180,14 @@ describe('POST /auth/get-user-to-activate/:userId/', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deactivateUserResponse.statusCode).toBe(200);
 
-      const getUserToActivateResponse = await request(app.getServer())
-        .post(authRoute.getUserToActivatePath + '/' + newUserDto.id)
+      const toActivateResponse = await request(app.getServer())
+        .post(authRoute.getAccountToActivatePath + '/' + newUserDto.id)
         .send();
-      expect(getUserToActivateResponse.statusCode).toBe(200);
-      const body = getUserToActivateResponse.body as GetUserToActivateResponseDto;
+      expect(toActivateResponse.statusCode).toBe(200);
+      const body = toActivateResponse.body as GetAccountToActivateResponseDto;
       expect(typeof body).toBe('object');
-      const { data: userToActivateResult } = body;
-      expect(userToActivateResult).toStrictEqual({
+      const { data: toActivateResult } = body;
+      expect(toActivateResult).toStrictEqual({
         isActive: false,
         isLockedOut: true,
       });
@@ -218,10 +218,10 @@ describe('POST /auth/get-user-to-activate/:userId/', () => {
     });
   });
 
-  describe('request should end with status code od 404', () => {
+  describe('request should end with status code of 404', () => {
     it('when user id is invalid', async () => {
       const response = await request(app.getServer())
-        .post(authRoute.getUserToActivatePath + '/invalidUserId')
+        .post(authRoute.getAccountToActivatePath + '/invalidUserId')
         .send();
       expect(response.statusCode).toBe(404);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 
 const isDate = (date: any): boolean => {
-  return date !== null && date !== undefined && date instanceof Date && !isNaN(date?.getTime());
+  return date !== null && date !== undefined && date instanceof Date && !isNaN(date.getTime());
 };
 
 const getDateTimeNow = (): Date => {

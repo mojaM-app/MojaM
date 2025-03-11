@@ -4,7 +4,7 @@ import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
-import { AuthRoute, GetUserInfoBeforeLogInResponseDto, IUserInfoBeforeLogInResultDto, LoginDto, UserTryingToLogInDto } from '@modules/auth';
+import { AccountTryingToLogInDto, AuthRoute, GetAccountBeforeLogInResponseDto, IGetAccountBeforeLogInResultDto, LoginDto } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
 import { generateRandomEmail, getAdminLoginData } from '@utils/tests.utils';
@@ -12,7 +12,7 @@ import { EventDispatcher } from 'event-dispatch';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
 
-describe('POST /auth/get-user-who-logs-in', () => {
+describe('POST /auth/get-account-before-log-in', () => {
   const userRoute = new UserRoute();
   const authRoute = new AuthRoute();
   const permissionsRoute = new PermissionsRoute();
@@ -47,17 +47,17 @@ describe('POST /auth/get-user-who-logs-in', () => {
     it('when exist only one activated user with given e-mail and user password is set', async () => {
       const { email } = getAdminLoginData();
       const response = await request(app.getServer())
-        .post(authRoute.getUserInfoBeforeLogInPath)
-        .send({ email } satisfies UserTryingToLogInDto);
+        .post(authRoute.getAccountBeforeLogInPath)
+        .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: GetUserInfoBeforeLogInResponseDto = response.body;
+      const body: GetAccountBeforeLogInResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
       expect(body.data).toStrictEqual({
         isPasswordSet: true,
         isActive: true,
-      } satisfies IUserInfoBeforeLogInResultDto);
-      expect(body.data).toEqual({ isPasswordSet: true, isActive: true } satisfies IUserInfoBeforeLogInResultDto);
+      } satisfies IGetAccountBeforeLogInResultDto);
+      expect(body.data).toEqual({ isPasswordSet: true, isActive: true } satisfies IGetAccountBeforeLogInResultDto);
     });
 
     it('when exist only one activated user with given e-mail and user password is NOT set', async () => {
@@ -78,17 +78,17 @@ describe('POST /auth/get-user-who-logs-in', () => {
       expect(activateNewUserResponse.statusCode).toBe(200);
 
       const response = await request(app.getServer())
-        .post(authRoute.getUserInfoBeforeLogInPath)
-        .send({ email: newUser1Dto.email } satisfies UserTryingToLogInDto);
+        .post(authRoute.getAccountBeforeLogInPath)
+        .send({ email: newUser1Dto.email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: GetUserInfoBeforeLogInResponseDto = response.body;
+      const body: GetAccountBeforeLogInResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
       expect(body.data).toStrictEqual({
         isPasswordSet: false,
         isActive: true,
-      } satisfies IUserInfoBeforeLogInResultDto);
-      expect(body.data).toEqual({ isPasswordSet: false, isActive: true } satisfies IUserInfoBeforeLogInResultDto);
+      } satisfies IGetAccountBeforeLogInResultDto);
+      expect(body.data).toEqual({ isPasswordSet: false, isActive: true } satisfies IGetAccountBeforeLogInResultDto);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUser1Dto.id)
@@ -109,17 +109,17 @@ describe('POST /auth/get-user-who-logs-in', () => {
       expect(newUserDto.email).toBe(user.email);
 
       const response = await request(app.getServer())
-        .post(authRoute.getUserInfoBeforeLogInPath)
-        .send({ email: newUserDto.email } satisfies UserTryingToLogInDto);
+        .post(authRoute.getAccountBeforeLogInPath)
+        .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: GetUserInfoBeforeLogInResponseDto = response.body;
+      const body: GetAccountBeforeLogInResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
       expect(body.data).toStrictEqual({
         isPasswordSet: false,
         isActive: false,
-      } satisfies IUserInfoBeforeLogInResultDto);
-      expect(body.data).toEqual({ isPasswordSet: false, isActive: false } satisfies IUserInfoBeforeLogInResultDto);
+      } satisfies IGetAccountBeforeLogInResultDto);
+      expect(body.data).toEqual({ isPasswordSet: false, isActive: false } satisfies IGetAccountBeforeLogInResultDto);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
@@ -139,20 +139,20 @@ describe('POST /auth/get-user-who-logs-in', () => {
       expect(newUserDto.email).toBe(user.email);
 
       const response = await request(app.getServer())
-        .post(authRoute.getUserInfoBeforeLogInPath)
-        .send({ email: newUserDto.email } satisfies UserTryingToLogInDto);
+        .post(authRoute.getAccountBeforeLogInPath)
+        .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: GetUserInfoBeforeLogInResponseDto = response.body;
+      const body: GetAccountBeforeLogInResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
       expect(body.data).toStrictEqual({
         isPasswordSet: true,
         isActive: false,
-      } satisfies IUserInfoBeforeLogInResultDto);
+      } satisfies IGetAccountBeforeLogInResultDto);
       expect(body.data).toEqual({
         isPasswordSet: true,
         isActive: false,
-      } satisfies IUserInfoBeforeLogInResultDto);
+      } satisfies IGetAccountBeforeLogInResultDto);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
@@ -164,17 +164,17 @@ describe('POST /auth/get-user-who-logs-in', () => {
     it('when NO user with given e-mail', async () => {
       const email = generateRandomEmail();
       const response = await request(app.getServer())
-        .post(authRoute.getUserInfoBeforeLogInPath)
-        .send({ email } satisfies UserTryingToLogInDto);
+        .post(authRoute.getAccountBeforeLogInPath)
+        .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: GetUserInfoBeforeLogInResponseDto = response.body;
+      const body: GetAccountBeforeLogInResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
       expect(body.data).toStrictEqual({
         isPasswordSet: true,
         isActive: true,
-      } satisfies IUserInfoBeforeLogInResultDto);
-      expect(body.data).toEqual({ isPasswordSet: true, isActive: true } satisfies IUserInfoBeforeLogInResultDto);
+      } satisfies IGetAccountBeforeLogInResultDto);
+      expect(body.data).toEqual({ isPasswordSet: true, isActive: true } satisfies IGetAccountBeforeLogInResultDto);
     });
   });
 
@@ -216,14 +216,14 @@ describe('POST /auth/get-user-who-logs-in', () => {
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
       const response = await request(app.getServer())
-        .post(authRoute.getUserInfoBeforeLogInPath)
-        .send({ email } satisfies UserTryingToLogInDto);
+        .post(authRoute.getAccountBeforeLogInPath)
+        .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: GetUserInfoBeforeLogInResponseDto = response.body;
+      const body: GetAccountBeforeLogInResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
-      expect(body.data).toStrictEqual({ isPhoneRequired: true } satisfies IUserInfoBeforeLogInResultDto);
-      expect(body.data).toEqual({ isPhoneRequired: true } satisfies IUserInfoBeforeLogInResultDto);
+      expect(body.data).toStrictEqual({ isPhoneRequired: true } satisfies IGetAccountBeforeLogInResultDto);
+      expect(body.data).toEqual({ isPhoneRequired: true } satisfies IGetAccountBeforeLogInResultDto);
 
       let deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUser1Dto.id)
@@ -268,14 +268,14 @@ describe('POST /auth/get-user-who-logs-in', () => {
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
       const response = await request(app.getServer())
-        .post(authRoute.getUserInfoBeforeLogInPath)
-        .send({ email } satisfies UserTryingToLogInDto);
+        .post(authRoute.getAccountBeforeLogInPath)
+        .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: GetUserInfoBeforeLogInResponseDto = response.body;
+      const body: GetAccountBeforeLogInResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
-      expect(body.data).toStrictEqual({ isPhoneRequired: true } satisfies IUserInfoBeforeLogInResultDto);
-      expect(body.data).toEqual({ isPhoneRequired: true } satisfies IUserInfoBeforeLogInResultDto);
+      expect(body.data).toStrictEqual({ isPhoneRequired: true } satisfies IGetAccountBeforeLogInResultDto);
+      expect(body.data).toEqual({ isPhoneRequired: true } satisfies IGetAccountBeforeLogInResultDto);
 
       let deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUser1Dto.id)
@@ -314,14 +314,14 @@ describe('POST /auth/get-user-who-logs-in', () => {
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
       const response = await request(app.getServer())
-        .post(authRoute.getUserInfoBeforeLogInPath)
-        .send({ email } satisfies UserTryingToLogInDto);
+        .post(authRoute.getAccountBeforeLogInPath)
+        .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: GetUserInfoBeforeLogInResponseDto = response.body;
+      const body: GetAccountBeforeLogInResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
-      expect(body.data).toStrictEqual({ isPhoneRequired: true } satisfies IUserInfoBeforeLogInResultDto);
-      expect(body.data).toEqual({ isPhoneRequired: true } satisfies IUserInfoBeforeLogInResultDto);
+      expect(body.data).toStrictEqual({ isPhoneRequired: true } satisfies IGetAccountBeforeLogInResultDto);
+      expect(body.data).toEqual({ isPhoneRequired: true } satisfies IGetAccountBeforeLogInResultDto);
 
       let deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUser1Dto.id)
@@ -373,14 +373,14 @@ describe('POST /auth/get-user-who-logs-in', () => {
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
       const response = await request(app.getServer())
-        .post(authRoute.getUserInfoBeforeLogInPath)
-        .send({ email } satisfies UserTryingToLogInDto);
+        .post(authRoute.getAccountBeforeLogInPath)
+        .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: GetUserInfoBeforeLogInResponseDto = response.body;
+      const body: GetAccountBeforeLogInResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
-      expect(body.data).toStrictEqual({ isPhoneRequired: true } satisfies IUserInfoBeforeLogInResultDto);
-      expect(body.data).toEqual({ isPhoneRequired: true } satisfies IUserInfoBeforeLogInResultDto);
+      expect(body.data).toStrictEqual({ isPhoneRequired: true } satisfies IGetAccountBeforeLogInResultDto);
+      expect(body.data).toEqual({ isPhoneRequired: true } satisfies IGetAccountBeforeLogInResultDto);
 
       let deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUser1Dto.id)
@@ -433,14 +433,14 @@ describe('POST /auth/get-user-who-logs-in', () => {
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
       const response = await request(app.getServer())
-        .post(authRoute.getUserInfoBeforeLogInPath)
-        .send({ email } satisfies UserTryingToLogInDto);
+        .post(authRoute.getAccountBeforeLogInPath)
+        .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: GetUserInfoBeforeLogInResponseDto = response.body;
+      const body: GetAccountBeforeLogInResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
-      expect(body.data).toStrictEqual({ isPhoneRequired: true } satisfies IUserInfoBeforeLogInResultDto);
-      expect(body.data).toEqual({ isPhoneRequired: true } satisfies IUserInfoBeforeLogInResultDto);
+      expect(body.data).toStrictEqual({ isPhoneRequired: true } satisfies IGetAccountBeforeLogInResultDto);
+      expect(body.data).toEqual({ isPhoneRequired: true } satisfies IGetAccountBeforeLogInResultDto);
 
       let deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUser1Dto.id)
@@ -459,8 +459,8 @@ describe('POST /auth/get-user-who-logs-in', () => {
 
       for (const email of testData) {
         const response = await request(app.getServer())
-          .post(authRoute.getUserInfoBeforeLogInPath)
-          .send({ email } satisfies UserTryingToLogInDto);
+          .post(authRoute.getAccountBeforeLogInPath)
+          .send({ email } satisfies AccountTryingToLogInDto);
         expect(response.statusCode).toBe(400);
         const data = response.body.data as BadRequestException;
         const errors = data.message.split(',');

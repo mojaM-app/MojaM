@@ -3,20 +3,17 @@ import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
-import { Type } from 'class-transformer';
-import { IsDate, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsPasswordEmptyOrValid } from '@modules/users/dtos/create-user.dto';
+import { Transform, Type } from 'class-transformer';
+import { IsDate, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class ActivateAccountDto {
-  @IsNotEmpty({
+  @IsOptional()
+  @IsPasswordEmptyOrValid({
     message: errorKeys.users.Invalid_Password,
   })
-  @IsString({
-    message: errorKeys.users.Invalid_Password,
-  })
-  @MaxLength(VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH, {
-    message: errorKeys.users.Invalid_Password,
-  })
-  public password: string | null | undefined;
+  @Transform(({ value }) => (value === '' ? null : value))
+  public password?: string | null;
 
   @IsOptional()
   @IsString({
