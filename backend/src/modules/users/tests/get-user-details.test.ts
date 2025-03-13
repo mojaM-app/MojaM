@@ -7,7 +7,14 @@ import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-han
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermissions } from '@modules/permissions';
-import { CreateUserResponseDto, GetUserDetailsResponseDto, UserDetailsRetrievedEvent, UserDetailsRoute, UserRoute } from '@modules/users';
+import {
+  CreateUserResponseDto,
+  GetUserDetailsResponseDto,
+  IUserDetailsDto,
+  UserDetailsRetrievedEvent,
+  UserDetailsRoute,
+  UserRoute,
+} from '@modules/users';
 import { isGuid, isNumber } from '@utils';
 import { generateRandomDate, getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
@@ -15,7 +22,7 @@ import { Guid } from 'guid-typescript';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
 
-describe('GET/user/:id', () => {
+describe('GET/user-details/:id', () => {
   const userDetailsRoute = new UserDetailsRoute();
   const userRoute = new UserRoute();
   const permissionsRoute = new PermissionsRoute();
@@ -89,6 +96,32 @@ describe('GET/user/:id', () => {
       expect(userDetails!.lastName).toBeDefined();
       expect(userDetails!.lastName).toBe(newUser.lastName);
       expect(userDetails!.lastLoginAt).toBeNull();
+
+      expect(userDetails).toStrictEqual({
+        id: newUserDto.id,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        joiningDate: newUser.joiningDate,
+        email: newUserDto.email,
+        phone: newUserDto.phone,
+        lastLoginAt: null,
+        isLockedOut: false,
+        permissionCount: 0,
+        isActive: false,
+      } satisfies IUserDetailsDto);
+
+      expect(userDetails).toEqual({
+        id: newUserDto.id,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        joiningDate: newUser.joiningDate,
+        email: newUserDto.email,
+        phone: newUserDto.phone,
+        lastLoginAt: null,
+        isLockedOut: false,
+        permissionCount: 0,
+        isActive: false,
+      } satisfies IUserDetailsDto);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + userDetails!.id)
