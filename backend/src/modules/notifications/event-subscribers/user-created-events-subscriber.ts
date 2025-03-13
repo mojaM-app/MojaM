@@ -4,7 +4,7 @@ import { UserCreatedEvent } from '@modules/users';
 import { EventSubscriber, On } from 'event-dispatch';
 import Container from 'typedi';
 import { EmailService } from '../services/email.service';
-import { LinkHelper } from '../services/Link.helper';
+import { LinkHelper } from '../services/link.helper';
 
 @EventSubscriber()
 export class UserCreatedEventSubscriber {

@@ -1,4 +1,4 @@
-import { AnnouncementsRepository } from '../repositories/announcements.repository';
+import { AnnouncementsRepository } from './announcements.repository';
 
 describe('UserRepository tests', () => {
   const repository: AnnouncementsRepository = new AnnouncementsRepository();

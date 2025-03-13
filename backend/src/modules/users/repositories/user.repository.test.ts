@@ -1,7 +1,7 @@
 import { EventDispatcherService } from '@events';
 import { registerTestEventHandlers } from '@helpers/event-handler-test.helpers';
 import { EventDispatcher } from 'event-dispatch';
-import { UserRepository } from '../repositories/user.repository';
+import { UserRepository } from './user.repository';
 
 describe('UserRepository tests', () => {
   const repository: UserRepository = new UserRepository();

@@ -1,6 +1,6 @@
 import { CreateAnnouncementsReqDto } from '../dtos/create-announcements.dto';
 import { UpdateAnnouncementsDto, UpdateAnnouncementsReqDto } from '../dtos/update-announcements.dto';
-import { AnnouncementsService } from '../services/announcements.service';
+import { AnnouncementsService } from './announcements.service';
 
 describe('UserRepository tests', () => {
   const service: AnnouncementsService = new AnnouncementsService();

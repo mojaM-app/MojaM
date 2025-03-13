@@ -4,7 +4,7 @@ import { IRequestWithIdentity } from '@interfaces';
 import { Identity } from '@modules/auth';
 import { UserPermissionsRepository } from '@modules/permissions';
 import { UserRepository } from '@modules/users';
-import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
+import { isNullOrEmptyString, isNullOrUndefined, isString } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { JwtPayload, verify } from 'jsonwebtoken';
 import Container from 'typedi';
@@ -20,12 +20,12 @@ const getAuthorization = (req: Request): string | null => {
     header = header[0];
   }
 
-  if (isNullOrUndefined(header)) {
+  if (isNullOrUndefined(header) || !isString(header)) {
     return null;
   }
 
-  const splittedHeader = (header as string).split('Bearer ');
-  return (splittedHeader?.length ?? 0) > 1 ? splittedHeader[1] : null;
+  header = header as string;
+  return header.startsWith('Bearer ') && header.split('Bearer ').length === 2 ? header.substring(7) : null;
 };
 
 export const getAccessTokenSecret = (): string => {

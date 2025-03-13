@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { VALIDATOR_SETTINGS } from '@config';
 import { getAdminLoginData } from '@utils/tests.utils';
 import { CryptoService } from './crypto.service';
 import { PasswordService } from './password.service';
@@ -99,6 +100,32 @@ describe('CryptoService', () => {
       expect(passwordMatches).toBe(false);
       passwordMatches = passwordService.passwordMatches(password1, salt, hashedPassword2);
       expect(passwordMatches).toBe(false);
+    });
+  });
+
+  describe('isPasswordValid', () => {
+    it('should return false when password is null or undefined', () => {
+      expect(passwordService.isPasswordValid(null)).toBe(false);
+      expect(passwordService.isPasswordValid(undefined)).toBe(false);
+    });
+
+    it('should return false when password is an empty string', () => {
+      expect(passwordService.isPasswordValid('')).toBe(false);
+    });
+
+    it('should return false when password exceeds max length', () => {
+      const longPassword = 'a'.repeat(VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH + 1);
+      expect(passwordService.isPasswordValid(longPassword)).toBe(false);
+    });
+
+    it('should return false when password is not strong', () => {
+      const weakPassword = 'password';
+      expect(passwordService.isPasswordValid(weakPassword)).toBe(false);
+    });
+
+    it('should return true when password is valid', () => {
+      const strongPassword = 'Str0ngP@ssw0rd!';
+      expect(passwordService.isPasswordValid(strongPassword)).toBe(true);
     });
   });
 });

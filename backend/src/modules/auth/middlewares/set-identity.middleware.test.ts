@@ -189,7 +189,7 @@ describe('getAuthorization', () => {
     expect(result).toBeNull();
   });
 
-  it('should return the token from the authorization header', () => {
+  it('should return token from the authorization header', () => {
     const req = {
       headers: {
         authorization: 'Bearer token',
@@ -197,6 +197,46 @@ describe('getAuthorization', () => {
     };
     const result = exportsForTesting.getAuthorization(req);
     expect(result).toBe('token');
+  });
+
+  it('should return null when the authorization header does not starts with Bearer', () => {
+    const req = {
+      headers: {
+        authorization: 'text and Bearer token',
+      },
+    };
+    const result = exportsForTesting.getAuthorization(req);
+    expect(result).toBeNull();
+  });
+
+  it('should return null when there is no space between Bearer and token', () => {
+    const req = {
+      headers: {
+        authorization: 'Bearertoken',
+      },
+    };
+    const result = exportsForTesting.getAuthorization(req);
+    expect(result).toBeNull();
+  });
+
+  it('should return null when authorization header does not contain Bearer', () => {
+    const req = {
+      headers: {
+        authorization: 'token',
+      },
+    };
+    const result = exportsForTesting.getAuthorization(req);
+    expect(result).toBeNull();
+  });
+
+  it('should return null when authorization header contain more than one Bearer', () => {
+    const req = {
+      headers: {
+        authorization: 'Bearer Bearer token',
+      },
+    };
+    const result = exportsForTesting.getAuthorization(req);
+    expect(result).toBeNull();
   });
 
   it('should return first element when the authorization header is an array', () => {
