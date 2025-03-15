@@ -1,6 +1,6 @@
 import { DataSource, PrimaryColumn, ViewColumn, ViewEntity } from 'typeorm';
 import { IUserGridItemDto } from '../dtos/get-user-list.dto';
-import { toNumber } from './../../../utils/numbers.utils';
+import { EntityTransformFunctions } from './../../../dataBase/EntityTransformFunctions';
 import { User } from './user.entity';
 
 export const UserListViewColumns: { [K in keyof IUserGridItemDto]: string } = {
@@ -52,8 +52,8 @@ export class vUser implements IUserGridItemDto {
 
   @ViewColumn({
     transformer: {
-      from: (value: string) => (value?.length > 0 ? new Date(value + 'T00:00:00Z') : null),
-      to: (value: any) => value,
+      from: EntityTransformFunctions.stringDateToDate,
+      to: EntityTransformFunctions.anyToAny,
     },
   })
   public joiningDate: Date | null;
@@ -63,24 +63,24 @@ export class vUser implements IUserGridItemDto {
 
   @ViewColumn({
     transformer: {
-      from: (value: any) => value === 1,
-      to: (value: any) => value,
+      from: EntityTransformFunctions.anyToBoolean,
+      to: EntityTransformFunctions.anyToAny,
     },
   })
   public isActive: boolean;
 
   @ViewColumn({
     transformer: {
-      from: (value: any) => value === 1,
-      to: (value: any) => value,
+      from: EntityTransformFunctions.anyToBoolean,
+      to: EntityTransformFunctions.anyToAny,
     },
   })
   public isLockedOut: boolean;
 
   @ViewColumn({
     transformer: {
-      from: (value: any) => toNumber(value) ?? 0,
-      to: (value: any) => value,
+      from: EntityTransformFunctions.anyToNumber,
+      to: EntityTransformFunctions.anyToAny,
     },
   })
   public permissionCount: number;

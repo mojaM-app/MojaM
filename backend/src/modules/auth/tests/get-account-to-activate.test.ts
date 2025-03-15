@@ -5,10 +5,10 @@ import { EventDispatcherService } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
-import { AuthRoute, GetAccountToActivateResponseDto, LoginDto } from '@modules/auth';
+import { AuthRoute, GetAccountToActivateResponseDto, IAccountToActivateResultDto, LoginDto } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
-import { CreateUserResponseDto, UserRoute } from '@modules/users';
-import { getAdminLoginData } from '@utils/tests.utils';
+import { CreateUserDto, CreateUserResponseDto, UserRoute } from '@modules/users';
+import { generateRandomDate, getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import { Guid } from 'guid-typescript';
 import nodemailer from 'nodemailer';
@@ -56,7 +56,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
       const { data: toActivateResult } = body;
       expect(toActivateResult).toStrictEqual({
         isActive: true,
-      });
+      } satisfies IAccountToActivateResultDto);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -75,7 +75,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
       const { data: toActivateResult } = body;
       expect(toActivateResult).toStrictEqual({
         isActive: true,
-      });
+      } satisfies IAccountToActivateResultDto);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -120,7 +120,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
       const { data: toActivateResult } = body;
       expect(toActivateResult).toStrictEqual({
         isActive: true,
-      });
+      } satisfies IAccountToActivateResultDto);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
@@ -190,7 +190,63 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
       expect(toActivateResult).toStrictEqual({
         isActive: false,
         isLockedOut: true,
-      });
+      } satisfies IAccountToActivateResultDto);
+
+      const deleteResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + newUserDto.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteResponse.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onFailedLoginAttempt,
+              testEventHandlers.onUserLockedOut,
+              testEventHandlers.lockedUserTriesToLogIn,
+              testEventHandlers.onUserDeactivated,
+              testEventHandlers.onUserDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+    });
+
+    it('when user with given id is inactive', async () => {
+      const user = {
+        ...generateValidUser(),
+        firstName: 'John',
+        lastName: 'Doe',
+        joiningDate: generateRandomDate(),
+      } satisfies CreateUserDto;
+
+      const createResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createResponse.statusCode).toBe(201);
+      const { data: newUserDto }: CreateUserResponseDto = createResponse.body;
+      expect(newUserDto?.id).toBeDefined();
+
+      const toActivateResponse = await request(app.getServer())
+        .post(authRoute.getAccountToActivatePath + '/' + newUserDto.id)
+        .send();
+      expect(toActivateResponse.statusCode).toBe(200);
+      const body = toActivateResponse.body as GetAccountToActivateResponseDto;
+      expect(typeof body).toBe('object');
+      const { data: toActivateResult } = body;
+      toActivateResult.joiningDate = new Date(toActivateResult.joiningDate!);
+      expect(toActivateResult).toStrictEqual({
+        email: user.email,
+        phone: user.phone,
+        joiningDate: user.joiningDate,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isActive: false,
+        isLockedOut: false,
+      } satisfies IAccountToActivateResultDto);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)

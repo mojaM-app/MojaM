@@ -2,6 +2,7 @@
 import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from 'typeorm';
 import { ICreateAnnouncementItem } from '../interfaces/create-announcement.interfaces';
 import { IUpdateAnnouncementItem } from '../interfaces/update-announcement.interfaces';
+import { EntityDefaultFunctions } from './../../../dataBase/EntityDefaultFunctions';
 import { User } from './../../../modules/users/entities/user.entity';
 import { Announcement } from './announcement.entity';
 
@@ -35,7 +36,7 @@ export class AnnouncementItem implements ICreateAnnouncementItem, IUpdateAnnounc
     precision: 3,
     nullable: false,
     type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(3)',
+    default: EntityDefaultFunctions.defaultCurrentTimestampPrecision3,
   })
   public createdAt: Date;
 
@@ -57,7 +58,7 @@ export class AnnouncementItem implements ICreateAnnouncementItem, IUpdateAnnounc
     precision: 3,
     nullable: true,
     type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(3)',
+    default: EntityDefaultFunctions.defaultCurrentTimestampPrecision3,
     onUpdate: 'CURRENT_TIMESTAMP(3)',
   })
   public updatedAt: Date;

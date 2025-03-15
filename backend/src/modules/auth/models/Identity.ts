@@ -10,14 +10,14 @@ export class Identity {
   }
 
   private readonly _user: { id: number | undefined; uuid: string | undefined };
-  private readonly _permissions: SystemPermissions[];
+  private readonly _permissions: SystemPermissions[] = [];
 
   public constructor(user: { id?: number; uuid?: string } | undefined | null, permissions: SystemPermissions[]) {
     this._user = {
       id: user?.id,
       uuid: user?.uuid,
     };
-    this._permissions = permissions;
+    this._permissions.push(...permissions);
   }
 
   public isAuthenticated(): boolean {
@@ -93,12 +93,6 @@ export class Identity {
   }
 
   protected hasAnyPermission(permissions: SystemPermissions[]): boolean {
-    return this.isAuthenticated() && this._permissions?.length > 0 && permissions?.length > 0 && permissions.some(s => this._permissions.includes(s));
-  }
-
-  protected hasAllPermissions(permissions: SystemPermissions[]): boolean {
-    return (
-      this.isAuthenticated() && this._permissions?.length > 0 && permissions?.length > 0 && permissions.every(s => this._permissions.includes(s))
-    );
+    return this.isAuthenticated() && this._permissions.length > 0 && permissions.length > 0 && permissions.some(s => this._permissions.includes(s));
   }
 }

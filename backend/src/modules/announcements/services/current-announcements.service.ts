@@ -48,7 +48,7 @@ export class CurrentAnnouncementsService extends BaseService {
       validFromDate: announcement.validFromDate!,
       createdBy: announcement.createdBy.getFirstLastName()!,
       createdAt: announcement.createdAt,
-      updatedAt: announcement.updatedAt ?? announcement.createdAt,
+      updatedAt: announcement.updatedAt,
       publishedBy: announcement.publishedBy!.getFirstLastName()!,
       publishedAt: announcement.publishedAt!,
       items: announcement.items.map(item => ({
@@ -57,7 +57,7 @@ export class CurrentAnnouncementsService extends BaseService {
         createdBy: item.createdBy.getFirstLastName()!,
         createdAt: item.createdAt,
         updatedBy: item.updatedBy?.getFirstLastName() ?? undefined,
-        updatedAt: item.updatedAt ?? item.createdAt,
+        updatedAt: item.updatedAt,
       })),
     } satisfies ICurrentAnnouncementsDto;
   }

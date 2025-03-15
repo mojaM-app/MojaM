@@ -14,6 +14,8 @@ import { ICreateUser } from '../interfaces/create-user.interfaces';
 import { IUser } from '../interfaces/IUser';
 import { IUserId } from '../interfaces/IUser.Id';
 import { IUpdateUser } from '../interfaces/update-user.interfaces';
+import { EntityDefaultFunctions } from './../../../dataBase/EntityDefaultFunctions';
+import { EntityTransformFunctions } from './../../../dataBase/EntityTransformFunctions';
 import { IHasGuidId } from './../../../interfaces/IHasGuidId';
 import { AnnouncementItem } from './../../../modules/announcements/entities/announcement-item.entity';
 import { Announcement } from './../../../modules/announcements/entities/announcement.entity';
@@ -120,8 +122,8 @@ export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser, IUse
     type: 'date',
     nullable: true,
     transformer: {
-      from: (value: string) => (value?.length > 0 ? new Date(value + 'T00:00:00Z') : null),
-      to: (value: Date | null) => value?.toISOString().slice(0, 10), // format the Date to YYYY-MM-DD
+      from: EntityTransformFunctions.stringDateToDate,
+      to: EntityTransformFunctions.dateToStringDate,
     },
   })
   public joiningDate: Date | null;
@@ -139,7 +141,7 @@ export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser, IUse
     precision: 0,
     nullable: false,
     type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
+    default: EntityDefaultFunctions.defaultCurrentTimestampPrecision0,
   })
   public createdAt: Date;
 
@@ -148,7 +150,7 @@ export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser, IUse
     precision: 0,
     nullable: true,
     type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
+    default: EntityDefaultFunctions.defaultCurrentTimestampPrecision0,
     onUpdate: 'CURRENT_TIMESTAMP',
   })
   public updatedAt: Date;

@@ -1,5 +1,5 @@
-import { IHasGuidId } from '@/interfaces';
 import { Event } from '@events';
+import { IHasGuidId } from '@interfaces';
 import { IUser } from '../interfaces/IUser';
 
 export class UserProfileUpdatedEvent extends Event {

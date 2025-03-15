@@ -167,7 +167,7 @@ export class AnnouncementsService extends BaseService {
       validFromDate: announcement.validFromDate,
       createdBy: announcement.createdBy.getFirstLastName()!,
       createdAt: announcement.createdAt,
-      updatedAt: announcement.updatedAt ?? announcement.createdAt,
+      updatedAt: announcement.updatedAt,
       publishedAt: announcement.publishedAt ?? undefined,
       publishedBy: announcement.publishedBy?.getFirstLastName() ?? undefined,
       items: (announcement.items ?? []).map(
@@ -177,7 +177,7 @@ export class AnnouncementsService extends BaseService {
             content: item.content,
             createdAt: item.createdAt,
             createdBy: item.createdBy.getFirstLastName()!,
-            updatedAt: item.updatedAt ?? item.createdAt,
+            updatedAt: item.updatedAt,
             updatedBy: item.updatedBy?.getFirstLastName() ?? undefined,
           }) satisfies IAnnouncementItemDto,
       ),

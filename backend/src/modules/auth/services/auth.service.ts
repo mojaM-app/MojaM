@@ -1,7 +1,6 @@
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
 import { events } from '@events';
-import { BadRequestException, errorKeys } from '@exceptions';
-import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
+import { BadRequestException, errorKeys, TranslatableHttpException } from '@exceptions';
 import {
   AccountTryingToLogInDto,
   ActivateAccountDto,
@@ -43,7 +42,7 @@ import { UserPermissionsRepository } from '@modules/permissions';
 import { UpdateUserModel, UserActivatedEvent, UserRepository } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
 import { IUpdateUser } from '@modules/users/interfaces/update-user.interfaces';
-import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
+import { isGuid, isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { decode, JwtPayload, sign, verify, VerifyErrors } from 'jsonwebtoken';
 import StatusCode from 'status-code-enum';
 import { Container, Service } from 'typedi';
@@ -299,15 +298,15 @@ export class AuthService extends BaseService {
       email: user!.email,
       phone: user!.phone,
       joiningDate: user!.joiningDate,
-      isActive: user!.isActive,
       firstName: user!.firstName,
       lastName: user!.lastName,
+      isActive: user!.isActive,
       isLockedOut: user!.isLockedOut,
     } satisfies IAccountToActivateResultDto;
   }
 
   public async activateAccount(reqDto: ActivateAccountReqDto): Promise<IActivateAccountResultDto> {
-    if (isNullOrEmptyString(reqDto?.userGuid)) {
+    if (!isGuid(reqDto.userGuid)) {
       throw new BadRequestException(errorKeys.users.Invalid_User_Id);
     }
 

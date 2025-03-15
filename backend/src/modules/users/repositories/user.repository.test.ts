@@ -28,6 +28,10 @@ describe('UserRepository tests', () => {
   });
 
   describe('checkIfExists tests', () => {
+    test('should throw BadRequestException when email is undefined', async () => {
+      await expect(repository.checkIfExists({ email: undefined as any, phone: '123456789' })).rejects.toThrow();
+    });
+
     test('should throw BadRequestException when email is null', async () => {
       await expect(repository.checkIfExists({ email: null as any, phone: '123456789' })).rejects.toThrow();
     });
@@ -42,6 +46,10 @@ describe('UserRepository tests', () => {
 
     test('should throw BadRequestException when phone is null', async () => {
       await expect(repository.checkIfExists({ email: 'email@domain.com', phone: null as any })).rejects.toThrow();
+    });
+
+    test('should throw BadRequestException when phone is undefined', async () => {
+      await expect(repository.checkIfExists({ email: 'email@domain.com', phone: undefined as any })).rejects.toThrow();
     });
 
     test('should throw BadRequestException when phone is empty', async () => {

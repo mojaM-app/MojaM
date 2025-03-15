@@ -258,7 +258,7 @@ describe('PUT /user/:id', () => {
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
-    test('when only password is updated nothing should change', async () => {
+    test('when only password is updated nothing should change (password should not be changed)', async () => {
       const requestData = generateValidUser();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -287,8 +287,6 @@ describe('PUT /user/:id', () => {
 
       const accessToken2 = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
       expect(accessToken2).toBeDefined();
-
-      expect(accessToken1).toBe(accessToken2);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + user.id)

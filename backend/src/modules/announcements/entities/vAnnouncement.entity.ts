@@ -1,7 +1,7 @@
 import { DataSource, PrimaryColumn, ViewColumn, ViewEntity } from 'typeorm';
 import { IAnnouncementGridItemDto } from '../dtos/get-announcement-list.dto';
+import { EntityTransformFunctions } from './../../../dataBase/EntityTransformFunctions';
 import { User } from './../../../modules/users/entities/user.entity';
-import { toNumber } from './../../../utils/numbers.utils';
 import { Announcement } from './announcement.entity';
 
 export const AnnouncementListViewColumns: { [K in keyof IAnnouncementGridItemDto]: string } = {
@@ -49,8 +49,8 @@ export class vAnnouncement implements IAnnouncementGridItemDto {
 
   @ViewColumn({
     transformer: {
-      from: (value: string) => (value?.length > 0 ? new Date(value + 'T00:00:00Z') : null),
-      to: (value: any) => value,
+      from: EntityTransformFunctions.stringDateToDate,
+      to: EntityTransformFunctions.anyToAny,
     },
   })
   public validFromDate: Date | null;
@@ -72,8 +72,8 @@ export class vAnnouncement implements IAnnouncementGridItemDto {
 
   @ViewColumn({
     transformer: {
-      from: (value: string) => toNumber(value) ?? 0,
-      to: (value: number) => value,
+      from: EntityTransformFunctions.anyToNumber,
+      to: EntityTransformFunctions.anyToAny,
     },
   })
   public itemsCount: number;

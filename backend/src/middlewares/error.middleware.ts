@@ -1,5 +1,4 @@
-import { HttpException } from '@exceptions/HttpException';
-import { TranslatableHttpException } from '@exceptions/TranslatableHttpException';
+import { HttpException, TranslatableHttpException } from '@exceptions';
 import { IResponseError } from '@interfaces';
 import { logger } from '@modules/logger';
 import { NextFunction, Request, Response } from 'express';

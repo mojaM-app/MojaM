@@ -13,3 +13,5 @@ export { isGuid } from '@utils/guid.utils';
 export { getFullUrl } from '@utils/url.utils';
 
 export { isEnumValue } from '@utils/enum.utils';
+
+export { toBoolean } from '@utils/boolean.utils';

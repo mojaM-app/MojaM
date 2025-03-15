@@ -15,6 +15,8 @@ import {
 import { ICreateAnnouncement } from '../interfaces/create-announcement.interfaces';
 import { IAnnouncementId } from '../interfaces/IAnnouncementId';
 import { IUpdateAnnouncement } from '../interfaces/update-announcement.interfaces';
+import { EntityDefaultFunctions } from './../../../dataBase/EntityDefaultFunctions';
+import { EntityTransformFunctions } from './../../../dataBase/EntityTransformFunctions';
 import { IHasGuidId } from './../../../interfaces/IHasGuidId';
 import { User } from './../../../modules/users/entities/user.entity';
 import { AnnouncementItem } from './announcement-item.entity';
@@ -60,8 +62,8 @@ export class Announcement implements IHasGuidId, IAnnouncementId, ICreateAnnounc
     type: 'date',
     nullable: true,
     transformer: {
-      from: (value: string) => (value?.length > 0 ? new Date(value + 'T00:00:00Z') : null),
-      to: (value: Date | null) => value?.toISOString().slice(0, 10), // format the Date to YYYY-MM-DD
+      from: EntityTransformFunctions.stringDateToDate,
+      to: EntityTransformFunctions.dateToStringDate,
     },
   })
   public validFromDate: Date | null;
@@ -71,7 +73,7 @@ export class Announcement implements IHasGuidId, IAnnouncementId, ICreateAnnounc
     precision: 0,
     nullable: false,
     type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
+    default: EntityDefaultFunctions.defaultCurrentTimestampPrecision0,
   })
   public createdAt: Date;
 
@@ -93,7 +95,7 @@ export class Announcement implements IHasGuidId, IAnnouncementId, ICreateAnnounc
     precision: 0,
     nullable: true,
     type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
+    default: EntityDefaultFunctions.defaultCurrentTimestampPrecision0,
     onUpdate: 'CURRENT_TIMESTAMP',
   })
   public updatedAt: Date;

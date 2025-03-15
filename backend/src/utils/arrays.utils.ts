@@ -56,7 +56,7 @@ const objectsEqual = (x: any, y: any): boolean => {
   return true;
 };
 
-const arraysEquals = (arr1: any[] | null | undefined, arr2: any[] | null | undefined): boolean => {
+export const arraysEquals = (arr1: any[] | null | undefined, arr2: any[] | null | undefined): boolean => {
   if (
     (isNullOrUndefined(arr1) && isNullOrUndefined(arr2)) ||
     (isNullOrUndefined(arr1) && (arr2?.length ?? 0) === 0) ||
@@ -83,7 +83,7 @@ const arraysEquals = (arr1: any[] | null | undefined, arr2: any[] | null | undef
   return arr1?.length === arr2?.length && uniqueArr1?.length === 0 && uniqueArr2?.length === 0;
 };
 
-const isArray = (array: any): boolean => {
+export const isArray = (array: any): boolean => {
   if (isNullOrUndefined(array) || isNullOrUndefined(array.length)) {
     return false;
   }
@@ -91,8 +91,6 @@ const isArray = (array: any): boolean => {
   return Array.isArray(array);
 };
 
-const isArrayEmpty = (array: any): boolean => {
+export const isArrayEmpty = (array: any): boolean => {
   return isArray(array) && array.length === 0;
 };
-
-export { arraysEquals, isArray, isArrayEmpty };

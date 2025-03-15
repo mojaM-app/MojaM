@@ -1,14 +1,14 @@
 /* eslint-disable no-use-before-define */
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryColumn, Relation } from 'typeorm';
 import { ICreateResetPasswordToken } from '../interfaces/create-reset-password-token.interfaces';
+import { EntityDefaultFunctions } from './../../../dataBase/EntityDefaultFunctions';
 import { User } from './../../users/entities/user.entity';
 
 @Entity({
   name: 'user_reset_password_tokens',
 })
 export class UserResetPasswordToken implements ICreateResetPasswordToken {
-  @OneToOne(() => User, (user: User) => user.resetPasswordToken,
-    { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
+  @OneToOne(() => User, (user: User) => user.resetPasswordToken, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
   @JoinColumn({
     name: 'UserId',
     referencedColumnName: 'id',
@@ -33,7 +33,7 @@ export class UserResetPasswordToken implements ICreateResetPasswordToken {
     name: 'CreatedAt',
     nullable: false,
     precision: 0,
-    default: () => 'CURRENT_TIMESTAMP',
+    default: EntityDefaultFunctions.defaultCurrentTimestampPrecision0,
     type: 'timestamp',
   })
   public createdAt: Date;

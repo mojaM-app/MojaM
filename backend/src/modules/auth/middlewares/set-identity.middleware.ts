@@ -71,7 +71,7 @@ export const getRefreshTokenExpiration = (): string => {
     return defaultRefreshTokenExpiration;
   }
 
-  return REFRESH_TOKEN_EXPIRE_IN ?? defaultRefreshTokenExpiration;
+  return REFRESH_TOKEN_EXPIRE_IN!;
 };
 
 export const getAccessTokenExpiration = (): string => {

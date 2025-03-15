@@ -24,6 +24,8 @@ import {
   UserDeletedEvent,
   UserDetailsRetrievedEvent,
   UserListRetrievedEvent,
+  UserProfileRetrievedEvent,
+  UserProfileUpdatedEvent,
   UserRetrievedEvent,
   UserUnlockedEvent,
   UserUpdatedEvent,
@@ -44,6 +46,8 @@ const testEventHandlers: {
   onUserListRetrieved: (data: any) => void;
   onUserDetailsRetrieved: (data: any) => void;
   onUserRetrieved: (data: any) => void;
+  onUserProfileRetrieved: (data: any) => void;
+  onUserProfileUpdated: (data: any) => void;
   onUserDeleted: (data: any) => void;
   onUserActivated: (data: any) => void;
   onUserDeactivated: (data: any) => void;
@@ -70,6 +74,8 @@ const testEventHandlers: {
   onUserListRetrieved: jest.fn((data: UserListRetrievedEvent) => {}),
   onUserDetailsRetrieved: jest.fn((data: UserDetailsRetrievedEvent) => {}),
   onUserRetrieved: jest.fn((data: UserRetrievedEvent) => {}),
+  onUserProfileRetrieved: jest.fn((data: UserProfileRetrievedEvent) => {}),
+  onUserProfileUpdated: jest.fn((data: UserProfileUpdatedEvent) => {}),
   onUserDeleted: jest.fn((data: UserDeletedEvent) => {}),
   onUserActivated: jest.fn((data: UserActivatedEvent) => {}),
   onUserDeactivated: jest.fn((data: UserDeactivatedEvent) => {}),

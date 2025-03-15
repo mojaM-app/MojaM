@@ -1,6 +1,5 @@
 /* eslint-disable */
-import { TranslatableHttpException } from '@/exceptions/TranslatableHttpException';
-import { HttpException } from '@exceptions/HttpException';
+import { HttpException, TranslatableHttpException } from '@exceptions';
 import { logger } from '@modules/logger';
 import { NextFunction, Request, Response } from 'express';
 import { ErrorMiddleware } from './error.middleware';
