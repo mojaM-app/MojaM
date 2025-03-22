@@ -174,7 +174,27 @@
     "InvalidToken": "Nieprawidłowy token resetujący hasło!",
     "TryAgain": "Spróbuj ponownie raz jeszcze.",
     "InvalidTokenHint": "Link do resetu hasła może być użyty tylko raz i jest ważny przez godzinę. Po tym czasie traci ważność i należy wysłać kolejną prośbę o zmianę hasła.",
-    "HidePasswordAriaLabel": "Ukryj hasło"
+    "HideAriaLabel": "Ukryj hasło"
+  },
+  "ResetPin": {
+    "ChangePinTitle": "Zmień nr PIN",
+    "ChangePinDescription": "Wprowadź nowy nr PIN dla konta <b>{email}</b>",
+    "ChangePinHint": "Pamiętaj, że silny PIN to podstawa bezpieczeństwa Twojego konta.<br>PIN może zawierać same cyfry jak również duże i małe litery.",
+    "Pin": "Nowy nr PIN",
+    "PinPlaceholder": "wprowadź nowy nr PIN",
+    "PinRequiredError": "Wprowadź nowy nr PIN",
+    "ConfirmPin": "Potwierdź nr PIN",
+    "ConfirmPinPlaceholder": "potwierdź nowy nr PIN",
+    "ConfirmPinRequiredError": "Potwierdź nowy nr PIN",
+    "ConfirmPinMismatchError": "Numery PIN nie są takie same",
+    "PinNotEnoughStrongError": "PIN jest zbyt słaby. Musi zawierać cztery znaki.",
+    "PinContainsInvalidCharactersError": "PIN zawiera niedozwolone znaki. Dozwolone są tylko cyfry oraz duże i małe litery.",
+    "ChangePin": "Zmień PIN",
+    "ChangePinNotPossible": "Nie można zmienić PIN-u",
+    "InvalidToken": "Nieprawidłowy token resetujący PIN!",
+    "TryAgain": "Spróbuj ponownie raz jeszcze.",
+    "InvalidTokenHint": "Link do resetu PIN-u może być użyty tylko raz i jest ważny przez godzinę. Po tym czasie traci ważność i należy wysłać kolejną prośbę o zmianę PIN-u.",
+    "HideAriaLabel": "Ukryj PIN"
   },
   "ActivateAccount": {
     "Title": "Aktywacja konta",
@@ -184,8 +204,8 @@
         "Description": "<b>Jeszcze kilka kliknięć i twoje konto będzie aktywne.</b><br><br>Specjalnie dla ciebie został przygotowany niniejszy kreator, który szybko i bez problemów przeprowadzi Cię przez proces aktywowania konta.",
         "BtnNext": "Rozpocznij"
       },
-      "Identity": {
-        "Title": "Potwierdź dane",
+      "Contact": {
+        "Title": "Dane kontaktowe",
         "TitleErrorMessage": "Błąd",
         "Description": "Potwierdź, czy poniższe adres e-mail i telefon należą do ciebie i czy są takie jakie podano podczas zapisów do wspólnoty.",
         "EmailConfirmed": "Potwierdzam, to jest mój e-mail",
@@ -193,30 +213,34 @@
         "BtnNext": "Dalej",
         "BtnBack": "Wstecz"
       },
-      "UserInfo": {
-        "Title": "Uzupełnij dane",
+      "PersonalInfo": {
+        "Title": "Dane osobowe",
         "TitleErrorMessage": "Błąd",
         "Description": "Podaj/potwierdź swoje imię i nazwisko.",
         "OptionalFieldsHint": "Opcjonalnie, jeżeli pamiętasz, podaj datę dołączenia do wspólnoty.",
         "BtnNext": "Dalej",
         "BtnBack": "Wstecz"
       },
-      "SetPassword": {
-        "Title": "Ustaw hasło",
+      "Authentication": {
+        "Title": "Uwierzytelnienie",
         "TitleErrorMessage": "Błąd",
-        "Description": "<b>Ustaw hasło do swojego konta</b>.<br><br>Pamiętaj, że silne hasło to podstawa bezpieczeństwa Twojego konta.<br>Hasło musi zawierać co najmniej dziewięć znaków w tym minimum jedną dużą literę i minimum jedną małą literę. Cyfry i znaki specjalne są opcjonalne.",
-        "Password": "Hasło",
-        "PasswordPlaceholder": "Wprowadź hasło",
-        "PasswordHint": "Hasło musi zawierać co najmniej dziewięć znaków w tym minimum jedną dużą literę i minimum jedną małą literę. Cyfry i znaki specjalne są opcjonalne.",
-        "ConfirmPassword": "Potwierdź hasło",
-        "ConfirmPasswordPlaceholder": "Potwierdź hasło",
+        "Description": "Ustaw sposób uwierzytelniania (logowania).",
+        "AuthenticationType": "Sposób uwierzytelnienia",
+        "AuthenticationTypeHint": "Wybierz sposób uwierzytelnienia, który będzie używany podczas logowania do aplikacji.",
+        "AuthenticationTypes": {
+          "Password": "Hasło",
+          "Pin": "PIN"
+        },
+        "ChangePasswordHint": "Pamiętaj, że silne hasło to podstawa bezpieczeństwa Twojego konta.<br>Hasło musi zawierać co najmniej dziewięć znaków.",
+        "ChangePinHint": "Pamiętaj, że silny PIN to podstawa bezpieczeństwa Twojego konta.<br>PIN może zawierać same cyfry jak również duże i małe litery.",
         "BtnNext": "Dalej",
         "BtnBack": "Wstecz"
       },
       "Finish": {
         "Title": "Gotowe!",
         "Description": "Możesz aktywować swoje konto.",
-        "BtnFinish": "Aktywuj konto"
+        "BtnFinish": "Aktywuj konto",
+        "BtnBack": "Wstecz"
       }
     }
   },
@@ -253,7 +277,7 @@
     "UserForm": {
       "AddTitle": "Dodaj użytkownika",
       "EditTitle": "Edytuj użytkownika",
-      "RequiredFieldsHint": "<b>E-mail i telefon są danymi wymaganymi.</b><br>Służą do identyfikacji użytkownika, są niezbędne do zalogowania się do aplikacji.<br>Są to również dane kontaktowe, dobrze by było gdyby były to dane prawdziwe.",
+      "RequiredFieldsHint": "<b>E-mail i telefon są danymi wymaganymi.</b><br>Służą do identyfikacji użytkownika, są niezbędne do zalogowania się do aplikacji.<br>Są to również dane kontaktowe, dobrze by było aby były to dane prawdziwe.",
       "OptionalFieldsHint": "Dane opcjonalne.",
       "NewUserHint": "Po utworzeniu nowego konta domyślnie nowy użytkownik jest nieaktywny i nie będzie w stanie się zalogować. W chwili dodania użytkownika do aplikacji zostanie wysłany do niego e-mail z instrukcją, jak aktywować swoje konto. Instrukcja zostanie wysłana na adres podany w polu \"E-mail\".",
       "Email": "E-mail",

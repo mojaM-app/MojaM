@@ -1,8 +1,10 @@
-import { VALIDATOR_SETTINGS } from '@config';
 import { events } from '@events';
 import { errorKeys } from '@exceptions';
+import { DtoTransformFunctions } from '@helpers/DtoTransformFunctions';
 import { IResponse } from '@interfaces';
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsPasswordEmptyOrValid } from '@validators';
+import { Transform } from 'class-transformer';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class ResetPasswordDto {
   @IsNotEmpty({
@@ -11,9 +13,10 @@ export class ResetPasswordDto {
   @IsString({
     message: errorKeys.users.Invalid_Password,
   })
-  @MaxLength(VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH, {
+  @IsPasswordEmptyOrValid({
     message: errorKeys.users.Invalid_Password,
   })
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public password: string | null | undefined;
 
   @IsNotEmpty({
@@ -22,6 +25,7 @@ export class ResetPasswordDto {
   @IsString({
     message: errorKeys.login.Invalid_Reset_Password_Token,
   })
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public token: string | null | undefined;
 }
 

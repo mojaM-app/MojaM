@@ -36,7 +36,8 @@
       "@helpers": ["helpers"],
       "@helpers/*": ["helpers/*"],
       "@modules/*": ["modules/*"],
-      "@db": ["dataBase"]
+      "@db": ["dataBase"],
+      "@validators": ["validators"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.json", ".env"],

@@ -36,7 +36,7 @@ export const validateData = (type: any, skipMissingProperties = false, whitelist
         next();
       })
       .catch((errors: ValidationError[]) => {
-        const message = [...new Set(errors.map((error: ValidationError) => getErrorConstraints(error)))].join(', ');
+        const message = [...new Set(errors.map((error: ValidationError) => getErrorConstraints(error)))].join(',');
         next(new BadRequestException(message));
       });
   };

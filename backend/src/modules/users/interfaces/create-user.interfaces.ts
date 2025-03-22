@@ -5,6 +5,7 @@ export interface ICreateUser {
   lastName?: string | null;
   joiningDate?: Date | null;
   password?: string | null;
+  pin?: string | null;
   isActive: boolean;
   salt: string;
   refreshTokenKey: string;

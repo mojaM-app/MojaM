@@ -1,4 +1,4 @@
-import { REGEX_GUID_PATTERN, REGEX_INT_PATTERN } from '@config';
+import { REGEX_PATTERNS } from '@config';
 import { ForbiddenException, UnauthorizedException } from '@exceptions';
 import { IRequestWithIdentity, IRoutes } from '@interfaces';
 import { setIdentity } from '@modules/auth';
@@ -18,12 +18,12 @@ export class PermissionsRoute implements IRoutes {
   private initializeRoutes(): void {
     this.router.get(`${this.path}`, [setIdentity, this.checkGet], this._permissionsController.get);
     this.router.post(
-      `${this.path}/:userId(${REGEX_GUID_PATTERN})/:permissionId(${REGEX_INT_PATTERN})`,
+      `${this.path}/:userId(${REGEX_PATTERNS.GUID})/:permissionId(${REGEX_PATTERNS.INT})`,
       [setIdentity, this.checkAdd],
       this._permissionsController.add,
     );
     this.router.delete(
-      `${this.path}/:userId(${REGEX_GUID_PATTERN})/:permissionId(${REGEX_INT_PATTERN})?`,
+      `${this.path}/:userId(${REGEX_PATTERNS.GUID})/:permissionId(${REGEX_PATTERNS.INT})?`,
       [setIdentity, this.checkDelete],
       this._permissionsController.delete,
     );

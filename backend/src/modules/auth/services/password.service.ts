@@ -6,7 +6,7 @@ import { isNullOrEmptyString } from './../../../utils/strings.utils';
 
 @Service()
 export class PasswordService {
-  public hashPassword(salt: string, password: string): string {
+  public getHash(salt: string, password: string): string {
     if (isNullOrEmptyString(salt) || isNullOrEmptyString(password)) {
       throw new Error('Salt and password are required to hash a password');
     }
@@ -14,11 +14,11 @@ export class PasswordService {
     return crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
   }
 
-  public passwordMatches(password: string, salt: string, hashedPassword: string): boolean {
-    return this.hashPassword(salt, password) === hashedPassword;
+  public match(password: string, salt: string, hashedPassword: string): boolean {
+    return this.getHash(salt, password) === hashedPassword;
   }
 
-  public isPasswordValid(password: string | undefined | null): boolean {
+  public isValid(password: string | undefined | null): boolean {
     if (isNullOrEmptyString(password)) {
       return false;
     }

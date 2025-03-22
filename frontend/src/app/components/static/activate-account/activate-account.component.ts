@@ -20,29 +20,33 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatStepperModule, StepperOrientation } from '@angular/material/stepper';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PATHS } from 'src/app/app.routes';
 import { SnackBarService } from 'src/app/components/static/snackbar/snack-bar.service';
-import { VALIDATOR_SETTINGS } from 'src/core/consts';
+import { REGEX_PATTERNS, VALIDATOR_SETTINGS } from 'src/core/consts';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { BrowserWindowService } from 'src/services/browser/browser-window.service';
 import { GuidUtils } from 'src/utils/guid.utils';
 import { ObjectUtils } from 'src/utils/object.utils';
+import { conditionalValidator } from 'src/validators/conditional.validator';
 import { ControlValidators } from 'src/validators/control.validators';
 import { PasswordValidator } from 'src/validators/password.validator';
 import { NewsMenu } from '../../news/news.menu';
 import { ResetPasswordControlComponent } from '../reset-password/reset-password-control/reset-password-control.component';
+import { ResetPinControlComponent } from '../reset-password/reset-pin-control/reset-pin-control.component';
 import {
   IActivateAccountForm,
-  IIdentityFormGroup,
-  ISetPasswordFormGroup,
-  IUserInfoFormGroup,
+  IAuthenticationFormGroup,
+  IContactFormGroup,
+  IPersonalInfoFormGroup,
 } from './activate-account.form';
+import { AuthenticationTypes } from './enums/authentication-type.enum';
 import { IAccountToActivate, IActivateAccountResult } from './interfaces/activate-account';
-import { ActivateUserDto } from './models/user.model';
+import { ActivateAccountDto } from './models/activate-account.model';
 import { ActivateAccountService } from './services/activate-account.service';
 
 @Component({
@@ -56,11 +60,13 @@ import { ActivateAccountService } from './services/activate-account.service';
     MatFormFieldModule,
     MatDatepickerModule,
     MatStepperModule,
+    MatSelectModule,
     MatCheckboxModule,
     FormsModule,
     PipesModule,
     DirectivesModule,
     ResetPasswordControlComponent,
+    ResetPinControlComponent,
   ],
   templateUrl: './activate-account.component.html',
   styleUrl: './activate-account.component.scss',
@@ -68,9 +74,11 @@ import { ActivateAccountService } from './services/activate-account.service';
 })
 export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() implements OnInit {
   protected readonly maxLengths = VALIDATOR_SETTINGS;
+  protected readonly AuthenticationTypes = AuthenticationTypes;
   protected readonly user = model<IAccountToActivate>();
   protected readonly stepperOrientation: WritableSignal<StepperOrientation> =
     model<StepperOrientation>('horizontal');
+  protected readonly selectedAuthenticationType = model<AuthenticationTypes | null>(null);
 
   public constructor(
     formBuilder: FormBuilder,
@@ -81,7 +89,7 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
     private _browserWindowService: BrowserWindowService
   ) {
     const form = formBuilder.group<IActivateAccountForm>({
-      identity: formBuilder.group<IIdentityFormGroup>({
+      contact: formBuilder.group<IContactFormGroup>({
         email: new FormControl<string | null>(null, {
           nonNullable: true,
           validators: [
@@ -104,7 +112,7 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
           nonNullable: true,
         }),
       }),
-      userInfo: formBuilder.group<IUserInfoFormGroup>({
+      personalInfo: formBuilder.group<IPersonalInfoFormGroup>({
         firstName: new FormControl<string | null>(null, {
           nonNullable: true,
           validators: [
@@ -123,27 +131,74 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
           nonNullable: true,
         }),
       }),
-      setPassword: formBuilder.group<ISetPasswordFormGroup>(
+      authentication: formBuilder.group<IAuthenticationFormGroup>(
         {
-          password: new FormControl<string | null>(null, {
+          authenticationType: new FormControl<AuthenticationTypes | null>(null, {
             nonNullable: true,
             validators: [Validators.required],
+          }),
+          password: new FormControl<string | null>(null, {
+            nonNullable: true,
+            validators: [
+              conditionalValidator(
+                () => this.selectedAuthenticationType() === AuthenticationTypes.Password,
+                Validators.required
+              ),
+            ],
           }),
           confirmPassword: new FormControl<string | null>(null, {
             nonNullable: true,
             validators: [
-              Validators.required,
-              Validators.minLength(9),
-              Validators.maxLength(50),
-              PasswordValidator.strong(),
+              conditionalValidator(
+                () => this.selectedAuthenticationType() === AuthenticationTypes.Password,
+                [
+                  Validators.required,
+                  Validators.minLength(VALIDATOR_SETTINGS.STRONG_PASSWORD_OPTIONS.minLength),
+                  Validators.maxLength(VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH),
+                  PasswordValidator.strong(),
+                ]
+              ),
+            ],
+          }),
+          pin: new FormControl<string | null>(null, {
+            nonNullable: true,
+            validators: [
+              conditionalValidator(
+                () => this.selectedAuthenticationType() === AuthenticationTypes.Pin,
+                Validators.required
+              ),
+            ],
+          }),
+          confirmPin: new FormControl<string | null>(null, {
+            nonNullable: true,
+            validators: [
+              conditionalValidator(
+                () => this.selectedAuthenticationType() === AuthenticationTypes.Pin,
+                [
+                  Validators.required,
+                  Validators.minLength(VALIDATOR_SETTINGS.PIN_LENGTH),
+                  Validators.maxLength(VALIDATOR_SETTINGS.PIN_LENGTH),
+                  Validators.pattern(REGEX_PATTERNS.ALPHANUMERIC_ONE_CHAR),
+                ]
+              ),
             ],
           }),
         },
         {
           validators: [
-            ControlValidators.matchControlsValue(
-              ObjectUtils.nameOf<ISetPasswordFormGroup>(p => p.password),
-              ObjectUtils.nameOf<ISetPasswordFormGroup>(p => p.confirmPassword)
+            conditionalValidator(
+              () => this.selectedAuthenticationType() === AuthenticationTypes.Password,
+              ControlValidators.matchControlsValue(
+                ObjectUtils.nameOf<IAuthenticationFormGroup>(p => p.password),
+                ObjectUtils.nameOf<IAuthenticationFormGroup>(p => p.confirmPassword)
+              )
+            ),
+            conditionalValidator(
+              () => this.selectedAuthenticationType() === AuthenticationTypes.Pin,
+              ControlValidators.matchControlsValue(
+                ObjectUtils.nameOf<IAuthenticationFormGroup>(p => p.pin),
+                ObjectUtils.nameOf<IAuthenticationFormGroup>(p => p.confirmPin)
+              )
             ),
           ],
         }
@@ -156,21 +211,24 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
       const model = this.user();
       if (model) {
         this.formGroup.patchValue({
-          identity: {
+          contact: {
             email: model.email,
             emailConfirmed: false,
             phone: model.phone,
             phoneConfirmed: false,
-          } satisfies { [K in keyof IIdentityFormGroup]: unknown },
-          userInfo: {
+          } satisfies { [K in keyof IContactFormGroup]: unknown },
+          personalInfo: {
             firstName: model.firstName,
             lastName: model.lastName,
             joiningDate: model.joiningDate,
-          } satisfies { [K in keyof IUserInfoFormGroup]: unknown },
-          setPassword: {
+          } satisfies { [K in keyof IPersonalInfoFormGroup]: unknown },
+          authentication: {
+            authenticationType: null,
             password: null,
             confirmPassword: null,
-          } satisfies { [K in keyof ISetPasswordFormGroup]: unknown },
+            pin: null,
+            confirmPin: null,
+          } satisfies { [K in keyof IAuthenticationFormGroup]: unknown },
         } satisfies { [K in keyof IActivateAccountForm]: unknown });
       }
     });
@@ -222,7 +280,7 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
       return;
     }
 
-    const dto = new ActivateUserDto(this.formGroup);
+    const dto = new ActivateAccountDto(this.formGroup);
     this._activateAccountService
       .activate(userId, dto)
       .subscribe((result: IActivateAccountResult) => {

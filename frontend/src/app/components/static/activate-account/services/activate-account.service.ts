@@ -4,7 +4,7 @@ import { BaseService } from 'src/services/common/base.service';
 import { HttpClientService } from 'src/services/common/httpClient.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
 import { IAccountToActivate, IActivateAccountResult } from '../interfaces/activate-account';
-import { ActivateUserDto } from '../models/user.model';
+import { ActivateAccountDto } from '../models/activate-account.model';
 
 @Injectable({
   providedIn: 'root',
@@ -34,7 +34,7 @@ export class ActivateAccountService extends BaseService {
       );
   }
 
-  public activate(userUuid: string, user: ActivateUserDto): Observable<IActivateAccountResult> {
+  public activate(userUuid: string, user: ActivateAccountDto): Observable<IActivateAccountResult> {
     return this._httpClient
       .request()
       .withUrl(this.API_ROUTES.auth.activateAccount(userUuid))

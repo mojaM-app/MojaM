@@ -1,7 +1,7 @@
 import { App } from '@/app';
 import { DbConnection } from '@db';
 import { loginAs } from '@helpers/user-tests.helpers';
-import { LoginDto } from '@modules/auth';
+import { AuthenticationTypes, LoginDto } from '@modules/auth';
 import { SystemPermissions } from '@modules/permissions';
 import { IUser, UserRoute } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
@@ -31,6 +31,7 @@ describe('Cache user data tests', () => {
         getLastFirstName: () => 'Doe John',
         getLastFirstNameOrEmail: () => 'Doe John',
         isAdmin: () => true,
+        getAuthenticationType: () => undefined,
       } satisfies IUser & {
         _is_from_mock_: boolean;
         id: number;
@@ -63,6 +64,7 @@ describe('Cache user data tests', () => {
               getLastFirstName: () => 'Doe John',
               getLastFirstNameOrEmail: () => 'Doe John',
               isAdmin: () => true,
+              getAuthenticationType: () => AuthenticationTypes.Password,
             } satisfies IUser & {
               _is_from_mock_: boolean;
               id: number;

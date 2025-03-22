@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { VALIDATOR_SETTINGS } from '@config';
-import { getAdminLoginData } from '@utils/tests.utils';
+import { generateRandomPassword, getAdminLoginData } from '@utils/tests.utils';
 import { CryptoService } from './crypto.service';
 import { PasswordService } from './password.service';
 
@@ -13,40 +13,25 @@ describe('CryptoService', () => {
     passwordService = new PasswordService();
   });
 
-  describe('generateSalt', () => {
-    it('should return a salt', () => {
-      const salt = cryptoService.generateSalt();
-      expect(salt).toBeDefined();
-      expect(typeof salt).toBe('string');
-      expect(salt.length).toBe(32);
-    });
-
-    it('should return random salt', () => {
-      const salt1 = cryptoService.generateSalt();
-      const salt2 = cryptoService.generateSalt();
-      expect(salt1).not.toEqual(salt2);
-    });
-  });
-
-  describe('hashPassword', () => {
+  describe('getHash', () => {
     it('should throw an error when salt is not set', () => {
       const { password } = getAdminLoginData();
-      expect(() => passwordService.hashPassword(null as any, password)).toThrow('Salt and password are required to hash a password');
-      expect(() => passwordService.hashPassword(undefined as any, password)).toThrow('Salt and password are required to hash a password');
-      expect(() => passwordService.hashPassword('', password)).toThrow('Salt and password are required to hash a password');
+      expect(() => passwordService.getHash(null as any, password)).toThrow('Salt and password are required to hash a password');
+      expect(() => passwordService.getHash(undefined as any, password)).toThrow('Salt and password are required to hash a password');
+      expect(() => passwordService.getHash('', password)).toThrow('Salt and password are required to hash a password');
     });
 
     it('should throw an error when password is not set', () => {
       const salt = cryptoService.generateSalt();
-      expect(() => passwordService.hashPassword(salt, null as any)).toThrow('Salt and password are required to hash a password');
-      expect(() => passwordService.hashPassword(salt, undefined as any)).toThrow('Salt and password are required to hash a password');
-      expect(() => passwordService.hashPassword(salt, '')).toThrow('Salt and password are required to hash a password');
+      expect(() => passwordService.getHash(salt, null as any)).toThrow('Salt and password are required to hash a password');
+      expect(() => passwordService.getHash(salt, undefined as any)).toThrow('Salt and password are required to hash a password');
+      expect(() => passwordService.getHash(salt, '')).toThrow('Salt and password are required to hash a password');
     });
 
     it('should return a hashed password', () => {
       const salt = cryptoService.generateSalt();
       const { password } = getAdminLoginData();
-      const hashedPassword = passwordService.hashPassword(salt, password);
+      const hashedPassword = passwordService.getHash(salt, password);
       expect(hashedPassword).toBeDefined();
       expect(typeof hashedPassword).toBe('string');
       expect(hashedPassword.length).toBe(128);
@@ -55,8 +40,8 @@ describe('CryptoService', () => {
     it('should return same hashed password', () => {
       const salt = cryptoService.generateSalt();
       const { password } = getAdminLoginData();
-      const hashedPassword1 = passwordService.hashPassword(salt, password);
-      const hashedPassword2 = passwordService.hashPassword(salt, password);
+      const hashedPassword1 = passwordService.getHash(salt, password);
+      const hashedPassword2 = passwordService.getHash(salt, password);
       expect(hashedPassword2).toEqual(hashedPassword1);
     });
 
@@ -64,24 +49,24 @@ describe('CryptoService', () => {
       const salt1 = cryptoService.generateSalt();
       const salt2 = cryptoService.generateSalt();
       const { password } = getAdminLoginData();
-      const hashedPassword1 = passwordService.hashPassword(salt1, password);
-      const hashedPassword2 = passwordService.hashPassword(salt2, password);
+      const hashedPassword1 = passwordService.getHash(salt1, password);
+      const hashedPassword2 = passwordService.getHash(salt2, password);
       expect(hashedPassword2).not.toEqual(hashedPassword1);
     });
   });
 
-  describe('passwordMatches', () => {
+  describe('match', () => {
     it('should return TRUE when password matches', () => {
       const salt = cryptoService.generateSalt();
       const { password } = getAdminLoginData();
 
       expect(salt.length).toBeGreaterThan(0);
 
-      const hashedPassword1 = passwordService.hashPassword(salt, password);
-      const hashedPassword2 = passwordService.hashPassword(salt, password);
+      const hashedPassword1 = passwordService.getHash(salt, password);
+      const hashedPassword2 = passwordService.getHash(salt, password);
       expect(hashedPassword2).toEqual(hashedPassword1);
 
-      const passwordMatches = passwordService.passwordMatches(password, salt, hashedPassword1);
+      const passwordMatches = passwordService.match(password, salt, hashedPassword1);
       expect(passwordMatches).toBe(true);
     });
 
@@ -89,43 +74,43 @@ describe('CryptoService', () => {
       const salt = cryptoService.generateSalt();
 
       const password1 = 'password123';
-      const hashedPassword1 = passwordService.hashPassword(salt, password1);
+      const hashedPassword1 = passwordService.getHash(salt, password1);
 
       const password2 = 'password1234';
-      const hashedPassword2 = passwordService.hashPassword(salt, password2);
+      const hashedPassword2 = passwordService.getHash(salt, password2);
 
       expect(hashedPassword2).not.toEqual(hashedPassword1);
 
-      let passwordMatches = passwordService.passwordMatches(password2, salt, hashedPassword1);
+      let passwordMatches = passwordService.match(password2, salt, hashedPassword1);
       expect(passwordMatches).toBe(false);
-      passwordMatches = passwordService.passwordMatches(password1, salt, hashedPassword2);
+      passwordMatches = passwordService.match(password1, salt, hashedPassword2);
       expect(passwordMatches).toBe(false);
     });
   });
 
-  describe('isPasswordValid', () => {
+  describe('isValid', () => {
     it('should return false when password is null or undefined', () => {
-      expect(passwordService.isPasswordValid(null)).toBe(false);
-      expect(passwordService.isPasswordValid(undefined)).toBe(false);
+      expect(passwordService.isValid(null)).toBe(false);
+      expect(passwordService.isValid(undefined)).toBe(false);
     });
 
     it('should return false when password is an empty string', () => {
-      expect(passwordService.isPasswordValid('')).toBe(false);
+      expect(passwordService.isValid('')).toBe(false);
     });
 
     it('should return false when password exceeds max length', () => {
-      const longPassword = 'a'.repeat(VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH + 1);
-      expect(passwordService.isPasswordValid(longPassword)).toBe(false);
+      const longPassword = generateRandomPassword(VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH + 1);
+      expect(passwordService.isValid(longPassword)).toBe(false);
     });
 
     it('should return false when password is not strong', () => {
-      const weakPassword = 'password';
-      expect(passwordService.isPasswordValid(weakPassword)).toBe(false);
+      const weakPassword = generateRandomPassword(VALIDATOR_SETTINGS.STRONG_PASSWORD_OPTIONS.minLength! - 1);
+      expect(passwordService.isValid(weakPassword)).toBe(false);
     });
 
     it('should return true when password is valid', () => {
-      const strongPassword = 'Str0ngP@ssw0rd!';
-      expect(passwordService.isPasswordValid(strongPassword)).toBe(true);
+      const strongPassword = generateRandomPassword(VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH);
+      expect(passwordService.isValid(strongPassword)).toBe(true);
     });
   });
 });

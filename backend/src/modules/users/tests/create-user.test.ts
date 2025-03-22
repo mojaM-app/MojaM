@@ -1,26 +1,25 @@
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
+import { VALIDATOR_SETTINGS } from '@config';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
-import { LoginDto } from '@modules/auth';
+import { AccountTryingToLogInDto, AuthRoute, IGetAccountBeforeLogInResultDto, LoginDto } from '@modules/auth';
 import { EmailService } from '@modules/notifications';
 import { PermissionsRoute, SystemPermissions } from '@modules/permissions';
 import {
   CreateUserDto,
-  CreateUserReqDto,
   CreateUserResponseDto,
   GetUserDetailsResponseDto,
   GetUserProfileResponseDto,
   IUserDto,
   UserDetailsRoute,
   UserRoute,
-  UsersService,
 } from '@modules/users';
 import { isGuid, isNumber } from '@utils';
-import { generateRandomPassword, getAdminLoginData } from '@utils/tests.utils';
+import { generateRandomNumber, generateRandomPassword, getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
@@ -29,16 +28,13 @@ describe('POST /user', () => {
   const userRoute = new UserRoute();
   const userDetailsRoute = new UserDetailsRoute();
   const permissionsRoute = new PermissionsRoute();
+  const authRoute = new AuthRoute();
   const app = new App();
   let mockSendMail: any;
   let adminAccessToken: string | undefined;
   let sendWelcomeEmailSpy: any;
-  let originalCreate: (reqDto: CreateUserReqDto) => Promise<IUserDto>;
 
   beforeAll(async () => {
-    const usersService = new UsersService();
-    originalCreate = usersService.create.bind(usersService);
-
     await app.initialize([userRoute, permissionsRoute, userDetailsRoute]);
     const { email, password } = getAdminLoginData();
 
@@ -113,7 +109,7 @@ describe('POST /user', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       expect(createUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      const body = createUserResponse.body;
+      let body = createUserResponse.body;
       expect(typeof body).toBe('object');
       const { data: user, message: createMessage }: CreateUserResponseDto = body;
       expect(user?.id).toBeDefined();
@@ -122,6 +118,14 @@ describe('POST /user', () => {
       expect(user?.phone).toBeDefined();
       expect(user.hasOwnProperty('uuid')).toBe(false);
       expect(createMessage).toBe(events.users.userCreated);
+
+      const getAccountBeforeLogInResponse = await request(app.getServer())
+        .post(authRoute.getAccountBeforeLogInPath)
+        .send({ email: requestData.email } satisfies AccountTryingToLogInDto);
+      expect(getAccountBeforeLogInResponse.statusCode).toBe(200);
+      body = getAccountBeforeLogInResponse.body;
+      expect(body.data).toStrictEqual({ isActive: false } satisfies IGetAccountBeforeLogInResultDto);
+      expect(body.data).toEqual({ isActive: false } satisfies IGetAccountBeforeLogInResultDto);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + user.id)
@@ -142,7 +146,7 @@ describe('POST /user', () => {
       expect(mockSendMail).toHaveBeenCalledTimes(1);
     });
 
-    test('when try to create user with empty password and user has permission', async () => {
+    test('when try to create user with empty password (password is set as null) and user has permission', async () => {
       const requestData = generateValidUser();
       requestData.password = '';
       const createUserResponse = await request(app.getServer())
@@ -151,7 +155,7 @@ describe('POST /user', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       expect(createUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      const body = createUserResponse.body;
+      let body = createUserResponse.body;
       expect(typeof body).toBe('object');
       const { data: user, message: createMessage }: CreateUserResponseDto = body;
       expect(user?.id).toBeDefined();
@@ -160,6 +164,14 @@ describe('POST /user', () => {
       expect(user?.phone).toBeDefined();
       expect(user.hasOwnProperty('uuid')).toBe(false);
       expect(createMessage).toBe(events.users.userCreated);
+
+      const getAccountBeforeLogInResponse = await request(app.getServer())
+        .post(authRoute.getAccountBeforeLogInPath)
+        .send({ email: requestData.email } satisfies AccountTryingToLogInDto);
+      expect(getAccountBeforeLogInResponse.statusCode).toBe(200);
+      body = getAccountBeforeLogInResponse.body;
+      expect(body.data).toStrictEqual({ isActive: false } satisfies IGetAccountBeforeLogInResultDto);
+      expect(body.data).toEqual({ isActive: false } satisfies IGetAccountBeforeLogInResultDto);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + user.id)
@@ -189,7 +201,7 @@ describe('POST /user', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       expect(createUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      const body = createUserResponse.body;
+      let body = createUserResponse.body;
       expect(typeof body).toBe('object');
       const { data: user, message: createMessage }: CreateUserResponseDto = body;
       expect(user?.id).toBeDefined();
@@ -198,6 +210,14 @@ describe('POST /user', () => {
       expect(user?.phone).toBeDefined();
       expect(user.hasOwnProperty('uuid')).toBe(false);
       expect(createMessage).toBe(events.users.userCreated);
+
+      const getAccountBeforeLogInResponse = await request(app.getServer())
+        .post(authRoute.getAccountBeforeLogInPath)
+        .send({ email: requestData.email } satisfies AccountTryingToLogInDto);
+      expect(getAccountBeforeLogInResponse.statusCode).toBe(200);
+      body = getAccountBeforeLogInResponse.body;
+      expect(body.data).toStrictEqual({ isActive: false } satisfies IGetAccountBeforeLogInResultDto);
+      expect(body.data).toEqual({ isActive: false } satisfies IGetAccountBeforeLogInResultDto);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + user.id)
@@ -273,6 +293,61 @@ describe('POST /user', () => {
       expect(testEventHandlers.onUserDetailsRetrieved).toHaveBeenCalledTimes(1);
     });
 
+    test('when data are valid (with completed name that contains white-spaces) and user has permission', async () => {
+      const requestData = generateValidUser();
+      requestData.firstName = 'John ';
+      requestData.lastName = ' Doe  ';
+      const createUserResponse = await request(app.getServer())
+        .post(userRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(201);
+      expect(createUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      let body = createUserResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: user, message: createMessage }: CreateUserResponseDto = body;
+      expect(user?.id).toBeDefined();
+      expect(isGuid(user.id)).toBe(true);
+      expect(user?.email).toBeDefined();
+      expect(user?.phone).toBeDefined();
+      expect(user.hasOwnProperty('uuid')).toBe(false);
+      expect(user.hasOwnProperty('password')).toBe(false);
+      expect(user).toEqual({ id: user.id, email: user.email, phone: user.phone } satisfies IUserDto);
+      expect(createMessage).toBe(events.users.userCreated);
+
+      expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
+      expect(mockSendMail).toHaveBeenCalledTimes(1);
+
+      const getUserDetailsResponse = await request(app.getServer())
+        .get(userDetailsRoute.path + '/' + user.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(getUserDetailsResponse.statusCode).toBe(200);
+      body = getUserDetailsResponse.body;
+      const { data: userDetails }: GetUserProfileResponseDto = body;
+      expect(userDetails!.firstName).toBe(requestData.firstName.trim());
+      expect(userDetails!.lastName).toBe(requestData.lastName.trim());
+
+      const deleteResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + user.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteResponse.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted, testEventHandlers.onUserDetailsRetrieved].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserDetailsRetrieved).toHaveBeenCalledTimes(1);
+    });
+
     test('when data are valid (with empty name) and user has permission', async () => {
       const requestData = generateValidUser();
       const createUserResponse = await request(app.getServer())
@@ -281,6 +356,63 @@ describe('POST /user', () => {
           ...requestData,
           firstName: '',
           lastName: '',
+        })
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(201);
+      expect(createUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      let body = createUserResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: user, message: createMessage }: CreateUserResponseDto = body;
+      expect(user?.id).toBeDefined();
+      expect(isGuid(user.id)).toBe(true);
+      expect(user?.email).toBeDefined();
+      expect(user?.phone).toBeDefined();
+      expect(user.hasOwnProperty('uuid')).toBe(false);
+      expect(user.hasOwnProperty('password')).toBe(false);
+      expect(user).toEqual({ id: user.id, email: user.email, phone: user.phone } satisfies IUserDto);
+      expect(createMessage).toBe(events.users.userCreated);
+
+      expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
+      expect(mockSendMail).toHaveBeenCalledTimes(1);
+
+      const getUserDetailsResponse = await request(app.getServer())
+        .get(userDetailsRoute.path + '/' + user.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(getUserDetailsResponse.statusCode).toBe(200);
+      body = getUserDetailsResponse.body;
+      const { data: userDetails }: GetUserDetailsResponseDto = body;
+      expect(userDetails!.firstName).toBeNull();
+      expect(userDetails!.lastName).toBeNull();
+
+      const deleteResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + user.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteResponse.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted, testEventHandlers.onUserDetailsRetrieved].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserDetailsRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('when data are valid (with white-space name) and user has permission', async () => {
+      const requestData = generateValidUser();
+      const createUserResponse = await request(app.getServer())
+        .post(userRoute.path)
+        .send({
+          ...requestData,
+          firstName: ' ',
+          lastName: ' ',
         })
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -364,6 +496,70 @@ describe('POST /user', () => {
         expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
         expect(mockSendMail).not.toHaveBeenCalled();
       }
+    });
+
+    test('when pin is invalid', async () => {
+      const model = { email: 'email@domain.com', phone: '123456789' };
+      const bodyData = [
+        { ...model, pin: ' ' } satisfies CreateUserDto,
+        { ...model, pin: 'invalid pin' } satisfies CreateUserDto,
+        { ...model, pin: generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH - 1) } satisfies CreateUserDto,
+        { ...model, pin: generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH + 1) } satisfies CreateUserDto,
+        { ...model, pin: 1234 as any } satisfies CreateUserDto,
+        { ...model, pin: true as any } satisfies CreateUserDto,
+        { ...model, pin: [] as any } satisfies CreateUserDto,
+        { ...model, pin: [generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH)] as any } satisfies CreateUserDto,
+        { ...model, pin: {} as any } satisfies CreateUserDto,
+      ];
+
+      for (const requestData of bodyData) {
+        const createUserResponse = await request(app.getServer())
+          .post(userRoute.path)
+          .send(requestData)
+          .set('Authorization', `Bearer ${adminAccessToken}`);
+        expect(createUserResponse.statusCode).toBe(400);
+        const body = createUserResponse.body;
+        expect(typeof body).toBe('object');
+        const { message: createUserResponseMessage } = body.data as BadRequestException;
+        const errors = createUserResponseMessage.split(',');
+        expect(errors.filter(x => !x.includes('Pin')).length).toBe(0);
+
+        // checking events running via eventDispatcher
+        Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+
+        expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
+        expect(mockSendMail).not.toHaveBeenCalled();
+      }
+    });
+
+    test('when password and pin are set', async () => {
+      const requestData = {
+        email: 'email@domain.com',
+        phone: '123456789',
+        password: generateRandomPassword(),
+        pin: generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH),
+      };
+
+      const createUserResponse = await request(app.getServer())
+        .post(userRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(400);
+      const body = createUserResponse.body;
+      expect(typeof body).toBe('object');
+      const { message: createUserResponseMessage } = body.data as BadRequestException;
+      const errors = createUserResponseMessage.split(',');
+      expect(errors.filter(x => x !== errorKeys.users.Both_Password_And_Pin_Are_Set).length).toBe(0);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+
+      expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
+      expect(mockSendMail).not.toHaveBeenCalled();
     });
 
     test('when email is invalid', async () => {
@@ -515,87 +711,6 @@ describe('POST /user', () => {
 
       expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
       expect(mockSendMail).toHaveBeenCalledTimes(1);
-    });
-
-    test('when data send to service is invalid (email)', async () => {
-      jest.spyOn(UsersService.prototype, 'create').mockImplementation(async (reqDto: CreateUserReqDto) => {
-        reqDto.userData.email = null as any;
-        return await originalCreate(reqDto);
-      });
-
-      const requestData = generateValidUser();
-      const createUserResponse = await request(app.getServer())
-        .post(userRoute.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(createUserResponse.statusCode).toBe(400);
-      const body = createUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { message: createUserResponseMessage } = body.data as BadRequestException;
-      const errors = createUserResponseMessage.split(',');
-      expect(errors.filter(x => !x.includes('Email')).length).toBe(0);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-
-      expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
-      expect(mockSendMail).not.toHaveBeenCalled();
-    });
-
-    test('when data send to service is invalid (phone)', async () => {
-      jest.spyOn(UsersService.prototype, 'create').mockImplementation(async (reqDto: CreateUserReqDto) => {
-        reqDto.userData.phone = null as any;
-        return await originalCreate(reqDto);
-      });
-
-      const requestData = generateValidUser();
-      const createUserResponse = await request(app.getServer())
-        .post(userRoute.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(createUserResponse.statusCode).toBe(400);
-      const body = createUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { message: createUserResponseMessage } = body.data as BadRequestException;
-      const errors = createUserResponseMessage.split(',');
-      expect(errors.filter(x => !x.includes('Phone')).length).toBe(0);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-
-      expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
-      expect(mockSendMail).not.toHaveBeenCalled();
-    });
-
-    test('when data send to service is invalid (password)', async () => {
-      jest.spyOn(UsersService.prototype, 'create').mockImplementation(async (reqDto: CreateUserReqDto) => {
-        reqDto.userData.password = 'invalid-password' as any;
-        return await originalCreate(reqDto);
-      });
-
-      const requestData = generateValidUser();
-      const createUserResponse = await request(app.getServer())
-        .post(userRoute.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(createUserResponse.statusCode).toBe(400);
-      const body = createUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { message: createUserResponseMessage } = body.data as BadRequestException;
-      const errors = createUserResponseMessage.split(',');
-      expect(errors.filter(x => !x.includes('Password')).length).toBe(0);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-
-      expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
-      expect(mockSendMail).not.toHaveBeenCalled();
     });
   });
 

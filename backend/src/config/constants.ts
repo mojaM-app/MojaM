@@ -1,9 +1,13 @@
 import { IsStrongPasswordOptions } from 'class-validator';
 import { CountryCode } from 'libphonenumber-js';
 
-export const REGEX_GUID_PATTERN = '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}';
-export const REGEX_INT_PATTERN = '\\d+';
-
+export const REGEX_PATTERNS = {
+  GUID: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}',
+  INT: '\\d+',
+  PHONE: /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})$/,
+  ALPHANUMERIC_ONE_CHAR: /^[a-zA-Z0-9]$/,
+  PIN: /^[a-zA-Z0-9]{4}$/,
+};
 /*
  * Constants used in the application
  * If you want to change the value of any constant, do it here
@@ -16,6 +20,7 @@ export const VALIDATOR_SETTINGS: {
   STRONG_PASSWORD_OPTIONS: IsStrongPasswordOptions;
   PHONE_MAX_LENGTH: number;
   PHONE_COUNTRY_CODE: CountryCode;
+  PIN_LENGTH: number;
   NAME_MAX_LENGTH: number;
   ANNOUNCEMENTS_TITLE_MAX_LENGTH: number;
   ANNOUNCEMENT_ITEM_CONTENT_MAX_LENGTH: number;
@@ -32,6 +37,7 @@ export const VALIDATOR_SETTINGS: {
   } satisfies IsStrongPasswordOptions,
   PHONE_MAX_LENGTH: 16,
   PHONE_COUNTRY_CODE: 'PL',
+  PIN_LENGTH: 4,
 
   NAME_MAX_LENGTH: 250, // max length for: first name, last name
 

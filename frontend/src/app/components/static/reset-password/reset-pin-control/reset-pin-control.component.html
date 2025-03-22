@@ -1,0 +1,60 @@
+<div [formGroup]="form()">
+  <div class="row mb-2">
+    <mat-form-field>
+      <mat-label>{{ 'ResetPin/Pin' | gmessage }}</mat-label>
+      <app-mat-opt-input-component
+        [hidePin]="hidePin()"
+        [formControl]="form().controls.pin"
+        [placeholder]="'ResetPin/PinPlaceholder' | gmessage">
+      </app-mat-opt-input-component>
+      <button
+        mat-icon-button
+        matSuffix
+        (click)="togglePinVisibility($event)"
+        [attr.aria-label]="'ResetPin/HidePinAriaLabel' | gmessage"
+        [attr.aria-pressed]="hidePin()"
+        type="button"
+        tabindex="-1">
+        <mat-icon>{{ hidePin() ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      @if (getControlErrors(form().controls.pin)[errorNames.required]) {
+        <mat-error>{{ 'ResetPin/PinRequiredError' | gmessage }}</mat-error>
+      }
+    </mat-form-field>
+  </div>
+
+  <div class="row">
+    <mat-form-field>
+      <mat-label>{{ 'ResetPin/ConfirmPin' | gmessage }}</mat-label>
+      <app-mat-opt-input-component
+        [hidePin]="hideConfirmPin()"
+        [formControl]="form().controls.confirmPin"
+        [placeholder]="'ResetPin/ConfirmPinPlaceholder' | gmessage">
+      </app-mat-opt-input-component>
+      <button
+        mat-icon-button
+        matSuffix
+        (click)="toggleConfirmPinVisibility($event)"
+        [attr.aria-label]="'ResetPin/HideAriaLabel' | gmessage"
+        [attr.aria-pressed]="hideConfirmPin()"
+        type="button"
+        tabindex="-1">
+        <mat-icon>{{ hideConfirmPin() ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      @if (getControlErrors(form().controls.confirmPin)[errorNames.required]) {
+        <mat-error>{{ 'ResetPin/ConfirmPinRequiredError' | gmessage }}</mat-error>
+      } @else if (getControlErrors(form().controls.confirmPin)[errorNames.minLength]) {
+        <mat-error>{{ 'ResetPin/PinNotEnoughStrongError' | gmessage }}</mat-error>
+      } @else if (getControlErrors(form().controls.confirmPin)[errorNames.pattern]) {
+        <mat-error>{{ 'ResetPin/PinContainsInvalidCharactersError' | gmessage }}</mat-error>
+      }
+    </mat-form-field>
+    <div class="mat-mdc-form-field-subscript-wrapper mat-mdc-form-field-subscript-dynamic-size">
+      <div class="mat-mdc-form-field-error-wrapper">
+        @if (getFormGroupErrors()[errorNames.notEqual]) {
+          <mat-error>{{ 'ResetPin/ConfirmPinMismatchError' | gmessage }}</mat-error>
+        }
+      </div>
+    </div>
+  </div>
+</div>

@@ -341,7 +341,7 @@ describe('POST /auth/request-reset-password', () => {
     });
 
     it('when e-mail is empty or null or not-string', async () => {
-      const testData: any[] = [null, '', true, undefined, 0, {}, []];
+      const testData: any[] = [null, '', ' ', true, undefined, 0, {}, []];
 
       for (const email of testData) {
         const response = await request(app.getServer())
@@ -423,7 +423,7 @@ describe('POST /auth/request-reset-password', () => {
     });
 
     it('when NO user with given e-mail (or email is invalid)', async () => {
-      const testData: any[] = [generateRandomEmail(), ' ', 'not-email', 'not-email@', 'not-email@domain', 'not-email@domain.', 'not-email@.com'];
+      const testData: any[] = [generateRandomEmail(), 'not-email', 'not-email@', 'not-email@domain', 'not-email@domain.', 'not-email@.com'];
       for (const email of testData) {
         const response = await request(app.getServer())
           .post(authRoute.requestResetPasswordPath)

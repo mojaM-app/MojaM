@@ -34,5 +34,8 @@ export { AuthRoute } from './routes/auth.routes';
 export { AuthService } from './services/auth.service';
 export { CryptoService } from './services/crypto.service';
 export { PasswordService } from './services/password.service';
+export { PinService } from './services/pin.service';
 
 export { setIdentity } from './middlewares/set-identity.middleware';
+
+export { AuthenticationTypes } from './enums/authentication-type.enum';

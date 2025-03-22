@@ -5,7 +5,7 @@ const isString = (value: any): boolean => {
 };
 
 const isEmptyString = (value: any): boolean => {
-  return isString(value) && value.trim().length === 0;
+  return isString(value) && value.length === 0;
 };
 
 /**

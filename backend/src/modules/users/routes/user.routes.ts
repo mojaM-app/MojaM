@@ -1,4 +1,4 @@
-import { REGEX_GUID_PATTERN } from '@config';
+import { REGEX_PATTERNS } from '@config';
 import { ForbiddenException, UnauthorizedException } from '@exceptions';
 import { IRequestWithIdentity, IRoutes } from '@interfaces';
 import { validateData } from '@middlewares';
@@ -20,29 +20,29 @@ export class UserRoute implements IRoutes {
   }
 
   private initializeRoutes(): void {
-    this.router.get(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity, this.checkGetPermission], this._controller.get);
+    this.router.get(`${this.path}/:id(${REGEX_PATTERNS.GUID})`, [setIdentity, this.checkGetPermission], this._controller.get);
     this.router.post(`${this.path}`, [validateData(CreateUserDto), setIdentity, this.checkCreatePermission], this._controller.create);
     this.router.post(
-      `${this.path}/:id(${REGEX_GUID_PATTERN})/${this.deactivatePath}`,
+      `${this.path}/:id(${REGEX_PATTERNS.GUID})/${this.deactivatePath}`,
       [setIdentity, this.checkDeactivatePermission],
       this._controller.deactivate,
     );
     this.router.post(
-      `${this.path}/:id(${REGEX_GUID_PATTERN})/${this.activatePath}`,
+      `${this.path}/:id(${REGEX_PATTERNS.GUID})/${this.activatePath}`,
       [setIdentity, this.checkActivatePermission],
       this._controller.activate,
     );
     this.router.post(
-      `${this.path}/:id(${REGEX_GUID_PATTERN})/${this.unlockPath}`,
+      `${this.path}/:id(${REGEX_PATTERNS.GUID})/${this.unlockPath}`,
       [setIdentity, this.checkUnlockPermission],
       this._controller.unlock,
     );
     this.router.put(
-      `${this.path}/:id(${REGEX_GUID_PATTERN})`,
+      `${this.path}/:id(${REGEX_PATTERNS.GUID})`,
       [validateData(UpdateUserDto), setIdentity, this.checkUpdatePermission],
       this._controller.update,
     );
-    this.router.delete(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity, this.checkDeletePermission], this._controller.delete);
+    this.router.delete(`${this.path}/:id(${REGEX_PATTERNS.GUID})`, [setIdentity, this.checkDeletePermission], this._controller.delete);
   }
 
   private readonly checkCreatePermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {

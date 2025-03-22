@@ -1,12 +1,18 @@
 import { events } from '@events';
+import { DtoTransformFunctions } from '@helpers/DtoTransformFunctions';
 import { IResponse } from '@interfaces';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class RefreshTokenDto {
   @IsNotEmpty()
   @IsString()
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public accessToken: string | null | undefined;
 
+  @IsOptional()
+  @IsString()
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public refreshToken?: string;
 }
 

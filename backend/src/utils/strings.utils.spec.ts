@@ -4,13 +4,13 @@ import { isNullOrEmptyString, isString } from './strings.utils';
 describe('isNullOrEmptyString', () => {
   it('should return true for empty string', () => {
     expect(isNullOrEmptyString('')).toBe(true);
-    expect(isNullOrEmptyString(' ')).toBe(true);
-    expect(isNullOrEmptyString('\n')).toBe(true);
-    expect(isNullOrEmptyString('\r')).toBe(true);
-    expect(isNullOrEmptyString('\t')).toBe(true);
   });
 
   it('should return false for non-empty string', () => {
+    expect(isNullOrEmptyString('\n')).toBe(false);
+    expect(isNullOrEmptyString('\r')).toBe(false);
+    expect(isNullOrEmptyString('\t')).toBe(false);
+    expect(isNullOrEmptyString(' ')).toBe(false);
     expect(isNullOrEmptyString('Hello, world!')).toBe(false);
     expect(isNullOrEmptyString(' Hello, world!')).toBe(false);
     expect(isNullOrEmptyString(' Hello, world! ')).toBe(false);

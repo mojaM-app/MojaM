@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateViewVAnouncements1731954228434 implements MigrationInterface {
-  name = 'CreateViewVAnouncements1731954228434';
+export class CreateViewVAnnouncement1731954228434 implements MigrationInterface {
+  name = 'CreateViewVAnnouncement1731954228434';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(

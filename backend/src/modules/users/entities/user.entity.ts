@@ -19,6 +19,7 @@ import { EntityTransformFunctions } from './../../../dataBase/EntityTransformFun
 import { IHasGuidId } from './../../../interfaces/IHasGuidId';
 import { AnnouncementItem } from './../../../modules/announcements/entities/announcement-item.entity';
 import { Announcement } from './../../../modules/announcements/entities/announcement.entity';
+import { AuthenticationTypes } from './../../../modules/auth/enums/authentication-type.enum';
 import { getAdminLoginData } from './../../../utils/tests.utils';
 import { UserResetPasswordToken } from './../../auth/entities/user-reset-password-tokens.entity';
 import { UserSystemPermission } from './user-system-permission.entity';
@@ -84,6 +85,14 @@ export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser, IUse
     nullable: true,
   })
   public password: string | null;
+
+  @Column({
+    name: 'Pin',
+    type: 'nvarchar',
+    length: 1024,
+    nullable: true,
+  })
+  public pin: string | null;
 
   @Column({
     name: 'Salt',
@@ -233,5 +242,15 @@ export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser, IUse
 
   public isAdmin(): boolean {
     return this.uuid === getAdminLoginData().uuid;
+  }
+
+  public getAuthenticationType(): AuthenticationTypes | undefined {
+    if ((this.password?.length ?? 0) > 0) {
+      return AuthenticationTypes.Password;
+    } else if ((this.pin?.length ?? 0) > 0) {
+      return AuthenticationTypes.Pin;
+    } else {
+      return undefined;
+    }
   }
 }

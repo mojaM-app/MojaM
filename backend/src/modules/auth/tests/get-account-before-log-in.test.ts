@@ -11,6 +11,7 @@ import { generateRandomEmail, getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
+import { AuthenticationTypes } from '../enums/authentication-type.enum';
 
 describe('POST /auth/get-account-before-log-in', () => {
   const userRoute = new UserRoute();
@@ -54,10 +55,10 @@ describe('POST /auth/get-account-before-log-in', () => {
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
       expect(body.data).toStrictEqual({
-        isPasswordSet: true,
         isActive: true,
+        authType: AuthenticationTypes.Password,
       } satisfies IGetAccountBeforeLogInResultDto);
-      expect(body.data).toEqual({ isPasswordSet: true, isActive: true } satisfies IGetAccountBeforeLogInResultDto);
+      expect(body.data).toEqual({ isActive: true, authType: AuthenticationTypes.Password } satisfies IGetAccountBeforeLogInResultDto);
     });
 
     it('when exist only one activated user with given e-mail and user password is NOT set', async () => {
@@ -85,10 +86,9 @@ describe('POST /auth/get-account-before-log-in', () => {
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
       expect(body.data).toStrictEqual({
-        isPasswordSet: false,
         isActive: true,
       } satisfies IGetAccountBeforeLogInResultDto);
-      expect(body.data).toEqual({ isPasswordSet: false, isActive: true } satisfies IGetAccountBeforeLogInResultDto);
+      expect(body.data).toEqual({ isActive: true } satisfies IGetAccountBeforeLogInResultDto);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUser1Dto.id)
@@ -116,10 +116,9 @@ describe('POST /auth/get-account-before-log-in', () => {
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
       expect(body.data).toStrictEqual({
-        isPasswordSet: false,
         isActive: false,
       } satisfies IGetAccountBeforeLogInResultDto);
-      expect(body.data).toEqual({ isPasswordSet: false, isActive: false } satisfies IGetAccountBeforeLogInResultDto);
+      expect(body.data).toEqual({ isActive: false } satisfies IGetAccountBeforeLogInResultDto);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
@@ -146,12 +145,12 @@ describe('POST /auth/get-account-before-log-in', () => {
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
       expect(body.data).toStrictEqual({
-        isPasswordSet: true,
         isActive: false,
+        authType: AuthenticationTypes.Password,
       } satisfies IGetAccountBeforeLogInResultDto);
       expect(body.data).toEqual({
-        isPasswordSet: true,
         isActive: false,
+        authType: AuthenticationTypes.Password,
       } satisfies IGetAccountBeforeLogInResultDto);
 
       const deleteResponse = await request(app.getServer())
@@ -171,10 +170,10 @@ describe('POST /auth/get-account-before-log-in', () => {
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
       expect(body.data).toStrictEqual({
-        isPasswordSet: true,
         isActive: true,
+        authType: AuthenticationTypes.Password,
       } satisfies IGetAccountBeforeLogInResultDto);
-      expect(body.data).toEqual({ isPasswordSet: true, isActive: true } satisfies IGetAccountBeforeLogInResultDto);
+      expect(body.data).toEqual({ isActive: true, authType: AuthenticationTypes.Password } satisfies IGetAccountBeforeLogInResultDto);
     });
   });
 

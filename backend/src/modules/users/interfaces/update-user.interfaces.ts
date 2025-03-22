@@ -5,6 +5,13 @@ export interface IUpdateUserPassword {
   failedLoginAttempts: number;
 }
 
+export interface IUpdateUserPin {
+  pin: string;
+  salt: string;
+  emailConfirmed: boolean;
+  failedLoginAttempts: number;
+}
+
 export interface IUpdateUser {
   email?: string;
   phone?: string;
@@ -17,4 +24,4 @@ export interface IUpdateUser {
   lastLoginAt?: Date | null;
 }
 
-export type TUpdateUser = IUpdateUser | IUpdateUserPassword;
+export type TUpdateUser = IUpdateUser | IUpdateUserPassword | IUpdateUserPin;

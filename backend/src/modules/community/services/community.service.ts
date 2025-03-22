@@ -2,16 +2,16 @@ import { COMMUNITY_INFO_URL } from '@config';
 import { BaseService } from '@modules/common';
 import { isNullOrEmptyString } from '@utils';
 import { Service } from 'typedi';
-import { CommunityInfoDto, GetCommunityDto } from '../dtos/community.dto';
+import { ICommunityInfoDto, IGetCommunityDto } from '../dtos/community.dto';
 
 @Service()
 export class CommunityService extends BaseService {
-  public async get(): Promise<GetCommunityDto> {
+  public async get(): Promise<IGetCommunityDto> {
     if (!isNullOrEmptyString(COMMUNITY_INFO_URL)) {
       return await fetch(COMMUNITY_INFO_URL!)
         .then(async resp => await resp.json())
         .then(json => {
-          return json as GetCommunityDto;
+          return json as IGetCommunityDto;
         });
     }
 
@@ -22,7 +22,7 @@ export class CommunityService extends BaseService {
         address: 'Community Address<br>City, Country<br>Postal Code',
         phone: '+1234567890',
         webPage: 'https://community.webpage.com',
-      } satisfies CommunityInfoDto,
+      } satisfies ICommunityInfoDto,
       tabs: [
         {
           title: 'Sample Tab',
@@ -55,6 +55,6 @@ export class CommunityService extends BaseService {
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
         },
       ],
-    } satisfies GetCommunityDto;
+    } satisfies IGetCommunityDto;
   }
 }

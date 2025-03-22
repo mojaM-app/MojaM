@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ResetPasswordService } from 'src/app/components/static/reset-password/services/reset-password.service';
 import { SnackBarService } from 'src/app/components/static/snackbar/snack-bar.service';
+import { VALIDATOR_SETTINGS } from 'src/core/consts';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { GuidUtils } from 'src/utils/guid.utils';
@@ -57,8 +58,8 @@ export class ResetPasswordComponent extends WithForm<IResetPasswordForm>() imple
         confirmPassword: new FormControl(null, {
           validators: [
             Validators.required,
-            Validators.minLength(9),
-            Validators.maxLength(50),
+            Validators.minLength(VALIDATOR_SETTINGS.STRONG_PASSWORD_OPTIONS.minLength),
+            Validators.maxLength(VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH),
             PasswordValidator.strong(),
           ],
         }),

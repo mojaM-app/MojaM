@@ -24,15 +24,15 @@
               </div>
             </mat-step>
             <mat-step
-              [label]="'ActivateAccount/Steps/Identity/Title' | gmessage"
-              [stepControl]="formGroup.controls.identity"
-              [errorMessage]="'ActivateAccount/Steps/Identity/TitleErrorMessage' | gmessage">
-              <div [formGroup]="formGroup.controls.identity" class="mt-3">
+              [label]="'ActivateAccount/Steps/Contact/Title' | gmessage"
+              [stepControl]="formGroup.controls.contact"
+              [errorMessage]="'ActivateAccount/Steps/Contact/TitleErrorMessage' | gmessage">
+              <div [formGroup]="formGroup.controls.contact" class="mt-3">
                 <div class="row">
                   <div class="col-12">
                     <p
                       class="text-wrap"
-                      [innerHTML]="'ActivateAccount/Steps/Identity/Description' | gmessage"></p>
+                      [innerHTML]="'ActivateAccount/Steps/Contact/Description' | gmessage"></p>
                   </div>
                 </div>
                 <div class="row">
@@ -43,15 +43,13 @@
                         matInput
                         readonly
                         type="email"
-                        [formControl]="formGroup.controls.identity.controls.email" />
+                        [formControl]="formGroup.controls.contact.controls.email" />
                     </mat-form-field>
                   </div>
                   <div class="col-12 mb-3">
                     <mat-checkbox
-                      [formControl]="formGroup.controls.identity.controls.emailConfirmed"
-                      >{{
-                        'ActivateAccount/Steps/Identity/EmailConfirmed' | gmessage
-                      }}</mat-checkbox
+                      [formControl]="formGroup.controls.contact.controls.emailConfirmed"
+                      >{{ 'ActivateAccount/Steps/Contact/EmailConfirmed' | gmessage }}</mat-checkbox
                     >
                   </div>
                 </div>
@@ -63,15 +61,13 @@
                         matInput
                         readonly
                         type="tel"
-                        [formControl]="formGroup.controls.identity.controls.phone" />
+                        [formControl]="formGroup.controls.contact.controls.phone" />
                     </mat-form-field>
                   </div>
                   <div class="col-12 mb-3">
                     <mat-checkbox
-                      [formControl]="formGroup.controls.identity.controls.phoneConfirmed"
-                      >{{
-                        'ActivateAccount/Steps/Identity/PhoneConfirmed' | gmessage
-                      }}</mat-checkbox
+                      [formControl]="formGroup.controls.contact.controls.phoneConfirmed"
+                      >{{ 'ActivateAccount/Steps/Contact/PhoneConfirmed' | gmessage }}</mat-checkbox
                     >
                   </div>
                 </div>
@@ -83,25 +79,29 @@
                 <div class="row">
                   <div class="col text-end">
                     <button mat-raised-button matStepperPrevious type="button" class="me-2">
-                      {{ 'ActivateAccount/Steps/Identity/BtnBack' | gmessage }}
+                      {{ 'ActivateAccount/Steps/Contact/BtnBack' | gmessage }}
                     </button>
-                    <button mat-raised-button matStepperNext type="button">
-                      {{ 'ActivateAccount/Steps/Identity/BtnNext' | gmessage }}
+                    <button
+                      mat-raised-button
+                      matStepperNext
+                      type="button"
+                      (click)="formGroup.controls.contact.markAllAsTouched()">
+                      {{ 'ActivateAccount/Steps/Contact/BtnNext' | gmessage }}
                     </button>
                   </div>
                 </div>
               </div>
             </mat-step>
             <mat-step
-              [label]="'ActivateAccount/Steps/UserInfo/Title' | gmessage"
-              [stepControl]="formGroup.controls.userInfo"
-              [errorMessage]="'ActivateAccount/Steps/UserInfo/TitleErrorMessage' | gmessage">
-              <div [formGroup]="formGroup.controls.userInfo" class="mt-3">
+              [label]="'ActivateAccount/Steps/PersonalInfo/Title' | gmessage"
+              [stepControl]="formGroup.controls.personalInfo"
+              [errorMessage]="'ActivateAccount/Steps/PersonalInfo/TitleErrorMessage' | gmessage">
+              <div [formGroup]="formGroup.controls.personalInfo" class="mt-3">
                 <div class="row">
                   <div class="col-12">
                     <p
                       class="text-wrap"
-                      [innerHTML]="'ActivateAccount/Steps/UserInfo/Description' | gmessage"></p>
+                      [innerHTML]="'ActivateAccount/Steps/PersonalInfo/Description' | gmessage"></p>
                   </div>
                 </div>
                 <div class="row">
@@ -112,8 +112,8 @@
                         matInput
                         required
                         [placeholder]="'Management/UserForm/FirstNamePlaceholder' | gmessage"
-                        [formControl]="formGroup.controls.userInfo.controls.firstName" />
-                      @if (formGroup.controls.userInfo.controls.firstName.errors) {
+                        [formControl]="formGroup.controls.personalInfo.controls.firstName" />
+                      @if (formGroup.controls.personalInfo.controls.firstName.errors) {
                         <mat-error>{{
                           'Management/UserForm/FirstNameHint'
                             | gmessage: { maxLength: maxLengths.NAME_MAX_LENGTH }
@@ -128,8 +128,8 @@
                         matInput
                         required
                         [placeholder]="'Management/UserForm/LastNamePlaceholder' | gmessage"
-                        [formControl]="formGroup.controls.userInfo.controls.lastName" />
-                      @if (formGroup.controls.userInfo.controls.lastName.errors) {
+                        [formControl]="formGroup.controls.personalInfo.controls.lastName" />
+                      @if (formGroup.controls.personalInfo.controls.lastName.errors) {
                         <mat-error>{{
                           'Management/UserForm/LastNameHint'
                             | gmessage: { maxLength: maxLengths.NAME_MAX_LENGTH }
@@ -140,7 +140,7 @@
                 </div>
                 <div class="row">
                   <div class="col-12 mb-1">
-                    {{ 'ActivateAccount/Steps/UserInfo/OptionalFieldsHint' | gmessage }}
+                    {{ 'ActivateAccount/Steps/PersonalInfo/OptionalFieldsHint' | gmessage }}
                   </div>
                 </div>
                 <div class="row">
@@ -151,9 +151,11 @@
                         matInput
                         [matDatepicker]="picker"
                         [placeholder]="'Management/UserForm/JoiningDatePlaceholder' | gmessage"
-                        [formControl]="formGroup.controls.userInfo.controls.joiningDate" />
-                      @if (formGroup.controls.userInfo.controls.joiningDate.errors) {
-                        <mat-error>{{ 'Management/UserForm/JoiningDateHint' }}</mat-error>
+                        [formControl]="formGroup.controls.personalInfo.controls.joiningDate" />
+                      @if (formGroup.controls.personalInfo.controls.joiningDate.errors) {
+                        <mat-error>{{
+                          'Management/UserForm/JoiningDateHint' | gmessage
+                        }}</mat-error>
                       }
                       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                       <mat-datepicker #picker></mat-datepicker>
@@ -163,38 +165,103 @@
                 <div class="row">
                   <div class="col text-end">
                     <button mat-raised-button matStepperPrevious type="button" class="me-2">
-                      {{ 'ActivateAccount/Steps/Identity/BtnBack' | gmessage }}
+                      {{ 'ActivateAccount/Steps/PersonalInfo/BtnBack' | gmessage }}
                     </button>
-                    <button mat-raised-button matStepperNext type="button">
-                      {{ 'ActivateAccount/Steps/Identity/BtnNext' | gmessage }}
+                    <button
+                      mat-raised-button
+                      matStepperNext
+                      type="button"
+                      (click)="formGroup.controls.personalInfo.markAllAsTouched()">
+                      {{ 'ActivateAccount/Steps/PersonalInfo/BtnNext' | gmessage }}
                     </button>
                   </div>
                 </div>
               </div>
             </mat-step>
             <mat-step
-              [label]="'ActivateAccount/Steps/SetPassword/Title' | gmessage"
-              [stepControl]="formGroup.controls.setPassword"
-              [errorMessage]="'ActivateAccount/Steps/SetPassword/TitleErrorMessage' | gmessage">
-              <div [formGroup]="formGroup.controls.setPassword" class="mt-3">
+              [label]="'ActivateAccount/Steps/Authentication/Title' | gmessage"
+              [stepControl]="formGroup.controls.authentication"
+              [errorMessage]="'ActivateAccount/Steps/Authentication/TitleErrorMessage' | gmessage">
+              <div [formGroup]="formGroup.controls.authentication" class="mt-3">
                 <div class="row">
                   <div class="col-12">
                     <p
                       class="text-wrap"
-                      [innerHTML]="'ActivateAccount/Steps/SetPassword/Description' | gmessage"></p>
+                      [innerHTML]="
+                        'ActivateAccount/Steps/Authentication/Description' | gmessage
+                      "></p>
                   </div>
                 </div>
+
                 <div class="row mb-3">
-                  <app-reset-password-control [formGroup]="formGroup.controls.setPassword">
-                  </app-reset-password-control>
+                  <div class="col-12 col-lg-6">
+                    <mat-form-field class="w-100">
+                      <mat-label>{{
+                        'ActivateAccount/Steps/Authentication/AuthenticationType' | gmessage
+                      }}</mat-label>
+                      <mat-select
+                        [(value)]="selectedAuthenticationType"
+                        [formControl]="
+                          formGroup.controls.authentication.controls.authenticationType
+                        ">
+                        <mat-option [value]="AuthenticationTypes.Password"
+                          ><mat-icon>password</mat-icon
+                          >{{
+                            'ActivateAccount/Steps/Authentication/AuthenticationTypes/Password'
+                              | gmessage
+                          }}</mat-option
+                        >
+                        <mat-option [value]="AuthenticationTypes.Pin"
+                          ><mat-icon>pin</mat-icon
+                          >{{
+                            'ActivateAccount/Steps/Authentication/AuthenticationTypes/Pin'
+                              | gmessage
+                          }}</mat-option
+                        >
+                      </mat-select>
+                      @if (formGroup.controls.authentication.controls.authenticationType.errors) {
+                        <mat-error>{{
+                          'ActivateAccount/Steps/Authentication/AuthenticationTypeHint' | gmessage
+                        }}</mat-error>
+                      }
+
+                      @if (this.selectedAuthenticationType() === AuthenticationTypes.Password) {
+                        <mat-hint
+                          [innerHtml]="
+                            'ActivateAccount/Steps/Authentication/ChangePasswordHint' | gmessage
+                          "></mat-hint>
+                      } @else if (this.selectedAuthenticationType() === AuthenticationTypes.Pin) {
+                        <mat-hint
+                          [innerHtml]="
+                            'ActivateAccount/Steps/Authentication/ChangePinHint' | gmessage
+                          "></mat-hint>
+                      }
+                    </mat-form-field>
+                  </div>
                 </div>
+
+                @if (this.selectedAuthenticationType() === AuthenticationTypes.Password) {
+                  <app-reset-password-control
+                    class="row"
+                    [formGroup]="formGroup.controls.authentication">
+                  </app-reset-password-control>
+                } @else if (this.selectedAuthenticationType() === AuthenticationTypes.Pin) {
+                  <app-reset-pin-control
+                    class="row mb-3"
+                    [formGroup]="formGroup.controls.authentication">
+                  </app-reset-pin-control>
+                }
                 <div class="row">
                   <div class="col text-end">
                     <button mat-raised-button matStepperPrevious type="button" class="me-2">
-                      {{ 'ActivateAccount/Steps/SetPassword/BtnBack' | gmessage }}
+                      {{ 'ActivateAccount/Steps/Authentication/BtnBack' | gmessage }}
                     </button>
-                    <button mat-raised-button matStepperNext type="button">
-                      {{ 'ActivateAccount/Steps/SetPassword/BtnNext' | gmessage }}
+                    <button
+                      mat-raised-button
+                      matStepperNext
+                      type="button"
+                      (click)="formGroup.controls.authentication.markAllAsTouched()">
+                      {{ 'ActivateAccount/Steps/Authentication/BtnNext' | gmessage }}
                     </button>
                   </div>
                 </div>
@@ -209,7 +276,7 @@
               <div class="row">
                 <div class="col text-end">
                   <button mat-raised-button matStepperPrevious type="button" class="me-2">
-                    {{ 'ActivateAccount/Steps/SetPassword/BtnBack' | gmessage }}
+                    {{ 'ActivateAccount/Steps/Finish/BtnBack' | gmessage }}
                   </button>
                   <button mat-raised-button type="submit">
                     {{ 'ActivateAccount/Steps/Finish/BtnFinish' | gmessage }}

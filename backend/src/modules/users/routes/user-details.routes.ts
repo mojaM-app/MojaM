@@ -1,4 +1,4 @@
-import { REGEX_GUID_PATTERN } from '@config';
+import { REGEX_PATTERNS } from '@config';
 import { ForbiddenException, UnauthorizedException } from '@exceptions';
 import { IRequestWithIdentity, IRoutes } from '@interfaces';
 import { setIdentity } from '@modules/auth';
@@ -16,7 +16,7 @@ export class UserDetailsRoute implements IRoutes {
   }
 
   private initializeRoutes(): void {
-    this.router.get(`${this.path}/:id(${REGEX_GUID_PATTERN})`, [setIdentity, this.checkPreviewPermission], this._controller.get);
+    this.router.get(`${this.path}/:id(${REGEX_PATTERNS.GUID})`, [setIdentity, this.checkPreviewPermission], this._controller.get);
   }
 
   private readonly checkPreviewPermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {

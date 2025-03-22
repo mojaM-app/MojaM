@@ -1,6 +1,6 @@
 import { relatedDataNames } from '@db';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { CryptoService, PasswordService } from '@modules/auth';
+import { CryptoService, PasswordService, PinService } from '@modules/auth';
 import { ResetPasswordTokensRepository } from '@modules/auth/repositories/reset-password-tokens.repository';
 import {
   ActivateUserReqDto,
@@ -17,19 +17,21 @@ import Container, { Service } from 'typedi';
 import { Not } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { ICreateUser } from '../interfaces/create-user.interfaces';
-import { IUpdateUser, IUpdateUserPassword } from '../interfaces/update-user.interfaces';
+import { IUpdateUser, IUpdateUserPassword, IUpdateUserPin } from '../interfaces/update-user.interfaces';
 import { BaseUserRepository } from './base.user.repository';
 
 @Service()
 export class UserRepository extends BaseUserRepository {
   private readonly _cryptoService: CryptoService;
   private readonly _passwordService: PasswordService;
+  private readonly _pinService: PinService;
   private readonly _resetPasswordTokensRepository: ResetPasswordTokensRepository;
 
   public constructor() {
     super();
     this._cryptoService = Container.get(CryptoService);
     this._passwordService = Container.get(PasswordService);
+    this._pinService = Container.get(PinService);
     this._resetPasswordTokensRepository = Container.get(ResetPasswordTokensRepository);
   }
 
@@ -66,12 +68,10 @@ export class UserRepository extends BaseUserRepository {
 
   public async create(reqDto: CreateUserReqDto): Promise<User> {
     const userData: CreateUserDto = reqDto.userData;
-    if ((userData.password?.length ?? 0) > 0 && !this._passwordService.isPasswordValid(userData.password)) {
-      throw new BadRequestException(errorKeys.users.Invalid_Password);
-    }
 
     const salt = this._cryptoService.generateSalt();
-    const hashedPassword = (userData.password?.length ?? 0) > 0 ? this._passwordService.hashPassword(salt, userData.password!) : null;
+    const hashedPassword = (userData.password?.length ?? 0) > 0 ? this._passwordService.getHash(salt, userData.password!) : null;
+    const hashedPin = (userData.pin?.length ?? 0) > 0 ? this._pinService.getHash(salt, userData.pin!) : null;
     const model = {
       email: userData.email,
       phone: userData.phone,
@@ -79,6 +79,7 @@ export class UserRepository extends BaseUserRepository {
       lastName: userData.lastName,
       joiningDate: userData.joiningDate,
       password: hashedPassword,
+      pin: hashedPin,
       isActive: false,
       salt,
       refreshTokenKey: this._cryptoService.generateUserRefreshTokenKey(),
@@ -212,7 +213,7 @@ export class UserRepository extends BaseUserRepository {
 
   public async setPassword(userId: number, password: string): Promise<void> {
     const salt = this._cryptoService.generateSalt();
-    const hashedPassword = this._passwordService.hashPassword(salt, password);
+    const hashedPassword = this._passwordService.getHash(salt, password);
 
     const model = {
       userId,
@@ -222,6 +223,23 @@ export class UserRepository extends BaseUserRepository {
         emailConfirmed: true,
         failedLoginAttempts: 0,
       } satisfies IUpdateUserPassword,
+    } satisfies UpdateUserModel;
+
+    await this._update(model);
+  }
+
+  public async setPin(userId: number, pin: string): Promise<void> {
+    const salt = this._cryptoService.generateSalt();
+    const hashedPin = this._pinService.getHash(salt, pin);
+
+    const model = {
+      userId,
+      userData: {
+        pin: hashedPin,
+        salt,
+        emailConfirmed: true,
+        failedLoginAttempts: 0,
+      } satisfies IUpdateUserPin,
     } satisfies UpdateUserModel;
 
     await this._update(model);

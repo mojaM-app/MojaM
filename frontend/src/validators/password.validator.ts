@@ -1,4 +1,5 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { VALIDATOR_SETTINGS } from 'src/core/consts';
 
 export interface IStrongPasswordOptions {
   minLength: number;
@@ -11,11 +12,11 @@ export interface IStrongPasswordOptions {
 export class PasswordValidator {
   public static strong(
     options: IStrongPasswordOptions = {
-      minLength: 9,
-      minLowercase: 1,
-      minUppercase: 1,
-      minNumbers: 0,
-      minSymbols: 0,
+      minLength: VALIDATOR_SETTINGS.STRONG_PASSWORD_OPTIONS.minLength,
+      minLowercase: VALIDATOR_SETTINGS.STRONG_PASSWORD_OPTIONS.minLowercase,
+      minUppercase: VALIDATOR_SETTINGS.STRONG_PASSWORD_OPTIONS.minUppercase,
+      minNumbers: VALIDATOR_SETTINGS.STRONG_PASSWORD_OPTIONS.minNumbers,
+      minSymbols: VALIDATOR_SETTINGS.STRONG_PASSWORD_OPTIONS.minSymbols,
     }
   ): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -27,7 +28,8 @@ export class PasswordValidator {
       const numberOfLowercase = (value.match(/[a-z]/g) || []).length;
       const numberOfUppercase = (value.match(/[A-Z]/g) || []).length;
       const numberOfNumbers = (value.match(/\d/g) || []).length;
-      const numberOfSymbols = value.length - numberOfLowercase - numberOfUppercase - numberOfNumbers;
+      const numberOfSymbols =
+        value.length - numberOfLowercase - numberOfUppercase - numberOfNumbers;
 
       if (
         numberOfLowercase < options.minLowercase ||

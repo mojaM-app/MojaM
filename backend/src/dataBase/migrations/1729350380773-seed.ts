@@ -21,12 +21,12 @@ export class Seed1729350380773 implements MigrationInterface {
     await queryRunner.query(
       'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
         SystemPermissions.AddUser +
-        ", 'AddUser', 'Permission that allows add new User (without password) from User list', 10)",
+        ", 'AddUser', 'Permission that allows add new User (without password and pin) from User list', 10)",
     );
     await queryRunner.query(
       'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
         SystemPermissions.EditUser +
-        ", 'EditUser', 'Permission that allows edit any User (without password) from User list', 10)",
+        ", 'EditUser', 'Permission that allows edit any User (without password and pin) from User list', 10)",
     );
     await queryRunner.query(
       'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
@@ -65,7 +65,7 @@ export class Seed1729350380773 implements MigrationInterface {
     const passwordService = new PasswordService();
     const adminLoginData = getAdminLoginData();
     const salt = '22fae28a2abbb54a638cb5b7f1acb2e9';
-    const password = passwordService.hashPassword(salt, adminLoginData.password);
+    const password = passwordService.getHash(salt, adminLoginData.password);
     const refreshTokenKey = 'aedc7970d693ea6e4d71e39bffa7dc4034bae8e858b1ad2bb65a5ffd8356db41';
     await queryRunner.query(
       "INSERT INTO `users` (`Uuid`,`Email`,`Phone`,`Password`,`Salt`,`RefreshTokenKey`,`FirstName`,`LastName`,`IsActive`) VALUES ('" +

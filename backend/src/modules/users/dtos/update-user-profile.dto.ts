@@ -15,7 +15,7 @@ export class UpdateUserProfileDto {
   @MaxLength(VALIDATOR_SETTINGS.NAME_MAX_LENGTH, {
     message: errorKeys.users.FirstName_Too_Long,
   })
-  @Transform(DtoTransformFunctions.emptyStringToNull)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public firstName?: string | null;
 
   @IsOptional()
@@ -25,7 +25,7 @@ export class UpdateUserProfileDto {
   @MaxLength(VALIDATOR_SETTINGS.NAME_MAX_LENGTH, {
     message: errorKeys.users.LastName_Too_Long,
   })
-  @Transform(DtoTransformFunctions.emptyStringToNull)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public lastName?: string | null;
 
   @IsOptional()

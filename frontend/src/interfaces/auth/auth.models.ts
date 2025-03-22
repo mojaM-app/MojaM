@@ -1,9 +1,10 @@
 import { IUser } from '../users/user.interfaces';
+import { AuthenticationTypes } from './../../app/components/static/activate-account/enums/authentication-type.enum';
 
 export interface IAccountBeforeLogInDto {
   isPhoneRequired?: boolean;
   isActive?: boolean;
-  isPasswordSet?: boolean;
+  authType?: AuthenticationTypes;
 }
 
 export interface IResetPasswordResultDto {

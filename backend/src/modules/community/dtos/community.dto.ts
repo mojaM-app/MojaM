@@ -1,7 +1,7 @@
 import { events } from '@events';
 import { IResponse } from '@interfaces';
 
-export class CommunityInfoDto {
+export interface ICommunityInfoDto {
   logoUrl?: string;
   email?: string;
   webPage?: string;
@@ -9,21 +9,21 @@ export class CommunityInfoDto {
   address?: string;
 }
 
-export class CommunityTabDto {
+export interface ICommunityTabDto {
   title: string;
   content: string;
 }
 
-export class GetCommunityDto {
-  info: CommunityInfoDto;
-  tabs: CommunityTabDto[];
+export interface IGetCommunityDto {
+  info: ICommunityInfoDto;
+  tabs: ICommunityTabDto[];
 }
 
-export class GetCommunityResponseDto implements IResponse<GetCommunityDto> {
-  public readonly data: GetCommunityDto;
+export class GetCommunityResponseDto implements IResponse<IGetCommunityDto> {
+  public readonly data: IGetCommunityDto;
   public readonly message?: string | undefined;
 
-  constructor(data: GetCommunityDto) {
+  constructor(data: IGetCommunityDto) {
     this.data = data;
     this.message = events.community.communityRetrieved;
   }

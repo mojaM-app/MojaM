@@ -1,0 +1,54 @@
+<div
+  role="group"
+  class="otp-input-container"
+  [formGroup]="parts"
+  [attr.aria-labelledby]="_formField?.getLabelId()"
+  (focusin)="onFocusIn()"
+  (focusout)="onFocusOut($event)">
+  <input
+    class="otp-input-element"
+    [ngClass]="{ focused: focused }"
+    formControlName="p1"
+    size="1"
+    maxLength="1"
+    (input)="handleInput(parts.controls.p1, p2)"
+    [type]="hidePin() ? 'password' : 'text'"
+    [pattern]="pattern"
+    #p1 />
+  <span class="otp-input-spacer">-</span>
+  <input
+    class="otp-input-element"
+    [ngClass]="{ focused: focused }"
+    formControlName="p2"
+    maxLength="1"
+    size="1"
+    (input)="handleInput(parts.controls.p2, p3)"
+    (keyup.backspace)="autoFocusPrev(parts.controls.p2, p1)"
+    [type]="hidePin() ? 'password' : 'text'"
+    [pattern]="pattern"
+    #p2 />
+  <span class="otp-input-spacer">-</span>
+  <input
+    class="otp-input-element"
+    [ngClass]="{ focused: focused }"
+    formControlName="p3"
+    maxLength="1"
+    size="1"
+    (input)="handleInput(parts.controls.p3, p4)"
+    (keyup.backspace)="autoFocusPrev(parts.controls.p3, p2)"
+    [type]="hidePin() ? 'password' : 'text'"
+    [pattern]="pattern"
+    #p3 />
+  <span class="otp-input-spacer">-</span>
+  <input
+    class="otp-input-element"
+    [ngClass]="{ focused: focused }"
+    formControlName="p4"
+    maxLength="1"
+    size="1"
+    (input)="handleInput(parts.controls.p4)"
+    (keyup.backspace)="autoFocusPrev(parts.controls.p4, p3)"
+    [type]="hidePin() ? 'password' : 'text'"
+    [pattern]="pattern"
+    #p4 />
+</div>

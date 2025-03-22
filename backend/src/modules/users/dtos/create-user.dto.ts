@@ -4,44 +4,10 @@ import { errorKeys } from '@exceptions';
 import { DtoTransformFunctions } from '@helpers/DtoTransformFunctions';
 import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
-import { isNullOrEmptyString } from '@utils';
+import { IsNotSetIf, IsPasswordEmptyOrValid, IsPinEmptyOrValid } from '@validators';
 import { Transform, Type } from 'class-transformer';
-import {
-  IsDate,
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsPhoneNumber,
-  IsString,
-  isStrongPassword,
-  maxLength,
-  MaxLength,
-  registerDecorator,
-  ValidationArguments,
-  ValidationOptions,
-} from 'class-validator';
+import { IsDate, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MaxLength } from 'class-validator';
 import { IUserDto } from '../interfaces/IUser.dto';
-
-export function IsPasswordEmptyOrValid(validationOptions?: ValidationOptions) {
-  return function (object: object, propertyName: string) {
-    registerDecorator({
-      name: 'isPasswordEmptyOrValid',
-      target: object.constructor,
-      propertyName,
-      constraints: [],
-      options: validationOptions,
-      validator: {
-        validate(value: any, args: ValidationArguments): boolean {
-          if (isNullOrEmptyString(value)) {
-            return true;
-          }
-
-          return maxLength(value, VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH) && isStrongPassword(value, VALIDATOR_SETTINGS.STRONG_PASSWORD_OPTIONS);
-        },
-      },
-    });
-  };
-}
 
 export class CreateUserDto {
   @IsString({
@@ -59,6 +25,7 @@ export class CreateUserDto {
   @MaxLength(VALIDATOR_SETTINGS.EMAIL_MAX_LENGTH, {
     message: errorKeys.users.Email_Too_Long,
   })
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public email: string;
 
   @IsString({
@@ -73,6 +40,7 @@ export class CreateUserDto {
   @MaxLength(VALIDATOR_SETTINGS.PHONE_MAX_LENGTH, {
     message: errorKeys.users.Phone_Too_Long,
   })
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public phone: string;
 
   @IsOptional()
@@ -82,7 +50,7 @@ export class CreateUserDto {
   @MaxLength(VALIDATOR_SETTINGS.NAME_MAX_LENGTH, {
     message: errorKeys.users.FirstName_Too_Long,
   })
-  @Transform(DtoTransformFunctions.emptyStringToNull)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public firstName?: string | null;
 
   @IsOptional()
@@ -92,7 +60,7 @@ export class CreateUserDto {
   @MaxLength(VALIDATOR_SETTINGS.NAME_MAX_LENGTH, {
     message: errorKeys.users.LastName_Too_Long,
   })
-  @Transform(DtoTransformFunctions.emptyStringToNull)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public lastName?: string | null;
 
   @IsOptional()
@@ -101,11 +69,30 @@ export class CreateUserDto {
   public joiningDate?: Date | null;
 
   @IsOptional()
+  @IsString({
+    message: errorKeys.users.Invalid_Password,
+  })
   @IsPasswordEmptyOrValid({
     message: errorKeys.users.Invalid_Password,
   })
-  @Transform(DtoTransformFunctions.emptyStringToNull)
+  @IsNotSetIf('pin', {
+    message: errorKeys.users.Both_Password_And_Pin_Are_Set,
+  })
+  @Transform(DtoTransformFunctions.returnNullIfEmpty)
   public password?: string | null;
+
+  @IsOptional()
+  @IsString({
+    message: errorKeys.users.Invalid_Pin,
+  })
+  @IsPinEmptyOrValid({
+    message: errorKeys.users.Invalid_Pin,
+  })
+  @IsNotSetIf('password', {
+    message: errorKeys.users.Both_Password_And_Pin_Are_Set,
+  })
+  @Transform(DtoTransformFunctions.returnNullIfEmpty)
+  public pin?: string | null;
 }
 
 export class CreateUserReqDto extends BaseReqDto {

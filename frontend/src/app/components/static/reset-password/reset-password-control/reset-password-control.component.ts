@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, Signal, signal } from '@angular/core';
 import {
   AbstractControl,
   FormGroup,
@@ -30,18 +30,22 @@ import { IResetPasswordForm } from '../reset-password.form';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetPasswordControlComponent {
-  public readonly formGroup = input.required<FormGroup<IResetPasswordForm>>();
-
+  public readonly formGroup = input.required<FormGroup>();
+  protected readonly form: Signal<FormGroup<IResetPasswordForm>>;
   protected readonly errorNames = errorNames;
   protected readonly hideConfirmPassword = signal(true);
   protected readonly hidePassword = signal(true);
 
-  public getControlErrors(control: AbstractControl): ValidationErrors {
+  public constructor() {
+    this.form = computed(() => this.formGroup() as FormGroup<IResetPasswordForm>);
+  }
+
+  protected getControlErrors(control: AbstractControl): ValidationErrors {
     return control?.errors ?? {};
   }
 
-  public getFormGroupErrors(): ValidationErrors {
-    return this.formGroup().errors ?? {};
+  protected getFormGroupErrors(): ValidationErrors {
+    return this.form().errors ?? {};
   }
 
   protected togglePasswordVisibility(event: MouseEvent): void {

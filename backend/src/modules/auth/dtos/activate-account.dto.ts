@@ -4,17 +4,36 @@ import { errorKeys } from '@exceptions';
 import { DtoTransformFunctions } from '@helpers/DtoTransformFunctions';
 import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
-import { IsPasswordEmptyOrValid } from '@modules/users/dtos/create-user.dto';
+import { IsNotSetIf, IsPasswordEmptyOrValid, IsPinEmptyOrValid } from '@validators';
 import { Transform, Type } from 'class-transformer';
 import { IsDate, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class ActivateAccountDto {
   @IsOptional()
+  @IsString({
+    message: errorKeys.users.Invalid_Password,
+  })
   @IsPasswordEmptyOrValid({
     message: errorKeys.users.Invalid_Password,
   })
-  @Transform(DtoTransformFunctions.emptyStringToNull)
+  @IsNotSetIf('pin', {
+    message: errorKeys.users.Both_Password_And_Pin_Are_Set,
+  })
+  @Transform(DtoTransformFunctions.returnNullIfEmpty)
   public password?: string | null;
+
+  @IsOptional()
+  @IsString({
+    message: errorKeys.users.Invalid_Pin,
+  })
+  @IsPinEmptyOrValid({
+    message: errorKeys.users.Invalid_Pin,
+  })
+  @IsNotSetIf('password', {
+    message: errorKeys.users.Both_Password_And_Pin_Are_Set,
+  })
+  @Transform(DtoTransformFunctions.returnNullIfEmpty)
+  public pin?: string | null;
 
   @IsOptional()
   @IsString({
@@ -23,7 +42,7 @@ export class ActivateAccountDto {
   @MaxLength(VALIDATOR_SETTINGS.NAME_MAX_LENGTH, {
     message: errorKeys.users.FirstName_Too_Long,
   })
-  @Transform(DtoTransformFunctions.emptyStringToNull)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public firstName?: string | null;
 
   @IsOptional()
@@ -33,7 +52,7 @@ export class ActivateAccountDto {
   @MaxLength(VALIDATOR_SETTINGS.NAME_MAX_LENGTH, {
     message: errorKeys.users.LastName_Too_Long,
   })
-  @Transform(DtoTransformFunctions.emptyStringToNull)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public lastName?: string | null;
 
   @IsOptional()

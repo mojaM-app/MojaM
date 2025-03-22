@@ -815,9 +815,10 @@ describe('POST /login', () => {
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
-    test('login should response with status code of 400 when user has no password', async () => {
+    test('login should response with status code of 400 when user has no password nor pin', async () => {
       const requestData = generateValidUser();
       requestData.password = undefined;
+      requestData.pin = undefined;
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)

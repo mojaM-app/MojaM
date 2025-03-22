@@ -4,4 +4,5 @@ export const errorNames = {
   minLength: 'minlength',
   invalidPassword: 'invalidPassword',
   notEqual: 'notEqual',
+  pattern: 'pattern',
 };

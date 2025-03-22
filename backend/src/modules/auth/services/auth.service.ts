@@ -20,6 +20,7 @@ import {
   LockedUserTriesToLogInEvent,
   LoginDto,
   PasswordService,
+  PinService,
   RefreshTokenDto,
   ResetPasswordReqDto,
   UserLockedOutEvent,
@@ -42,10 +43,11 @@ import { UserPermissionsRepository } from '@modules/permissions';
 import { UpdateUserModel, UserActivatedEvent, UserRepository } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
 import { IUpdateUser } from '@modules/users/interfaces/update-user.interfaces';
-import { isGuid, isNullOrEmptyString, isNullOrUndefined } from '@utils';
+import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { decode, JwtPayload, sign, verify, VerifyErrors } from 'jsonwebtoken';
 import StatusCode from 'status-code-enum';
 import { Container, Service } from 'typedi';
+import { AuthenticationTypes } from '../enums/authentication-type.enum';
 import { ResetPasswordTokensRepository } from '../repositories/reset-password-tokens.repository';
 
 @Service()
@@ -55,6 +57,7 @@ export class AuthService extends BaseService {
   private readonly _resetPasswordTokensRepository: ResetPasswordTokensRepository;
   private readonly _cryptoService: CryptoService;
   private readonly _passwordService: PasswordService;
+  private readonly _pinService: PinService;
   private readonly _emailService: EmailService;
 
   public constructor() {
@@ -64,12 +67,13 @@ export class AuthService extends BaseService {
     this._resetPasswordTokensRepository = Container.get(ResetPasswordTokensRepository);
     this._cryptoService = Container.get(CryptoService);
     this._passwordService = Container.get(PasswordService);
+    this._pinService = Container.get(PinService);
     this._emailService = Container.get(EmailService);
   }
 
   public async getAccountBeforeLogIn(data: AccountTryingToLogInDto): Promise<IGetAccountBeforeLogInResultDto> {
     const result = {
-      isPasswordSet: true,
+      authType: AuthenticationTypes.Password,
       isActive: true,
     } satisfies IGetAccountBeforeLogInResultDto;
 
@@ -88,7 +92,7 @@ export class AuthService extends BaseService {
     const user = users[0];
 
     return {
-      isPasswordSet: !isNullOrEmptyString(user.password),
+      authType: user.getAuthenticationType(),
       isActive: user.isActive,
     } satisfies IGetAccountBeforeLogInResultDto;
   }
@@ -149,7 +153,7 @@ export class AuthService extends BaseService {
       throw new BadRequestException(errorKeys.login.Invalid_Reset_Password_Token);
     }
 
-    if (!this._passwordService.isPasswordValid(data.model?.password)) {
+    if (!this._passwordService.isValid(data.model?.password)) {
       throw new BadRequestException(errorKeys.users.Invalid_Password);
     }
 
@@ -189,7 +193,7 @@ export class AuthService extends BaseService {
 
     const user: User = users[0];
 
-    if (isNullOrEmptyString(user.password)) {
+    if (isNullOrEmptyString(user.password) && isNullOrEmptyString(user.pin)) {
       throw new BadRequestException(errorKeys.login.User_Password_Is_Not_Set);
     }
 
@@ -203,7 +207,18 @@ export class AuthService extends BaseService {
       throw new BadRequestException(errorKeys.login.User_Is_Locked_Out);
     }
 
-    const isPasswordMatching: boolean = this._passwordService.passwordMatches(data.password ?? '', user.salt, user.password!);
+    let isPasswordMatching: boolean = false;
+    const authenticationType = user.getAuthenticationType();
+    switch (authenticationType) {
+      case AuthenticationTypes.Password:
+        isPasswordMatching = this._passwordService.match(data.password ?? '', user.salt, user.password!);
+        break;
+      case AuthenticationTypes.Pin:
+        isPasswordMatching = this._pinService.match(data.password ?? '', user.salt, user.pin!);
+        break;
+      default:
+        throw new BadRequestException(errorKeys.login.Invalid_Authentication_Type);
+    }
 
     if (!isPasswordMatching) {
       const failedLoginAttempts = await this._userRepository.increaseFailedLoginAttempts(user.id, user.failedLoginAttempts);
@@ -306,10 +321,6 @@ export class AuthService extends BaseService {
   }
 
   public async activateAccount(reqDto: ActivateAccountReqDto): Promise<IActivateAccountResultDto> {
-    if (!isGuid(reqDto.userGuid)) {
-      throw new BadRequestException(errorKeys.users.Invalid_User_Id);
-    }
-
     const user: User | null = await this._userRepository.getByUuid(reqDto.userGuid);
 
     if (isNullOrUndefined(user)) {
@@ -321,11 +332,11 @@ export class AuthService extends BaseService {
     const userData: ActivateAccountDto = reqDto.model!;
 
     if (!isNullOrEmptyString(userData.password)) {
-      if (!this._passwordService.isPasswordValid(userData.password)) {
-        throw new BadRequestException(errorKeys.users.Invalid_Password);
-      }
-
       await this._userRepository.setPassword(user!.id, userData.password!);
+    }
+
+    if (!isNullOrEmptyString(userData.pin)) {
+      await this._userRepository.setPin(user!.id, userData.pin!);
     }
 
     if (!user!.isActive) {
