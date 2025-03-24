@@ -45,7 +45,7 @@ export class LoginDto {
   @MaxLength(VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH, {
     message: errorKeys.login.Invalid_Login_Or_Password,
   })
-  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
+  @Transform(DtoTransformFunctions.returnNullIfEmpty)
   public password: string | null | undefined;
 }
 
