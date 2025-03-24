@@ -30,8 +30,7 @@ describe('CryptoService', () => {
 
     it('should return a hashed password', () => {
       const salt = cryptoService.generateSalt();
-      const { password } = getAdminLoginData();
-      const hashedPassword = passwordService.getHash(salt, password);
+      const hashedPassword = passwordService.getHash(salt, generateRandomPassword(VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH));
       expect(hashedPassword).toBeDefined();
       expect(typeof hashedPassword).toBe('string');
       expect(hashedPassword.length).toBe(128);
