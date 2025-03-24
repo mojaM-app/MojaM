@@ -1,7 +1,7 @@
 import { errorKeys } from '@exceptions';
-import { getAuthenticationType } from '@modules/common';
 import Container from 'typedi';
 import { AuthenticationTypes } from '../enums/authentication-type.enum';
+import { getAuthenticationType } from '../helpers/auth.helper';
 import { PasswordService } from './password.service';
 import { PinService } from './pin.service';
 
@@ -27,27 +27,16 @@ class AuthenticationTypFactory {
 export class AuthenticationTypService {
   private readonly _authenticationTypeService: IAuthenticationTypeService;
   private readonly _authenticationType;
-  public get authenticationType(): AuthenticationTypes | undefined {
-    return this._authenticationType;
-  }
 
   private constructor(private readonly _authenticationData: { password?: string | null; pin?: string | null; salt?: string }) {
     this._authenticationType = getAuthenticationType(_authenticationData);
     this._authenticationTypeService = AuthenticationTypFactory.create(this._authenticationType);
   }
 
-  public getHash(text: string): string {
-    return this._authenticationTypeService.getHash(this._authenticationData.salt!, text);
-  }
-
   public match(text: string): boolean {
     const hashedText = this.getPasscode();
 
     return this._authenticationTypeService.match(text, this._authenticationData.salt!, hashedText);
-  }
-
-  public isValid(text: string | undefined | null): boolean {
-    return this._authenticationTypeService.isValid(text);
   }
 
   private getPasscode(): string {

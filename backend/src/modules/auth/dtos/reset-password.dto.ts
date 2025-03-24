@@ -16,7 +16,7 @@ export class ResetPasswordDto {
   @IsPasswordOrPinValid({
     message: errorKeys.users.Invalid_Passcode,
   })
-  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
+  @Transform(DtoTransformFunctions.returnNullIfEmpty)
   public passcode: string;
 
   @IsNotEmpty({
@@ -25,7 +25,7 @@ export class ResetPasswordDto {
   @IsString({
     message: errorKeys.login.Invalid_Reset_Password_Token,
   })
-  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
+  @Transform(DtoTransformFunctions.returnNullIfEmpty)
   public token: string;
 }
 

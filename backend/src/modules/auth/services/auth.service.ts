@@ -36,7 +36,7 @@ import {
   getTokenAudience,
   getTokenIssuer,
 } from '@modules/auth/middlewares/set-identity.middleware';
-import { BaseService, getAuthenticationType, userToIUser } from '@modules/common';
+import { BaseService, userToIUser } from '@modules/common';
 import { EmailService, LinkHelper } from '@modules/notifications';
 import { UserPermissionsRepository } from '@modules/permissions';
 import { UpdateUserModel, UserActivatedEvent, UserRepository } from '@modules/users';
@@ -47,6 +47,7 @@ import { decode, JwtPayload, sign, verify, VerifyErrors } from 'jsonwebtoken';
 import StatusCode from 'status-code-enum';
 import { Container, Service } from 'typedi';
 import { AuthenticationTypes } from '../enums/authentication-type.enum';
+import { getAuthenticationType } from '../helpers/auth.helper';
 import { ResetPasswordTokensRepository } from '../repositories/reset-password-tokens.repository';
 import { AuthenticationTypService } from './authentication-typ.service';
 

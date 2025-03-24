@@ -7,4 +7,4 @@ export { CacheService } from './cache.service';
 
 export { BaseReqDto } from './base.request.dto';
 
-export { getAuthenticationType, userToIUser } from '@modules/users/helpers/users.helper';
+export { userToIUser } from '@modules/users/helpers/users.helper';

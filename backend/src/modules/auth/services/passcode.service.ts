@@ -12,10 +12,6 @@ export class PasscodeService {
     this._pinService = Container.get(PinService);
   }
 
-  public isValid(passcode: string | undefined | null): boolean {
-    return this.isPassword(passcode) || this.isPin(passcode);
-  }
-
   public isPassword(passcode: string | undefined | null): boolean {
     return this._passwordService.isValid(passcode);
   }
