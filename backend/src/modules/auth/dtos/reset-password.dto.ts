@@ -2,22 +2,22 @@ import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { DtoTransformFunctions } from '@helpers/DtoTransformFunctions';
 import { IResponse } from '@interfaces';
-import { IsPasswordEmptyOrValid } from '@validators';
+import { IsPasswordOrPinValid } from '@validators';
 import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class ResetPasswordDto {
   @IsNotEmpty({
-    message: errorKeys.users.Invalid_Password,
+    message: errorKeys.users.Invalid_Passcode,
   })
   @IsString({
-    message: errorKeys.users.Invalid_Password,
+    message: errorKeys.users.Invalid_Passcode,
   })
-  @IsPasswordEmptyOrValid({
-    message: errorKeys.users.Invalid_Password,
+  @IsPasswordOrPinValid({
+    message: errorKeys.users.Invalid_Passcode,
   })
   @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
-  public password: string | null | undefined;
+  public passcode: string;
 
   @IsNotEmpty({
     message: errorKeys.login.Invalid_Reset_Password_Token,
@@ -26,7 +26,7 @@ export class ResetPasswordDto {
     message: errorKeys.login.Invalid_Reset_Password_Token,
   })
   @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
-  public token: string | null | undefined;
+  public token: string;
 }
 
 export class ResetPasswordReqDto {

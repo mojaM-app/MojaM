@@ -3,7 +3,7 @@ import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
-import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { GetPermissionsResponseDto, PermissionsRoute, SystemPermissions } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
@@ -77,7 +77,7 @@ describe('GET /permissions', () => {
     });
 
     it('when user has no permission', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -133,7 +133,7 @@ describe('GET /permissions', () => {
     });
 
     it('when user have all permissions expect AddPermission/DeletePermission', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -204,7 +204,7 @@ describe('GET /permissions', () => {
 
   describe('POST should respond with a status code of 200', () => {
     it('when user have AddPermission permission', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -270,7 +270,7 @@ describe('GET /permissions', () => {
     });
 
     it('when user have DeletePermission permission', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)

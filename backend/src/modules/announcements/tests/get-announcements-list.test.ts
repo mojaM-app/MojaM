@@ -4,7 +4,7 @@ import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
-import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermissions } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
@@ -131,7 +131,7 @@ describe('GET/announcements-list', () => {
     });
 
     test('when user has no permission', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -190,7 +190,7 @@ describe('GET/announcements-list', () => {
     });
 
     test('when user have all permissions expect PreviewAnnouncementsList', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)

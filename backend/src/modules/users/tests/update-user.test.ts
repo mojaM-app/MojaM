@@ -5,7 +5,7 @@ import { VALIDATOR_SETTINGS } from '@config';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
-import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermissions } from '@modules/permissions';
 import { CreateUserDto, CreateUserResponseDto, GetUserDetailsResponseDto, UpdateUserDto, UserRoute } from '@modules/users';
@@ -48,7 +48,7 @@ describe('PUT /user/:id', () => {
   describe('PUT should respond with a status code of 200', () => {
     test('when all data are passed but only firstName is changed', async () => {
       const createUserRequestData = {
-        ...generateValidUser(),
+        ...generateValidUserWithPassword(),
         firstName: 'Bob',
         lastName: 'Smith',
         joiningDate: generateRandomDate(),
@@ -118,7 +118,7 @@ describe('PUT /user/:id', () => {
 
     test('when all data are passed but only joiningDate is changed', async () => {
       const createUserRequestData = {
-        ...generateValidUser(),
+        ...generateValidUserWithPassword(),
         firstName: 'Bob',
         lastName: 'Smith',
         joiningDate: generateRandomDate(),
@@ -188,7 +188,7 @@ describe('PUT /user/:id', () => {
 
     test('when only email case is changed', async () => {
       const createUserRequestData = {
-        ...generateValidUser(),
+        ...generateValidUserWithPassword(),
         firstName: 'Bob',
         lastName: 'Smith',
       } satisfies CreateUserDto;
@@ -259,7 +259,7 @@ describe('PUT /user/:id', () => {
     });
 
     test('when only password is updated nothing should change (password should not be changed)', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -318,7 +318,7 @@ describe('PUT /user/:id', () => {
 
     test('when firstName is set to null', async () => {
       const createUserRequestData = {
-        ...generateValidUser(),
+        ...generateValidUserWithPassword(),
         firstName: 'Bob',
       } satisfies CreateUserDto;
       const createUserResponse = await request(app.getServer())
@@ -385,7 +385,7 @@ describe('PUT /user/:id', () => {
 
   describe('PUT should respond with a status code of 400', () => {
     test('when email is invalid', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -438,7 +438,7 @@ describe('PUT /user/:id', () => {
     });
 
     test('when phone is invalid', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -489,7 +489,7 @@ describe('PUT /user/:id', () => {
     });
 
     test('when first name is invalid', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -540,7 +540,7 @@ describe('PUT /user/:id', () => {
     });
 
     test('when last name is invalid', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -591,7 +591,7 @@ describe('PUT /user/:id', () => {
     });
 
     test('when tries to set up someone else`s email and phone number', async () => {
-      const requestData1 = generateValidUser();
+      const requestData1 = generateValidUserWithPassword();
       const createUserResponse1 = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData1)
@@ -599,7 +599,7 @@ describe('PUT /user/:id', () => {
       expect(createUserResponse1.statusCode).toBe(201);
       const { data: user1 }: CreateUserResponseDto = createUserResponse1.body;
 
-      const requestData2 = generateValidUser();
+      const requestData2 = generateValidUserWithPassword();
       const createUserResponse2 = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData2)
@@ -649,7 +649,7 @@ describe('PUT /user/:id', () => {
     });
 
     test('when tries to set up someone else`s email and phone number by only changing the e-mail', async () => {
-      const requestData1 = generateValidUser();
+      const requestData1 = generateValidUserWithPassword();
       const createUserResponse1 = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData1)
@@ -657,7 +657,7 @@ describe('PUT /user/:id', () => {
       expect(createUserResponse1.statusCode).toBe(201);
       const { data: user1 }: CreateUserResponseDto = createUserResponse1.body;
 
-      const requestData2 = generateValidUser();
+      const requestData2 = generateValidUserWithPassword();
       requestData2.phone = user1.phone;
 
       const createUserResponse2 = await request(app.getServer())
@@ -711,7 +711,7 @@ describe('PUT /user/:id', () => {
     });
 
     test('when tries to set up someone else`s email and phone number by only changing the phone number', async () => {
-      const requestData1 = generateValidUser();
+      const requestData1 = generateValidUserWithPassword();
       const createUserResponse1 = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData1)
@@ -719,7 +719,7 @@ describe('PUT /user/:id', () => {
       expect(createUserResponse1.statusCode).toBe(201);
       const { data: user1 }: CreateUserResponseDto = createUserResponse1.body;
 
-      const requestData2 = generateValidUser();
+      const requestData2 = generateValidUserWithPassword();
       requestData2.email = user1.email;
 
       const createUserResponse2 = await request(app.getServer())
@@ -773,7 +773,7 @@ describe('PUT /user/:id', () => {
     });
 
     test('when tries to set up someone else`s email and phone number (different letters size)', async () => {
-      const requestData1 = generateValidUser();
+      const requestData1 = generateValidUserWithPassword();
       requestData1.email = requestData1.email.toLocaleLowerCase();
       const createUserResponse1 = await request(app.getServer())
         .post(userRoute.path)
@@ -782,7 +782,7 @@ describe('PUT /user/:id', () => {
       expect(createUserResponse1.statusCode).toBe(201);
       const { data: user1 }: CreateUserResponseDto = createUserResponse1.body;
 
-      const requestData2 = generateValidUser();
+      const requestData2 = generateValidUserWithPassword();
       requestData2.email = requestData2.email.toLocaleLowerCase();
       const createUserResponse2 = await request(app.getServer())
         .post(userRoute.path)
@@ -834,7 +834,7 @@ describe('PUT /user/:id', () => {
 
     test('when tries to update user that not exist', async () => {
       const createUserRequestData = {
-        ...generateValidUser(),
+        ...generateValidUserWithPassword(),
         firstName: 'Bob',
       } satisfies CreateUserDto;
       const createUserResponse = await request(app.getServer())
@@ -879,7 +879,7 @@ describe('PUT /user/:id', () => {
       const admin = getAdminLoginData();
       const updateUserResponse = await request(app.getServer())
         .put(userRoute.path + '/' + admin.uuid)
-        .send(generateValidUser());
+        .send(generateValidUserWithPassword());
       expect(updateUserResponse.statusCode).toBe(401);
       const body = updateUserResponse.body;
       expect(typeof body).toBe('object');
@@ -892,7 +892,7 @@ describe('PUT /user/:id', () => {
     });
 
     test('when user has no permission', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const newUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -916,7 +916,7 @@ describe('PUT /user/:id', () => {
 
       const updateUserResponse = await request(app.getServer())
         .put(userRoute.path + '/' + admin.uuid)
-        .send(generateValidUser())
+        .send(generateValidUserWithPassword())
         .set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(updateUserResponse.statusCode).toBe(403);
       expect(updateUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -952,7 +952,7 @@ describe('PUT /user/:id', () => {
     });
 
     test('when user have all permissions expect EditUser', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const newUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -988,7 +988,7 @@ describe('PUT /user/:id', () => {
 
       const updateUserResponse = await request(app.getServer())
         .put(userRoute.path + '/' + admin.uuid)
-        .send(generateValidUser())
+        .send(generateValidUserWithPassword())
         .set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(updateUserResponse.statusCode).toBe(403);
       expect(updateUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -1045,7 +1045,7 @@ describe('PUT /user/:id', () => {
     });
 
     test('when try to use token from user that not exists', async () => {
-      const userBob = generateValidUser();
+      const userBob = generateValidUserWithPassword();
 
       const createBobResponse = await request(app.getServer()).post(userRoute.path).send(userBob).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createBobResponse.statusCode).toBe(201);
@@ -1070,7 +1070,7 @@ describe('PUT /user/:id', () => {
       const admin = getAdminLoginData();
       const updateUserUsingBobAccessTokenResponse = await request(app.getServer())
         .put(userRoute.path + '/' + admin.uuid)
-        .send(generateValidUser())
+        .send(generateValidUserWithPassword())
         .set('Authorization', `Bearer ${bobAccessToken}`);
       expect(updateUserUsingBobAccessTokenResponse.statusCode).toBe(401);
       expect(updateUserUsingBobAccessTokenResponse.headers['content-type']).toEqual(expect.stringContaining('json'));

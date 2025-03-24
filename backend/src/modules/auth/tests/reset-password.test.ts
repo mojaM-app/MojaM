@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { App } from '@/app';
-import { RESET_PASSWORD_TOKEN_EXPIRE_IN, USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
+import { RESET_PASSWORD_TOKEN_EXPIRE_IN, USER_ACCOUNT_LOCKOUT_SETTINGS, VALIDATOR_SETTINGS } from '@config';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
-import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import {
   AccountTryingToLogInDto,
   AuthRoute,
@@ -18,7 +18,7 @@ import { EmailService } from '@modules/notifications';
 import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, IUser, UserRoute } from '@modules/users';
 import * as Utils from '@utils';
-import { generateRandomPassword, getAdminLoginData } from '@utils/tests.utils';
+import { generateRandomNumber, generateRandomPassword, getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import { Guid } from 'guid-typescript';
 import ms from 'ms';
@@ -62,7 +62,7 @@ describe('POST /auth/reset-password', () => {
 
   describe('when reset password data are valid', () => {
     it('when user is inactive, after reset password user should be active and should be able to log in', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
@@ -104,7 +104,7 @@ describe('POST /auth/reset-password', () => {
       const newPassword = generateRandomPassword();
       const resetPasswordDto = {
         token,
-        password: newPassword,
+        passcode: newPassword,
       } satisfies ResetPasswordDto;
       const resetPasswordResponse = await request(app.getServer())
         .post(authRoute.resetPasswordPath + '/' + newUserDto.id)
@@ -148,7 +148,7 @@ describe('POST /auth/reset-password', () => {
     });
 
     it('when user is active, after reset password user should be active and should be able to log in', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
@@ -196,7 +196,7 @@ describe('POST /auth/reset-password', () => {
       const newPassword = generateRandomPassword();
       const resetPasswordDto = {
         token,
-        password: newPassword,
+        passcode: newPassword,
       } satisfies ResetPasswordDto;
       const resetPasswordResponse = await request(app.getServer())
         .post(authRoute.resetPasswordPath + '/' + newUserDto.id)
@@ -242,7 +242,7 @@ describe('POST /auth/reset-password', () => {
     });
 
     it('when user is lockedOut, after reset password user should be active and should stay lockedOut (should not be able to log in)', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
@@ -303,7 +303,7 @@ describe('POST /auth/reset-password', () => {
       const newPassword = generateRandomPassword();
       const resetPasswordDto = {
         token,
-        password: newPassword,
+        passcode: newPassword,
       } satisfies ResetPasswordDto;
       const resetPasswordResponse = await request(app.getServer())
         .post(authRoute.resetPasswordPath + '/' + newUserDto.id)
@@ -361,16 +361,21 @@ describe('POST /auth/reset-password', () => {
   });
 
   describe('when reset password data are invalid', () => {
-    it('when user id is invalid', async () => {
-      const user = generateValidUser();
-      const resetPasswordDto = {
-        token: 'valid token',
-        password: user.password,
-      } satisfies ResetPasswordDto;
-      const response = await request(app.getServer())
-        .post(authRoute.resetPasswordPath + '/invalid uuid')
-        .send(resetPasswordDto);
-      expect(response.statusCode).toBe(404);
+    it('when user id is not set', async () => {
+      const user = generateValidUserWithPassword();
+
+      const invalidUserIds = ['invalid uuid', '', null, undefined];
+
+      for (const invalidUserId of invalidUserIds) {
+        const resetPasswordDto = {
+          token: 'valid token',
+          passcode: user.password!,
+        } satisfies ResetPasswordDto;
+        const response = await request(app.getServer())
+          .post(authRoute.resetPasswordPath + '/' + invalidUserId)
+          .send(resetPasswordDto);
+        expect(response.statusCode).toBe(404);
+      }
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -378,16 +383,21 @@ describe('POST /auth/reset-password', () => {
       });
     });
 
-    it('when user id is empty/null/undefined', async () => {
-      const user = generateValidUser();
-      const resetPasswordDto = {
-        token: 'valid token',
-        password: user.password,
-      } satisfies ResetPasswordDto;
-      const response = await request(app.getServer())
-        .post(authRoute.resetPasswordPath + '/')
-        .send(resetPasswordDto);
-      expect(response.statusCode).toBe(404);
+    it('when user id invalid', async () => {
+      const user = generateValidUserWithPassword();
+
+      const invalidUserIds = [Guid.EMPTY];
+
+      for (const invalidUserId of invalidUserIds) {
+        const resetPasswordDto = {
+          token: 'valid token',
+          passcode: user.password!,
+        } satisfies ResetPasswordDto;
+        const response = await request(app.getServer())
+          .post(authRoute.resetPasswordPath + '/' + invalidUserId)
+          .send(resetPasswordDto);
+        expect(response.statusCode).toBe(400);
+      }
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -396,7 +406,7 @@ describe('POST /auth/reset-password', () => {
     });
 
     it('when user not exists', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
       user.password = undefined;
 
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
@@ -418,17 +428,26 @@ describe('POST /auth/reset-password', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
 
-      const resetPasswordDto = {
-        token: 'valid token',
-        password: generateRandomPassword(),
-      } satisfies ResetPasswordDto;
-      const response = await request(app.getServer())
-        .post(authRoute.resetPasswordPath + '/' + newUserDto.id)
-        .send(resetPasswordDto);
-      expect(response.statusCode).toBe(400);
-      const data = response.body.data as BadRequestException;
-      const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.users.Invalid_User_Id).length).toBe(0);
+      const resetPasswordModels = [
+        {
+          token: 'valid token',
+          passcode: generateRandomPassword(),
+        } satisfies ResetPasswordDto,
+        {
+          token: 'valid token',
+          passcode: generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH),
+        } satisfies ResetPasswordDto,
+      ];
+
+      for (const resetPasswordModel of resetPasswordModels) {
+        const response = await request(app.getServer())
+          .post(authRoute.resetPasswordPath + '/' + newUserDto.id)
+          .send(resetPasswordModel);
+        expect(response.statusCode).toBe(400);
+        const data = response.body.data as BadRequestException;
+        const errors = data.message.split(',');
+        expect(errors.filter(x => x !== errorKeys.users.Invalid_User_Id).length).toBe(0);
+      }
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -441,135 +460,34 @@ describe('POST /auth/reset-password', () => {
         });
     });
 
-    it('when password is invalid', async () => {
-      const resetPasswordDto = {
-        token: 'valid token',
-        password: 'invalid password',
-      } satisfies ResetPasswordDto;
-      const response = await request(app.getServer())
-        .post(authRoute.resetPasswordPath + '/' + Guid.EMPTY)
-        .send(resetPasswordDto);
-      expect(response.statusCode).toBe(400);
-      const data = response.body.data as BadRequestException;
-      const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.users.Invalid_Password).length).toBe(0);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    });
-
-    it('when password is empty', async () => {
-      const resetPasswordDto = {
-        token: 'valid token',
-        password: '',
-      } satisfies ResetPasswordDto;
-      const response = await request(app.getServer())
-        .post(authRoute.resetPasswordPath + '/' + Guid.EMPTY)
-        .send(resetPasswordDto);
-      expect(response.statusCode).toBe(400);
-      const data = response.body.data as BadRequestException;
-      const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.users.Invalid_Password).length).toBe(0);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    });
-
-    it('when password is null', async () => {
-      const resetPasswordDto = {
-        token: 'valid token',
-        password: null,
-      } satisfies ResetPasswordDto;
-      const response = await request(app.getServer())
-        .post(authRoute.resetPasswordPath + '/' + Guid.EMPTY)
-        .send(resetPasswordDto);
-      expect(response.statusCode).toBe(400);
-      const data = response.body.data as BadRequestException;
-      const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.users.Invalid_Password).length).toBe(0);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    });
-
-    it('when password is undefined', async () => {
-      const resetPasswordDto = {
-        token: 'valid token',
-        password: undefined,
-      } satisfies ResetPasswordDto;
-      const response = await request(app.getServer())
-        .post(authRoute.resetPasswordPath + '/' + Guid.EMPTY)
-        .send(resetPasswordDto);
-      expect(response.statusCode).toBe(400);
-      const data = response.body.data as BadRequestException;
-      const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.users.Invalid_Password).length).toBe(0);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    });
-
-    it('when token is empty', async () => {
-      const user = generateValidUser();
-      const resetPasswordDto = {
-        token: '',
-        password: user.password,
-      } satisfies ResetPasswordDto;
-      const response = await request(app.getServer())
-        .post(authRoute.resetPasswordPath + '/' + Guid.EMPTY)
-        .send(resetPasswordDto);
-      expect(response.statusCode).toBe(400);
-      const data = response.body.data as BadRequestException;
-      const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.login.Invalid_Reset_Password_Token).length).toBe(0);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    });
-
-    it('when token is null', async () => {
-      const user = generateValidUser();
-      const resetPasswordDto = {
-        token: null,
-        password: user.password,
-      } satisfies ResetPasswordDto;
-      const response = await request(app.getServer())
-        .post(authRoute.resetPasswordPath + '/' + Guid.EMPTY)
-        .send(resetPasswordDto);
-      expect(response.statusCode).toBe(400);
-      const data = response.body.data as BadRequestException;
-      const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.login.Invalid_Reset_Password_Token).length).toBe(0);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    });
-
-    it('when token is undefined', async () => {
-      const user = generateValidUser();
-      const resetPasswordDto = {
-        token: undefined,
-        password: user.password,
-      } satisfies ResetPasswordDto;
-      const response = await request(app.getServer())
-        .post(authRoute.resetPasswordPath + '/' + Guid.EMPTY)
-        .send(resetPasswordDto);
-      expect(response.statusCode).toBe(400);
-      const data = response.body.data as BadRequestException;
-      const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.login.Invalid_Reset_Password_Token).length).toBe(0);
+    it('when password/pin is invalid', async () => {
+      const resetPasswordModels = [
+        {
+          token: 'valid token',
+          passcode: 'invalid password and token',
+        } satisfies ResetPasswordDto,
+        {
+          token: 'valid token',
+          passcode: '',
+        } satisfies ResetPasswordDto,
+        {
+          token: 'valid token',
+          passcode: null as any,
+        } satisfies ResetPasswordDto,
+        {
+          token: 'valid token',
+          passcode: undefined as any,
+        } satisfies ResetPasswordDto,
+      ];
+      for (const resetPasswordModel of resetPasswordModels) {
+        const response = await request(app.getServer())
+          .post(authRoute.resetPasswordPath + '/' + Guid.EMPTY)
+          .send(resetPasswordModel);
+        expect(response.statusCode).toBe(400);
+        const data = response.body.data as BadRequestException;
+        const errors = data.message.split(',');
+        expect(errors.filter(x => x !== errorKeys.users.Invalid_Passcode).length).toBe(0);
+      }
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -578,18 +496,53 @@ describe('POST /auth/reset-password', () => {
     });
 
     it('when token is invalid', async () => {
-      const { uuid, password } = getAdminLoginData();
-      const resetPasswordDto = {
-        token: 'invalid token',
-        password,
-      } satisfies ResetPasswordDto;
-      const response = await request(app.getServer())
-        .post(authRoute.resetPasswordPath + '/' + uuid)
-        .send(resetPasswordDto);
-      expect(response.statusCode).toBe(400);
-      const data = response.body.data as BadRequestException;
-      const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.login.Invalid_Reset_Password_Token).length).toBe(0);
+      const password = generateRandomPassword();
+      const pin = generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH);
+
+      const resetPasswordModels = [
+        {
+          token: '',
+          passcode: password,
+        } satisfies ResetPasswordDto,
+        {
+          token: null as any,
+          passcode: password,
+        } satisfies ResetPasswordDto,
+        {
+          token: undefined as any,
+          passcode: password,
+        } satisfies ResetPasswordDto,
+        {
+          token: 'invalid token',
+          passcode: password,
+        } satisfies ResetPasswordDto,
+        {
+          token: '',
+          passcode: pin,
+        } satisfies ResetPasswordDto,
+        {
+          token: null as any,
+          passcode: pin,
+        } satisfies ResetPasswordDto,
+        {
+          token: undefined as any,
+          passcode: pin,
+        } satisfies ResetPasswordDto,
+        {
+          token: 'invalid token',
+          passcode: pin,
+        } satisfies ResetPasswordDto,
+      ];
+
+      for (const resetPasswordModel of resetPasswordModels) {
+        const response = await request(app.getServer())
+          .post(authRoute.resetPasswordPath + '/' + getAdminLoginData().uuid)
+          .send(resetPasswordModel);
+        expect(response.statusCode).toBe(400);
+        const data = response.body.data as BadRequestException;
+        const errors = data.message.split(',');
+        expect(errors.filter(x => x !== errorKeys.login.Invalid_Reset_Password_Token).length).toBe(0);
+      }
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -598,7 +551,7 @@ describe('POST /auth/reset-password', () => {
     });
 
     it('when token is valid but userId is from different user', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
@@ -630,7 +583,7 @@ describe('POST /auth/reset-password', () => {
       expect(newUserDto.id).not.toBe(adminUuid);
       const resetPasswordDto = {
         token,
-        password: generateRandomPassword(),
+        passcode: generateRandomPassword(),
       } satisfies ResetPasswordDto;
       const response = await request(app.getServer())
         .post(authRoute.resetPasswordPath + '/' + adminUuid)
@@ -655,7 +608,7 @@ describe('POST /auth/reset-password', () => {
     });
 
     it('when token expired', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
@@ -700,7 +653,7 @@ describe('POST /auth/reset-password', () => {
 
       const resetPasswordDto = {
         token,
-        password: generateRandomPassword(),
+        passcode: generateRandomPassword(),
       } satisfies ResetPasswordDto;
       const response = await request(app.getServer())
         .post(authRoute.resetPasswordPath + '/' + newUserDto.id)

@@ -3,6 +3,7 @@ export interface IUpdateUserPassword {
   salt: string;
   emailConfirmed: boolean;
   failedLoginAttempts: number;
+  pin: null;
 }
 
 export interface IUpdateUserPin {
@@ -10,6 +11,7 @@ export interface IUpdateUserPin {
   salt: string;
   emailConfirmed: boolean;
   failedLoginAttempts: number;
+  password: null;
 }
 
 export interface IUpdateUser {

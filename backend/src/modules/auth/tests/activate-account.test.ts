@@ -4,7 +4,7 @@ import { VALIDATOR_SETTINGS } from '@config';
 import { EventDispatcherService } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
-import { generateValidUser, generateValidUserWithPin, loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword, generateValidUserWithPin, loginAs } from '@helpers/user-tests.helpers';
 import {
   AccountTryingToLogInDto,
   ActivateAccountDto,
@@ -109,7 +109,7 @@ describe('POST /auth/activate-account/', () => {
     });
 
     it('while activating when password is NULL, password should not be changed', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -225,7 +225,7 @@ describe('POST /auth/activate-account/', () => {
     });
 
     it('while activating when password is UNDEFINED, password should not be changed', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -341,7 +341,7 @@ describe('POST /auth/activate-account/', () => {
     });
 
     it('while activating when password is empty, password should not be changed', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -457,7 +457,7 @@ describe('POST /auth/activate-account/', () => {
     });
 
     it('while activating when password is set, password should be changed', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -587,7 +587,7 @@ describe('POST /auth/activate-account/', () => {
     });
 
     it('while activating when first and last name are set, first and last name should be set', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -656,7 +656,7 @@ describe('POST /auth/activate-account/', () => {
     });
 
     it('while activating user without password, when password is set, password should be set', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       delete requestData.password;
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)

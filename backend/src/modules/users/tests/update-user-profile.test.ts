@@ -4,7 +4,7 @@ import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys, UnauthorizedException } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
-import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import {
@@ -54,7 +54,7 @@ describe('PUT/user-profile', () => {
   describe('PUT should respond with a status code of 200', () => {
     test('when data (firstName and lastName) are valid', async () => {
       const newUser = {
-        ...generateValidUser(),
+        ...generateValidUserWithPassword(),
         firstName: 'John',
         lastName: 'Doe',
         joiningDate: generateRandomDate(),
@@ -131,7 +131,7 @@ describe('PUT/user-profile', () => {
 
     test('when user has no permissions (permissions are not needed)', async () => {
       const newUser = {
-        ...generateValidUser(),
+        ...generateValidUserWithPassword(),
         firstName: 'John',
         lastName: 'Doe',
         joiningDate: generateRandomDate(),
@@ -209,7 +209,7 @@ describe('PUT/user-profile', () => {
 
     test('when firstName and lastName are undefined firstName and lastName should stay unchanged', async () => {
       const newUser = {
-        ...generateValidUser(),
+        ...generateValidUserWithPassword(),
         firstName: 'John',
         lastName: 'Doe',
         joiningDate: generateRandomDate(),
@@ -285,7 +285,7 @@ describe('PUT/user-profile', () => {
 
     test('when firstName and lastName are null firstName and lastName should be null', async () => {
       const newUser = {
-        ...generateValidUser(),
+        ...generateValidUserWithPassword(),
         firstName: 'John',
         lastName: 'Doe',
         joiningDate: generateRandomDate(),
@@ -361,7 +361,7 @@ describe('PUT/user-profile', () => {
 
     test('when firstName and lastName are empty firstName and lastName should be null', async () => {
       const newUser = {
-        ...generateValidUser(),
+        ...generateValidUserWithPassword(),
         firstName: 'John',
         lastName: 'Doe',
         joiningDate: generateRandomDate(),
@@ -437,7 +437,7 @@ describe('PUT/user-profile', () => {
 
     test('when joiningDate are null joiningDate should be null', async () => {
       const newUser = {
-        ...generateValidUser(),
+        ...generateValidUserWithPassword(),
         firstName: 'John',
         lastName: 'Doe',
         joiningDate: generateRandomDate(),
@@ -509,7 +509,7 @@ describe('PUT/user-profile', () => {
   describe('PUT should respond with a status code of 401', () => {
     test('when try to update profile that not exist', async () => {
       const newUser = {
-        ...generateValidUser(),
+        ...generateValidUserWithPassword(),
         firstName: 'John',
         lastName: 'Doe',
         joiningDate: generateRandomDate(),

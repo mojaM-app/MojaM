@@ -33,6 +33,7 @@ export { AuthController } from './controllers/auth.controller';
 export { AuthRoute } from './routes/auth.routes';
 export { AuthService } from './services/auth.service';
 export { CryptoService } from './services/crypto.service';
+export { PasscodeService } from './services/passcode.service';
 export { PasswordService } from './services/password.service';
 export { PinService } from './services/pin.service';
 

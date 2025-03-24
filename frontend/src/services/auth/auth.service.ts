@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, skip, tap } from 'rxjs';
 import {
   IAccountBeforeLogInDto,
-  ILoginModel,
-  ILoginResponse,
+  ILoginModelDto,
+  ILoginResponseDto,
 } from 'src/interfaces/auth/auth.models';
 import { BaseService } from '../common/base.service';
 import { HttpClientService } from '../common/httpClient.service';
@@ -45,20 +45,20 @@ export class AuthService extends BaseService {
     email: string,
     phone: string | undefined,
     password: string
-  ): Observable<ILoginResponse> {
+  ): Observable<ILoginResponseDto> {
     const model = {
       email: email,
       phone: phone,
       password: password,
-    } satisfies ILoginModel;
+    } satisfies ILoginModelDto;
 
     return this._httpClient
       .request()
       .withUrl(this.API_ROUTES.auth.login())
       .withBody(model)
-      .post<ILoginResponse>()
+      .post<ILoginResponseDto>()
       .pipe(
-        tap((response: ILoginResponse) => {
+        tap((response: ILoginResponseDto) => {
           this._authTokenService.saveToken(response?.accessToken);
           this._refreshTokenService.saveToken(response?.refreshToken);
           this._isAuthenticated$.next(this._authTokenService.isTokenValid());

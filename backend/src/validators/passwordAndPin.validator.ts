@@ -1,26 +1,27 @@
-import { isNullOrUndefined } from '@/utils';
+import { PasswordService, PinService } from '@/modules/auth';
+import { isNullOrUndefined } from '@utils';
 import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
 
 /**
- * Check if both password and pin are not set
+ * Check if both password and pin are valid
  */
-export function IsNotSetIf(property: string, validationOptions?: ValidationOptions) {
-  return (object: any, propertyName: string) => {
+export function IsPasswordOrPinValid(validationOptions?: ValidationOptions): PropertyDecorator {
+  return function (object: any, propertyName: string): void {
     registerDecorator({
-      name: 'isNotSetIf',
+      name: 'isPasswordOrPinValid',
       target: object.constructor,
       propertyName,
-      constraints: [property],
+      constraints: [],
       options: validationOptions,
       validator: {
         validate(value: any, args: ValidationArguments) {
-          const [relatedPropertyName] = args.constraints;
-          const relatedValue = (args.object as any)[relatedPropertyName];
-          if (isNullOrUndefined(relatedValue)) {
-            return true;
+          if (isNullOrUndefined(value)) {
+            return false;
           }
 
-          return isNullOrUndefined(value);
+          const isPasswordValid = new PasswordService().isValid(value as string);
+          const isPinValid = new PinService().isValid(value as string);
+          return isPasswordValid || isPinValid;
         },
       },
     });

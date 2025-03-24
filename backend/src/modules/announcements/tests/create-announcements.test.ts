@@ -5,7 +5,7 @@ import { VALIDATOR_SETTINGS } from '@config';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
-import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import { AnnouncementsRout, AnnouncementStateValue, CreateAnnouncementsResponseDto, GetAnnouncementsResponseDto } from '@modules/announcements';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermissions } from '@modules/permissions';
@@ -580,7 +580,7 @@ describe('POST /announcements', () => {
     });
 
     test('when user has no permission', async () => {
-      const userData = generateValidUser();
+      const userData = generateValidUserWithPassword();
       const newUserResponse = await request(app.getServer()).post(userRoute.path).send(userData).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(newUserResponse.statusCode).toBe(201);
       let body = newUserResponse.body;
@@ -635,7 +635,7 @@ describe('POST /announcements', () => {
     });
 
     test('when user have all permissions expect AddAnnouncements', async () => {
-      const userData = generateValidUser();
+      const userData = generateValidUserWithPassword();
       const newUserResponse = await request(app.getServer()).post(userRoute.path).send(userData).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(newUserResponse.statusCode).toBe(201);
       let body = newUserResponse.body;
@@ -723,7 +723,7 @@ describe('POST /announcements', () => {
     });
 
     test('when try to use token from user that not exists', async () => {
-      const userBob = generateValidUser();
+      const userBob = generateValidUserWithPassword();
 
       const createBobResponse = await request(app.getServer()).post(userRoute.path).send(userBob).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createBobResponse.statusCode).toBe(201);

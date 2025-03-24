@@ -3,7 +3,7 @@ import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
-import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { AddPermissionsResponseDto, PermissionAddedEvent, PermissionsRoute, SystemPermissions } from '@modules/permissions';
 import { CreateUserResponseDto, IUserDto, UserRoute } from '@modules/users';
@@ -103,7 +103,7 @@ describe('POST /permissions', () => {
     });
 
     it('POST should respond with a status code of 400 when permission not exist', async () => {
-      const newUser = generateValidUser();
+      const newUser = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
@@ -168,7 +168,7 @@ describe('POST /permissions', () => {
     });
 
     it('when user has no permission', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -222,7 +222,7 @@ describe('POST /permissions', () => {
     });
 
     it('when user have all permissions expect AddPermission', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -291,7 +291,7 @@ describe('POST /permissions', () => {
 
   describe('POST should respond with a status code of 200', () => {
     it('when user have permissions to add systemPermission', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -359,7 +359,7 @@ describe('POST /permissions', () => {
     });
 
     it('when user have permissions to add systemPermission and the user to whom we grant permissions already has this permission', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)

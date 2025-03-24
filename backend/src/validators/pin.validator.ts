@@ -2,8 +2,8 @@ import { PinService } from '@modules/auth';
 import { isNullOrEmptyString } from '@utils';
 import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
 
-export function IsPinEmptyOrValid(validationOptions?: ValidationOptions) {
-  return function (object: object, propertyName: string) {
+export function IsPinEmptyOrValid(validationOptions?: ValidationOptions): PropertyDecorator {
+  return function (object: object, propertyName: string): void {
     registerDecorator({
       name: 'isPinEmptyOrValid',
       target: object.constructor,

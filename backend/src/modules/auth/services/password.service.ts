@@ -3,9 +3,10 @@ import * as crypto from 'crypto';
 import { Service } from 'typedi';
 import { VALIDATOR_SETTINGS } from './../../../config/constants';
 import { isNullOrEmptyString } from './../../../utils/strings.utils';
+import { IAuthenticationTypeService } from './authentication-typ.service';
 
 @Service()
-export class PasswordService {
+export class PasswordService implements IAuthenticationTypeService {
   public getHash(salt: string, password: string): string {
     if (isNullOrEmptyString(salt) || isNullOrEmptyString(password)) {
       throw new Error('Salt and password are required to hash a password');

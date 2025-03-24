@@ -3,9 +3,10 @@ import * as crypto from 'crypto';
 import { Service } from 'typedi';
 import { REGEX_PATTERNS, VALIDATOR_SETTINGS } from '../../../config/constants';
 import { isNullOrEmptyString } from '../../../utils/strings.utils';
+import { IAuthenticationTypeService } from './authentication-typ.service';
 
 @Service()
-export class PinService {
+export class PinService implements IAuthenticationTypeService {
   public getHash(salt: string, pin: string): string {
     if (isNullOrEmptyString(salt) || isNullOrEmptyString(pin)) {
       throw new Error('Salt and pin are required to hash a pin');

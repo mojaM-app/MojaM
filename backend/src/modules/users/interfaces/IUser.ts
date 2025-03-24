@@ -1,5 +1,3 @@
-import { AuthenticationTypes } from '@modules/auth';
-
 export interface IUser {
   email: string;
   phone: string;
@@ -10,5 +8,4 @@ export interface IUser {
   getLastFirstName: () => string | null;
   getLastFirstNameOrEmail: () => string | null;
   isAdmin: () => boolean;
-  getAuthenticationType: () => AuthenticationTypes | undefined;
 }

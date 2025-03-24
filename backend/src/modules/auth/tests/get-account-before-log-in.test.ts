@@ -3,7 +3,7 @@ import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers } from '@helpers/event-handler-test.helpers';
-import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import { AccountTryingToLogInDto, AuthRoute, GetAccountBeforeLogInResponseDto, IGetAccountBeforeLogInResultDto, LoginDto } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
@@ -62,7 +62,7 @@ describe('POST /auth/get-account-before-log-in', () => {
     });
 
     it('when exist only one activated user with given e-mail and user password is NOT set', async () => {
-      const user1 = generateValidUser();
+      const user1 = generateValidUserWithPassword();
       user1.password = undefined;
 
       const createUser1Response = await request(app.getServer()).post(userRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
@@ -98,7 +98,7 @@ describe('POST /auth/get-account-before-log-in', () => {
     });
 
     it('when exist only one NOT-activated user with given e-mail and user password is NOT set', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
       user.password = undefined;
 
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
@@ -128,7 +128,7 @@ describe('POST /auth/get-account-before-log-in', () => {
     });
 
     it('when exist only one NOT-activated user with given e-mail and user password is set', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
 
       const createUser1Response = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser1Response.statusCode).toBe(201);
@@ -179,8 +179,8 @@ describe('POST /auth/get-account-before-log-in', () => {
 
   describe('when login data are invalid (eg. given email is NOT unique)', () => {
     it('when exist more then one user with given email and both are activated', async () => {
-      const user1 = generateValidUser();
-      const user2 = generateValidUser();
+      const user1 = generateValidUserWithPassword();
+      const user2 = generateValidUserWithPassword();
       const email = user1.email;
       user2.email = email;
       expect(user1.email).toBe(user2.email);
@@ -237,8 +237,8 @@ describe('POST /auth/get-account-before-log-in', () => {
     });
 
     it('when exist more then one user with given email and only one is activated', async () => {
-      const user1 = generateValidUser();
-      const user2 = generateValidUser();
+      const user1 = generateValidUserWithPassword();
+      const user2 = generateValidUserWithPassword();
       const email = user1.email;
       user2.email = email;
       expect(user1.email).toBe(user2.email);
@@ -289,8 +289,8 @@ describe('POST /auth/get-account-before-log-in', () => {
     });
 
     it('when exist more then one user with given email and NO one is activated', async () => {
-      const user1 = generateValidUser();
-      const user2 = generateValidUser();
+      const user1 = generateValidUserWithPassword();
+      const user2 = generateValidUserWithPassword();
       const email = user1.email;
       user2.email = email;
       expect(user1.email).toBe(user2.email);
@@ -335,8 +335,8 @@ describe('POST /auth/get-account-before-log-in', () => {
     });
 
     it('when exist more then one activated users with given email and only one has set password', async () => {
-      const user1 = generateValidUser();
-      const user2 = generateValidUser();
+      const user1 = generateValidUserWithPassword();
+      const user2 = generateValidUserWithPassword();
       const email = user1.email;
       user2.email = email;
       user2.password = undefined;
@@ -394,9 +394,9 @@ describe('POST /auth/get-account-before-log-in', () => {
     });
 
     it('when exist more then one activated users with given email and NO one has set password', async () => {
-      const user1 = generateValidUser();
+      const user1 = generateValidUserWithPassword();
       user1.password = undefined;
-      const user2 = generateValidUser();
+      const user2 = generateValidUserWithPassword();
       user2.password = undefined;
       const email = user1.email;
       user2.email = email;

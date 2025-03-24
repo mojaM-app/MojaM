@@ -3,7 +3,7 @@ import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
-import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermissions } from '@modules/permissions';
 import { ActivateUserResponseDto, CreateUserResponseDto, DeactivateUserResponseDto, UserRoute } from '@modules/users';
@@ -46,7 +46,7 @@ describe('POST /user/:id/deactivate', () => {
 
   describe('POST should respond with a status code of 200', () => {
     test('when data are valid and user has permission', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
@@ -86,7 +86,7 @@ describe('POST /user/:id/deactivate', () => {
     });
 
     test('when data are valid, user has permission and deactivatedUser is not active', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
@@ -138,7 +138,7 @@ describe('POST /user/:id/deactivate', () => {
     });
 
     test('when data are valid, user has permission and deactivatedUser is active', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
@@ -214,7 +214,7 @@ describe('POST /user/:id/deactivate', () => {
     });
 
     test('when user has no permission', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -271,7 +271,7 @@ describe('POST /user/:id/deactivate', () => {
     });
 
     test('when user have all permissions expect DeactivateUser', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)

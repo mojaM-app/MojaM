@@ -4,7 +4,7 @@ import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys, UnauthorizedException } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
-import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, GetUserProfileResponseDto, IGetUserProfileDto, UserProfileRoute, UserRoute } from '@modules/users';
@@ -47,7 +47,7 @@ describe('GET/user-profile', () => {
   describe('GET should respond with a status code of 200', () => {
     test('when data are valid', async () => {
       const newUser = {
-        ...generateValidUser(),
+        ...generateValidUserWithPassword(),
         firstName: 'John',
         lastName: 'Doe',
         joiningDate: generateRandomDate(),
@@ -135,7 +135,7 @@ describe('GET/user-profile', () => {
     });
 
     test('when user has no permissions (permissions are not needed)', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -194,7 +194,7 @@ describe('GET/user-profile', () => {
   describe('GET should respond with a status code of 401', () => {
     test('when try to get profile that not exist', async () => {
       const newUser = {
-        ...generateValidUser(),
+        ...generateValidUserWithPassword(),
         firstName: 'John',
         lastName: 'Doe',
         joiningDate: generateRandomDate(),

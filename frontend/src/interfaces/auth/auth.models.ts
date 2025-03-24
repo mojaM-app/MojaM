@@ -11,13 +11,13 @@ export interface IResetPasswordResultDto {
   isPasswordSet: boolean;
 }
 
-export interface ILoginModel {
+export interface ILoginModelDto {
   email: string;
   phone?: string;
   password: string;
 }
 
-export interface ILoginResponse extends IUser {
+export interface ILoginResponseDto extends IUser {
   accessToken?: string;
   refreshToken?: string;
 }

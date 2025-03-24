@@ -25,6 +25,7 @@ export const errorKeys = {
     Invalid_Email_Or_Phone: 'Invalid_Email_Or_Phone',
     Invalid_Password: 'Invalid_Password',
     Invalid_Pin: 'Invalid_Pin',
+    Invalid_Passcode: 'Invalid_Passcode',
     Both_Password_And_Pin_Are_Set: 'Both_Password_And_Pin_Are_Set',
     Password_Too_Long: 'Password_Too_Long',
     User_Already_Exists: 'User_Already_Exists',

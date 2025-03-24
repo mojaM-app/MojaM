@@ -3,7 +3,7 @@ import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
-import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import { IRequestWithIdentity } from '@interfaces';
 import { AuthRoute, LoginDto, LoginResponseDto, RefreshTokenDto, RefreshTokenResponseDto, setIdentity } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
@@ -107,7 +107,7 @@ describe('POST /auth/refresh-token', () => {
       const expirationDate = new Date(Utils.getDateTimeNow().getTime() + expirationPeriod + 1);
       jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] }).setSystemTime(new Date(expirationDate));
 
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
       let createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(401);
 
@@ -215,7 +215,7 @@ describe('POST /auth/refresh-token', () => {
       const expirationDate = new Date(Utils.getDateTimeNow().getTime() + expirationPeriod + 1);
       jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] }).setSystemTime(new Date(expirationDate));
 
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(401);
 
@@ -271,7 +271,7 @@ describe('POST /auth/refresh-token', () => {
       const expirationDate = new Date(Utils.getDateTimeNow().getTime() + expirationPeriod + 1);
       jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] }).setSystemTime(new Date(expirationDate));
 
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(401);
 

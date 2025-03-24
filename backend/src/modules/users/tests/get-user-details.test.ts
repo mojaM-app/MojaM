@@ -4,7 +4,7 @@ import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
-import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermissions } from '@modules/permissions';
 import {
@@ -56,7 +56,7 @@ describe('GET/user-details/:id', () => {
   describe('GET should respond with a status code of 200', () => {
     test('when data are valid and user has permission', async () => {
       const newUser = {
-        ...generateValidUser(),
+        ...generateValidUserWithPassword(),
         firstName: 'John',
         lastName: 'Doe',
         joiningDate: generateRandomDate(),
@@ -163,7 +163,7 @@ describe('GET/user-details/:id', () => {
     });
 
     test('when user has no permission', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -222,7 +222,7 @@ describe('GET/user-details/:id', () => {
     });
 
     test('when user have all permissions expect PreviewUserDetails', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)

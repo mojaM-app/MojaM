@@ -4,7 +4,7 @@ import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
-import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword, generateValidUserWithPin, loginAs } from '@helpers/user-tests.helpers';
 import { IRequestWithIdentity } from '@interfaces';
 import { AuthRoute, LoginDto, LoginResponseDto, setIdentity } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
@@ -142,8 +142,8 @@ describe('POST /login', () => {
     });
 
     it('(login via email and password) case when exist more then one user with same phone', async () => {
-      const user1 = generateValidUser();
-      const user2 = generateValidUser();
+      const user1 = generateValidUserWithPassword();
+      const user2 = generateValidUserWithPassword();
       const phone = user1.phone;
       user2.phone = phone;
       expect(user1.phone).toBe(user2.phone);
@@ -223,8 +223,8 @@ describe('POST /login', () => {
     });
 
     it('(login via email, phone and password) case when exist more then one user with same phone', async () => {
-      const user1 = generateValidUser();
-      const user2 = generateValidUser();
+      const user1 = generateValidUserWithPassword();
+      const user2 = generateValidUserWithPassword();
       const phone = user1.phone;
       user2.phone = phone;
       expect(user1.phone).toBe(user2.phone);
@@ -304,8 +304,8 @@ describe('POST /login', () => {
     });
 
     it('(login via email, phone and password) case when exist more then one user with same email', async () => {
-      const user1 = generateValidUser();
-      const user2 = generateValidUser();
+      const user1 = generateValidUserWithPassword();
+      const user2 = generateValidUserWithPassword();
       const email = user1.email;
       user2.email = email;
       expect(user1.email).toBe(user2.email);
@@ -387,8 +387,8 @@ describe('POST /login', () => {
 
   describe('when exist more then one user with same login', () => {
     it('login via email should respond with a status code of 400 when exist more then one user with same email', async () => {
-      const user1 = generateValidUser();
-      const user2 = generateValidUser();
+      const user1 = generateValidUserWithPassword();
+      const user2 = generateValidUserWithPassword();
       const email = user1.email;
       user2.email = email;
       expect(user1.email).toBe(user2.email);
@@ -489,7 +489,7 @@ describe('POST /login', () => {
     });
 
     it('should respond with a status code of 400 when password is invalid', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
 
       const createResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
@@ -534,8 +534,54 @@ describe('POST /login', () => {
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
+    it('should respond with a status code of 400 when pin is invalid', async () => {
+      const user = generateValidUserWithPin();
+
+      const createResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createResponse.statusCode).toBe(201);
+      const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createResponse.body;
+      expect(newUserDto?.id).toBeDefined();
+      expect(createMessage).toBe(events.users.userCreated);
+
+      const model = { email: user.email };
+
+      const bodyData = [
+        { ...model, password: null } satisfies LoginDto,
+        { ...model, password: undefined } satisfies LoginDto,
+        { ...model, password: '' } satisfies LoginDto,
+        { ...model, password: 'V3ry looooooooooooooooooooong passwooooooooooord!12' } satisfies LoginDto,
+        { ...model, password: 1234 as any } satisfies LoginDto,
+        { ...model, password: true as any } satisfies LoginDto,
+        { ...model, password: [] as any } satisfies LoginDto,
+        { ...model, password: {} as any } satisfies LoginDto,
+      ];
+
+      for (const body of bodyData) {
+        const response = await request(app.getServer()).post(authRoute.loginPath).send(body);
+        expect(response.statusCode).toBe(400);
+        const data = response.body.data as BadRequestException;
+        const errors = data.message.split(',');
+        expect(errors.filter(x => !x.includes('Password')).length).toBe(0);
+      }
+
+      const deleteResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + newUserDto.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteResponse.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
+    });
+
     it('should respond with a status code of 400 when user with given email not exist', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
       const loginData: LoginDto = { email: user.email, password: user.password };
       const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
       expect(loginResponse.statusCode).toBe(400);
@@ -554,7 +600,7 @@ describe('POST /login', () => {
     });
 
     it('should respond with a status code of 400 when user with given phone not exist', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
       const loginData: LoginDto = { email: user.phone, password: user.password };
       const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
       expect(loginResponse.statusCode).toBe(400);
@@ -573,7 +619,7 @@ describe('POST /login', () => {
     });
 
     it('login (via email) should respond with a status code of 400 when password is incorrect', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
 
       const createResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
@@ -625,7 +671,7 @@ describe('POST /login', () => {
     });
 
     it('login (via email and phone) should respond with a status code of 400 when password is incorrect', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
 
       const createResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
@@ -677,7 +723,7 @@ describe('POST /login', () => {
     });
 
     it('login (via email) x-times should lock-out the user and should respond with a status code of 400 when password is incorrect', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
 
       const createResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
@@ -745,8 +791,8 @@ describe('POST /login', () => {
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
-    it('login (via phone and phone) x-times should lock-out the user and should respond with a status code of 400 when password is incorrect', async () => {
-      const user = generateValidUser();
+    it('login (via email and phone) x-times should lock-out the user and should respond with a status code of 400 when password is incorrect', async () => {
+      const user = generateValidUserWithPassword();
 
       const createResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
@@ -816,7 +862,7 @@ describe('POST /login', () => {
     });
 
     test('login should response with status code of 400 when user has no password nor pin', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       requestData.password = undefined;
       requestData.pin = undefined;
       const createUserResponse = await request(app.getServer())
@@ -861,7 +907,7 @@ describe('POST /login', () => {
 
   describe('when user is not active', () => {
     it('should respond with a status code of 400 when user is not active and password is correct', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
 
       const createResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
@@ -913,7 +959,7 @@ describe('POST /login', () => {
     });
 
     it('should respond with a status code of 400 when user is not active and password is incorrect', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
 
       const createResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
@@ -967,7 +1013,7 @@ describe('POST /login', () => {
 
   describe('when user is deleted', () => {
     it('should respond with a status code of 400 when user is deleted', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
 
       const createResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);

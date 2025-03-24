@@ -3,7 +3,7 @@ import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
-import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import {
   AddPermissionsResponseDto,
@@ -110,7 +110,7 @@ describe('DELETE /permissions', () => {
     });
 
     it('DELETE should respond with a status code of 400 when permission not exist', async () => {
-      const newUser = generateValidUser();
+      const newUser = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
@@ -175,7 +175,7 @@ describe('DELETE /permissions', () => {
     });
 
     it('when user has no permission', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -244,7 +244,7 @@ describe('DELETE /permissions', () => {
     });
 
     it('when user have all permissions expect DeletePermission', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -317,7 +317,7 @@ describe('DELETE /permissions', () => {
 
   describe('DELETE should respond with a status code of 200', () => {
     it('when user have permissions to delete systemPermission', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -405,7 +405,7 @@ describe('DELETE /permissions', () => {
     });
 
     it('when the user whose permission we want to revoke does not have this permission', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -447,7 +447,7 @@ describe('DELETE /permissions', () => {
     });
 
     it('when we want to revoke all system permissions for user', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)

@@ -1,4 +1,4 @@
-import { generateValidUser } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword } from '@helpers/user-tests.helpers';
 import { CreateUserDto } from '@modules/users';
 import { plainToInstance } from 'class-transformer';
 import { validateSync, ValidationError } from 'class-validator';
@@ -20,7 +20,7 @@ describe('user validator test', () => {
         'email@domain.name',
       ];
       for (const email of emails) {
-        const user = { ...generateValidUser(), email };
+        const user = { ...generateValidUserWithPassword(), email };
         const dto = plainToInstance(CreateUserDto, user);
         const validationResult: ValidationError[] = validateSync(dto);
         expect(validationResult.length).toBe(0);
@@ -68,7 +68,7 @@ describe('user validator test', () => {
         'more_than_100_chars_email_looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong@domain.com',
       ];
       for (const email of emails) {
-        const user = { ...generateValidUser(), email };
+        const user = { ...generateValidUserWithPassword(), email };
         const dto = plainToInstance(CreateUserDto, user);
         const validationResult: ValidationError[] = validateSync(dto);
         expect(validationResult.length).toBe(1);
@@ -93,7 +93,7 @@ describe('user validator test', () => {
         '+ 48 456 123 456',
       ];
       for (const phone of phones) {
-        const user = { ...generateValidUser(), phone };
+        const user = { ...generateValidUserWithPassword(), phone };
         const dto = plainToInstance(CreateUserDto, user);
         const validationResult: ValidationError[] = validateSync(dto);
         expect(validationResult.length).toBe(0);
@@ -123,7 +123,7 @@ describe('user validator test', () => {
         '+48 012 345 678',
       ];
       for (const phone of phones) {
-        const user = { ...generateValidUser(), phone };
+        const user = { ...generateValidUserWithPassword(), phone };
         const dto = plainToInstance(CreateUserDto, user);
         const validationResult: ValidationError[] = validateSync(dto);
         expect(validationResult.length).toBe(1);
@@ -144,7 +144,7 @@ describe('user validator test', () => {
         'PaasssworD123@$',
       ];
       for (const password of passwords) {
-        const user = { ...generateValidUser(), password };
+        const user = { ...generateValidUserWithPassword(), password };
         const dto = plainToInstance(CreateUserDto, user);
         const validationResult: ValidationError[] = validateSync(dto);
         expect(validationResult.length).toBe(0);
@@ -154,7 +154,7 @@ describe('user validator test', () => {
     test('validation should be incorrect when PASSWORD is invalid', () => {
       const passwords: string[] = ['paasssword', 'P@sswo2!', 'more_than_50_chars_password!10P@sswo2!10P@sswo2!101'];
       for (const password of passwords) {
-        const user = { ...generateValidUser(), password };
+        const user = { ...generateValidUserWithPassword(), password };
         const dto = plainToInstance(CreateUserDto, user);
         const validationResult: ValidationError[] = validateSync(dto);
         expect(validationResult.length).toBe(1);

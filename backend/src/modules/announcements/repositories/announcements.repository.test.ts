@@ -1,6 +1,6 @@
 import { AnnouncementsRepository } from './announcements.repository';
 
-describe('UserRepository tests', () => {
+describe('AnnouncementsRepository tests', () => {
   const repository: AnnouncementsRepository = new AnnouncementsRepository();
 
   beforeEach(async () => {

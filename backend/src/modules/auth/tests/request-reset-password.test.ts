@@ -3,7 +3,7 @@ import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
-import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import {
   AccountTryingToLogInDto,
   AuthRoute,
@@ -61,8 +61,8 @@ describe('POST /auth/request-reset-password', () => {
 
   describe('when login data are invalid (given email is NOT unique, is empty or invalid)', () => {
     it('when exist more then one user with given email and both are activated', async () => {
-      const user1 = generateValidUser();
-      const user2 = generateValidUser();
+      const user1 = generateValidUserWithPassword();
+      const user2 = generateValidUserWithPassword();
       const email = user1.email;
       user2.email = email;
       expect(user1.email).toBe(user2.email);
@@ -120,8 +120,8 @@ describe('POST /auth/request-reset-password', () => {
     });
 
     it('when exist more then one user with given email and only one is activated', async () => {
-      const user1 = generateValidUser();
-      const user2 = generateValidUser();
+      const user1 = generateValidUserWithPassword();
+      const user2 = generateValidUserWithPassword();
       const email = user1.email;
       user2.email = email;
       expect(user1.email).toBe(user2.email);
@@ -173,8 +173,8 @@ describe('POST /auth/request-reset-password', () => {
     });
 
     it('when exist more then one user with given email and NO one is activated', async () => {
-      const user1 = generateValidUser();
-      const user2 = generateValidUser();
+      const user1 = generateValidUserWithPassword();
+      const user2 = generateValidUserWithPassword();
       const email = user1.email;
       user2.email = email;
       expect(user1.email).toBe(user2.email);
@@ -220,8 +220,8 @@ describe('POST /auth/request-reset-password', () => {
     });
 
     it('when exist more then one user with given email and only one has a password set', async () => {
-      const user1 = generateValidUser();
-      const user2 = generateValidUser();
+      const user1 = generateValidUserWithPassword();
+      const user2 = generateValidUserWithPassword();
       const email = user1.email;
       user2.email = email;
       user2.password = undefined;
@@ -280,9 +280,9 @@ describe('POST /auth/request-reset-password', () => {
     });
 
     it('when exist more then one user with given email and NO one has a password set', async () => {
-      const user1 = generateValidUser();
+      const user1 = generateValidUserWithPassword();
       user1.password = undefined;
-      const user2 = generateValidUser();
+      const user2 = generateValidUserWithPassword();
       user2.password = undefined;
       const email = user1.email;
       user2.email = email;
@@ -359,7 +359,7 @@ describe('POST /auth/request-reset-password', () => {
 
   describe('when login data are valid (given email is unique, not exist, etc.)', () => {
     it('when exist only one active user with given e-mail and user password is NOT set', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
       user.password = undefined;
 
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
@@ -394,7 +394,7 @@ describe('POST /auth/request-reset-password', () => {
     });
 
     it('when exist only one inactive user with given e-mail and user password is NOT set', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
       user.password = undefined;
 
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
@@ -438,7 +438,7 @@ describe('POST /auth/request-reset-password', () => {
     });
 
     it('email is sent only once when token is still valid (not expired)', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
       user.password = undefined;
 
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
@@ -512,7 +512,7 @@ describe('POST /auth/request-reset-password', () => {
 
       response = await request(app.getServer())
         .post(authRoute.resetPasswordPath + `/${userId}`)
-        .send({ token, password } satisfies ResetPasswordDto);
+        .send({ token, passcode: password } satisfies ResetPasswordDto);
       expect(response.statusCode).toBe(200);
 
       const resetPasswordResultBody: ResetPasswordResponseDto = response.body;
@@ -541,7 +541,7 @@ describe('POST /auth/request-reset-password', () => {
       });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPassword').mockImplementation(mockSendEmailResetPassword);
 
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
       user.email = getAdminLoginData().email;
       expect(user.phone).not.toBe(getAdminLoginData().phone);
 
@@ -575,7 +575,7 @@ describe('POST /auth/request-reset-password', () => {
 
       response = await request(app.getServer())
         .post(authRoute.resetPasswordPath + `/${newUserDto.id}`)
-        .send({ token, password: user.password } satisfies ResetPasswordDto);
+        .send({ token, passcode: user.password! } satisfies ResetPasswordDto);
       expect(response.statusCode).toBe(200);
 
       const resetPasswordResultBody: ResetPasswordResponseDto = response.body;

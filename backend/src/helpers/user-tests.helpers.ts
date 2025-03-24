@@ -1,35 +1,33 @@
 import { App } from '@/app';
 import { VALIDATOR_SETTINGS } from '@config';
-import { AuthenticationTypes, AuthRoute, LoginDto, TLoginResult } from '@modules/auth';
+import { AuthRoute, LoginDto, TLoginResult } from '@modules/auth';
 import { CreateUserDto, IUser } from '@modules/users';
 import { generateRandomEmail, generateRandomNumber, generateRandomPassword } from '@utils/tests.utils';
 import request from 'supertest';
 
-const generateValidUser = (): CreateUserDto & IUser => {
+const generateValidUser = (): any => {
   return {
     email: generateRandomEmail(),
     phone: '88' + generateRandomNumber(7),
-    password: generateRandomPassword(),
     getFirstLastName: () => 'John Doe',
     getFirstLastNameOrEmail: () => 'John Doe',
     getLastFirstName: () => 'Doe John',
     getLastFirstNameOrEmail: () => 'Doe John',
     isAdmin: () => true,
-    getAuthenticationType: () => AuthenticationTypes.Password,
+  };
+};
+
+const generateValidUserWithPassword = (): CreateUserDto & IUser => {
+  return {
+    ...generateValidUser(),
+    password: generateRandomPassword(),
   } satisfies CreateUserDto & IUser;
 };
 
 const generateValidUserWithPin = (): CreateUserDto & IUser => {
   return {
-    email: generateRandomEmail(),
-    phone: '88' + generateRandomNumber(7),
+    ...generateValidUser(),
     pin: generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH),
-    getFirstLastName: () => 'John Doe',
-    getFirstLastNameOrEmail: () => 'John Doe',
-    getLastFirstName: () => 'Doe John',
-    getLastFirstNameOrEmail: () => 'Doe John',
-    isAdmin: () => true,
-    getAuthenticationType: () => AuthenticationTypes.Pin,
   } satisfies CreateUserDto & IUser;
 };
 
@@ -45,4 +43,4 @@ const loginAs = async (app: App, user: { email?: string; phone?: string; passwor
   }
 };
 
-export { generateValidUser, generateValidUserWithPin, loginAs };
+export { generateValidUserWithPassword, generateValidUserWithPin, loginAs };

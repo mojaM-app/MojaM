@@ -222,6 +222,7 @@ export class UserRepository extends BaseUserRepository {
         salt,
         emailConfirmed: true,
         failedLoginAttempts: 0,
+        pin: null,
       } satisfies IUpdateUserPassword,
     } satisfies UpdateUserModel;
 
@@ -239,6 +240,7 @@ export class UserRepository extends BaseUserRepository {
         salt,
         emailConfirmed: true,
         failedLoginAttempts: 0,
+        password: null,
       } satisfies IUpdateUserPin,
     } satisfies UpdateUserModel;
 

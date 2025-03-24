@@ -4,7 +4,7 @@ import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
 import { EventDispatcherService } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
-import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import { AuthRoute, GetAccountToActivateResponseDto, IAccountToActivateResultDto, LoginDto } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserDto, CreateUserResponseDto, UserRoute } from '@modules/users';
@@ -84,7 +84,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
     });
 
     it('when user with given id is active and is lockedOut', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
 
       const createResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
@@ -147,7 +147,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
     });
 
     it('when user with given id is inactive and is lockedOut', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
 
       const createResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
@@ -219,7 +219,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
 
     it('when user with given id is inactive', async () => {
       const user = {
-        ...generateValidUser(),
+        ...generateValidUserWithPassword(),
         firstName: 'John',
         lastName: 'Doe',
         joiningDate: generateRandomDate(),

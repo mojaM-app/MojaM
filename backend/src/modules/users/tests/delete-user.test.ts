@@ -4,7 +4,7 @@ import { relatedDataNames } from '@db';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
-import { generateValidUser, loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import { AnnouncementsRout, CreateAnnouncementsResponseDto, GetAnnouncementsResponseDto, UpdateAnnouncementsDto } from '@modules/announcements';
 import { generateValidAnnouncements } from '@modules/announcements/tests/announcements-tests.helpers';
 import { AccountTryingToLogInDto, AuthRoute, LoginDto } from '@modules/auth';
@@ -51,7 +51,7 @@ describe('DELETE /user', () => {
 
   describe('DELETE should respond with a status code of 200', () => {
     test('when data are valid and logged user has permission', async () => {
-      const user = generateValidUser();
+      const user = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
@@ -81,7 +81,7 @@ describe('DELETE /user', () => {
     });
 
     test('when a user have ony of system permissions granted by another user', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -132,7 +132,7 @@ describe('DELETE /user', () => {
     });
 
     test('when a user have ony of system permissions granted by himself', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -205,7 +205,7 @@ describe('DELETE /user', () => {
     });
 
     test('when a user has reset password token', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -276,7 +276,7 @@ describe('DELETE /user', () => {
     });
 
     test('when user has no permission', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -340,7 +340,7 @@ describe('DELETE /user', () => {
     });
 
     test('when user have all permissions expect DeleteUser', async () => {
-      const requestData = generateValidUser();
+      const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -443,7 +443,7 @@ describe('DELETE /user', () => {
 
   describe('DELETE should respond with a status code of 409', () => {
     test('when a user has granted ony of system permissions to another users', async () => {
-      const user1RequestData = generateValidUser();
+      const user1RequestData = generateValidUserWithPassword();
 
       let createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -470,7 +470,7 @@ describe('DELETE /user', () => {
       expect(addPermission1Result).toBe(true);
       expect(addPermission1Message).toBe(events.permissions.permissionAdded);
 
-      const user2RequestData = generateValidUser();
+      const user2RequestData = generateValidUserWithPassword();
 
       createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -554,7 +554,7 @@ describe('DELETE /user', () => {
     });
 
     test('when a user has created announcements', async () => {
-      const userRequestData = generateValidUser();
+      const userRequestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -643,7 +643,7 @@ describe('DELETE /user', () => {
     });
 
     test('when a user has published announcements', async () => {
-      const userRequestData = generateValidUser();
+      const userRequestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -738,7 +738,7 @@ describe('DELETE /user', () => {
     });
 
     test('when a user has created announcements items', async () => {
-      const userRequestData = generateValidUser();
+      const userRequestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -858,7 +858,7 @@ describe('DELETE /user', () => {
     });
 
     test('when a user has updated announcements items', async () => {
-      const userRequestData = generateValidUser();
+      const userRequestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)

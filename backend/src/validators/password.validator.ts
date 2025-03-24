@@ -2,8 +2,8 @@ import { PasswordService } from '@modules/auth';
 import { isNullOrEmptyString } from '@utils';
 import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
 
-export function IsPasswordEmptyOrValid(validationOptions?: ValidationOptions) {
-  return function (object: object, propertyName: string) {
+export function IsPasswordEmptyOrValid(validationOptions?: ValidationOptions): PropertyDecorator {
+  return function (object: object, propertyName: string): void {
     registerDecorator({
       name: 'isPasswordEmptyOrValid',
       target: object.constructor,
