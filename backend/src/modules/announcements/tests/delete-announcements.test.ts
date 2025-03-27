@@ -27,9 +27,9 @@ describe('DELETE /announcements', () => {
 
   beforeAll(async () => {
     await app.initialize([userRoute, permissionsRoute, announcementRoute]);
-    const { email, password } = getAdminLoginData();
+    const { email, passcode } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { email, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -158,7 +158,7 @@ describe('DELETE /announcements', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: userData.email, password: userData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: userData.email, passcode: userData.passcode } satisfies LoginDto))?.accessToken;
 
       const id: string = Guid.EMPTY;
       const deleteResponse = await request(app.getServer())
@@ -226,7 +226,7 @@ describe('DELETE /announcements', () => {
         }
       });
 
-      const newUserAccessToken = (await loginAs(app, { email: userData.email, password: userData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: userData.email, passcode: userData.passcode } satisfies LoginDto))?.accessToken;
 
       const id: string = Guid.EMPTY;
       const deleteResponse = await request(app.getServer())
@@ -301,7 +301,7 @@ describe('DELETE /announcements', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateBobResponse.statusCode).toBe(200);
 
-      const bobAccessToken = (await loginAs(app, { email: bobDto.email, password: userBob.password } satisfies LoginDto))?.accessToken;
+      const bobAccessToken = (await loginAs(app, { email: bobDto.email, passcode: userBob.passcode } satisfies LoginDto))?.accessToken;
 
       const deleteBobResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + bobDto.id)

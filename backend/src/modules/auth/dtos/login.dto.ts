@@ -9,13 +9,13 @@ import { TLoginResult } from '../types/login.types';
 
 export class LoginDto {
   @IsNotEmpty({
-    message: errorKeys.login.Invalid_Login_Or_Password,
+    message: errorKeys.login.Invalid_Login_Or_Passcode,
   })
   @IsString({
-    message: errorKeys.login.Invalid_Login_Or_Password,
+    message: errorKeys.login.Invalid_Login_Or_Passcode,
   })
   @MaxLength(VALIDATOR_SETTINGS.EMAIL_MAX_LENGTH, {
-    message: errorKeys.login.Invalid_Login_Or_Password,
+    message: errorKeys.login.Invalid_Login_Or_Passcode,
   })
   @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public email: string | null | undefined;
@@ -37,16 +37,16 @@ export class LoginDto {
   public phone?: string;
 
   @IsNotEmpty({
-    message: errorKeys.login.Invalid_Login_Or_Password,
+    message: errorKeys.login.Invalid_Login_Or_Passcode,
   })
   @IsString({
-    message: errorKeys.login.Invalid_Login_Or_Password,
+    message: errorKeys.login.Invalid_Login_Or_Passcode,
   })
   @MaxLength(VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH, {
-    message: errorKeys.login.Invalid_Login_Or_Password,
+    message: errorKeys.login.Invalid_Login_Or_Passcode,
   })
   @Transform(DtoTransformFunctions.returnNullIfEmpty)
-  public password: string | null | undefined;
+  public passcode: string | null | undefined;
 }
 
 export class LoginResponseDto implements IResponse<TLoginResult> {

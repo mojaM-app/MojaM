@@ -4,9 +4,9 @@ import {
   ActivateAccountReqDto,
   ActivateAccountResponseDto,
   AuthService,
-  CheckResetPasswordTokenReqDto,
-  CheckResetPasswordTokenResponseDto,
-  CheckResetPasswordTokenResultDto,
+  CheckResetPasscodeTokenReqDto,
+  CheckResetPasscodeTokenResponseDto,
+  CheckResetPasscodeTokenResultDto,
   GetAccountBeforeLogInResponseDto,
   GetAccountToActivateReqDto,
   GetAccountToActivateResponseDto,
@@ -14,15 +14,15 @@ import {
   IActivateAccountResultDto,
   IGetAccountBeforeLogInResultDto,
   ILoginResult,
-  IResetPasswordResultDto,
+  IResetPasscodeResultDto,
   LoginDto,
   LoginResponseDto,
   RefreshTokenDto,
   RefreshTokenResponseDto,
-  RequestResetPasswordResponseDto,
-  ResetPasswordDto,
-  ResetPasswordReqDto,
-  ResetPasswordResponseDto,
+  RequestResetPasscodeResponseDto,
+  ResetPasscodeDto,
+  ResetPasscodeReqDto,
+  ResetPasscodeResponseDto,
 } from '@modules/auth';
 import { BaseController } from '@modules/common';
 import { isGuid } from '@utils';
@@ -47,34 +47,34 @@ export class AuthController extends BaseController {
     }
   };
 
-  public requestResetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public requestResetPasscode = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const model: AccountTryingToLogInDto = req.body;
-      const result = await this._authService.requestResetPassword(model);
-      res.status(200).json(new RequestResetPasswordResponseDto(result));
+      const result = await this._authService.requestResetPasscode(model);
+      res.status(200).json(new RequestResetPasscodeResponseDto(result));
     } catch (error) {
       next(error);
     }
   };
 
-  public checkResetPasswordToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public checkResetPasscodeToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userGuid = isGuid(req.params?.userId) ? req.params.userId : undefined;
-      const resetPasswordToken = req.params?.token?.length > 0 ? req.params.token : undefined;
-      const reqDto = new CheckResetPasswordTokenReqDto(userGuid, resetPasswordToken);
-      const result: CheckResetPasswordTokenResultDto = await this._authService.checkResetPasswordToken(reqDto);
-      res.status(200).json(new CheckResetPasswordTokenResponseDto(result));
+      const token = req.params?.token?.length > 0 ? req.params.token : undefined;
+      const reqDto = new CheckResetPasscodeTokenReqDto(userGuid, token);
+      const result: CheckResetPasscodeTokenResultDto = await this._authService.checkResetPasscodeToken(reqDto);
+      res.status(200).json(new CheckResetPasscodeTokenResponseDto(result));
     } catch (error) {
       next(error);
     }
   };
 
-  public resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public resetPasscode = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userGuid = isGuid(req.params?.userId) ? req.params.userId : undefined;
-      const model: ResetPasswordDto = req.body;
-      const result: IResetPasswordResultDto = await this._authService.resetPassword(new ResetPasswordReqDto(userGuid, model));
-      res.status(200).json(new ResetPasswordResponseDto(result));
+      const model: ResetPasscodeDto = req.body;
+      const result: IResetPasscodeResultDto = await this._authService.resetPasscode(new ResetPasscodeReqDto(userGuid, model));
+      res.status(200).json(new ResetPasscodeResponseDto(result));
     } catch (error) {
       next(error);
     }

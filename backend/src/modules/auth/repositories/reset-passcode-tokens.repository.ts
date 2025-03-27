@@ -4,11 +4,11 @@ import { BaseRepository } from '@modules/common';
 import { getDateTimeNow, isNullOrUndefined } from '@utils';
 import ms from 'ms';
 import Container, { Service } from 'typedi';
-import { UserResetPasswordToken } from '../entities/user-reset-password-tokens.entity';
-import { ICreateResetPasswordToken } from '../interfaces/create-reset-password-token.interfaces';
+import { UserResetPasscodeToken } from '../entities/user-reset-passcode-tokens.entity';
+import { ICreateResetPasscodeToken } from '../interfaces/create-reset-passcode-token.interfaces';
 
 @Service()
-export class ResetPasswordTokensRepository extends BaseRepository {
+export class ResetPasscodeTokensRepository extends BaseRepository {
   private readonly _cryptoService: CryptoService;
 
   public constructor() {
@@ -22,7 +22,7 @@ export class ResetPasswordTokensRepository extends BaseRepository {
     return this.isTokenExpired(lastToken);
   }
 
-  public isTokenExpired(token: UserResetPasswordToken | null): boolean {
+  public isTokenExpired(token: UserResetPasscodeToken | null): boolean {
     if (isNullOrUndefined(token)) {
       return true;
     }
@@ -32,15 +32,15 @@ export class ResetPasswordTokensRepository extends BaseRepository {
     return actualDate > token!.createdAt.getTime() + expirationPeriod;
   }
 
-  public async createToken(userId: number, token: string): Promise<UserResetPasswordToken> {
-    return await this._dbContext.userResetPasswordTokens.save({
+  public async createToken(userId: number, token: string): Promise<UserResetPasscodeToken> {
+    return await this._dbContext.userResetPasscodeTokens.save({
       user: { id: userId },
       token,
-    } satisfies ICreateResetPasswordToken);
+    } satisfies ICreateResetPasscodeToken);
   }
 
   public async deleteTokens(userId: number): Promise<boolean> {
-    const queryBuilder = this._dbContext.userResetPasswordTokens.createQueryBuilder().where('UserId = :userId', { userId });
+    const queryBuilder = this._dbContext.userResetPasscodeTokens.createQueryBuilder().where('UserId = :userId', { userId });
 
     const count = await queryBuilder.getCount();
 
@@ -52,8 +52,8 @@ export class ResetPasswordTokensRepository extends BaseRepository {
     return !isNullOrUndefined(deleteResult);
   }
 
-  public async getLastToken(userId: number): Promise<UserResetPasswordToken | null> {
-    const queryBuilder = this._dbContext.userResetPasswordTokens
+  public async getLastToken(userId: number): Promise<UserResetPasscodeToken | null> {
+    const queryBuilder = this._dbContext.userResetPasscodeTokens
       .createQueryBuilder()
       .where('UserId = :userId', { userId })
       .orderBy('CreatedAt', 'DESC')

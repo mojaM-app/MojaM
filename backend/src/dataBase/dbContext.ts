@@ -2,7 +2,7 @@ import { DataSource, DataSourceOptions, Repository } from 'typeorm';
 import { AnnouncementItem } from '../modules/announcements/entities/announcement-item.entity';
 import { Announcement } from '../modules/announcements/entities/announcement.entity';
 import { vAnnouncement } from '../modules/announcements/entities/vAnnouncement.entity';
-import { UserResetPasswordToken } from '../modules/auth/entities/user-reset-password-tokens.entity';
+import { UserResetPasscodeToken } from '../modules/auth/entities/user-reset-passcode-tokens.entity';
 import { UserSystemPermission } from '../modules/users/entities/user-system-permission.entity';
 import { User } from '../modules/users/entities/user.entity';
 import { vUser } from '../modules/users/entities/vUser.entity';
@@ -20,8 +20,8 @@ export class DbContext extends DataSource {
     return this.getRepository(UserSystemPermission);
   }
 
-  public get userResetPasswordTokens(): Repository<UserResetPasswordToken> {
-    return this.getRepository(UserResetPasswordToken);
+  public get userResetPasscodeTokens(): Repository<UserResetPasscodeToken> {
+    return this.getRepository(UserResetPasscodeToken);
   }
 
   public get announcements(): Repository<Announcement> {

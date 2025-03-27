@@ -55,7 +55,7 @@ export class EmailService {
     });
   }
 
-  public async sendEmailResetPassword(user: IUser, link: string): Promise<boolean> {
+  public async sendEmailResetPasscode(user: IUser, link: string): Promise<boolean> {
     return await new Promise((resolve, reject) => {
       try {
         const templatePath = join(__dirname, `./../email.templates/requestResetPassword.${this.language}.handlebars`);

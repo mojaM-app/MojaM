@@ -24,9 +24,9 @@ describe('POST /permissions', () => {
 
   beforeAll(async () => {
     await app.initialize([userRoute, permissionsRoute]);
-    const { email, password } = getAdminLoginData();
+    const { email, passcode } = getAdminLoginData();
 
-    const loginResult = await loginAs(app, { email, password } satisfies LoginDto);
+    const loginResult = await loginAs(app, { email, passcode } satisfies LoginDto);
     adminAccessToken = loginResult?.accessToken;
     userLoggedIn = loginResult!;
 
@@ -185,7 +185,7 @@ describe('POST /permissions', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       const path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.PreviewUserList.toString();
       const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
@@ -251,7 +251,7 @@ describe('POST /permissions', () => {
         }
       });
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       const path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.PreviewUserList.toString();
       const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
@@ -318,7 +318,7 @@ describe('POST /permissions', () => {
       expect(addPermission1Result).toBe(true);
       expect(addPermission1Message).toBe(events.permissions.permissionAdded);
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.PreviewUserList.toString();
       addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${newUserAccessToken}`);

@@ -15,7 +15,7 @@ describe('CryptoService', () => {
 
   describe('getHash', () => {
     it('should throw an error when salt is not set', () => {
-      const { password } = getAdminLoginData();
+      const { passcode: password } = getAdminLoginData();
       expect(() => passwordService.getHash(null as any, password)).toThrow('Salt and password are required to hash a password');
       expect(() => passwordService.getHash(undefined as any, password)).toThrow('Salt and password are required to hash a password');
       expect(() => passwordService.getHash('', password)).toThrow('Salt and password are required to hash a password');
@@ -33,12 +33,12 @@ describe('CryptoService', () => {
       const hashedPassword = passwordService.getHash(salt, generateRandomPassword(VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH));
       expect(hashedPassword).toBeDefined();
       expect(typeof hashedPassword).toBe('string');
-      expect(hashedPassword.length).toBe(128);
+      expect(hashedPassword.length).toBe(PasswordService.HASH_LENGTH);
     });
 
     it('should return same hashed password', () => {
       const salt = cryptoService.generateSalt();
-      const { password } = getAdminLoginData();
+      const { passcode: password } = getAdminLoginData();
       const hashedPassword1 = passwordService.getHash(salt, password);
       const hashedPassword2 = passwordService.getHash(salt, password);
       expect(hashedPassword2).toEqual(hashedPassword1);
@@ -47,7 +47,7 @@ describe('CryptoService', () => {
     it('should return different hashed password', () => {
       const salt1 = cryptoService.generateSalt();
       const salt2 = cryptoService.generateSalt();
-      const { password } = getAdminLoginData();
+      const { passcode: password } = getAdminLoginData();
       const hashedPassword1 = passwordService.getHash(salt1, password);
       const hashedPassword2 = passwordService.getHash(salt2, password);
       expect(hashedPassword2).not.toEqual(hashedPassword1);
@@ -57,7 +57,7 @@ describe('CryptoService', () => {
   describe('match', () => {
     it('should return TRUE when password matches', () => {
       const salt = cryptoService.generateSalt();
-      const { password } = getAdminLoginData();
+      const { passcode: password } = getAdminLoginData();
 
       expect(salt.length).toBeGreaterThan(0);
 

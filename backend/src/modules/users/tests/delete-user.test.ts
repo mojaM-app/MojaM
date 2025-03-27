@@ -28,9 +28,9 @@ describe('DELETE /user', () => {
 
   beforeAll(async () => {
     await app.initialize([userRoute, permissionsRoute, authRoute, announcementRoute]);
-    const { email, password } = getAdminLoginData();
+    const { email, passcode } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { email, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -159,7 +159,7 @@ describe('DELETE /user', () => {
       expect(addPermission1Result).toBe(true);
       expect(addPermission1Message).toBe(events.permissions.permissionAdded);
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.PreviewUserList.toString();
       addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
@@ -204,7 +204,7 @@ describe('DELETE /user', () => {
       expect(testEventHandlers.onPermissionAdded).toHaveBeenCalled();
     });
 
-    test('when a user has reset password token', async () => {
+    test('when a user has reset passcode token', async () => {
       const requestData = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer())
@@ -216,21 +216,21 @@ describe('DELETE /user', () => {
       const { data: user }: CreateUserResponseDto = body;
       expect(user?.id).toBeDefined();
 
-      const requestResetPasswordResponse = await request(app.getServer())
-        .post(authRoute.requestResetPasswordPath)
+      const requestResetPasscodeResponse = await request(app.getServer())
+        .post(authRoute.requestResetPasscodePath)
         .send({ email: requestData.email } satisfies AccountTryingToLogInDto);
-      expect(requestResetPasswordResponse.statusCode).toBe(200);
-      body = requestResetPasswordResponse.body;
+      expect(requestResetPasscodeResponse.statusCode).toBe(200);
+      body = requestResetPasscodeResponse.body;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
-      const deleteUserWithResetPasswordTokenResponse = await request(app.getServer())
+      const deleteUserWithResetPasscodeTokenResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteUserWithResetPasswordTokenResponse.statusCode).toBe(200);
-      expect(deleteUserWithResetPasswordTokenResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      body = deleteUserWithResetPasswordTokenResponse.body;
+      expect(deleteUserWithResetPasscodeTokenResponse.statusCode).toBe(200);
+      expect(deleteUserWithResetPasscodeTokenResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = deleteUserWithResetPasscodeTokenResponse.body;
       expect(typeof body).toBe('object');
       const { data: deletedUserResult, message: deleteMessage }: DeleteUserResponseDto = body;
       expect(deleteMessage).toBe(events.users.userDeleted);
@@ -295,7 +295,7 @@ describe('DELETE /user', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       let deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + user.id)
@@ -371,7 +371,7 @@ describe('DELETE /user', () => {
         }
       });
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       let deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + user.id)
@@ -487,7 +487,7 @@ describe('DELETE /user', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
 
-      const user1AccessToken = (await loginAs(app, { email: user1RequestData.email, password: user1RequestData.password } satisfies LoginDto))
+      const user1AccessToken = (await loginAs(app, { email: user1RequestData.email, passcode: user1RequestData.passcode } satisfies LoginDto))
         ?.accessToken;
 
       path = permissionsRoute.path + '/' + user2.id + '/' + SystemPermissions.PreviewUserList.toString();
@@ -580,7 +580,7 @@ describe('DELETE /user', () => {
       expect(addPermissionResult).toBe(true);
       expect(addPermissionMessage).toBe(events.permissions.permissionAdded);
 
-      const userAccessToken = (await loginAs(app, { email: userRequestData.email, password: userRequestData.password } satisfies LoginDto))
+      const userAccessToken = (await loginAs(app, { email: userRequestData.email, passcode: userRequestData.passcode } satisfies LoginDto))
         ?.accessToken;
 
       const createAnnouncementsResponse = await request(app.getServer())
@@ -679,7 +679,7 @@ describe('DELETE /user', () => {
       expect(addPermissionResult).toBe(true);
       expect(addPermissionMessage).toBe(events.permissions.permissionAdded);
 
-      const userAccessToken = (await loginAs(app, { email: userRequestData.email, password: userRequestData.password } satisfies LoginDto))
+      const userAccessToken = (await loginAs(app, { email: userRequestData.email, passcode: userRequestData.passcode } satisfies LoginDto))
         ?.accessToken;
 
       const publishAnnouncementsResponse = await request(app.getServer())
@@ -782,7 +782,7 @@ describe('DELETE /user', () => {
       expect(addPermissionResult).toBe(true);
       expect(addPermissionMessage).toBe(events.permissions.permissionAdded);
 
-      const userAccessToken = (await loginAs(app, { email: userRequestData.email, password: userRequestData.password } satisfies LoginDto))
+      const userAccessToken = (await loginAs(app, { email: userRequestData.email, passcode: userRequestData.passcode } satisfies LoginDto))
         ?.accessToken;
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
@@ -902,7 +902,7 @@ describe('DELETE /user', () => {
       expect(addPermissionResult).toBe(true);
       expect(addPermissionMessage).toBe(events.permissions.permissionAdded);
 
-      const userAccessToken = (await loginAs(app, { email: userRequestData.email, password: userRequestData.password } satisfies LoginDto))
+      const userAccessToken = (await loginAs(app, { email: userRequestData.email, passcode: userRequestData.passcode } satisfies LoginDto))
         ?.accessToken;
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {

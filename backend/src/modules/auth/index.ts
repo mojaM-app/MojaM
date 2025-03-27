@@ -3,15 +3,15 @@ export { InactiveUserTriesToLogInEvent } from './events/inactive-user-tries-to-l
 export { LockedUserTriesToLogInEvent } from './events/locked-user-tries-to-log-in-event';
 export { UserLockedOutEvent } from './events/user-locked-out-event';
 export { UserLoggedInEvent } from './events/user-logged-in-event';
-export { UserPasswordChangedEvent } from './events/user-password-changed-event';
+export { UserPasscodeChangedEvent } from './events/user-passcode-changed-event';
 export { UserRefreshedTokenEvent } from './events/user-refreshed-token-event';
 
 export { ActivateAccountDto, ActivateAccountReqDto, ActivateAccountResponseDto, type IActivateAccountResultDto } from './dtos/activate-account.dto';
 export {
-  CheckResetPasswordTokenReqDto,
-  CheckResetPasswordTokenResponseDto,
-  type CheckResetPasswordTokenResultDto,
-} from './dtos/check-reset-password-token.dto';
+  CheckResetPasscodeTokenReqDto,
+  CheckResetPasscodeTokenResponseDto,
+  type CheckResetPasscodeTokenResultDto,
+} from './dtos/check-reset-passcode-token.dto';
 export {
   AccountTryingToLogInDto,
   GetAccountBeforeLogInResponseDto,
@@ -20,8 +20,8 @@ export {
 export { GetAccountToActivateReqDto, GetAccountToActivateResponseDto, type IAccountToActivateResultDto } from './dtos/get-account-to-activate.dto';
 export { LoginDto, LoginResponseDto } from './dtos/login.dto';
 export { RefreshTokenDto, RefreshTokenResponseDto } from './dtos/refresh-token.dto';
-export { RequestResetPasswordResponseDto } from './dtos/request-reset-password.dto';
-export { ResetPasswordDto, ResetPasswordReqDto, ResetPasswordResponseDto, type IResetPasswordResultDto } from './dtos/reset-password.dto';
+export { RequestResetPasscodeResponseDto } from './dtos/request-reset-passcode.dto';
+export { ResetPasscodeDto, ResetPasscodeReqDto, ResetPasscodeResponseDto, type IResetPasscodeResultDto } from './dtos/reset-passcode.dto';
 
 export type { IDataStoredInToken } from './interfaces/data-stored-in-token.interface';
 export { Identity } from './models/Identity';

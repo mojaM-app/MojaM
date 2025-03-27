@@ -6,8 +6,8 @@ export class LinkHelper {
     return `${LinkHelper.getClientAppUrl()}/account/${userUuid}/activate?t=${new Date().getTime()}`;
   }
 
-  public static resetPasswordLink(userUuid: string, resetPasswordToken: string): string {
-    return `${LinkHelper.getClientAppUrl()}/${AuthRoute.resetPassword}/${userUuid}/${resetPasswordToken}`;
+  public static resetPasscodeLink(userUuid: string, token: string): string {
+    return `${LinkHelper.getClientAppUrl()}/${AuthRoute.resetPasscode}/${userUuid}/${token}`;
   }
 
   private static getClientAppUrl(): string {

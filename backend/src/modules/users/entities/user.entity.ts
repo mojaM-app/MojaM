@@ -10,6 +10,7 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
+import { UserResetPasscodeToken } from '../../auth/entities/user-reset-passcode-tokens.entity';
 import { ICreateUser } from '../interfaces/create-user.interfaces';
 import { IUser } from '../interfaces/IUser';
 import { IUserId } from '../interfaces/IUser.Id';
@@ -20,7 +21,6 @@ import { IHasGuidId } from './../../../interfaces/IHasGuidId';
 import { AnnouncementItem } from './../../../modules/announcements/entities/announcement-item.entity';
 import { Announcement } from './../../../modules/announcements/entities/announcement.entity';
 import { getAdminLoginData } from './../../../utils/tests.utils';
-import { UserResetPasswordToken } from './../../auth/entities/user-reset-password-tokens.entity';
 import { UserSystemPermission } from './user-system-permission.entity';
 
 @Unique('UQ_User_Email_Phone', ['email', 'phone'])
@@ -78,20 +78,12 @@ export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser, IUse
   public phoneConfirmed: boolean;
 
   @Column({
-    name: 'Password',
+    name: 'Passcode',
     type: 'nvarchar',
-    length: 1024,
+    length: 256,
     nullable: true,
   })
-  public password: string | null;
-
-  @Column({
-    name: 'Pin',
-    type: 'nvarchar',
-    length: 1024,
-    nullable: true,
-  })
-  public pin: string | null;
+  public passcode: string | null;
 
   @Column({
     name: 'Salt',
@@ -192,8 +184,8 @@ export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser, IUse
   @OneToMany(() => UserSystemPermission, (permissions: UserSystemPermission) => permissions.assignedBy)
   public assignedSystemPermissions: Relation<UserSystemPermission[]>;
 
-  @OneToOne(() => UserResetPasswordToken, (token: UserResetPasswordToken) => token.user)
-  public resetPasswordToken: Relation<UserResetPasswordToken>;
+  @OneToOne(() => UserResetPasscodeToken, (token: UserResetPasscodeToken) => token.user)
+  public resetPasscodeToken: Relation<UserResetPasscodeToken>;
 
   @OneToMany(() => Announcement, (announcements: Announcement) => announcements.createdBy)
   public createdAnnouncements: Relation<Announcement[]>;

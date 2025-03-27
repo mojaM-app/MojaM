@@ -33,9 +33,9 @@ describe('POST /auth/activate-account/', () => {
 
   beforeAll(async () => {
     await app.initialize([userRoute, permissionsRoute]);
-    const { email, password } = getAdminLoginData();
+    const { email, passcode } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { email, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -59,7 +59,7 @@ describe('POST /auth/activate-account/', () => {
       const model = {
         firstName: 'John',
         lastName: 'Smith',
-        password: generateRandomPassword(),
+        passcode: generateRandomPassword(),
         joiningDate: generateRandomDate(),
       } satisfies ActivateAccountDto;
       const response = await request(app.getServer())
@@ -108,7 +108,7 @@ describe('POST /auth/activate-account/', () => {
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
     });
 
-    it('while activating when password is NULL, password should not be changed', async () => {
+    it('while activating when passcode is NULL, passcode should not be changed', async () => {
       const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -122,7 +122,7 @@ describe('POST /auth/activate-account/', () => {
       const activateResponse = await request(app.getServer())
         .post(authRoute.activateAccountPath + '/' + user.id)
         .send({
-          password: null as any,
+          passcode: null as any,
         } satisfies ActivateAccountDto);
       expect(activateResponse.statusCode).toBe(200);
       body = activateResponse.body;
@@ -132,7 +132,7 @@ describe('POST /auth/activate-account/', () => {
         isActive: true,
       });
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
       expect(newUserAccessToken).toBeDefined();
 
       const getAccountBeforeLogInResponse = await request(app.getServer())
@@ -166,65 +166,7 @@ describe('POST /auth/activate-account/', () => {
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
     });
 
-    it('while activating when pin is NULL, pin should not be changed', async () => {
-      const requestData = generateValidUserWithPin();
-      const createUserResponse = await request(app.getServer())
-        .post(userRoute.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(createUserResponse.statusCode).toBe(201);
-      let body = createUserResponse.body;
-      const { data: user }: CreateUserResponseDto = body;
-      expect(user?.id).toBeDefined();
-
-      const activateResponse = await request(app.getServer())
-        .post(authRoute.activateAccountPath + '/' + user.id)
-        .send({
-          pin: null as any,
-        } satisfies ActivateAccountDto);
-      expect(activateResponse.statusCode).toBe(200);
-      body = activateResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: userToActivateResult }: ActivateAccountResponseDto = body;
-      expect(userToActivateResult).toStrictEqual({
-        isActive: true,
-      });
-
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.pin } satisfies LoginDto))?.accessToken;
-      expect(newUserAccessToken).toBeDefined();
-
-      const getAccountBeforeLogInResponse = await request(app.getServer())
-        .post(authRoute.getAccountBeforeLogInPath)
-        .send({ email: requestData.email } satisfies AccountTryingToLogInDto);
-      expect(getAccountBeforeLogInResponse.statusCode).toBe(200);
-      body = getAccountBeforeLogInResponse.body as GetAccountBeforeLogInResponseDto;
-      expect(body.data).toStrictEqual({ isActive: true, authType: AuthenticationTypes.Pin } satisfies IGetAccountBeforeLogInResultDto);
-      expect(body.data).toEqual({ isActive: true, authType: AuthenticationTypes.Pin } satisfies IGetAccountBeforeLogInResultDto);
-
-      const deleteResponse = await request(app.getServer())
-        .delete(userRoute.path + '/' + user.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteResponse.statusCode).toBe(200);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers)
-        .filter(
-          ([, eventHandler]) =>
-            ![
-              testEventHandlers.onUserCreated,
-              testEventHandlers.onUserActivated,
-              testEventHandlers.onUserLoggedIn,
-              testEventHandlers.onUserDeleted,
-            ].includes(eventHandler),
-        )
-        .forEach(([, eventHandler]) => {
-          expect(eventHandler).not.toHaveBeenCalled();
-        });
-      expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
-    });
-
-    it('while activating when password is UNDEFINED, password should not be changed', async () => {
+    it('while activating when passcode is UNDEFINED, passcode should not be changed', async () => {
       const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -238,7 +180,7 @@ describe('POST /auth/activate-account/', () => {
       const activateResponse = await request(app.getServer())
         .post(authRoute.activateAccountPath + '/' + user.id)
         .send({
-          password: undefined as any,
+          passcode: undefined as any,
         } satisfies ActivateAccountDto);
       expect(activateResponse.statusCode).toBe(200);
       body = activateResponse.body;
@@ -248,7 +190,7 @@ describe('POST /auth/activate-account/', () => {
         isActive: true,
       });
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
       expect(newUserAccessToken).toBeDefined();
 
       const getAccountBeforeLogInResponse = await request(app.getServer())
@@ -282,65 +224,7 @@ describe('POST /auth/activate-account/', () => {
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
     });
 
-    it('while activating when pin is UNDEFINED, pin should not be changed', async () => {
-      const requestData = generateValidUserWithPin();
-      const createUserResponse = await request(app.getServer())
-        .post(userRoute.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(createUserResponse.statusCode).toBe(201);
-      let body = createUserResponse.body;
-      const { data: user }: CreateUserResponseDto = body;
-      expect(user?.id).toBeDefined();
-
-      const activateResponse = await request(app.getServer())
-        .post(authRoute.activateAccountPath + '/' + user.id)
-        .send({
-          pin: undefined as any,
-        } satisfies ActivateAccountDto);
-      expect(activateResponse.statusCode).toBe(200);
-      body = activateResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: userToActivateResult }: ActivateAccountResponseDto = body;
-      expect(userToActivateResult).toStrictEqual({
-        isActive: true,
-      });
-
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.pin } satisfies LoginDto))?.accessToken;
-      expect(newUserAccessToken).toBeDefined();
-
-      const getAccountBeforeLogInResponse = await request(app.getServer())
-        .post(authRoute.getAccountBeforeLogInPath)
-        .send({ email: requestData.email } satisfies AccountTryingToLogInDto);
-      expect(getAccountBeforeLogInResponse.statusCode).toBe(200);
-      body = getAccountBeforeLogInResponse.body as GetAccountBeforeLogInResponseDto;
-      expect(body.data).toStrictEqual({ isActive: true, authType: AuthenticationTypes.Pin } satisfies IGetAccountBeforeLogInResultDto);
-      expect(body.data).toEqual({ isActive: true, authType: AuthenticationTypes.Pin } satisfies IGetAccountBeforeLogInResultDto);
-
-      const deleteResponse = await request(app.getServer())
-        .delete(userRoute.path + '/' + user.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteResponse.statusCode).toBe(200);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers)
-        .filter(
-          ([, eventHandler]) =>
-            ![
-              testEventHandlers.onUserCreated,
-              testEventHandlers.onUserActivated,
-              testEventHandlers.onUserLoggedIn,
-              testEventHandlers.onUserDeleted,
-            ].includes(eventHandler),
-        )
-        .forEach(([, eventHandler]) => {
-          expect(eventHandler).not.toHaveBeenCalled();
-        });
-      expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
-    });
-
-    it('while activating when password is empty, password should not be changed', async () => {
+    it('while activating when passcode is empty, passcode should not be changed', async () => {
       const requestData = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -354,7 +238,7 @@ describe('POST /auth/activate-account/', () => {
       const activateResponse = await request(app.getServer())
         .post(authRoute.activateAccountPath + '/' + user.id)
         .send({
-          password: '',
+          passcode: '',
         } satisfies ActivateAccountDto);
       expect(activateResponse.statusCode).toBe(200);
       body = activateResponse.body;
@@ -364,7 +248,7 @@ describe('POST /auth/activate-account/', () => {
         isActive: true,
       });
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
       expect(newUserAccessToken).toBeDefined();
 
       const getAccountBeforeLogInResponse = await request(app.getServer())
@@ -374,64 +258,6 @@ describe('POST /auth/activate-account/', () => {
       body = getAccountBeforeLogInResponse.body as GetAccountBeforeLogInResponseDto;
       expect(body.data).toStrictEqual({ isActive: true, authType: AuthenticationTypes.Password } satisfies IGetAccountBeforeLogInResultDto);
       expect(body.data).toEqual({ isActive: true, authType: AuthenticationTypes.Password } satisfies IGetAccountBeforeLogInResultDto);
-
-      const deleteResponse = await request(app.getServer())
-        .delete(userRoute.path + '/' + user.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteResponse.statusCode).toBe(200);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers)
-        .filter(
-          ([, eventHandler]) =>
-            ![
-              testEventHandlers.onUserCreated,
-              testEventHandlers.onUserActivated,
-              testEventHandlers.onUserLoggedIn,
-              testEventHandlers.onUserDeleted,
-            ].includes(eventHandler),
-        )
-        .forEach(([, eventHandler]) => {
-          expect(eventHandler).not.toHaveBeenCalled();
-        });
-      expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
-    });
-
-    it('while activating when pin is empty, pin should not be changed', async () => {
-      const requestData = generateValidUserWithPin();
-      const createUserResponse = await request(app.getServer())
-        .post(userRoute.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(createUserResponse.statusCode).toBe(201);
-      let body = createUserResponse.body;
-      const { data: user }: CreateUserResponseDto = body;
-      expect(user?.id).toBeDefined();
-
-      const activateResponse = await request(app.getServer())
-        .post(authRoute.activateAccountPath + '/' + user.id)
-        .send({
-          pin: '',
-        } satisfies ActivateAccountDto);
-      expect(activateResponse.statusCode).toBe(200);
-      body = activateResponse.body;
-      expect(typeof body).toBe('object');
-      const { data: userToActivateResult }: ActivateAccountResponseDto = body;
-      expect(userToActivateResult).toStrictEqual({
-        isActive: true,
-      });
-
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.pin } satisfies LoginDto))?.accessToken;
-      expect(newUserAccessToken).toBeDefined();
-
-      const getAccountBeforeLogInResponse = await request(app.getServer())
-        .post(authRoute.getAccountBeforeLogInPath)
-        .send({ email: requestData.email } satisfies AccountTryingToLogInDto);
-      expect(getAccountBeforeLogInResponse.statusCode).toBe(200);
-      body = getAccountBeforeLogInResponse.body as GetAccountBeforeLogInResponseDto;
-      expect(body.data).toStrictEqual({ isActive: true, authType: AuthenticationTypes.Pin } satisfies IGetAccountBeforeLogInResultDto);
-      expect(body.data).toEqual({ isActive: true, authType: AuthenticationTypes.Pin } satisfies IGetAccountBeforeLogInResultDto);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + user.id)
@@ -471,7 +297,7 @@ describe('POST /auth/activate-account/', () => {
       const activateResponse = await request(app.getServer())
         .post(authRoute.activateAccountPath + '/' + user.id)
         .send({
-          password,
+          passcode: password,
         } satisfies ActivateAccountDto);
       expect(activateResponse.statusCode).toBe(200);
       body = activateResponse.body;
@@ -481,11 +307,11 @@ describe('POST /auth/activate-account/', () => {
         isActive: true,
       });
 
-      const loginData: LoginDto = { email: requestData.email, password: requestData.password };
+      const loginData: LoginDto = { email: requestData.email, passcode: requestData.passcode };
       let loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
       expect(loginResponse.statusCode).toBe(400);
 
-      loginData.password = password;
+      loginData.passcode = password;
       loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
       expect(loginResponse.statusCode).toBe(200);
 
@@ -536,7 +362,7 @@ describe('POST /auth/activate-account/', () => {
       const activateResponse = await request(app.getServer())
         .post(authRoute.activateAccountPath + '/' + user.id)
         .send({
-          pin,
+          passcode: pin,
         } satisfies ActivateAccountDto);
       expect(activateResponse.statusCode).toBe(200);
       body = activateResponse.body;
@@ -546,11 +372,11 @@ describe('POST /auth/activate-account/', () => {
         isActive: true,
       });
 
-      const loginData: LoginDto = { email: requestData.email, password: requestData.password };
+      const loginData: LoginDto = { email: requestData.email, passcode: requestData.passcode };
       let loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
       expect(loginResponse.statusCode).toBe(400);
 
-      loginData.password = pin;
+      loginData.passcode = pin;
       loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
       expect(loginResponse.statusCode).toBe(200);
 
@@ -655,9 +481,9 @@ describe('POST /auth/activate-account/', () => {
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
     });
 
-    it('while activating user without password, when password is set, password should be set', async () => {
+    it('while activating user without passcode, when passcode is set, passcode should be set', async () => {
       const requestData = generateValidUserWithPassword();
-      delete requestData.password;
+      delete requestData.passcode;
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -679,7 +505,7 @@ describe('POST /auth/activate-account/', () => {
       const activateResponse = await request(app.getServer())
         .post(authRoute.activateAccountPath + '/' + user.id)
         .send({
-          password,
+          passcode: password,
         } satisfies ActivateAccountDto);
       expect(activateResponse.statusCode).toBe(200);
       body = activateResponse.body;
@@ -689,7 +515,7 @@ describe('POST /auth/activate-account/', () => {
         isActive: true,
       });
 
-      const loginData: LoginDto = { email: requestData.email, password };
+      const loginData: LoginDto = { email: requestData.email, passcode: password };
       const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
       expect(loginResponse.statusCode).toBe(200);
 
@@ -727,7 +553,7 @@ describe('POST /auth/activate-account/', () => {
 
     it('while activating user without pin, when pin is set, pin should be set', async () => {
       const requestData = generateValidUserWithPin();
-      delete requestData.pin;
+      delete requestData.passcode;
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -749,7 +575,7 @@ describe('POST /auth/activate-account/', () => {
       const activateResponse = await request(app.getServer())
         .post(authRoute.activateAccountPath + '/' + user.id)
         .send({
-          pin,
+          passcode: pin,
         } satisfies ActivateAccountDto);
       expect(activateResponse.statusCode).toBe(200);
       body = activateResponse.body;
@@ -759,7 +585,7 @@ describe('POST /auth/activate-account/', () => {
         isActive: true,
       });
 
-      const loginData: LoginDto = { email: requestData.email, password: pin };
+      const loginData: LoginDto = { email: requestData.email, passcode: pin };
       const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
       expect(loginResponse.statusCode).toBe(200);
 
@@ -797,14 +623,18 @@ describe('POST /auth/activate-account/', () => {
   });
 
   describe('request should end with status code of 400', () => {
-    it('when password is invalid', async () => {
-      const model = { firstName: 'John', lastName: 'Smith', joiningDate: generateRandomDate() };
+    it('when passcode is invalid', async () => {
+      const model = { firstName: 'John', lastName: 'Smith', joiningDate: generateRandomDate() } satisfies ActivateAccountDto;
       const bodyData = [
-        { ...model, password: 'invalid password' } satisfies ActivateAccountDto,
-        { ...model, password: 123 as any } satisfies ActivateAccountDto,
-        { ...model, password: true as any } satisfies ActivateAccountDto,
-        { ...model, password: [] as any } satisfies ActivateAccountDto,
-        { ...model, password: {} as any } satisfies ActivateAccountDto,
+        { ...model, passcode: 'invalid password' } satisfies ActivateAccountDto,
+        { ...model, passcode: 123 as any } satisfies ActivateAccountDto,
+        { ...model, passcode: true as any } satisfies ActivateAccountDto,
+        { ...model, passcode: [] as any } satisfies ActivateAccountDto,
+        { ...model, passcode: {} as any } satisfies ActivateAccountDto,
+        { ...model, passcode: 'invalid pin' } satisfies ActivateAccountDto,
+        { ...model, passcode: 1234 as any } satisfies ActivateAccountDto,
+        { ...model, passcode: generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH - 1) } satisfies ActivateAccountDto,
+        { ...model, passcode: generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH + 1) } satisfies ActivateAccountDto,
       ];
 
       for (const body of bodyData) {
@@ -814,68 +644,17 @@ describe('POST /auth/activate-account/', () => {
         expect(response.statusCode).toBe(400);
         const data = response.body.data as BadRequestException;
         const errors = data.message.split(',');
-        expect(errors.filter(x => x !== errorKeys.users.Invalid_Password).length).toBe(0);
+        expect(errors.filter(x => x !== errorKeys.users.Invalid_Passcode).length).toBe(0);
 
         // checking events running via eventDispatcher
         Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
       }
-    });
-
-    it('when pin is invalid', async () => {
-      const model = { firstName: 'John', lastName: 'Smith', joiningDate: generateRandomDate() };
-      const bodyData = [
-        { ...model, pin: 'invalid pin' } satisfies ActivateAccountDto,
-        { ...model, pin: 1234 as any } satisfies ActivateAccountDto,
-        { ...model, pin: generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH - 1) } satisfies ActivateAccountDto,
-        { ...model, pin: generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH + 1) } satisfies ActivateAccountDto,
-        { ...model, pin: true as any } satisfies ActivateAccountDto,
-        { ...model, pin: [] as any } satisfies ActivateAccountDto,
-        { ...model, pin: {} as any } satisfies ActivateAccountDto,
-      ];
-
-      for (const body of bodyData) {
-        const response = await request(app.getServer())
-          .post(authRoute.activateAccountPath + '/' + Guid.EMPTY)
-          .send(body);
-        expect(response.statusCode).toBe(400);
-        const data = response.body.data as BadRequestException;
-        const errors = data.message.split(',');
-        expect(errors.filter(x => x !== errorKeys.users.Invalid_Pin).length).toBe(0);
-
-        // checking events running via eventDispatcher
-        Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-          expect(eventHandler).not.toHaveBeenCalled();
-        });
-      }
-    });
-
-    it('when password and pin are set', async () => {
-      const model = {
-        firstName: 'John',
-        lastName: 'Smith',
-        joiningDate: generateRandomDate(),
-        password: generateRandomPassword(),
-        pin: generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH),
-      } satisfies ActivateAccountDto;
-
-      const response = await request(app.getServer())
-        .post(authRoute.activateAccountPath + '/' + getAdminLoginData().uuid)
-        .send(model);
-      expect(response.statusCode).toBe(400);
-      const data = response.body.data as BadRequestException;
-      const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.users.Both_Password_And_Pin_Are_Set).length).toBe(0);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
     });
 
     it('when firstName is invalid', async () => {
-      const model = { lastName: 'Smith', joiningDate: generateRandomDate(), password: generateRandomPassword() };
+      const model = { lastName: 'Smith', joiningDate: generateRandomDate(), passcode: generateRandomPassword() } satisfies ActivateAccountDto;
       const bodyData = [
         { ...model, firstName: 123 as any } satisfies ActivateAccountDto,
         { ...model, firstName: true as any } satisfies ActivateAccountDto,
@@ -900,7 +679,7 @@ describe('POST /auth/activate-account/', () => {
     });
 
     it('when lastName is invalid', async () => {
-      const model = { firstName: 'John', joiningDate: generateRandomDate(), password: generateRandomPassword() };
+      const model = { firstName: 'John', joiningDate: generateRandomDate(), passcode: generateRandomPassword() } satisfies ActivateAccountDto;
       const bodyData = [
         { ...model, lastName: 123 as any } satisfies ActivateAccountDto,
         { ...model, lastName: true as any } satisfies ActivateAccountDto,
@@ -925,7 +704,7 @@ describe('POST /auth/activate-account/', () => {
     });
 
     it('when joiningDate is invalid', async () => {
-      const model = { firstName: 'John', lastName: 'Smith', password: generateRandomPassword() };
+      const model = { firstName: 'John', lastName: 'Smith', passcode: generateRandomPassword() } satisfies ActivateAccountDto;
       const bodyData = [
         { ...model, joiningDate: 'some text' as any } satisfies ActivateAccountDto,
         { ...model, joiningDate: [] as any } satisfies ActivateAccountDto,

@@ -11,7 +11,7 @@ export class CryptoService {
     return crypto.randomBytes(32).toString('hex');
   }
 
-  public generateResetPasswordToken(): string {
+  public generateResetPasscodeToken(): string {
     return crypto.randomBytes(32).toString('hex');
   }
 }

@@ -5,8 +5,8 @@ import {
   AccountTryingToLogInDto,
   ActivateAccountDto,
   ActivateAccountReqDto,
-  CheckResetPasswordTokenReqDto,
-  CheckResetPasswordTokenResultDto,
+  CheckResetPasscodeTokenReqDto,
+  CheckResetPasscodeTokenResultDto,
   CryptoService,
   FailedLoginAttemptEvent,
   GetAccountToActivateReqDto,
@@ -16,15 +16,15 @@ import {
   IGetAccountBeforeLogInResultDto,
   ILoginResult,
   InactiveUserTriesToLogInEvent,
-  IResetPasswordResultDto,
+  IResetPasscodeResultDto,
   LockedUserTriesToLogInEvent,
   LoginDto,
   PasscodeService,
   RefreshTokenDto,
-  ResetPasswordReqDto,
+  ResetPasscodeReqDto,
   UserLockedOutEvent,
   UserLoggedInEvent,
-  UserPasswordChangedEvent,
+  UserPasscodeChangedEvent,
   UserRefreshedTokenEvent,
 } from '@modules/auth';
 import {
@@ -48,14 +48,13 @@ import StatusCode from 'status-code-enum';
 import { Container, Service } from 'typedi';
 import { AuthenticationTypes } from '../enums/authentication-type.enum';
 import { getAuthenticationType } from '../helpers/auth.helper';
-import { ResetPasswordTokensRepository } from '../repositories/reset-password-tokens.repository';
-import { AuthenticationTypService } from './authentication-typ.service';
+import { ResetPasscodeTokensRepository } from '../repositories/reset-passcode-tokens.repository';
 
 @Service()
 export class AuthService extends BaseService {
   private readonly _userRepository: UserRepository;
   private readonly _permissionRepository: UserPermissionsRepository;
-  private readonly _resetPasswordTokensRepository: ResetPasswordTokensRepository;
+  private readonly _resetPasscodeTokensRepository: ResetPasscodeTokensRepository;
   private readonly _cryptoService: CryptoService;
   private readonly _passcodeService: PasscodeService;
   private readonly _emailService: EmailService;
@@ -64,7 +63,7 @@ export class AuthService extends BaseService {
     super();
     this._userRepository = Container.get(UserRepository);
     this._permissionRepository = Container.get(UserPermissionsRepository);
-    this._resetPasswordTokensRepository = Container.get(ResetPasswordTokensRepository);
+    this._resetPasscodeTokensRepository = Container.get(ResetPasscodeTokensRepository);
     this._cryptoService = Container.get(CryptoService);
     this._emailService = Container.get(EmailService);
     this._passcodeService = Container.get(PasscodeService);
@@ -96,7 +95,7 @@ export class AuthService extends BaseService {
     } satisfies IGetAccountBeforeLogInResultDto;
   }
 
-  public async requestResetPassword(data: AccountTryingToLogInDto): Promise<boolean> {
+  public async requestResetPasscode(data: AccountTryingToLogInDto): Promise<boolean> {
     const users: User[] = await this._userRepository.findManyByLogin(data?.email, data?.phone);
 
     if ((users?.length ?? 0) !== 1) {
@@ -105,34 +104,34 @@ export class AuthService extends BaseService {
 
     const user = users[0];
 
-    if (!(await this._resetPasswordTokensRepository.isLastTokenExpired(user.id))) {
+    if (!(await this._resetPasscodeTokensRepository.isLastTokenExpired(user.id))) {
       return true;
     }
 
-    await this._resetPasswordTokensRepository.deleteTokens(user.id);
+    await this._resetPasscodeTokensRepository.deleteTokens(user.id);
 
-    const token = this._cryptoService.generateResetPasswordToken();
+    const token = this._cryptoService.generateResetPasscodeToken();
 
-    const resetPasswordToken = await this._resetPasswordTokensRepository.createToken(user.id, token);
+    const resetPasscodeToken = await this._resetPasscodeTokensRepository.createToken(user.id, token);
 
-    return await this._emailService.sendEmailResetPassword(user, LinkHelper.resetPasswordLink(user.uuid, resetPasswordToken.token));
+    return await this._emailService.sendEmailResetPasscode(user, LinkHelper.resetPasscodeLink(user.uuid, resetPasscodeToken.token));
   }
 
-  public async checkResetPasswordToken(data: CheckResetPasswordTokenReqDto): Promise<CheckResetPasswordTokenResultDto> {
+  public async checkResetPasscodeToken(data: CheckResetPasscodeTokenReqDto): Promise<CheckResetPasscodeTokenResultDto> {
     const userId = await this._userRepository.getIdByUuid(data.userGuid);
 
     if (isNullOrUndefined(userId)) {
       return {
         isValid: false,
-      } satisfies CheckResetPasswordTokenResultDto;
+      } satisfies CheckResetPasscodeTokenResultDto;
     }
 
-    const token = await this._resetPasswordTokensRepository.getLastToken(userId!);
+    const token = await this._resetPasscodeTokensRepository.getLastToken(userId!);
 
-    if (isNullOrUndefined(token) || this._resetPasswordTokensRepository.isTokenExpired(token) || token!.token !== data.resetPasswordToken) {
+    if (isNullOrUndefined(token) || this._resetPasscodeTokensRepository.isTokenExpired(token) || token!.token !== data.token) {
       return {
         isValid: false,
-      } satisfies CheckResetPasswordTokenResultDto;
+      } satisfies CheckResetPasscodeTokenResultDto;
     }
 
     const user = await this._userRepository.getById(userId);
@@ -140,16 +139,16 @@ export class AuthService extends BaseService {
     return {
       isValid: true,
       userEmail: user?.email,
-    } satisfies CheckResetPasswordTokenResultDto;
+    } satisfies CheckResetPasscodeTokenResultDto;
   }
 
-  public async resetPassword(data: ResetPasswordReqDto): Promise<IResetPasswordResultDto> {
+  public async resetPasscode(data: ResetPasscodeReqDto): Promise<IResetPasscodeResultDto> {
     if (isNullOrEmptyString(data.userGuid)) {
       throw new BadRequestException(errorKeys.users.Invalid_User_Id);
     }
 
     if (isNullOrEmptyString(data.model?.token)) {
-      throw new BadRequestException(errorKeys.login.Invalid_Reset_Password_Token);
+      throw new BadRequestException(errorKeys.login.Invalid_Reset_Passcode_Token);
     }
 
     const user: User | null = await this._userRepository.getByUuid(data.userGuid);
@@ -158,16 +157,14 @@ export class AuthService extends BaseService {
       throw new BadRequestException(errorKeys.users.Invalid_User_Id);
     }
 
-    const token = await this._resetPasswordTokensRepository.getLastToken(user!.id);
+    const token = await this._resetPasscodeTokensRepository.getLastToken(user!.id);
 
-    if (isNullOrUndefined(token) || this._resetPasswordTokensRepository.isTokenExpired(token) || token!.token !== data.model!.token) {
-      throw new BadRequestException(errorKeys.login.Invalid_Reset_Password_Token);
+    if (isNullOrUndefined(token) || this._resetPasscodeTokensRepository.isTokenExpired(token) || token!.token !== data.model!.token) {
+      throw new BadRequestException(errorKeys.login.Invalid_Reset_Passcode_Token);
     }
 
-    if (this._passcodeService.isPassword(data.model?.passcode)) {
-      await this._userRepository.setPassword(user!.id, data.model!.passcode);
-    } else if (this._passcodeService.isPin(data.model?.passcode)) {
-      await this._userRepository.setPin(user!.id, data.model!.passcode);
+    if (this._passcodeService.isValid(data.model?.passcode)) {
+      await this._userRepository.setPasscode(user!.id, data.model!.passcode);
     } else {
       throw new BadRequestException(errorKeys.users.Invalid_Passcode);
     }
@@ -176,26 +173,26 @@ export class AuthService extends BaseService {
       await this._userRepository.activate(user!.id);
     }
 
-    await this._resetPasswordTokensRepository.deleteTokens(user!.id);
+    await this._resetPasscodeTokensRepository.deleteTokens(user!.id);
 
-    this._eventDispatcher.dispatch(events.users.userPasswordChanged, new UserPasswordChangedEvent(user!));
+    this._eventDispatcher.dispatch(events.users.userPasscodeChanged, new UserPasscodeChangedEvent(user!));
 
     return {
-      isPasswordSet: true,
-    } satisfies IResetPasswordResultDto;
+      isPasscodeSet: true,
+    } satisfies IResetPasscodeResultDto;
   }
 
   public async login(data: LoginDto): Promise<ILoginResult> {
     const users: User[] = await this._userRepository.findManyByLogin(data?.email, data?.phone);
 
     if (users?.length !== 1) {
-      throw new BadRequestException(errorKeys.login.Invalid_Login_Or_Password);
+      throw new BadRequestException(errorKeys.login.Invalid_Login_Or_Passcode);
     }
 
     const user: User = users[0];
 
-    if (isNullOrEmptyString(user.password) && isNullOrEmptyString(user.pin)) {
-      throw new BadRequestException(errorKeys.login.User_Password_Is_Not_Set);
+    if (isNullOrEmptyString(user.passcode)) {
+      throw new BadRequestException(errorKeys.login.User_Passcode_Is_Not_Set);
     }
 
     if (!user.isActive) {
@@ -208,9 +205,11 @@ export class AuthService extends BaseService {
       throw new BadRequestException(errorKeys.login.User_Is_Locked_Out);
     }
 
-    const isPasswordMatching: boolean = AuthenticationTypService.create(user).match(data.password ?? '');
+    const isPasscodeMatching: boolean = this._passcodeService.match(user, data.passcode);
 
-    if (!isPasswordMatching) {
+    if (isPasscodeMatching) {
+      await this._userRepository.updateAfterLogin(user.id);
+    } else {
       const failedLoginAttempts = await this._userRepository.increaseFailedLoginAttempts(user.id, user.failedLoginAttempts);
 
       this._eventDispatcher.dispatch(events.users.failedLoginAttempt, new FailedLoginAttemptEvent(user));
@@ -221,9 +220,7 @@ export class AuthService extends BaseService {
         this._eventDispatcher.dispatch(events.users.userLockedOut, new UserLockedOutEvent(user));
       }
 
-      throw new BadRequestException(errorKeys.login.Invalid_Login_Or_Password);
-    } else {
-      await this._userRepository.updateAfterLogin(user.id);
+      throw new BadRequestException(errorKeys.login.Invalid_Login_Or_Passcode);
     }
 
     const accessToken = await this.createAccessTokenAsync(user);
@@ -321,12 +318,8 @@ export class AuthService extends BaseService {
 
     const userData: ActivateAccountDto = reqDto.model!;
 
-    if (!isNullOrEmptyString(userData.password)) {
-      await this._userRepository.setPassword(user!.id, userData.password!);
-    }
-
-    if (!isNullOrEmptyString(userData.pin)) {
-      await this._userRepository.setPin(user!.id, userData.pin!);
+    if (!isNullOrEmptyString(userData.passcode)) {
+      await this._userRepository.setPasscode(user!.id, userData.passcode!);
     }
 
     if (!user!.isActive) {
@@ -340,7 +333,7 @@ export class AuthService extends BaseService {
     } satisfies IUpdateUser) satisfies UpdateUserModel;
     const updatedUser = await this._userRepository.update(model);
 
-    await this._resetPasswordTokensRepository.deleteTokens(user!.id);
+    await this._resetPasscodeTokensRepository.deleteTokens(user!.id);
 
     this._eventDispatcher.dispatch(events.users.userActivated, new UserActivatedEvent(updatedUser!, undefined));
 

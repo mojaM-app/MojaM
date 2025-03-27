@@ -32,9 +32,9 @@ describe('GET/user-details/:id', () => {
 
   beforeAll(async () => {
     await app.initialize([userDetailsRoute, userRoute, permissionsRoute]);
-    const { email, password } = getAdminLoginData();
+    const { email, passcode } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { email, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -182,7 +182,7 @@ describe('GET/user-details/:id', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       const getUserDetailsResponse = await request(app.getServer())
         .get(userDetailsRoute.path + '/' + newUserDto.id)
@@ -253,7 +253,7 @@ describe('GET/user-details/:id', () => {
         }
       });
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       const getUserDetailsResponse = await request(app.getServer())
         .get(userDetailsRoute.path + '/' + newUserDto.id)

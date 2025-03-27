@@ -1,18 +1,21 @@
 import { matches, maxLength, minLength } from 'class-validator';
 import * as crypto from 'crypto';
 import { Service } from 'typedi';
-import { REGEX_PATTERNS, VALIDATOR_SETTINGS } from '../../../config/constants';
-import { isNullOrEmptyString } from '../../../utils/strings.utils';
-import { IAuthenticationTypeService } from './authentication-typ.service';
+import { IAuthenticationTypeService } from '../interfaces/IAuthenticationTypeService';
+import { REGEX_PATTERNS, VALIDATOR_SETTINGS } from './../../../config/constants';
+import { isNullOrEmptyString } from './../../../utils/strings.utils';
 
 @Service()
 export class PinService implements IAuthenticationTypeService {
+  public static readonly HASH_LENGTH = 64;
+  private static readonly KEY_LENGTH = 32;
+
   public getHash(salt: string, pin: string): string {
     if (isNullOrEmptyString(salt) || isNullOrEmptyString(pin)) {
       throw new Error('Salt and pin are required to hash a pin');
     }
 
-    return crypto.pbkdf2Sync(pin, salt, 1000, 64, 'sha512').toString('hex');
+    return crypto.pbkdf2Sync(pin, salt, 1000, PinService.KEY_LENGTH, 'sha512').toString('hex');
   }
 
   public match(pin: string, salt: string, hashedPin: string): boolean {

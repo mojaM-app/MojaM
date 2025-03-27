@@ -4,36 +4,20 @@ import { errorKeys } from '@exceptions';
 import { DtoTransformFunctions } from '@helpers/DtoTransformFunctions';
 import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
-import { IsNotSetIf, IsPasswordEmptyOrValid, IsPinEmptyOrValid } from '@validators';
+import { IsPasswordOrPinValid } from '@validators';
 import { Transform, Type } from 'class-transformer';
 import { IsDate, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class ActivateAccountDto {
   @IsOptional()
   @IsString({
-    message: errorKeys.users.Invalid_Password,
+    message: errorKeys.users.Invalid_Passcode,
   })
-  @IsPasswordEmptyOrValid({
-    message: errorKeys.users.Invalid_Password,
-  })
-  @IsNotSetIf('pin', {
-    message: errorKeys.users.Both_Password_And_Pin_Are_Set,
+  @IsPasswordOrPinValid({
+    message: errorKeys.users.Invalid_Passcode,
   })
   @Transform(DtoTransformFunctions.returnNullIfEmpty)
-  public password?: string | null;
-
-  @IsOptional()
-  @IsString({
-    message: errorKeys.users.Invalid_Pin,
-  })
-  @IsPinEmptyOrValid({
-    message: errorKeys.users.Invalid_Pin,
-  })
-  @IsNotSetIf('password', {
-    message: errorKeys.users.Both_Password_And_Pin_Are_Set,
-  })
-  @Transform(DtoTransformFunctions.returnNullIfEmpty)
-  public pin?: string | null;
+  public passcode?: string | null;
 
   @IsOptional()
   @IsString({

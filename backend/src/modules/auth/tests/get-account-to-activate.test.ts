@@ -24,9 +24,9 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
 
   beforeAll(async () => {
     await app.initialize([userRoute, permissionsRoute]);
-    const { email, password } = getAdminLoginData();
+    const { email, passcode } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { email, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -97,7 +97,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
 
-      const loginData: LoginDto = { email: newUserDto.email, password: user.password + 'invalid_password' };
+      const loginData: LoginDto = { email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' };
 
       for (let index = 1; index <= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
         const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
@@ -107,7 +107,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
         expect(typeof body).toBe('object');
         const data = body.data as BadRequestException;
         const { message: loginMessage, args: loginArgs } = data;
-        expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
+        expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Passcode);
         expect(loginArgs).toBeUndefined();
       }
 
@@ -160,7 +160,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
 
-      const loginData: LoginDto = { email: newUserDto.email, password: user.password + 'invalid_password' };
+      const loginData: LoginDto = { email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' };
 
       for (let index = 1; index <= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
         const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
@@ -170,7 +170,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
         expect(typeof body).toBe('object');
         const data = body.data as BadRequestException;
         const { message: loginMessage, args: loginArgs } = data;
-        expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
+        expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Passcode);
         expect(loginArgs).toBeUndefined();
       }
 

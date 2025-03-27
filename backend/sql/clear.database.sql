@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS
-user_reset_password_tokens,
+user_reset_passcode_tokens,
 user_to_systempermissions,
 system_permissions,
 announcement_items,

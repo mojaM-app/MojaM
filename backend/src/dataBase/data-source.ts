@@ -3,7 +3,7 @@ import { DATABASE_HOST, DATABASE_MIGRATIONS_PATH, DATABASE_NAME, DATABASE_PASSWO
 import { AnnouncementItem } from '../modules/announcements/entities/announcement-item.entity';
 import { Announcement } from '../modules/announcements/entities/announcement.entity';
 import { vAnnouncement } from '../modules/announcements/entities/vAnnouncement.entity';
-import { UserResetPasswordToken } from '../modules/auth/entities/user-reset-password-tokens.entity';
+import { UserResetPasscodeToken } from '../modules/auth/entities/user-reset-passcode-tokens.entity';
 import { SystemPermission } from '../modules/permissions/entities/system-permission.entity';
 import { UserSystemPermission } from '../modules/users/entities/user-system-permission.entity';
 import { User } from '../modules/users/entities/user.entity';
@@ -21,7 +21,7 @@ export const AppDataSource = new DbContext({
   database: DATABASE_NAME,
   synchronize: false,
   logging: true,
-  entities: [User, SystemPermission, UserSystemPermission, UserResetPasswordToken, vUser, Announcement, AnnouncementItem, vAnnouncement],
+  entities: [User, SystemPermission, UserSystemPermission, UserResetPasscodeToken, vUser, Announcement, AnnouncementItem, vAnnouncement],
   subscribers: [],
   namingStrategy: new TitleCaseNamingStrategy(),
   migrationsTableName: '_migrations_history',

@@ -1,4 +1,7 @@
+import { isNullOrEmptyString } from '@/utils';
 import Container, { Service } from 'typedi';
+import { AuthenticationTypes } from '../enums/authentication-type.enum';
+import { getAuthenticationType } from '../helpers/auth.helper';
 import { PasswordService } from './password.service';
 import { PinService } from './pin.service';
 
@@ -12,11 +15,51 @@ export class PasscodeService {
     this._pinService = Container.get(PinService);
   }
 
-  public isPassword(passcode: string | undefined | null): boolean {
+  public isValid(passcode: string | null | undefined): boolean {
+    if (isNullOrEmptyString(passcode)) {
+      return false;
+    }
+
+    return this.isPassword(passcode) || this.isPin(passcode);
+  }
+
+  public match(user: { salt: string; passcode: string | null }, passcode: string | null | undefined): boolean {
+    if (isNullOrEmptyString(passcode) || isNullOrEmptyString(user.passcode)) {
+      return false;
+    }
+
+    const authenticationType = getAuthenticationType(user);
+    switch (authenticationType) {
+      case AuthenticationTypes.Password:
+        return this._passwordService.match(passcode!, user.salt, user.passcode!);
+      case AuthenticationTypes.Pin:
+        return this._pinService.match(passcode!, user.salt, user.passcode!);
+      default:
+        return false;
+    }
+  }
+
+  public getHash(salt: string, passcode: string | null | undefined): string | null {
+    if (isNullOrEmptyString(passcode)) {
+      return null;
+    }
+
+    if (this.isPassword(passcode)) {
+      return this._passwordService.getHash(salt, passcode!);
+    }
+
+    if (this.isPin(passcode)) {
+      return this._pinService.getHash(salt, passcode!);
+    }
+
+    return null;
+  }
+
+  private isPassword(passcode: string | undefined | null): boolean {
     return this._passwordService.isValid(passcode);
   }
 
-  public isPin(passcode: string | undefined | null): boolean {
+  private isPin(passcode: string | undefined | null): boolean {
     return this._pinService.isValid(passcode);
   }
 }

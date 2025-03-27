@@ -1,17 +1,17 @@
 import { REGEX_PATTERNS } from '@config';
 import { IRoutes } from '@interfaces';
 import { validateData } from '@middlewares';
-import { AccountTryingToLogInDto, ActivateAccountDto, AuthController, LoginDto, RefreshTokenDto, ResetPasswordDto } from '@modules/auth';
+import { AccountTryingToLogInDto, ActivateAccountDto, AuthController, LoginDto, RefreshTokenDto, ResetPasscodeDto } from '@modules/auth';
 import express from 'express';
 
 export class AuthRoute implements IRoutes {
-  public static resetPassword: string = 'reset-password';
+  public static resetPasscode: string = 'reset-passcode';
   public path = '/auth';
   public loginPath = '/login';
   public getAccountBeforeLogInPath = `${this.path}/get-account-before-log-in`;
-  public requestResetPasswordPath = `${this.path}/request-reset-password`;
-  public checkResetPasswordTokenPath = `${this.path}/check-reset-password-token`;
-  public resetPasswordPath = `${this.path}/${AuthRoute.resetPassword}`;
+  public requestResetPasscodePath = `${this.path}/request-reset-passcode`;
+  public checkResetPasscodeTokenPath = `${this.path}/check-reset-passcode-token`;
+  public resetPasscodePath = `${this.path}/${AuthRoute.resetPasscode}`;
   public refreshTokenPath = `${this.path}/refresh-token`;
   public getAccountToActivatePath = `${this.path}/get-account-to-activate`;
   public activateAccountPath = `${this.path}/activate-account`;
@@ -27,12 +27,12 @@ export class AuthRoute implements IRoutes {
   private initializeRoutes(): void {
     this.router.post(this.loginPath, [validateData(LoginDto)], this._authController.logIn);
     this.router.post(this.getAccountBeforeLogInPath, [validateData(AccountTryingToLogInDto)], this._authController.getAccountBeforeLogIn);
-    this.router.post(this.requestResetPasswordPath, [validateData(AccountTryingToLogInDto)], this._authController.requestResetPassword);
-    this.router.post(this.checkResetPasswordTokenPath + `/:userId(${REGEX_PATTERNS.GUID})/:token`, this._authController.checkResetPasswordToken);
+    this.router.post(this.requestResetPasscodePath, [validateData(AccountTryingToLogInDto)], this._authController.requestResetPasscode);
+    this.router.post(this.checkResetPasscodeTokenPath + `/:userId(${REGEX_PATTERNS.GUID})/:token`, this._authController.checkResetPasscodeToken);
     this.router.post(
-      this.resetPasswordPath + `/:userId(${REGEX_PATTERNS.GUID})`,
-      [validateData(ResetPasswordDto)],
-      this._authController.resetPassword,
+      this.resetPasscodePath + `/:userId(${REGEX_PATTERNS.GUID})`,
+      [validateData(ResetPasscodeDto)],
+      this._authController.resetPasscode,
     );
     this.router.post(this.refreshTokenPath, [validateData(RefreshTokenDto)], this._authController.refreshAccessToken);
     this.router.post(this.getAccountToActivatePath + `/:userId(${REGEX_PATTERNS.GUID})`, this._authController.getAccountToActivate);

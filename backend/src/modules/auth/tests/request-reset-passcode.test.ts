@@ -8,9 +8,9 @@ import {
   AccountTryingToLogInDto,
   AuthRoute,
   LoginDto,
-  RequestResetPasswordResponseDto,
-  ResetPasswordDto,
-  ResetPasswordResponseDto,
+  RequestResetPasscodeResponseDto,
+  ResetPasscodeDto,
+  ResetPasscodeResponseDto,
 } from '@modules/auth';
 import { EmailService } from '@modules/notifications';
 import { PermissionsRoute } from '@modules/permissions';
@@ -20,7 +20,7 @@ import { EventDispatcher } from 'event-dispatch';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
 
-describe('POST /auth/request-reset-password', () => {
+describe('POST /auth/request-reset-passcode', () => {
   const userRoute = new UserRoute();
   const authRoute = new AuthRoute();
   const permissionsRoute = new PermissionsRoute();
@@ -28,16 +28,16 @@ describe('POST /auth/request-reset-password', () => {
   let adminAccessToken: string | undefined;
   let mockSendMail: any;
   let sendWelcomeEmailSpy: any;
-  let originalSendEmailResetPassword: (user: IUser, link: string) => Promise<boolean>;
+  let originalSendEmailResetPasscode: (user: IUser, link: string) => Promise<boolean>;
 
   beforeAll(async () => {
     const emailService = new EmailService();
-    originalSendEmailResetPassword = emailService.sendEmailResetPassword.bind(emailService);
+    originalSendEmailResetPasscode = emailService.sendEmailResetPasscode.bind(emailService);
 
     await app.initialize([userRoute, permissionsRoute]);
-    const { email, password } = getAdminLoginData();
+    const { email, passcode } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { email, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -97,10 +97,10 @@ describe('POST /auth/request-reset-password', () => {
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
       const response = await request(app.getServer())
-        .post(authRoute.requestResetPasswordPath)
+        .post(authRoute.requestResetPasscodePath)
         .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: RequestResetPasswordResponseDto = response.body;
+      const body: RequestResetPasscodeResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -150,10 +150,10 @@ describe('POST /auth/request-reset-password', () => {
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
       const response = await request(app.getServer())
-        .post(authRoute.requestResetPasswordPath)
+        .post(authRoute.requestResetPasscodePath)
         .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: RequestResetPasswordResponseDto = response.body;
+      const body: RequestResetPasscodeResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -197,10 +197,10 @@ describe('POST /auth/request-reset-password', () => {
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
       const response = await request(app.getServer())
-        .post(authRoute.requestResetPasswordPath)
+        .post(authRoute.requestResetPasscodePath)
         .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: RequestResetPasswordResponseDto = response.body;
+      const body: RequestResetPasscodeResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -219,12 +219,12 @@ describe('POST /auth/request-reset-password', () => {
       expect(deleteResponse.statusCode).toBe(200);
     });
 
-    it('when exist more then one user with given email and only one has a password set', async () => {
+    it('when exist more then one user with given email and only one has a passcode set', async () => {
       const user1 = generateValidUserWithPassword();
       const user2 = generateValidUserWithPassword();
       const email = user1.email;
       user2.email = email;
-      user2.password = undefined;
+      user2.passcode = undefined;
       expect(user1.email).toBe(user2.email);
       expect(user1.phone).not.toBe(user2.phone);
 
@@ -257,10 +257,10 @@ describe('POST /auth/request-reset-password', () => {
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
       const response = await request(app.getServer())
-        .post(authRoute.requestResetPasswordPath)
+        .post(authRoute.requestResetPasscodePath)
         .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: RequestResetPasswordResponseDto = response.body;
+      const body: RequestResetPasscodeResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -279,11 +279,11 @@ describe('POST /auth/request-reset-password', () => {
       expect(deleteResponse.statusCode).toBe(200);
     });
 
-    it('when exist more then one user with given email and NO one has a password set', async () => {
+    it('when exist more then one user with given email and NO one has a passcode set', async () => {
       const user1 = generateValidUserWithPassword();
-      user1.password = undefined;
+      user1.passcode = undefined;
       const user2 = generateValidUserWithPassword();
-      user2.password = undefined;
+      user2.passcode = undefined;
       const email = user1.email;
       user2.email = email;
       expect(user1.email).toBe(user2.email);
@@ -318,10 +318,10 @@ describe('POST /auth/request-reset-password', () => {
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
       const response = await request(app.getServer())
-        .post(authRoute.requestResetPasswordPath)
+        .post(authRoute.requestResetPasscodePath)
         .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: RequestResetPasswordResponseDto = response.body;
+      const body: RequestResetPasscodeResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -345,7 +345,7 @@ describe('POST /auth/request-reset-password', () => {
 
       for (const email of testData) {
         const response = await request(app.getServer())
-          .post(authRoute.requestResetPasswordPath)
+          .post(authRoute.requestResetPasscodePath)
           .send({ email } satisfies AccountTryingToLogInDto);
         expect(response.statusCode).toBe(400);
         const data = response.body.data as BadRequestException;
@@ -358,9 +358,9 @@ describe('POST /auth/request-reset-password', () => {
   });
 
   describe('when login data are valid (given email is unique, not exist, etc.)', () => {
-    it('when exist only one active user with given e-mail and user password is NOT set', async () => {
+    it('when exist only one active user with given e-mail and user passcode is NOT set', async () => {
       const user = generateValidUserWithPassword();
-      user.password = undefined;
+      user.passcode = undefined;
 
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -376,10 +376,10 @@ describe('POST /auth/request-reset-password', () => {
       expect(activateNewUserResponse.statusCode).toBe(200);
 
       const response = await request(app.getServer())
-        .post(authRoute.requestResetPasswordPath)
+        .post(authRoute.requestResetPasscodePath)
         .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: RequestResetPasswordResponseDto = response.body;
+      const body: RequestResetPasscodeResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -393,9 +393,9 @@ describe('POST /auth/request-reset-password', () => {
       expect(mockSendMail).toHaveBeenCalledTimes(2);
     });
 
-    it('when exist only one inactive user with given e-mail and user password is NOT set', async () => {
+    it('when exist only one inactive user with given e-mail and user passcode is NOT set', async () => {
       const user = generateValidUserWithPassword();
-      user.password = undefined;
+      user.passcode = undefined;
 
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -405,10 +405,10 @@ describe('POST /auth/request-reset-password', () => {
       expect(newUserDto.email).toBe(user.email);
 
       const response = await request(app.getServer())
-        .post(authRoute.requestResetPasswordPath)
+        .post(authRoute.requestResetPasscodePath)
         .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const body: RequestResetPasswordResponseDto = response.body;
+      const body: RequestResetPasscodeResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -426,10 +426,10 @@ describe('POST /auth/request-reset-password', () => {
       const testData: any[] = [generateRandomEmail(), 'not-email', 'not-email@', 'not-email@domain', 'not-email@domain.', 'not-email@.com'];
       for (const email of testData) {
         const response = await request(app.getServer())
-          .post(authRoute.requestResetPasswordPath)
+          .post(authRoute.requestResetPasscodePath)
           .send({ email } satisfies AccountTryingToLogInDto);
         expect(response.statusCode).toBe(200);
-        const body: RequestResetPasswordResponseDto = response.body;
+        const body: RequestResetPasscodeResponseDto = response.body;
         expect(typeof body).toBe('object');
         expect(body.data).toBe(true);
 
@@ -439,7 +439,7 @@ describe('POST /auth/request-reset-password', () => {
 
     it('email is sent only once when token is still valid (not expired)', async () => {
       const user = generateValidUserWithPassword();
-      user.password = undefined;
+      user.passcode = undefined;
 
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -455,15 +455,15 @@ describe('POST /auth/request-reset-password', () => {
       expect(activateNewUserResponse.statusCode).toBe(200);
 
       let response = await request(app.getServer())
-        .post(authRoute.requestResetPasswordPath)
+        .post(authRoute.requestResetPasscodePath)
         .send({ email: user.email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      let body: RequestResetPasswordResponseDto = response.body;
+      let body: RequestResetPasscodeResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
       response = await request(app.getServer())
-        .post(authRoute.requestResetPasswordPath)
+        .post(authRoute.requestResetPasscodePath)
         .send({ email: user.email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
       body = response.body;
@@ -482,20 +482,20 @@ describe('POST /auth/request-reset-password', () => {
 
     it('when exist only one user (via e-mail) and user password is set', async () => {
       let url = '';
-      const mockSendEmailResetPassword = jest.fn().mockImplementation(async (user: IUser, link: string) => {
+      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (user: IUser, link: string) => {
         url = link;
-        return await originalSendEmailResetPassword(user, link);
+        return await originalSendEmailResetPasscode(user, link);
       });
-      jest.spyOn(EmailService.prototype, 'sendEmailResetPassword').mockImplementation(mockSendEmailResetPassword);
+      jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
-      const { email, uuid: userId, password } = getAdminLoginData();
+      const { email, uuid: userId, passcode } = getAdminLoginData();
       let response = await request(app.getServer())
-        .post(authRoute.requestResetPasswordPath)
+        .post(authRoute.requestResetPasscodePath)
         .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const resetPasswordBody: RequestResetPasswordResponseDto = response.body;
-      expect(typeof resetPasswordBody).toBe('object');
-      expect(resetPasswordBody.data).toBe(true);
+      const resetPasscodeBody: RequestResetPasscodeResponseDto = response.body;
+      expect(typeof resetPasscodeBody).toBe('object');
+      expect(resetPasscodeBody.data).toBe(true);
 
       const splittedUrl = url?.split('/') ?? [];
       expect(splittedUrl.length).toBe(7);
@@ -503,7 +503,7 @@ describe('POST /auth/request-reset-password', () => {
       expect(splittedUrl[1]).toBe('');
       expect(splittedUrl[2]).toBe('localhost:4200');
       expect(splittedUrl[3]).toBe('#');
-      expect(splittedUrl[4]).toBe('reset-password');
+      expect(splittedUrl[4]).toBe('reset-passcode');
       expect(splittedUrl[5].length).toBe(36); // UUID v4
       expect(splittedUrl[5]).toBe(userId);
       expect(splittedUrl[6].length).toBe(64);
@@ -511,35 +511,35 @@ describe('POST /auth/request-reset-password', () => {
       const token = splittedUrl[6];
 
       response = await request(app.getServer())
-        .post(authRoute.resetPasswordPath + `/${userId}`)
-        .send({ token, passcode: password } satisfies ResetPasswordDto);
+        .post(authRoute.resetPasscodePath + `/${userId}`)
+        .send({ token, passcode } satisfies ResetPasscodeDto);
       expect(response.statusCode).toBe(200);
 
-      const resetPasswordResultBody: ResetPasswordResponseDto = response.body;
-      expect(typeof resetPasswordResultBody).toBe('object');
-      const { data, message }: ResetPasswordResponseDto = resetPasswordResultBody;
-      expect(data.isPasswordSet).toBe(true);
-      expect(message).toBe(events.users.userPasswordChanged);
+      const resetPasscodeResultBody: ResetPasscodeResponseDto = response.body;
+      expect(typeof resetPasscodeResultBody).toBe('object');
+      const { data, message }: ResetPasscodeResponseDto = resetPasscodeResultBody;
+      expect(data.isPasscodeSet).toBe(true);
+      expect(message).toBe(events.users.userPasscodeChanged);
 
-      expect(mockSendEmailResetPassword).toHaveBeenCalledTimes(1);
+      expect(mockSendEmailResetPasscode).toHaveBeenCalledTimes(1);
       expect(mockSendMail).toHaveBeenCalledTimes(1);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
-        .filter(([, eventHandler]) => ![testEventHandlers.onUserPasswordChanged].includes(eventHandler))
+        .filter(([, eventHandler]) => ![testEventHandlers.onUserPasscodeChanged].includes(eventHandler))
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
-      expect(testEventHandlers.onUserPasswordChanged).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserPasscodeChanged).toHaveBeenCalledTimes(1);
     });
 
     it('when exist only one user (via e-mail and phone) and user password is set', async () => {
       let url = '';
-      const mockSendEmailResetPassword = jest.fn().mockImplementation(async (user: IUser, link: string) => {
+      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (user: IUser, link: string) => {
         url = link;
-        return await originalSendEmailResetPassword(user, link);
+        return await originalSendEmailResetPasscode(user, link);
       });
-      jest.spyOn(EmailService.prototype, 'sendEmailResetPassword').mockImplementation(mockSendEmailResetPassword);
+      jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
       const user = generateValidUserWithPassword();
       user.email = getAdminLoginData().email;
@@ -553,12 +553,12 @@ describe('POST /auth/request-reset-password', () => {
       expect(newUserDto.email).toBe(user.email);
 
       let response = await request(app.getServer())
-        .post(authRoute.requestResetPasswordPath)
+        .post(authRoute.requestResetPasscodePath)
         .send({ email: user.email, phone: user.phone } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
-      const resetPasswordBody: RequestResetPasswordResponseDto = response.body;
-      expect(typeof resetPasswordBody).toBe('object');
-      expect(resetPasswordBody.data).toBe(true);
+      const resetPasscodeBody: RequestResetPasscodeResponseDto = response.body;
+      expect(typeof resetPasscodeBody).toBe('object');
+      expect(resetPasscodeBody.data).toBe(true);
 
       const splittedUrl = url?.split('/') ?? [];
       expect(splittedUrl.length).toBe(7);
@@ -566,7 +566,7 @@ describe('POST /auth/request-reset-password', () => {
       expect(splittedUrl[1]).toBe('');
       expect(splittedUrl[2]).toBe('localhost:4200');
       expect(splittedUrl[3]).toBe('#');
-      expect(splittedUrl[4]).toBe('reset-password');
+      expect(splittedUrl[4]).toBe('reset-passcode');
       expect(splittedUrl[5].length).toBe(36); // UUID v4
       expect(splittedUrl[5]).toBe(newUserDto.id);
       expect(splittedUrl[6].length).toBe(64);
@@ -574,15 +574,15 @@ describe('POST /auth/request-reset-password', () => {
       const token = splittedUrl[6];
 
       response = await request(app.getServer())
-        .post(authRoute.resetPasswordPath + `/${newUserDto.id}`)
-        .send({ token, passcode: user.password! } satisfies ResetPasswordDto);
+        .post(authRoute.resetPasscodePath + `/${newUserDto.id}`)
+        .send({ token, passcode: user.passcode! } satisfies ResetPasscodeDto);
       expect(response.statusCode).toBe(200);
 
-      const resetPasswordResultBody: ResetPasswordResponseDto = response.body;
-      expect(typeof resetPasswordResultBody).toBe('object');
-      const { data, message }: ResetPasswordResponseDto = resetPasswordResultBody;
-      expect(data.isPasswordSet).toBe(true);
-      expect(message).toBe(events.users.userPasswordChanged);
+      const resetPasscodeResultBody: ResetPasscodeResponseDto = response.body;
+      expect(typeof resetPasscodeResultBody).toBe('object');
+      const { data, message }: ResetPasscodeResponseDto = resetPasscodeResultBody;
+      expect(data.isPasscodeSet).toBe(true);
+      expect(message).toBe(events.users.userPasscodeChanged);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
@@ -590,7 +590,7 @@ describe('POST /auth/request-reset-password', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
 
-      expect(mockSendEmailResetPassword).toHaveBeenCalledTimes(1);
+      expect(mockSendEmailResetPasscode).toHaveBeenCalledTimes(1);
       expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
       expect(mockSendMail).toHaveBeenCalledTimes(2);
 
@@ -598,12 +598,12 @@ describe('POST /auth/request-reset-password', () => {
       Object.entries(testEventHandlers)
         .filter(
           ([, eventHandler]) =>
-            ![testEventHandlers.onUserCreated, testEventHandlers.onUserPasswordChanged, testEventHandlers.onUserDeleted].includes(eventHandler),
+            ![testEventHandlers.onUserCreated, testEventHandlers.onUserPasscodeChanged, testEventHandlers.onUserDeleted].includes(eventHandler),
         )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
-      expect(testEventHandlers.onUserPasswordChanged).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserPasscodeChanged).toHaveBeenCalledTimes(1);
     });
   });
 

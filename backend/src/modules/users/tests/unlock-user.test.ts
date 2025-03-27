@@ -25,9 +25,9 @@ describe('POST /user/:id/unlock', () => {
 
   beforeAll(async () => {
     await app.initialize([userRoute, permissionsRoute, authRoute]);
-    const { email, password } = getAdminLoginData();
+    const { email, passcode } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { email, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -62,7 +62,7 @@ describe('POST /user/:id/unlock', () => {
       expect(activateUserResponse.statusCode).toBe(200);
 
       // lock user
-      const loginData: LoginDto = { email: newUserDto.email, phone: newUserDto.phone, password: user.password + 'invalid_password' };
+      const loginData: LoginDto = { email: newUserDto.email, phone: newUserDto.phone, passcode: user.passcode + 'invalid_passcode' };
       for (let index = 1; index <= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
         const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
         expect(loginResponse.statusCode).toBe(400);
@@ -70,13 +70,13 @@ describe('POST /user/:id/unlock', () => {
         expect(typeof loginResponse?.body).toBe('object');
         const data = loginResponse.body.data;
         const { message: loginMessage, args: loginArgs }: { message: string; args: string[] } = data;
-        expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
+        expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Passcode);
         expect(loginArgs).toBeUndefined();
       }
 
       let loginResponse = await request(app.getServer())
         .post(authRoute.loginPath)
-        .send({ email: newUserDto.email, password: user.password } satisfies LoginDto);
+        .send({ email: newUserDto.email, passcode: user.passcode } satisfies LoginDto);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const data = loginResponse.body.data as BadRequestException;
@@ -98,7 +98,7 @@ describe('POST /user/:id/unlock', () => {
 
       loginResponse = await request(app.getServer())
         .post(authRoute.loginPath)
-        .send({ email: newUserDto.email, password: user.password } satisfies LoginDto);
+        .send({ email: newUserDto.email, passcode: user.passcode } satisfies LoginDto);
       body = loginResponse.body as LoginResponseDto;
       expect(typeof body).toBe('object');
       expect(loginResponse.statusCode).toBe(200);
@@ -168,7 +168,7 @@ describe('POST /user/:id/unlock', () => {
 
       const loginResponse = await request(app.getServer())
         .post(authRoute.loginPath)
-        .send({ email: newUserDto.email, password: user.password } satisfies LoginDto);
+        .send({ email: newUserDto.email, passcode: user.passcode } satisfies LoginDto);
       body = loginResponse.body as LoginResponseDto;
       expect(typeof body).toBe('object');
       expect(loginResponse.statusCode).toBe(200);
@@ -243,7 +243,7 @@ describe('POST /user/:id/unlock', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       const unlockUserResponse = await request(app.getServer())
         .post(userRoute.path + '/' + user.id + '/' + userRoute.unlockPath)
@@ -314,7 +314,7 @@ describe('POST /user/:id/unlock', () => {
         }
       });
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       const unlockUserResponse = await request(app.getServer())
         .post(userRoute.path + '/' + user.id + '/' + userRoute.unlockPath)

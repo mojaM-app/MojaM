@@ -1,2 +1,2 @@
 SELECT * FROM users;
-DELETE FROM users WHERE Id > 7;
+DELETE FROM users WHERE Id > 1;

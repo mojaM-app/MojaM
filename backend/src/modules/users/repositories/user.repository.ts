@@ -1,7 +1,7 @@
+import { ResetPasscodeTokensRepository } from '@/modules/auth/repositories/reset-passcode-tokens.repository';
 import { relatedDataNames } from '@db';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { CryptoService, PasswordService, PinService } from '@modules/auth';
-import { ResetPasswordTokensRepository } from '@modules/auth/repositories/reset-password-tokens.repository';
+import { CryptoService, PasscodeService } from '@modules/auth';
 import {
   ActivateUserReqDto,
   CreateUserDto,
@@ -17,22 +17,20 @@ import Container, { Service } from 'typedi';
 import { Not } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { ICreateUser } from '../interfaces/create-user.interfaces';
-import { IUpdateUser, IUpdateUserPassword, IUpdateUserPin } from '../interfaces/update-user.interfaces';
+import { IUpdateUser, IUpdateUserPasscode } from '../interfaces/update-user.interfaces';
 import { BaseUserRepository } from './base.user.repository';
 
 @Service()
 export class UserRepository extends BaseUserRepository {
   private readonly _cryptoService: CryptoService;
-  private readonly _passwordService: PasswordService;
-  private readonly _pinService: PinService;
-  private readonly _resetPasswordTokensRepository: ResetPasswordTokensRepository;
+  private readonly _passcodeService: PasscodeService;
+  private readonly _resetPasscodeTokensRepository: ResetPasscodeTokensRepository;
 
   public constructor() {
     super();
     this._cryptoService = Container.get(CryptoService);
-    this._passwordService = Container.get(PasswordService);
-    this._pinService = Container.get(PinService);
-    this._resetPasswordTokensRepository = Container.get(ResetPasswordTokensRepository);
+    this._passcodeService = Container.get(PasscodeService);
+    this._resetPasscodeTokensRepository = Container.get(ResetPasscodeTokensRepository);
   }
 
   public async findManyByLogin(email: string | null | undefined, phone?: string | null | undefined): Promise<User[]> {
@@ -70,16 +68,14 @@ export class UserRepository extends BaseUserRepository {
     const userData: CreateUserDto = reqDto.userData;
 
     const salt = this._cryptoService.generateSalt();
-    const hashedPassword = (userData.password?.length ?? 0) > 0 ? this._passwordService.getHash(salt, userData.password!) : null;
-    const hashedPin = (userData.pin?.length ?? 0) > 0 ? this._pinService.getHash(salt, userData.pin!) : null;
+    const hashedPasscode = this._passcodeService.getHash(salt, userData.passcode);
     const model = {
       email: userData.email,
       phone: userData.phone,
       firstName: userData.firstName,
       lastName: userData.lastName,
       joiningDate: userData.joiningDate,
-      password: hashedPassword,
-      pin: hashedPin,
+      passcode: hashedPasscode,
       isActive: false,
       salt,
       refreshTokenKey: this._cryptoService.generateUserRefreshTokenKey(),
@@ -137,7 +133,7 @@ export class UserRepository extends BaseUserRepository {
 
   public async delete(userId: number, reqDto: DeleteUserReqDto): Promise<boolean> {
     await this._dbContext.userSystemPermissions.createQueryBuilder().delete().where('userId = :userId', { userId }).execute();
-    await this._resetPasswordTokensRepository.deleteTokens(userId);
+    await this._resetPasscodeTokensRepository.deleteTokens(userId);
 
     await this._dbContext.users.delete({ id: userId });
 
@@ -211,37 +207,18 @@ export class UserRepository extends BaseUserRepository {
     await this._update(model);
   }
 
-  public async setPassword(userId: number, password: string): Promise<void> {
+  public async setPasscode(userId: number, passcode: string): Promise<void> {
     const salt = this._cryptoService.generateSalt();
-    const hashedPassword = this._passwordService.getHash(salt, password);
+    const hashedPasscode = this._passcodeService.getHash(salt, passcode);
 
     const model = {
       userId,
       userData: {
-        password: hashedPassword,
+        passcode: hashedPasscode!,
         salt,
         emailConfirmed: true,
         failedLoginAttempts: 0,
-        pin: null,
-      } satisfies IUpdateUserPassword,
-    } satisfies UpdateUserModel;
-
-    await this._update(model);
-  }
-
-  public async setPin(userId: number, pin: string): Promise<void> {
-    const salt = this._cryptoService.generateSalt();
-    const hashedPin = this._pinService.getHash(salt, pin);
-
-    const model = {
-      userId,
-      userData: {
-        pin: hashedPin,
-        salt,
-        emailConfirmed: true,
-        failedLoginAttempts: 0,
-        password: null,
-      } satisfies IUpdateUserPin,
+      } satisfies IUpdateUserPasscode,
     } satisfies UpdateUserModel;
 
     await this._update(model);

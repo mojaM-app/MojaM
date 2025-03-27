@@ -5,7 +5,16 @@ import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import { IRequestWithIdentity } from '@interfaces';
-import { AuthRoute, LoginDto, LoginResponseDto, RefreshTokenDto, RefreshTokenResponseDto, setIdentity } from '@modules/auth';
+import {
+  ActivateAccountDto,
+  ActivateAccountResponseDto,
+  AuthRoute,
+  LoginDto,
+  LoginResponseDto,
+  RefreshTokenDto,
+  RefreshTokenResponseDto,
+  setIdentity,
+} from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
 import * as Utils from '@utils';
@@ -28,10 +37,10 @@ describe('POST /auth/refresh-token', () => {
   let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
-    const { email, password } = getAdminLoginData();
+    const { email, passcode } = getAdminLoginData();
     await app.initialize([userRoute, permissionsRoute]);
 
-    adminAccessToken = (await loginAs(app, { email, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -52,10 +61,10 @@ describe('POST /auth/refresh-token', () => {
 
   describe('new access token should be generated', () => {
     it('when current access token is expired', async () => {
-      const { email, password } = getAdminLoginData();
+      const { email, passcode } = getAdminLoginData();
       const loginResponse = await request(app.getServer())
         .post(authRoute.loginPath)
-        .send({ email, password } satisfies LoginDto);
+        .send({ email, passcode } satisfies LoginDto);
       const body: LoginResponseDto = loginResponse.body;
       expect(typeof body).toBe('object');
       expect(loginResponse.statusCode).toBe(200);
@@ -160,10 +169,10 @@ describe('POST /auth/refresh-token', () => {
 
   describe('new access token should NOT be generated', () => {
     it('when current: refresh and access token are expired', async () => {
-      const { email, password } = getAdminLoginData();
+      const { email, passcode } = getAdminLoginData();
       const loginResponse = await request(app.getServer())
         .post(authRoute.loginPath)
-        .send({ email, password } satisfies LoginDto);
+        .send({ email, passcode } satisfies LoginDto);
       const body: LoginResponseDto = loginResponse.body;
       expect(typeof body).toBe('object');
       expect(loginResponse.statusCode).toBe(200);
@@ -242,10 +251,10 @@ describe('POST /auth/refresh-token', () => {
     });
 
     it('when refresh token is empty', async () => {
-      const { email, password } = getAdminLoginData();
+      const { email, passcode } = getAdminLoginData();
       const loginResponse = await request(app.getServer())
         .post(authRoute.loginPath)
-        .send({ email, password } satisfies LoginDto);
+        .send({ email, passcode } satisfies LoginDto);
       const body: LoginResponseDto = loginResponse.body;
       expect(typeof body).toBe('object');
       expect(loginResponse.statusCode).toBe(200);
@@ -295,6 +304,62 @@ describe('POST /auth/refresh-token', () => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onUserRefreshedToken).not.toHaveBeenCalled();
+    });
+
+    it('when user stored in refresh token not exists', async () => {
+      const requestData = generateValidUserWithPassword();
+      const createUserResponse = await request(app.getServer())
+        .post(userRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(201);
+      let body = createUserResponse.body;
+      const { data: newUserDto }: CreateUserResponseDto = body;
+      expect(newUserDto?.id).toBeDefined();
+
+      const activateResponse = await request(app.getServer())
+        .post(authRoute.activateAccountPath + '/' + newUserDto.id)
+        .send({} satisfies ActivateAccountDto);
+      expect(activateResponse.statusCode).toBe(200);
+      body = activateResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: userToActivateResult }: ActivateAccountResponseDto = body;
+      expect(userToActivateResult).toStrictEqual({
+        isActive: true,
+      });
+
+      const newUserRefreshToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.refreshToken;
+      expect(newUserRefreshToken).toBeDefined();
+
+      const deleteResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + newUserDto.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteResponse.statusCode).toBe(200);
+
+      const refreshTokenResponse = await request(app.getServer())
+        .post(authRoute.refreshTokenPath)
+        .send({
+          refreshToken: newUserRefreshToken,
+          accessToken: adminAccessToken,
+        } satisfies RefreshTokenDto);
+      expect(refreshTokenResponse.statusCode).toBe(200);
+      expect(refreshTokenResponse.body.data).toBeNull();
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onUserLoggedIn,
+              testEventHandlers.onUserDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
     });
 
     afterEach(() => {

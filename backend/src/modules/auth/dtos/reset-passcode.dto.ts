@@ -6,7 +6,7 @@ import { IsPasswordOrPinValid } from '@validators';
 import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class ResetPasswordDto {
+export class ResetPasscodeDto {
   @IsNotEmpty({
     message: errorKeys.users.Invalid_Passcode,
   })
@@ -20,35 +20,35 @@ export class ResetPasswordDto {
   public passcode: string;
 
   @IsNotEmpty({
-    message: errorKeys.login.Invalid_Reset_Password_Token,
+    message: errorKeys.login.Invalid_Reset_Passcode_Token,
   })
   @IsString({
-    message: errorKeys.login.Invalid_Reset_Password_Token,
+    message: errorKeys.login.Invalid_Reset_Passcode_Token,
   })
   @Transform(DtoTransformFunctions.returnNullIfEmpty)
   public token: string;
 }
 
-export class ResetPasswordReqDto {
+export class ResetPasscodeReqDto {
   public readonly userGuid: string | undefined;
-  public readonly model: ResetPasswordDto | undefined;
+  public readonly model: ResetPasscodeDto | undefined;
 
-  public constructor(userGuid: string | undefined, model: ResetPasswordDto | undefined) {
+  public constructor(userGuid: string | undefined, model: ResetPasscodeDto | undefined) {
     this.userGuid = userGuid;
     this.model = model;
   }
 }
 
-export interface IResetPasswordResultDto {
-  isPasswordSet: boolean;
+export interface IResetPasscodeResultDto {
+  isPasscodeSet: boolean;
 }
 
-export class ResetPasswordResponseDto implements IResponse<IResetPasswordResultDto> {
-  public readonly data: IResetPasswordResultDto;
+export class ResetPasscodeResponseDto implements IResponse<IResetPasscodeResultDto> {
+  public readonly data: IResetPasscodeResultDto;
   public readonly message: string;
 
-  public constructor(result: IResetPasswordResultDto) {
+  public constructor(result: IResetPasscodeResultDto) {
     this.data = result;
-    this.message = events.users.userPasswordChanged;
+    this.message = events.users.userPasscodeChanged;
   }
 }

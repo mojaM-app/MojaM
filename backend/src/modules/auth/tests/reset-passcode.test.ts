@@ -8,11 +8,11 @@ import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.help
 import {
   AccountTryingToLogInDto,
   AuthRoute,
-  CheckResetPasswordTokenResponseDto,
+  CheckResetPasscodeTokenResponseDto,
   LoginDto,
-  RequestResetPasswordResponseDto,
-  ResetPasswordDto,
-  ResetPasswordResponseDto,
+  RequestResetPasscodeResponseDto,
+  ResetPasscodeDto,
+  ResetPasscodeResponseDto,
 } from '@modules/auth';
 import { EmailService } from '@modules/notifications';
 import { PermissionsRoute } from '@modules/permissions';
@@ -25,23 +25,23 @@ import ms from 'ms';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
 
-describe('POST /auth/reset-password', () => {
+describe('POST /auth/reset-passcode', () => {
   const userRoute = new UserRoute();
   const authRoute = new AuthRoute();
   const permissionsRoute = new PermissionsRoute();
   const app = new App();
   let adminAccessToken: string | undefined;
   let mockSendMail: any;
-  let originalSendEmailResetPassword: (user: IUser, link: string) => Promise<boolean>;
+  let originalSendEmailResetPasscode: (user: IUser, link: string) => Promise<boolean>;
 
   beforeAll(async () => {
     const emailService = new EmailService();
-    originalSendEmailResetPassword = emailService.sendEmailResetPassword.bind(emailService);
+    originalSendEmailResetPasscode = emailService.sendEmailResetPasscode.bind(emailService);
 
     await app.initialize([userRoute, permissionsRoute]);
-    const { email, password } = getAdminLoginData();
+    const { email, passcode } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { email, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -70,18 +70,18 @@ describe('POST /auth/reset-password', () => {
       expect(newUserDto.email).toBe(user.email);
 
       let url = '';
-      const mockSendEmailResetPassword = jest.fn().mockImplementation(async (user: IUser, link: string) => {
+      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (user: IUser, link: string) => {
         url = link;
-        return await originalSendEmailResetPassword(user, link);
+        return await originalSendEmailResetPasscode(user, link);
       });
-      jest.spyOn(EmailService.prototype, 'sendEmailResetPassword').mockImplementation(mockSendEmailResetPassword);
+      jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
-      const requestResetPasswordResponse = await request(app.getServer())
-        .post(authRoute.requestResetPasswordPath)
+      const requestResetPasscodeResponse = await request(app.getServer())
+        .post(authRoute.requestResetPasscodePath)
         .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
-      expect(requestResetPasswordResponse.statusCode).toBe(200);
-      let body: RequestResetPasswordResponseDto | ResetPasswordResponseDto | CheckResetPasswordTokenResponseDto =
-        requestResetPasswordResponse.body as RequestResetPasswordResponseDto;
+      expect(requestResetPasscodeResponse.statusCode).toBe(200);
+      let body: RequestResetPasscodeResponseDto | ResetPasscodeResponseDto | CheckResetPasscodeTokenResponseDto =
+        requestResetPasscodeResponse.body as RequestResetPasscodeResponseDto;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -91,32 +91,32 @@ describe('POST /auth/reset-password', () => {
       const token = splittedUrl[splittedUrl.length - 1];
       expect(token?.length).toBe(64);
 
-      const checkResetPasswordTokenResponse = await request(app.getServer())
-        .post(authRoute.checkResetPasswordTokenPath + '/' + newUserDto.id + '/' + token)
+      const checkResetPasscodeTokenResponse = await request(app.getServer())
+        .post(authRoute.checkResetPasscodeTokenPath + '/' + newUserDto.id + '/' + token)
         .send();
-      expect(checkResetPasswordTokenResponse.statusCode).toBe(200);
-      body = checkResetPasswordTokenResponse.body as CheckResetPasswordTokenResponseDto;
+      expect(checkResetPasscodeTokenResponse.statusCode).toBe(200);
+      body = checkResetPasscodeTokenResponse.body as CheckResetPasscodeTokenResponseDto;
       expect(typeof body).toBe('object');
-      const { data: checkResetPasswordTokenResult } = body;
-      expect(checkResetPasswordTokenResult.isValid).toBe(true);
-      expect(checkResetPasswordTokenResult.userEmail).toBe(newUserDto.email);
+      const { data: checkResetPasscodeTokenResult } = body;
+      expect(checkResetPasscodeTokenResult.isValid).toBe(true);
+      expect(checkResetPasscodeTokenResult.userEmail).toBe(newUserDto.email);
 
       const newPassword = generateRandomPassword();
-      const resetPasswordDto = {
+      const resetPasscodeDto = {
         token,
         passcode: newPassword,
-      } satisfies ResetPasswordDto;
-      const resetPasswordResponse = await request(app.getServer())
-        .post(authRoute.resetPasswordPath + '/' + newUserDto.id)
-        .send(resetPasswordDto);
-      expect(resetPasswordResponse.statusCode).toBe(200);
-      body = resetPasswordResponse.body as ResetPasswordResponseDto;
+      } satisfies ResetPasscodeDto;
+      const resetPasscodeResponse = await request(app.getServer())
+        .post(authRoute.resetPasscodePath + '/' + newUserDto.id)
+        .send(resetPasscodeDto);
+      expect(resetPasscodeResponse.statusCode).toBe(200);
+      body = resetPasscodeResponse.body as ResetPasscodeResponseDto;
       expect(typeof body).toBe('object');
-      const { data: resetPasswordResult, message: resetPasswordMessage } = body;
-      expect(resetPasswordMessage).toBe(events.users.userPasswordChanged);
-      expect(resetPasswordResult.isPasswordSet).toBe(true);
+      const { data: resetPasscodeResult, message: resetPasscodeMessage } = body;
+      expect(resetPasscodeMessage).toBe(events.users.userPasscodeChanged);
+      expect(resetPasscodeResult.isPasscodeSet).toBe(true);
 
-      const newUserAccessToken = (await loginAs(app, { email: newUserDto.email, password: newPassword } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: newUserDto.email, passcode: newPassword } satisfies LoginDto))?.accessToken;
       expect(newUserAccessToken).toBeDefined();
       expect(newUserAccessToken!.length).toBeGreaterThan(1);
 
@@ -132,7 +132,7 @@ describe('POST /auth/reset-password', () => {
           ([, eventHandler]) =>
             ![
               testEventHandlers.onUserCreated,
-              testEventHandlers.onUserPasswordChanged,
+              testEventHandlers.onUserPasscodeChanged,
               testEventHandlers.onUserLoggedIn,
               testEventHandlers.onUserDeleted,
             ].includes(eventHandler),
@@ -142,7 +142,7 @@ describe('POST /auth/reset-password', () => {
         });
 
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserPasswordChanged).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserPasscodeChanged).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
@@ -162,18 +162,18 @@ describe('POST /auth/reset-password', () => {
       expect(activateUserResponse.statusCode).toBe(200);
 
       let url = '';
-      const mockSendEmailResetPassword = jest.fn().mockImplementation(async (user: IUser, link: string) => {
+      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (user: IUser, link: string) => {
         url = link;
-        return await originalSendEmailResetPassword(user, link);
+        return await originalSendEmailResetPasscode(user, link);
       });
-      jest.spyOn(EmailService.prototype, 'sendEmailResetPassword').mockImplementation(mockSendEmailResetPassword);
+      jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
-      const requestResetPasswordResponse = await request(app.getServer())
-        .post(authRoute.requestResetPasswordPath)
+      const requestResetPasscodeResponse = await request(app.getServer())
+        .post(authRoute.requestResetPasscodePath)
         .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
-      expect(requestResetPasswordResponse.statusCode).toBe(200);
-      let body: RequestResetPasswordResponseDto | ResetPasswordResponseDto | CheckResetPasswordTokenResponseDto =
-        requestResetPasswordResponse.body as RequestResetPasswordResponseDto;
+      expect(requestResetPasscodeResponse.statusCode).toBe(200);
+      let body: RequestResetPasscodeResponseDto | ResetPasscodeResponseDto | CheckResetPasscodeTokenResponseDto =
+        requestResetPasscodeResponse.body as RequestResetPasscodeResponseDto;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -183,32 +183,32 @@ describe('POST /auth/reset-password', () => {
       const token = splittedUrl[splittedUrl.length - 1];
       expect(token?.length).toBe(64);
 
-      const checkResetPasswordTokenResponse = await request(app.getServer())
-        .post(authRoute.checkResetPasswordTokenPath + '/' + newUserDto.id + '/' + token)
+      const checkResetPasscodeTokenResponse = await request(app.getServer())
+        .post(authRoute.checkResetPasscodeTokenPath + '/' + newUserDto.id + '/' + token)
         .send();
-      expect(checkResetPasswordTokenResponse.statusCode).toBe(200);
-      body = checkResetPasswordTokenResponse.body as CheckResetPasswordTokenResponseDto;
+      expect(checkResetPasscodeTokenResponse.statusCode).toBe(200);
+      body = checkResetPasscodeTokenResponse.body as CheckResetPasscodeTokenResponseDto;
       expect(typeof body).toBe('object');
-      const { data: checkResetPasswordTokenResult } = body;
-      expect(checkResetPasswordTokenResult.isValid).toBe(true);
-      expect(checkResetPasswordTokenResult.userEmail).toBe(newUserDto.email);
+      const { data: checkResetPasscodeTokenResult } = body;
+      expect(checkResetPasscodeTokenResult.isValid).toBe(true);
+      expect(checkResetPasscodeTokenResult.userEmail).toBe(newUserDto.email);
 
       const newPassword = generateRandomPassword();
-      const resetPasswordDto = {
+      const resetPasscodeDto = {
         token,
         passcode: newPassword,
-      } satisfies ResetPasswordDto;
-      const resetPasswordResponse = await request(app.getServer())
-        .post(authRoute.resetPasswordPath + '/' + newUserDto.id)
-        .send(resetPasswordDto);
-      expect(resetPasswordResponse.statusCode).toBe(200);
-      body = resetPasswordResponse.body as ResetPasswordResponseDto;
+      } satisfies ResetPasscodeDto;
+      const resetPasscodeResponse = await request(app.getServer())
+        .post(authRoute.resetPasscodePath + '/' + newUserDto.id)
+        .send(resetPasscodeDto);
+      expect(resetPasscodeResponse.statusCode).toBe(200);
+      body = resetPasscodeResponse.body as ResetPasscodeResponseDto;
       expect(typeof body).toBe('object');
-      const { data: resetPasswordResult, message: resetPasswordMessage } = body;
-      expect(resetPasswordMessage).toBe(events.users.userPasswordChanged);
-      expect(resetPasswordResult.isPasswordSet).toBe(true);
+      const { data: resetPasscodeResult, message: resetPasscodeMessage } = body;
+      expect(resetPasscodeMessage).toBe(events.users.userPasscodeChanged);
+      expect(resetPasscodeResult.isPasscodeSet).toBe(true);
 
-      const newUserAccessToken = (await loginAs(app, { email: newUserDto.email, password: newPassword } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: newUserDto.email, passcode: newPassword } satisfies LoginDto))?.accessToken;
       expect(newUserAccessToken).toBeDefined();
       expect(newUserAccessToken!.length).toBeGreaterThan(1);
 
@@ -225,7 +225,7 @@ describe('POST /auth/reset-password', () => {
             ![
               testEventHandlers.onUserCreated,
               testEventHandlers.onUserActivated,
-              testEventHandlers.onUserPasswordChanged,
+              testEventHandlers.onUserPasscodeChanged,
               testEventHandlers.onUserLoggedIn,
               testEventHandlers.onUserDeleted,
             ].includes(eventHandler),
@@ -236,7 +236,7 @@ describe('POST /auth/reset-password', () => {
 
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onUserPasswordChanged).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserPasscodeChanged).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
@@ -255,7 +255,7 @@ describe('POST /auth/reset-password', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
 
-      const loginData: LoginDto = { email: newUserDto.email, phone: newUserDto.phone, password: user.password + 'invalid_password' };
+      const loginData: LoginDto = { email: newUserDto.email, phone: newUserDto.phone, passcode: user.passcode + 'invalid_password' };
       for (let index = 1; index <= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
         const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
         expect(loginResponse.statusCode).toBe(400);
@@ -264,23 +264,23 @@ describe('POST /auth/reset-password', () => {
         expect(typeof body).toBe('object');
         const data = body.data as BadRequestException;
         const { message: loginMessage, args: loginArgs } = data;
-        expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Password);
+        expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Passcode);
         expect(loginArgs).toBeUndefined();
       }
 
       let url = '';
-      const mockSendEmailResetPassword = jest.fn().mockImplementation(async (user: IUser, link: string) => {
+      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (user: IUser, link: string) => {
         url = link;
-        return await originalSendEmailResetPassword(user, link);
+        return await originalSendEmailResetPasscode(user, link);
       });
-      jest.spyOn(EmailService.prototype, 'sendEmailResetPassword').mockImplementation(mockSendEmailResetPassword);
+      jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
-      const requestResetPasswordResponse = await request(app.getServer())
-        .post(authRoute.requestResetPasswordPath)
+      const requestResetPasscodeResponse = await request(app.getServer())
+        .post(authRoute.requestResetPasscodePath)
         .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
-      expect(requestResetPasswordResponse.statusCode).toBe(200);
-      let body: RequestResetPasswordResponseDto | ResetPasswordResponseDto | CheckResetPasswordTokenResponseDto | BadRequestException =
-        requestResetPasswordResponse.body as RequestResetPasswordResponseDto;
+      expect(requestResetPasscodeResponse.statusCode).toBe(200);
+      let body: RequestResetPasscodeResponseDto | ResetPasscodeResponseDto | CheckResetPasscodeTokenResponseDto | BadRequestException =
+        requestResetPasscodeResponse.body as RequestResetPasscodeResponseDto;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -290,34 +290,34 @@ describe('POST /auth/reset-password', () => {
       const token = splittedUrl[splittedUrl.length - 1];
       expect(token?.length).toBe(64);
 
-      const checkResetPasswordTokenResponse = await request(app.getServer())
-        .post(authRoute.checkResetPasswordTokenPath + '/' + newUserDto.id + '/' + token)
+      const checkResetPasscodeTokenResponse = await request(app.getServer())
+        .post(authRoute.checkResetPasscodeTokenPath + '/' + newUserDto.id + '/' + token)
         .send();
-      expect(checkResetPasswordTokenResponse.statusCode).toBe(200);
-      body = checkResetPasswordTokenResponse.body as CheckResetPasswordTokenResponseDto;
+      expect(checkResetPasscodeTokenResponse.statusCode).toBe(200);
+      body = checkResetPasscodeTokenResponse.body as CheckResetPasscodeTokenResponseDto;
       expect(typeof body).toBe('object');
-      const { data: checkResetPasswordTokenResult } = body;
-      expect(checkResetPasswordTokenResult.isValid).toBe(true);
-      expect(checkResetPasswordTokenResult.userEmail).toBe(newUserDto.email);
+      const { data: checkResetPasscodeTokenResult } = body;
+      expect(checkResetPasscodeTokenResult.isValid).toBe(true);
+      expect(checkResetPasscodeTokenResult.userEmail).toBe(newUserDto.email);
 
       const newPassword = generateRandomPassword();
-      const resetPasswordDto = {
+      const resetPasscodeDto = {
         token,
         passcode: newPassword,
-      } satisfies ResetPasswordDto;
-      const resetPasswordResponse = await request(app.getServer())
-        .post(authRoute.resetPasswordPath + '/' + newUserDto.id)
-        .send(resetPasswordDto);
-      expect(resetPasswordResponse.statusCode).toBe(200);
-      body = resetPasswordResponse.body as ResetPasswordResponseDto;
+      } satisfies ResetPasscodeDto;
+      const resetPasscodeResponse = await request(app.getServer())
+        .post(authRoute.resetPasscodePath + '/' + newUserDto.id)
+        .send(resetPasscodeDto);
+      expect(resetPasscodeResponse.statusCode).toBe(200);
+      body = resetPasscodeResponse.body as ResetPasscodeResponseDto;
       expect(typeof body).toBe('object');
-      const { data: resetPasswordResult, message: resetPasswordMessage } = body;
-      expect(resetPasswordMessage).toBe(events.users.userPasswordChanged);
-      expect(resetPasswordResult.isPasswordSet).toBe(true);
+      const { data: resetPasscodeResult, message: resetPasscodeMessage } = body;
+      expect(resetPasscodeMessage).toBe(events.users.userPasscodeChanged);
+      expect(resetPasscodeResult.isPasscodeSet).toBe(true);
 
       const loginResponse = await request(app.getServer())
         .post(authRoute.loginPath)
-        .send({ email: newUserDto.email, password: newPassword } satisfies LoginDto);
+        .send({ email: newUserDto.email, passcode: newPassword } satisfies LoginDto);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const data = loginResponse.body.data as BadRequestException;
@@ -340,7 +340,7 @@ describe('POST /auth/reset-password', () => {
               testEventHandlers.onUserActivated,
               testEventHandlers.onUserLockedOut,
               testEventHandlers.onFailedLoginAttempt,
-              testEventHandlers.onUserPasswordChanged,
+              testEventHandlers.onUserPasscodeChanged,
               testEventHandlers.lockedUserTriesToLogIn,
               testEventHandlers.onUserDeleted,
             ].includes(eventHandler),
@@ -354,7 +354,7 @@ describe('POST /auth/reset-password', () => {
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserLockedOut).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onFailedLoginAttempt).toHaveBeenCalledTimes(USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS);
-      expect(testEventHandlers.onUserPasswordChanged).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserPasscodeChanged).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.lockedUserTriesToLogIn).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
@@ -367,13 +367,13 @@ describe('POST /auth/reset-password', () => {
       const invalidUserIds = ['invalid uuid', '', null, undefined];
 
       for (const invalidUserId of invalidUserIds) {
-        const resetPasswordDto = {
+        const resetPasscodeDto = {
           token: 'valid token',
-          passcode: user.password!,
-        } satisfies ResetPasswordDto;
+          passcode: user.passcode!,
+        } satisfies ResetPasscodeDto;
         const response = await request(app.getServer())
-          .post(authRoute.resetPasswordPath + '/' + invalidUserId)
-          .send(resetPasswordDto);
+          .post(authRoute.resetPasscodePath + '/' + invalidUserId)
+          .send(resetPasscodeDto);
         expect(response.statusCode).toBe(404);
       }
 
@@ -389,13 +389,13 @@ describe('POST /auth/reset-password', () => {
       const invalidUserIds = [Guid.EMPTY];
 
       for (const invalidUserId of invalidUserIds) {
-        const resetPasswordDto = {
+        const resetPasscodeDto = {
           token: 'valid token',
-          passcode: user.password!,
-        } satisfies ResetPasswordDto;
+          passcode: user.passcode!,
+        } satisfies ResetPasscodeDto;
         const response = await request(app.getServer())
-          .post(authRoute.resetPasswordPath + '/' + invalidUserId)
-          .send(resetPasswordDto);
+          .post(authRoute.resetPasscodePath + '/' + invalidUserId)
+          .send(resetPasscodeDto);
         expect(response.statusCode).toBe(400);
       }
 
@@ -407,7 +407,7 @@ describe('POST /auth/reset-password', () => {
 
     it('when user not exists', async () => {
       const user = generateValidUserWithPassword();
-      user.password = undefined;
+      user.passcode = undefined;
 
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -428,21 +428,21 @@ describe('POST /auth/reset-password', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
 
-      const resetPasswordModels = [
+      const resetPasscodeModels = [
         {
           token: 'valid token',
           passcode: generateRandomPassword(),
-        } satisfies ResetPasswordDto,
+        } satisfies ResetPasscodeDto,
         {
           token: 'valid token',
           passcode: generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH),
-        } satisfies ResetPasswordDto,
+        } satisfies ResetPasscodeDto,
       ];
 
-      for (const resetPasswordModel of resetPasswordModels) {
+      for (const resetPasscodeModel of resetPasscodeModels) {
         const response = await request(app.getServer())
-          .post(authRoute.resetPasswordPath + '/' + newUserDto.id)
-          .send(resetPasswordModel);
+          .post(authRoute.resetPasscodePath + '/' + newUserDto.id)
+          .send(resetPasscodeModel);
         expect(response.statusCode).toBe(400);
         const data = response.body.data as BadRequestException;
         const errors = data.message.split(',');
@@ -461,28 +461,28 @@ describe('POST /auth/reset-password', () => {
     });
 
     it('when password/pin is invalid', async () => {
-      const resetPasswordModels = [
+      const resetPasscodeModels = [
         {
           token: 'valid token',
           passcode: 'invalid password and token',
-        } satisfies ResetPasswordDto,
+        } satisfies ResetPasscodeDto,
         {
           token: 'valid token',
           passcode: '',
-        } satisfies ResetPasswordDto,
+        } satisfies ResetPasscodeDto,
         {
           token: 'valid token',
           passcode: null as any,
-        } satisfies ResetPasswordDto,
+        } satisfies ResetPasscodeDto,
         {
           token: 'valid token',
           passcode: undefined as any,
-        } satisfies ResetPasswordDto,
+        } satisfies ResetPasscodeDto,
       ];
-      for (const resetPasswordModel of resetPasswordModels) {
+      for (const resetPasscodeModel of resetPasscodeModels) {
         const response = await request(app.getServer())
-          .post(authRoute.resetPasswordPath + '/' + Guid.EMPTY)
-          .send(resetPasswordModel);
+          .post(authRoute.resetPasscodePath + '/' + Guid.EMPTY)
+          .send(resetPasscodeModel);
         expect(response.statusCode).toBe(400);
         const data = response.body.data as BadRequestException;
         const errors = data.message.split(',');
@@ -499,49 +499,49 @@ describe('POST /auth/reset-password', () => {
       const password = generateRandomPassword();
       const pin = generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH);
 
-      const resetPasswordModels = [
+      const resetPasscodeModels = [
         {
           token: '',
           passcode: password,
-        } satisfies ResetPasswordDto,
+        } satisfies ResetPasscodeDto,
         {
           token: null as any,
           passcode: password,
-        } satisfies ResetPasswordDto,
+        } satisfies ResetPasscodeDto,
         {
           token: undefined as any,
           passcode: password,
-        } satisfies ResetPasswordDto,
+        } satisfies ResetPasscodeDto,
         {
           token: 'invalid token',
           passcode: password,
-        } satisfies ResetPasswordDto,
+        } satisfies ResetPasscodeDto,
         {
           token: '',
           passcode: pin,
-        } satisfies ResetPasswordDto,
+        } satisfies ResetPasscodeDto,
         {
           token: null as any,
           passcode: pin,
-        } satisfies ResetPasswordDto,
+        } satisfies ResetPasscodeDto,
         {
           token: undefined as any,
           passcode: pin,
-        } satisfies ResetPasswordDto,
+        } satisfies ResetPasscodeDto,
         {
           token: 'invalid token',
           passcode: pin,
-        } satisfies ResetPasswordDto,
+        } satisfies ResetPasscodeDto,
       ];
 
-      for (const resetPasswordModel of resetPasswordModels) {
+      for (const resetPasscodeModel of resetPasscodeModels) {
         const response = await request(app.getServer())
-          .post(authRoute.resetPasswordPath + '/' + getAdminLoginData().uuid)
-          .send(resetPasswordModel);
+          .post(authRoute.resetPasscodePath + '/' + getAdminLoginData().uuid)
+          .send(resetPasscodeModel);
         expect(response.statusCode).toBe(400);
         const data = response.body.data as BadRequestException;
         const errors = data.message.split(',');
-        expect(errors.filter(x => x !== errorKeys.login.Invalid_Reset_Password_Token).length).toBe(0);
+        expect(errors.filter(x => x !== errorKeys.login.Invalid_Reset_Passcode_Token).length).toBe(0);
       }
 
       // checking events running via eventDispatcher
@@ -559,17 +559,17 @@ describe('POST /auth/reset-password', () => {
       expect(newUserDto.email).toBe(user.email);
 
       let url = '';
-      const mockSendEmailResetPassword = jest.fn().mockImplementation(async (user: IUser, link: string) => {
+      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (user: IUser, link: string) => {
         url = link;
-        return await originalSendEmailResetPassword(user, link);
+        return await originalSendEmailResetPasscode(user, link);
       });
-      jest.spyOn(EmailService.prototype, 'sendEmailResetPassword').mockImplementation(mockSendEmailResetPassword);
+      jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
-      const requestResetPasswordResponse = await request(app.getServer())
-        .post(authRoute.requestResetPasswordPath)
+      const requestResetPasscodeResponse = await request(app.getServer())
+        .post(authRoute.requestResetPasscodePath)
         .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
-      expect(requestResetPasswordResponse.statusCode).toBe(200);
-      const body: RequestResetPasswordResponseDto = requestResetPasswordResponse.body;
+      expect(requestResetPasscodeResponse.statusCode).toBe(200);
+      const body: RequestResetPasscodeResponseDto = requestResetPasscodeResponse.body;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -581,17 +581,17 @@ describe('POST /auth/reset-password', () => {
 
       const { uuid: adminUuid } = getAdminLoginData();
       expect(newUserDto.id).not.toBe(adminUuid);
-      const resetPasswordDto = {
+      const resetPasscodeDto = {
         token,
         passcode: generateRandomPassword(),
-      } satisfies ResetPasswordDto;
+      } satisfies ResetPasscodeDto;
       const response = await request(app.getServer())
-        .post(authRoute.resetPasswordPath + '/' + adminUuid)
-        .send(resetPasswordDto);
+        .post(authRoute.resetPasscodePath + '/' + adminUuid)
+        .send(resetPasscodeDto);
       expect(response.statusCode).toBe(400);
       const data = response.body.data as BadRequestException;
       const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.login.Invalid_Reset_Password_Token).length).toBe(0);
+      expect(errors.filter(x => x !== errorKeys.login.Invalid_Reset_Passcode_Token).length).toBe(0);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
@@ -616,18 +616,18 @@ describe('POST /auth/reset-password', () => {
       expect(newUserDto.email).toBe(user.email);
 
       let url = '';
-      const mockSendEmailResetPassword = jest.fn().mockImplementation(async (user: IUser, link: string) => {
+      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (user: IUser, link: string) => {
         url = link;
-        return await originalSendEmailResetPassword(user, link);
+        return await originalSendEmailResetPasscode(user, link);
       });
-      jest.spyOn(EmailService.prototype, 'sendEmailResetPassword').mockImplementation(mockSendEmailResetPassword);
+      jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
-      const requestResetPasswordResponse = await request(app.getServer())
-        .post(authRoute.requestResetPasswordPath)
+      const requestResetPasscodeResponse = await request(app.getServer())
+        .post(authRoute.requestResetPasscodePath)
         .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
-      expect(requestResetPasswordResponse.statusCode).toBe(200);
-      let body: RequestResetPasswordResponseDto | CheckResetPasswordTokenResponseDto =
-        requestResetPasswordResponse.body as RequestResetPasswordResponseDto;
+      expect(requestResetPasscodeResponse.statusCode).toBe(200);
+      let body: RequestResetPasscodeResponseDto | CheckResetPasscodeTokenResponseDto =
+        requestResetPasscodeResponse.body as RequestResetPasscodeResponseDto;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -641,27 +641,27 @@ describe('POST /auth/reset-password', () => {
       const expirationDate = new Date(Utils.getDateTimeNow().getTime() + expirationPeriod + 1);
       const getDateTimeNow = jest.spyOn(Utils, 'getDateTimeNow').mockImplementation(() => expirationDate);
 
-      const checkResetPasswordTokenResponse = await request(app.getServer())
-        .post(authRoute.checkResetPasswordTokenPath + '/' + newUserDto.id + '/' + token)
+      const checkResetPasscodeTokenResponse = await request(app.getServer())
+        .post(authRoute.checkResetPasscodeTokenPath + '/' + newUserDto.id + '/' + token)
         .send();
-      expect(checkResetPasswordTokenResponse.statusCode).toBe(200);
-      body = checkResetPasswordTokenResponse.body as CheckResetPasswordTokenResponseDto;
+      expect(checkResetPasscodeTokenResponse.statusCode).toBe(200);
+      body = checkResetPasscodeTokenResponse.body as CheckResetPasscodeTokenResponseDto;
       expect(typeof body).toBe('object');
-      const { data: checkResetPasswordTokenResult } = body;
-      expect(checkResetPasswordTokenResult.isValid).toBe(false);
-      expect(checkResetPasswordTokenResult).toEqual({ isValid: false });
+      const { data: checkResetPasscodeTokenResult } = body;
+      expect(checkResetPasscodeTokenResult.isValid).toBe(false);
+      expect(checkResetPasscodeTokenResult).toEqual({ isValid: false });
 
-      const resetPasswordDto = {
+      const resetPasscodeDto = {
         token,
         passcode: generateRandomPassword(),
-      } satisfies ResetPasswordDto;
+      } satisfies ResetPasscodeDto;
       const response = await request(app.getServer())
-        .post(authRoute.resetPasswordPath + '/' + newUserDto.id)
-        .send(resetPasswordDto);
+        .post(authRoute.resetPasscodePath + '/' + newUserDto.id)
+        .send(resetPasscodeDto);
       expect(response.statusCode).toBe(400);
       const data = response.body.data as BadRequestException;
       const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.login.Invalid_Reset_Password_Token).length).toBe(0);
+      expect(errors.filter(x => x !== errorKeys.login.Invalid_Reset_Passcode_Token).length).toBe(0);
 
       getDateTimeNow.mockRestore();
 

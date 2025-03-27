@@ -23,9 +23,9 @@ describe('GET/user-profile', () => {
 
   beforeAll(async () => {
     await app.initialize([userProfileRoute, userRoute, permissionsRoute]);
-    const { email, password } = getAdminLoginData();
+    const { email, passcode } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { email, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -64,7 +64,7 @@ describe('GET/user-profile', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: newUser.email, password: newUser.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))?.accessToken;
 
       const getUserProfileResponse = await request(app.getServer())
         .get(userProfileRoute.path)
@@ -154,7 +154,7 @@ describe('GET/user-profile', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       const getUserProfileResponse = await request(app.getServer())
         .get(userProfileRoute.path)
@@ -211,7 +211,7 @@ describe('GET/user-profile', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: newUser.email, password: newUser.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))?.accessToken;
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)

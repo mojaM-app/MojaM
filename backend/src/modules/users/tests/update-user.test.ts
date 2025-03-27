@@ -24,9 +24,9 @@ describe('PUT /user/:id', () => {
 
   beforeAll(async () => {
     await app.initialize([userRoute, permissionsRoute]);
-    const { email, password } = getAdminLoginData();
+    const { email, passcode } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { email, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -276,16 +276,16 @@ describe('PUT /user/:id', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
 
-      const accessToken1 = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const accessToken1 = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
       expect(accessToken1).toBeDefined();
 
       const updateUserResponse = await request(app.getServer())
         .put(userRoute.path + '/' + user.id)
-        .send({ password: 'strongPassword1@' })
+        .send({ passcode: 'strongPassword1@' })
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(updateUserResponse.statusCode).toBe(200);
 
-      const accessToken2 = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const accessToken2 = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
       expect(accessToken2).toBeDefined();
 
       const deleteResponse = await request(app.getServer())
@@ -911,7 +911,7 @@ describe('PUT /user/:id', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
       const admin = getAdminLoginData();
 
       const updateUserResponse = await request(app.getServer())
@@ -983,7 +983,7 @@ describe('PUT /user/:id', () => {
         }
       });
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
       const admin = getAdminLoginData();
 
       const updateUserResponse = await request(app.getServer())
@@ -1059,7 +1059,7 @@ describe('PUT /user/:id', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateBobResponse.statusCode).toBe(200);
 
-      const bobAccessToken = (await loginAs(app, { email: bobDto.email, password: userBob.password } satisfies LoginDto))?.accessToken;
+      const bobAccessToken = (await loginAs(app, { email: bobDto.email, passcode: userBob.passcode } satisfies LoginDto))?.accessToken;
 
       const deleteBobResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + bobDto.id)

@@ -46,7 +46,7 @@ export class Seed1729350380773 implements MigrationInterface {
     await queryRunner.query(
       'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
         SystemPermissions.UnlockUser +
-        ", 'UnlockUser', 'Permission that allows unlock User (when user locks his profile by entering the wrong login or password several times)', 10)",
+        ", 'UnlockUser', 'Permission that allows unlock User (when user locks his profile by entering the wrong login or passcode several times)', 10)",
     );
     await queryRunner.query(
       "INSERT INTO `system_permissions` (`Id`, `Name`, `Description`) VALUES (20, 'PermissionsAdministration', 'Permissions administration permission group')",
@@ -65,17 +65,17 @@ export class Seed1729350380773 implements MigrationInterface {
     const passwordService = new PasswordService();
     const adminLoginData = getAdminLoginData();
     const salt = '22fae28a2abbb54a638cb5b7f1acb2e9';
-    const password = passwordService.getHash(salt, adminLoginData.password);
+    const passcode = passwordService.getHash(salt, adminLoginData.passcode);
     const refreshTokenKey = 'aedc7970d693ea6e4d71e39bffa7dc4034bae8e858b1ad2bb65a5ffd8356db41';
     await queryRunner.query(
-      "INSERT INTO `users` (`Uuid`,`Email`,`Phone`,`Password`,`Salt`,`RefreshTokenKey`,`FirstName`,`LastName`,`IsActive`) VALUES ('" +
+      "INSERT INTO `users` (`Uuid`,`Email`,`Phone`,`Passcode`,`Salt`,`RefreshTokenKey`,`FirstName`,`LastName`,`IsActive`) VALUES ('" +
         adminLoginData.uuid +
         "', '" +
         adminLoginData.email +
         "', '" +
         adminLoginData.phone +
         "', '" +
-        password +
+        passcode +
         "', '" +
         salt +
         "', '" +

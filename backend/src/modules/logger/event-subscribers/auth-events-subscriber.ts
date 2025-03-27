@@ -5,7 +5,7 @@ import {
   LockedUserTriesToLogInEvent,
   UserLockedOutEvent,
   UserLoggedInEvent,
-  UserPasswordChangedEvent,
+  UserPasscodeChangedEvent,
   UserRefreshedTokenEvent,
 } from '@modules/auth';
 import { EventSubscriber, On } from 'event-dispatch';
@@ -43,8 +43,8 @@ export class AuthEventsSubscriber {
     logger.debug(`User ${data?.user?.getFirstLastNameOrEmail()} (phone: ${data?.user?.phone}) refreshed token!`);
   }
 
-  @On(events.users.userPasswordChanged)
-  public onUserPasswordChanged(data: UserPasswordChangedEvent): void {
-    logger.debug(`User ${data?.user?.getFirstLastNameOrEmail()} (phone: ${data?.user?.phone}) changed password!`);
+  @On(events.users.userPasscodeChanged)
+  public onUserPasscodeChanged(data: UserPasscodeChangedEvent): void {
+    logger.debug(`User ${data?.user?.getFirstLastNameOrEmail()} (phone: ${data?.user?.phone}) changed passcode!`);
   }
 }

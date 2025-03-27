@@ -1,2 +1,2 @@
-SELECT * FROM user_reset_password_tokens;
-delete FROM user_reset_password_tokens WHERE UserId > 7
+SELECT * FROM user_reset_passcode_tokens;
+DELETE FROM user_reset_passcode_tokens WHERE UserId > 1;

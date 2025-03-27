@@ -22,9 +22,9 @@ describe('GET /permissions', () => {
 
   beforeAll(async () => {
     await app.initialize([userRoute, permissionsRoute]);
-    const { email, password } = getAdminLoginData();
+    const { email, passcode } = getAdminLoginData();
 
-    const loginResult = await loginAs(app, { email, password } satisfies LoginDto);
+    const loginResult = await loginAs(app, { email, passcode } satisfies LoginDto);
     adminAccessToken = loginResult?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
@@ -94,7 +94,7 @@ describe('GET /permissions', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       const getPermissionsResponse = await request(app.getServer())
         .get(permissionsRoute.path)
@@ -162,7 +162,7 @@ describe('GET /permissions', () => {
         }
       });
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       const getPermissionsResponse = await request(app.getServer())
         .get(permissionsRoute.path)
@@ -225,7 +225,7 @@ describe('GET /permissions', () => {
       const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(addPermissionResponse.statusCode).toBe(201);
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       const getPermissionsResponse = await request(app.getServer())
         .get(permissionsRoute.path)
@@ -291,7 +291,7 @@ describe('GET /permissions', () => {
       const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(addPermissionResponse.statusCode).toBe(201);
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       const getPermissionsResponse = await request(app.getServer())
         .get(permissionsRoute.path)

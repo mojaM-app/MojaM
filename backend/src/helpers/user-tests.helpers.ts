@@ -20,19 +20,19 @@ const generateValidUser = (): any => {
 const generateValidUserWithPassword = (): CreateUserDto & IUser => {
   return {
     ...generateValidUser(),
-    password: generateRandomPassword(),
+    passcode: generateRandomPassword(),
   } satisfies CreateUserDto & IUser;
 };
 
 const generateValidUserWithPin = (): CreateUserDto & IUser => {
   return {
     ...generateValidUser(),
-    pin: generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH),
+    passcode: generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH),
   } satisfies CreateUserDto & IUser;
 };
 
-const loginAs = async (app: App, user: { email?: string; phone?: string; password?: string | null }): Promise<TLoginResult | null> => {
-  const loginDto = { email: user.email, phone: user.phone, password: user.password } satisfies LoginDto;
+const loginAs = async (app: App, user: { email?: string; phone?: string; passcode?: string | null }): Promise<TLoginResult | null> => {
+  const loginDto = { email: user.email, phone: user.phone, passcode: user.passcode } satisfies LoginDto;
   try {
     const loginResponse = await request(app.getServer()).post(new AuthRoute().loginPath).send(loginDto);
     const loginResult: TLoginResult = loginResponse.statusCode === 200 ? loginResponse.body.data : {};

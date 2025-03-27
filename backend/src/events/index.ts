@@ -33,7 +33,7 @@ export const events = {
     userDeleted: 'onUserDeleted',
     userActivated: 'onUserActivated',
     userDeactivated: 'onUserDeactivated',
-    userPasswordChanged: 'onUserPasswordChanged',
+    userPasscodeChanged: 'onUserPasscodeChanged',
     userProfileRetrieved: 'onUserProfileRetrieved',
     userProfileUpdated: 'onUserProfileUpdated',
   },

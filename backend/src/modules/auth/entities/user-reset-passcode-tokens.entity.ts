@@ -1,18 +1,18 @@
 /* eslint-disable no-use-before-define */
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryColumn, Relation } from 'typeorm';
-import { ICreateResetPasswordToken } from '../interfaces/create-reset-password-token.interfaces';
-import { EntityDefaultFunctions } from './../../../dataBase/EntityDefaultFunctions';
-import { User } from './../../users/entities/user.entity';
+import { EntityDefaultFunctions } from '../../../dataBase/EntityDefaultFunctions';
+import { User } from '../../users/entities/user.entity';
+import { ICreateResetPasscodeToken } from '../interfaces/create-reset-passcode-token.interfaces';
 
 @Entity({
-  name: 'user_reset_password_tokens',
+  name: 'user_reset_passcode_tokens',
 })
-export class UserResetPasswordToken implements ICreateResetPasswordToken {
-  @OneToOne(() => User, (user: User) => user.resetPasswordToken, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
+export class UserResetPasscodeToken implements ICreateResetPasscodeToken {
+  @OneToOne(() => User, (user: User) => user.resetPasscodeToken, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
   @JoinColumn({
     name: 'UserId',
     referencedColumnName: 'id',
-    foreignKeyConstraintName: 'FK_UserResetPasswordToken_UserId_To_User',
+    foreignKeyConstraintName: 'FK_UserResetPasscodeToken_UserId_To_User',
   })
   @PrimaryColumn({
     name: 'UserId',

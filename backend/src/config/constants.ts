@@ -48,5 +48,5 @@ export const VALIDATOR_SETTINGS: {
 export const USER_ACCOUNT_LOCKOUT_SETTINGS: {
   FAILED_LOGIN_ATTEMPTS: number;
 } = {
-  FAILED_LOGIN_ATTEMPTS: 3, // how many times each user can specify the wrong password before the lockout occurs
+  FAILED_LOGIN_ATTEMPTS: 3, // how many times each user can specify the wrong passcode before the lockout occurs
 };

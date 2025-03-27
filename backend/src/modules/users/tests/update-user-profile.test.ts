@@ -30,9 +30,9 @@ describe('PUT/user-profile', () => {
 
   beforeAll(async () => {
     await app.initialize([userProfileRoute, userRoute, permissionsRoute]);
-    const { email, password } = getAdminLoginData();
+    const { email, passcode } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { email, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -71,7 +71,7 @@ describe('PUT/user-profile', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: newUser.email, password: newUser.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))?.accessToken;
 
       const updateModel = {
         firstName: 'Average',
@@ -151,7 +151,7 @@ describe('PUT/user-profile', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: newUser.email, password: newUser.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))?.accessToken;
 
       const updateModel = {
         firstName: 'Average',
@@ -226,7 +226,7 @@ describe('PUT/user-profile', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: newUser.email, password: newUser.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))?.accessToken;
 
       const updateUserProfileResponse = await request(app.getServer())
         .put(userProfileRoute.path)
@@ -302,7 +302,7 @@ describe('PUT/user-profile', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: newUser.email, password: newUser.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))?.accessToken;
 
       const updateUserProfileResponse = await request(app.getServer())
         .put(userProfileRoute.path)
@@ -378,7 +378,7 @@ describe('PUT/user-profile', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: newUser.email, password: newUser.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))?.accessToken;
 
       const updateUserProfileResponse = await request(app.getServer())
         .put(userProfileRoute.path)
@@ -454,7 +454,7 @@ describe('PUT/user-profile', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: newUser.email, password: newUser.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))?.accessToken;
 
       const updateUserProfileResponse = await request(app.getServer())
         .put(userProfileRoute.path)
@@ -526,7 +526,7 @@ describe('PUT/user-profile', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: newUser.email, password: newUser.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))?.accessToken;
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)

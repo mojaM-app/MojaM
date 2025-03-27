@@ -22,8 +22,8 @@ describe('LinkHelper', () => {
   describe('resetPasswordLink', () => {
     it('should generate the correct reset password link', () => {
       jest.replaceProperty(config, 'CLIENT_APP_URL', mockClientAppUrl);
-      const link = LinkHelper.resetPasswordLink(userUuid, resetPasswordToken);
-      expect(link).toBe(`${mockClientAppUrl}/${AuthRoute.resetPassword}/${userUuid}/${resetPasswordToken}`);
+      const link = LinkHelper.resetPasscodeLink(userUuid, resetPasswordToken);
+      expect(link).toBe(`${mockClientAppUrl}/${AuthRoute.resetPasscode}/${userUuid}/${resetPasswordToken}`);
     });
 
     afterEach(() => {

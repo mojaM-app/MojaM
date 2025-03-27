@@ -1,6 +1,6 @@
 import { IUserId } from '@modules/users';
 
-export interface ICreateResetPasswordToken {
+export interface ICreateResetPasscodeToken {
   user: IUserId;
   token: string;
 }

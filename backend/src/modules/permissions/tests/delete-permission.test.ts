@@ -31,9 +31,9 @@ describe('DELETE /permissions', () => {
 
   beforeAll(async () => {
     await app.initialize([userRoute, userDetailsRoute, permissionsRoute]);
-    const { email, password } = getAdminLoginData();
+    const { email, passcode } = getAdminLoginData();
 
-    const loginResult = await loginAs(app, { email, password } satisfies LoginDto);
+    const loginResult = await loginAs(app, { email, passcode } satisfies LoginDto);
     adminAccessToken = loginResult?.accessToken;
     userLoggedIn = loginResult!;
 
@@ -205,7 +205,7 @@ describe('DELETE /permissions', () => {
       expect(addPermissionResult).toBe(true);
       expect(addPermissionMessage).toBe(events.permissions.permissionAdded);
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.PreviewUserList.toString();
       const deletePermissionResponse = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
@@ -276,7 +276,7 @@ describe('DELETE /permissions', () => {
         }
       });
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       const path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.PreviewUserList.toString();
       const deletePermissionResponse = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
@@ -354,7 +354,7 @@ describe('DELETE /permissions', () => {
       expect(addPermission2Result).toBe(true);
       expect(addPermission2Message).toBe(events.permissions.permissionAdded);
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.AddPermission.toString();
       const deletePermissionResponse = await request(app.getServer()).delete(path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
@@ -474,7 +474,7 @@ describe('DELETE /permissions', () => {
       expect(addPermission1Result).toBe(true);
       expect(addPermission1Message).toBe(events.permissions.permissionAdded);
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.PreviewUserDetails.toString();
       addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${newUserAccessToken}`);

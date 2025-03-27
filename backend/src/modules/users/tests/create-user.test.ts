@@ -19,7 +19,7 @@ import {
   UserRoute,
 } from '@modules/users';
 import { isGuid, isNumber } from '@utils';
-import { generateRandomNumber, generateRandomPassword, getAdminLoginData } from '@utils/tests.utils';
+import { generateRandomEmail, generateRandomNumber, generateRandomPassword, getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
@@ -36,9 +36,9 @@ describe('POST /user', () => {
 
   beforeAll(async () => {
     await app.initialize([userRoute, permissionsRoute, userDetailsRoute]);
-    const { email, password } = getAdminLoginData();
+    const { email, passcode } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { email, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -78,6 +78,8 @@ describe('POST /user', () => {
       expect(user?.phone).toBeDefined();
       expect(user.hasOwnProperty('uuid')).toBe(false);
       expect(user.hasOwnProperty('password')).toBe(false);
+      expect(user.hasOwnProperty('pin')).toBe(false);
+      expect(user.hasOwnProperty('passcode')).toBe(false);
       expect(user).toEqual({ id: user.id, email: user.email, phone: user.phone } satisfies IUserDto);
       expect(createMessage).toBe(events.users.userCreated);
 
@@ -100,9 +102,9 @@ describe('POST /user', () => {
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
-    test('when try to create user without password (password=undefined) and user has permission', async () => {
+    test('when try to create user without passcode (passcode=undefined) and user has permission', async () => {
       const requestData = generateValidUserWithPassword();
-      delete requestData.password;
+      delete requestData.passcode;
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -146,9 +148,9 @@ describe('POST /user', () => {
       expect(mockSendMail).toHaveBeenCalledTimes(1);
     });
 
-    test('when try to create user with empty password (password is set as null) and user has permission', async () => {
+    test('when try to create user with empty passcode (passcode will be set as null) and user has permission', async () => {
       const requestData = generateValidUserWithPassword();
-      requestData.password = '';
+      requestData.passcode = '';
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -192,9 +194,9 @@ describe('POST /user', () => {
       expect(mockSendMail).toHaveBeenCalledTimes(1);
     });
 
-    test('when try to create user with password=null and user has permission', async () => {
+    test('when try to create user with passcode=null and user has permission', async () => {
       const requestData = generateValidUserWithPassword();
-      requestData.password = null;
+      requestData.passcode = null;
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -257,6 +259,8 @@ describe('POST /user', () => {
       expect(user?.phone).toBeDefined();
       expect(user.hasOwnProperty('uuid')).toBe(false);
       expect(user.hasOwnProperty('password')).toBe(false);
+      expect(user.hasOwnProperty('pin')).toBe(false);
+      expect(user.hasOwnProperty('passcode')).toBe(false);
       expect(user).toEqual({ id: user.id, email: user.email, phone: user.phone } satisfies IUserDto);
       expect(createMessage).toBe(events.users.userCreated);
 
@@ -312,6 +316,8 @@ describe('POST /user', () => {
       expect(user?.phone).toBeDefined();
       expect(user.hasOwnProperty('uuid')).toBe(false);
       expect(user.hasOwnProperty('password')).toBe(false);
+      expect(user.hasOwnProperty('pin')).toBe(false);
+      expect(user.hasOwnProperty('passcode')).toBe(false);
       expect(user).toEqual({ id: user.id, email: user.email, phone: user.phone } satisfies IUserDto);
       expect(createMessage).toBe(events.users.userCreated);
 
@@ -369,6 +375,8 @@ describe('POST /user', () => {
       expect(user?.phone).toBeDefined();
       expect(user.hasOwnProperty('uuid')).toBe(false);
       expect(user.hasOwnProperty('password')).toBe(false);
+      expect(user.hasOwnProperty('pin')).toBe(false);
+      expect(user.hasOwnProperty('passcode')).toBe(false);
       expect(user).toEqual({ id: user.id, email: user.email, phone: user.phone } satisfies IUserDto);
       expect(createMessage).toBe(events.users.userCreated);
 
@@ -426,6 +434,8 @@ describe('POST /user', () => {
       expect(user?.phone).toBeDefined();
       expect(user.hasOwnProperty('uuid')).toBe(false);
       expect(user.hasOwnProperty('password')).toBe(false);
+      expect(user.hasOwnProperty('pin')).toBe(false);
+      expect(user.hasOwnProperty('passcode')).toBe(false);
       expect(user).toEqual({ id: user.id, email: user.email, phone: user.phone } satisfies IUserDto);
       expect(createMessage).toBe(events.users.userCreated);
 
@@ -464,7 +474,7 @@ describe('POST /user', () => {
 
     test('when try to create user without pin (pin=undefined) and user has permission', async () => {
       const requestData = generateValidUserWithPin();
-      delete requestData.pin;
+      delete requestData.passcode;
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -508,9 +518,9 @@ describe('POST /user', () => {
       expect(mockSendMail).toHaveBeenCalledTimes(1);
     });
 
-    test('when try to create user with empty pin (pin is set as null) and user has permission', async () => {
+    test('when try to create user with empty pin (pin will be set as null) and user has permission', async () => {
       const requestData = generateValidUserWithPin();
-      requestData.pin = '';
+      requestData.passcode = '';
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -556,7 +566,7 @@ describe('POST /user', () => {
 
     test('when try to create user with pin=null and user has permission', async () => {
       const requestData = generateValidUserWithPin();
-      requestData.pin = null;
+      requestData.passcode = null;
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
         .send(requestData)
@@ -602,16 +612,19 @@ describe('POST /user', () => {
   });
 
   describe('POST should respond with a status code of 400', () => {
-    test('when password is invalid', async () => {
-      const model = { email: 'email@domain.com', phone: '123456789' };
+    test('when passcode is invalid', async () => {
+      const model = { email: 'email@domain.com', phone: '123456789' } satisfies CreateUserDto;
       const bodyData = [
-        { ...model, password: ' ' } satisfies CreateUserDto,
-        { ...model, password: 'invalid password' } satisfies CreateUserDto,
-        { ...model, password: 123 as any } satisfies CreateUserDto,
-        { ...model, password: true as any } satisfies CreateUserDto,
-        { ...model, password: [] as any } satisfies CreateUserDto,
-        { ...model, password: [generateRandomPassword()] as any } satisfies CreateUserDto,
-        { ...model, password: {} as any } satisfies CreateUserDto,
+        { ...model, passcode: ' ' } satisfies CreateUserDto,
+        { ...model, passcode: 'invalid password/pin' } satisfies CreateUserDto,
+        { ...model, passcode: true as any } satisfies CreateUserDto,
+        { ...model, passcode: [] as any } satisfies CreateUserDto,
+        { ...model, passcode: [generateRandomPassword()] as any } satisfies CreateUserDto,
+        { ...model, passcode: {} as any } satisfies CreateUserDto,
+        { ...model, passcode: generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH - 1) } satisfies CreateUserDto,
+        { ...model, passcode: generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH + 1) } satisfies CreateUserDto,
+        { ...model, passcode: 1234 as any } satisfies CreateUserDto,
+        { ...model, passcode: [generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH)] as any } satisfies CreateUserDto,
       ];
 
       for (const requestData of bodyData) {
@@ -624,7 +637,7 @@ describe('POST /user', () => {
         expect(typeof body).toBe('object');
         const { message: createUserResponseMessage } = body.data as BadRequestException;
         const errors = createUserResponseMessage.split(',');
-        expect(errors.filter(x => !x.includes('Password')).length).toBe(0);
+        expect(errors.filter(x => !x.includes('Passcode')).length).toBe(0);
 
         // checking events running via eventDispatcher
         Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -634,74 +647,10 @@ describe('POST /user', () => {
         expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
         expect(mockSendMail).not.toHaveBeenCalled();
       }
-    });
-
-    test('when pin is invalid', async () => {
-      const model = { email: 'email@domain.com', phone: '123456789' };
-      const bodyData = [
-        { ...model, pin: ' ' } satisfies CreateUserDto,
-        { ...model, pin: 'invalid pin' } satisfies CreateUserDto,
-        { ...model, pin: generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH - 1) } satisfies CreateUserDto,
-        { ...model, pin: generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH + 1) } satisfies CreateUserDto,
-        { ...model, pin: 1234 as any } satisfies CreateUserDto,
-        { ...model, pin: true as any } satisfies CreateUserDto,
-        { ...model, pin: [] as any } satisfies CreateUserDto,
-        { ...model, pin: [generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH)] as any } satisfies CreateUserDto,
-        { ...model, pin: {} as any } satisfies CreateUserDto,
-      ];
-
-      for (const requestData of bodyData) {
-        const createUserResponse = await request(app.getServer())
-          .post(userRoute.path)
-          .send(requestData)
-          .set('Authorization', `Bearer ${adminAccessToken}`);
-        expect(createUserResponse.statusCode).toBe(400);
-        const body = createUserResponse.body;
-        expect(typeof body).toBe('object');
-        const { message: createUserResponseMessage } = body.data as BadRequestException;
-        const errors = createUserResponseMessage.split(',');
-        expect(errors.filter(x => !x.includes('Pin')).length).toBe(0);
-
-        // checking events running via eventDispatcher
-        Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-          expect(eventHandler).not.toHaveBeenCalled();
-        });
-
-        expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
-        expect(mockSendMail).not.toHaveBeenCalled();
-      }
-    });
-
-    test('when password and pin are set', async () => {
-      const requestData = {
-        email: 'email@domain.com',
-        phone: '123456789',
-        password: generateRandomPassword(),
-        pin: generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH),
-      };
-
-      const createUserResponse = await request(app.getServer())
-        .post(userRoute.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(createUserResponse.statusCode).toBe(400);
-      const body = createUserResponse.body;
-      expect(typeof body).toBe('object');
-      const { message: createUserResponseMessage } = body.data as BadRequestException;
-      const errors = createUserResponseMessage.split(',');
-      expect(errors.filter(x => x !== errorKeys.users.Both_Password_And_Pin_Are_Set).length).toBe(0);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-
-      expect(sendWelcomeEmailSpy).not.toHaveBeenCalled();
-      expect(mockSendMail).not.toHaveBeenCalled();
     });
 
     test('when email is invalid', async () => {
-      const model = { password: 'strongPassword1@', phone: '123456789' };
+      const model = { passcode: 'strongPassword1@', phone: '123456789', email: generateRandomEmail() } satisfies CreateUserDto;
       const bodyData = [
         { ...model, email: null as any } satisfies CreateUserDto,
         { ...model, email: undefined as any } satisfies CreateUserDto,
@@ -736,7 +685,7 @@ describe('POST /user', () => {
     });
 
     test('when phone is invalid', async () => {
-      const model = { email: 'email@domain.com', password: 'strongPassword1@' };
+      const model = { email: 'email@domain.com', passcode: 'strongPassword1@', phone: generateRandomNumber(7) } satisfies CreateUserDto;
       const bodyData = [
         { ...model, phone: null as any } satisfies CreateUserDto,
         { ...model, phone: undefined as any } satisfies CreateUserDto,
@@ -890,7 +839,7 @@ describe('POST /user', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -963,7 +912,7 @@ describe('POST /user', () => {
         }
       });
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, password: requestData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
 
       const createUserResponse = await request(app.getServer())
         .post(userRoute.path)
@@ -1043,7 +992,7 @@ describe('POST /user', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateBobResponse.statusCode).toBe(200);
 
-      const bobAccessToken = (await loginAs(app, { email: bobDto.email, password: userBob.password } satisfies LoginDto))?.accessToken;
+      const bobAccessToken = (await loginAs(app, { email: bobDto.email, passcode: userBob.passcode } satisfies LoginDto))?.accessToken;
 
       const deleteBobResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + bobDto.id)

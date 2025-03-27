@@ -36,9 +36,9 @@ describe('PUT /announcements', () => {
 
   beforeAll(async () => {
     await app.initialize([userRoute, permissionsRoute, announcementRoute]);
-    const { email, password } = getAdminLoginData();
+    const { email, passcode } = getAdminLoginData();
 
-    adminAccessToken = (await loginAs(app, { email, password } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
 
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
@@ -1510,7 +1510,7 @@ describe('PUT /announcements', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: userData.email, password: userData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: userData.email, passcode: userData.passcode } satisfies LoginDto))?.accessToken;
 
       const updateAnnouncementsResponse = await request(app.getServer())
         .put(announcementRoute.path + '/' + Guid.EMPTY)
@@ -1577,7 +1577,7 @@ describe('PUT /announcements', () => {
         }
       });
 
-      const newUserAccessToken = (await loginAs(app, { email: userData.email, password: userData.password } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await loginAs(app, { email: userData.email, passcode: userData.passcode } satisfies LoginDto))?.accessToken;
 
       const updateAnnouncementsResponse = await request(app.getServer())
         .put(announcementRoute.path + '/' + Guid.EMPTY)
@@ -1651,7 +1651,7 @@ describe('PUT /announcements', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateBobResponse.statusCode).toBe(200);
 
-      const bobAccessToken = (await loginAs(app, { email: bobDto.email, password: userBob.password } satisfies LoginDto))?.accessToken;
+      const bobAccessToken = (await loginAs(app, { email: bobDto.email, passcode: userBob.passcode } satisfies LoginDto))?.accessToken;
 
       const deleteBobResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + bobDto.id)

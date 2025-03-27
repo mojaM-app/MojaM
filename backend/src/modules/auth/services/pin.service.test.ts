@@ -34,7 +34,7 @@ describe('CryptoService', () => {
       const hashedPin = pinService.getHash(salt, pin);
       expect(hashedPin).toBeDefined();
       expect(typeof hashedPin).toBe('string');
-      expect(hashedPin.length).toBe(128);
+      expect(hashedPin.length).toBe(PinService.HASH_LENGTH);
     });
 
     it('should return same hashed pin', () => {
