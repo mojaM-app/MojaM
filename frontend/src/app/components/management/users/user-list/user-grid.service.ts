@@ -199,6 +199,12 @@ export class UserGridService
     const result = await firstValueFrom(this._userService.activate(user.id));
 
     if (result) {
+      this._snackBarService.translateAndShowSuccess({
+        message: 'Management/UserList/AccountActivatedSuccessfully',
+        options: {
+          duration: SnackBarService.SUCCESS_DURATION,
+        },
+      });
       return MenuItemClickResult.REFRESH_GRID;
     }
 
@@ -209,6 +215,12 @@ export class UserGridService
     const result = await firstValueFrom(this._userService.deactivate(user.id));
 
     if (result) {
+      this._snackBarService.translateAndShowSuccess({
+        message: 'Management/UserList/AccountDeactivatedSuccessfully',
+        options: {
+          duration: SnackBarService.SUCCESS_DURATION,
+        },
+      });
       return MenuItemClickResult.REFRESH_GRID;
     }
 

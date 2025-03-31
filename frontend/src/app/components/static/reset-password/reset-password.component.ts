@@ -20,7 +20,7 @@ import { GuidUtils } from 'src/utils/guid.utils';
 import { ObjectUtils } from 'src/utils/object.utils';
 import { ControlValidators } from 'src/validators/control.validators';
 import { PasswordValidator } from 'src/validators/password.validator';
-import { ICheckResetPasswordTokenResult } from './interfaces/reset-password.interfaces';
+import { ICheckResetPasswordTokenResultDto } from './interfaces/reset-password.interfaces';
 import { ResetPasswordDto } from './models/reset-password.models';
 import { ResetPasswordControlComponent } from './reset-password-control/reset-password-control.component';
 import { IResetPasswordForm } from './reset-password.form';
@@ -84,7 +84,7 @@ export class ResetPasswordComponent extends WithForm<IResetPasswordForm>() imple
 
     this._resetPasswordService
       .checkResetPasswordToken(userId, token)
-      .subscribe((result: ICheckResetPasswordTokenResult) => {
+      .subscribe((result: ICheckResetPasswordTokenResultDto) => {
         this.isTokenValid.set(result.isValid);
         this.userEmail.set(result.userEmail);
       });

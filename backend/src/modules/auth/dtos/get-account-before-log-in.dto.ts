@@ -40,7 +40,6 @@ export interface IGetAccountBeforeLogInResultDto {
   isPhoneRequired?: boolean;
   isActive?: boolean;
   authType?: AuthenticationTypes;
-  shouldConfirmEmail?: boolean;
 }
 
 export class GetAccountBeforeLogInResponseDto implements IResponse<IGetAccountBeforeLogInResultDto> {

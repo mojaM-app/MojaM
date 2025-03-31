@@ -1,6 +1,6 @@
 import { BehaviorSubject, Observable } from 'rxjs';
-import { ITokenChangedEvent } from 'src/interfaces/auth/auth.events';
-import { IAuthTokenPayload, ITokenPayload } from 'src/interfaces/auth/IAuthTokenPayload';
+import { ITokenChangedEvent } from 'src/services/auth/events/auth.events';
+import { IAuthTokenPayload, ITokenPayload } from 'src/services/auth/interfaces/IAuthTokenPayload';
 import { LocalStorageService } from 'src/services/storage/localstorage.service';
 
 export abstract class TokenService<TPayload extends IAuthTokenPayload | ITokenPayload> {

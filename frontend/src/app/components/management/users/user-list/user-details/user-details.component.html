@@ -4,32 +4,75 @@
       <div class="col-12 col-md-6">
         <table class="table-sm m-0 table p-0">
           <tr>
-            <td class="text-end">{{ 'Management/UserDetails/Email' | gmessage }}&nbsp;</td>
+            <td class="text-nowrap pe-2 text-end">
+              {{ 'Management/UserDetails/Email' | gmessage }}
+            </td>
             <td width="100%">
-              {{ userDetails()!.email }}
+              <div class="d-flex align-items-center">
+                {{ userDetails()!.email }}
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="ms-2"
+                  (click)="copyToClipboard(userDetails()!.email)">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+                <button mat-icon-button type="button" class="ms-1" (click)="sendEmail()">
+                  <mat-icon>outgoing_mail</mat-icon>
+                </button>
+              </div>
             </td>
           </tr>
           <tr>
-            <td class="text-end">{{ 'Management/UserDetails/Phone' | gmessage }}&nbsp;</td>
-            <td>{{ userDetails()!.phone }}</td>
-          </tr>
-          <tr>
-            <td class="text-end">{{ 'Management/UserDetails/IsLockedOut' | gmessage }}&nbsp;</td>
-            <td>{{ userDetails()!.isLockedOut | yesNo }}</td>
-          </tr>
-          <tr>
-            <td class="text-end">{{ 'Management/UserDetails/IsActive' | gmessage }}&nbsp;</td>
-            <td>{{ userDetails()!.isActive | yesNo }}</td>
-          </tr>
-
-          <tr>
-            <td class="text-end">{{ 'Management/UserDetails/JoiningDate' | gmessage }}&nbsp;</td>
+            <td class="text-nowrap pe-2 text-end">
+              {{ 'Management/UserDetails/Phone' | gmessage }}
+            </td>
             <td>
-              @if (userDetails()!.joiningDate) {
-                {{ userDetails()!.joiningDate! | gdate }}
-              } @else {
-                {{ 'Management/UserDetails/NotAvailable' | gmessage }}
-              }
+              <div class="d-flex align-items-center">
+                {{ userDetails()!.phone }}
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="ms-2"
+                  (click)="copyToClipboard(userDetails()!.phone)">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+                @if (isMobile) {
+                  <button mat-icon-button type="button" class="ms-1" (click)="sendSms()">
+                    <mat-icon>sms</mat-icon>
+                  </button>
+                }
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-nowrap pe-2 text-end">
+              {{ 'Management/UserDetails/IsLockedOut' | gmessage }}
+            </td>
+            <td>
+              <div class="d-flex align-items-center">{{ userDetails()!.isLockedOut | yesNo }}</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-nowrap pe-2 text-end">
+              {{ 'Management/UserDetails/IsActive' | gmessage }}
+            </td>
+            <td>
+              <div class="d-flex align-items-center">{{ userDetails()!.isActive | yesNo }}</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-nowrap pe-2 text-end">
+              {{ 'Management/UserDetails/JoiningDate' | gmessage }}
+            </td>
+            <td>
+              <div class="d-flex align-items-center">
+                @if (userDetails()!.joiningDate) {
+                  {{ userDetails()!.joiningDate! | gdate }}
+                } @else {
+                  {{ 'Management/UserDetails/NotAvailable' | gmessage }}
+                }
+              </div>
             </td>
           </tr>
         </table>

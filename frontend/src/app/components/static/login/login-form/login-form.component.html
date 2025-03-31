@@ -1,6 +1,6 @@
 <div class="row">
   <form [formGroup]="formGroup">
-    @if (showStep() === formSteps.EnterEmail) {
+    @if (currentStep() === formSteps.EnterEmail) {
       <div class="row mb-4">
         <mat-form-field>
           <mat-label>{{ 'Login/Email' | gmessage }}</mat-label>
@@ -23,8 +23,7 @@
           </button>
         </div>
       </div>
-    }
-    @if (showStep() === formSteps.EnterPhone) {
+    } @else if (currentStep() === formSteps.EnterPhone) {
       <div class="row mb-4">
         <mat-form-field>
           <mat-label>{{ 'Login/Phone' | gmessage }}</mat-label>
@@ -52,8 +51,7 @@
           </button>
         </div>
       </div>
-    }
-    @if (showStep() === formSteps.ResetPassword) {
+    } @else if (currentStep() === formSteps.ResetPasscode) {
       <div class="row">
         <div class="col-12 mb-3">
           {{ 'Login/PasswordNotSetError' | gmessage }}
@@ -67,8 +65,7 @@
           <mat-hint>{{ 'Login/BtnSetPasswordHint' | gmessage }}</mat-hint>
         </div>
       </div>
-    }
-    @if (showStep() === formSteps.EnterPassword) {
+    } @else if (currentStep() === formSteps.EnterPassword) {
       <div class="row mb-2">
         <mat-form-field>
           <mat-label>{{ 'Login/Password' | gmessage }}</mat-label>
@@ -77,7 +74,7 @@
             matInput
             [type]="hidePassword() ? 'password' : 'text'"
             [placeholder]="'Login/PasswordPlaceholder' | gmessage"
-            [formControl]="formGroup.controls.password" />
+            [formControl]="formGroup.controls.passcode" />
           <button
             mat-icon-button
             matSuffix
@@ -110,8 +107,49 @@
           </button>
         </div>
       </div>
-    }
-    @if (showStep() === formSteps.ForgotPassword) {
+    } @else if (currentStep() === formSteps.EnterPin) {
+      <div class="row mb-2">
+        <mat-form-field>
+          <mat-label>{{ 'Login/Password' | gmessage }}</mat-label>
+          <input
+            #passwordInput
+            matInput
+            [type]="hidePassword() ? 'password' : 'text'"
+            [placeholder]="'Login/PasswordPlaceholder' | gmessage"
+            [formControl]="formGroup.controls.passcode" />
+          <button
+            mat-icon-button
+            matSuffix
+            tabindex="-1"
+            (click)="togglePasswordVisibility($event)"
+            [attr.aria-label]="'Login/HidePasswordAriaLabel' | gmessage"
+            [attr.aria-pressed]="hidePassword()">
+            <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      @if (showResetPasswordButton()) {
+        <div class="row mb-2">
+          <div class="offset-3 col-9 offset-sm-6 col-sm-6">
+            <button mat-button class="w-100" type="button" (click)="goToStepForgotPassword()">
+              {{ 'Login/ForgotPassword' | gmessage }}
+            </button>
+          </div>
+        </div>
+      }
+      <div class="row mb-2">
+        <div class="col-6">
+          <button mat-raised-button class="w-100" type="button" (click)="goToStepEnterEmail()">
+            {{ 'Shared/BtnBack' | gmessage }}
+          </button>
+        </div>
+        <div class="col-6">
+          <button mat-raised-button class="w-100" type="submit" (click)="login()">
+            {{ 'Login/BtnLogin' | gmessage }}
+          </button>
+        </div>
+      </div>
+    } @else if (currentStep() === formSteps.ForgotPassword) {
       <div class="row">
         <div class="col-12 mb-3">
           {{ 'Login/ResetPasswordMessage' | gmessage }}
@@ -125,8 +163,7 @@
           <mat-hint>{{ 'Login/BtnResetPasswordHint' | gmessage }}</mat-hint>
         </div>
       </div>
-    }
-    @if (showStep() === formSteps.UserNotActive) {
+    } @else if (currentStep() === formSteps.UserNotActive) {
       <div>
         <div class="row mb-3">
           <div class="col-12 error-container fw-bold p-2">

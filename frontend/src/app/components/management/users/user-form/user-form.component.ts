@@ -165,11 +165,25 @@ export class UserFormComponent extends WithUnsubscribe(WithForm<IUserForm>()) im
     if (this.formMode() === FormMode.Edit) {
       const dto = new EditUserDto(this.user()!.id!, this.controls);
       this._userService.update(dto).subscribe(() => {
+        this._snackBarService.translateAndShowSuccess({
+          message: 'Management/UserForm/UserSavedSuccessfully',
+          options: {
+            duration: SnackBarService.SUCCESS_DURATION,
+          },
+        });
+
         this.navigateToUserList();
       });
     } else {
       const dto = new AddUserDto(this.controls);
       this._userService.create(dto).subscribe(() => {
+        this._snackBarService.translateAndShowSuccess({
+          message: 'Management/UserForm/UserAddedSuccessfully',
+          options: {
+            duration: SnackBarService.SUCCESS_DURATION,
+          },
+        });
+
         this.navigateToUserList();
       });
     }

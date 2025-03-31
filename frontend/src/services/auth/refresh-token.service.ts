@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ITokenPayload } from 'src/interfaces/auth/IAuthTokenPayload';
+import { ITokenPayload } from 'src/services/auth/interfaces/IAuthTokenPayload';
 import { LocalStorageService } from '../storage/localstorage.service';
 import { TokenService } from './base-token.service';
 

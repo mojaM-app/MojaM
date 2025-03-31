@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, skip, tap } from 'rxjs';
-import {
-  IAccountBeforeLogInDto,
-  ILoginModelDto,
-  ILoginResponseDto,
-} from 'src/interfaces/auth/auth.models';
+import { BehaviorSubject, map, Observable, of, skip, tap } from 'rxjs';
+import { ILoginResponseDto } from 'src/services/auth/interfaces/ILoginResponseDto';
 import { BaseService } from '../common/base.service';
 import { HttpClientService } from '../common/httpClient.service';
 import { AuthTokenService } from './auth-token.service';
+import { IGetAccountBeforeLogInResponseDto } from './interfaces/IGetAccountBeforeLogInResponseDto';
+import { ILoginModelDto } from './interfaces/ILoginModelDto';
+import { AccountBeforeLogIn } from './models/account-before-logIn';
 import { RefreshTokenService } from './refresh-token.service';
 
 @Injectable({
@@ -33,23 +32,28 @@ export class AuthService extends BaseService {
     this.onAuthStateChanged = this._isAuthenticated$.asObservable().pipe(skip(1));
   }
 
-  public getAccountBeforeLogIn(email: string, phone?: string): Observable<IAccountBeforeLogInDto> {
+  public getAccountBeforeLogIn(email: string, phone?: string): Observable<AccountBeforeLogIn> {
     return this._httpClient
       .request()
       .withUrl(this.API_ROUTES.auth.getAccountBeforeLogIn())
       .withBody({ email, phone })
-      .post<IAccountBeforeLogInDto>();
+      .post<IGetAccountBeforeLogInResponseDto>()
+      .pipe(
+        map((response: IGetAccountBeforeLogInResponseDto) => {
+          return new AccountBeforeLogIn(response);
+        })
+      );
   }
 
   public login(
     email: string,
     phone: string | undefined,
-    password: string
+    passcode: string
   ): Observable<ILoginResponseDto> {
     const model = {
       email: email,
       phone: phone,
-      password: password,
+      passcode: passcode,
     } satisfies ILoginModelDto;
 
     return this._httpClient

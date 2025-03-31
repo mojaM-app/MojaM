@@ -18,6 +18,9 @@ export interface IToast {
   providedIn: 'root',
 })
 export class SnackBarService {
+  public static readonly LONG_SUCCESS_DURATION = 2000;
+  public static readonly SUCCESS_DURATION = 1000;
+  public static readonly SHORT_SUCCESS_DURATION = 500;
   public readonly onActionCalled = new Subject<ISnackbarAction>();
 
   private readonly _snackBar = inject(MatSnackBar);

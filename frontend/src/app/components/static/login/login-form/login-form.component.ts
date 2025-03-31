@@ -22,12 +22,12 @@ import { IS_MOBILE } from 'src/app/app.config';
 import { ResetPasswordService } from 'src/app/components/static/reset-password/services/reset-password.service';
 import { SnackBarService } from 'src/app/components/static/snackbar/snack-bar.service';
 import { environment } from 'src/environments/environment';
-import { IAccountBeforeLogInDto } from 'src/interfaces/auth/auth.models';
 import { IResponseError } from 'src/interfaces/errors/response.error';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthTokenService } from 'src/services/auth/auth-token.service';
 import { AuthService } from 'src/services/auth/auth.service';
+import { AccountBeforeLogIn } from 'src/services/auth/models/account-before-logIn';
 import { conditionalValidator } from 'src/validators/conditional.validator';
 import { phoneValidator } from 'src/validators/phone.validator';
 import { RequestResetPasswordDto } from '../../reset-password/models/reset-password.models';
@@ -52,7 +52,7 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
   public afterLogIn = output<boolean>();
 
   protected readonly formSteps = LoginFormSteps;
-  protected showStep = signal<LoginFormSteps>(LoginFormSteps.EnterEmail);
+  protected currentStep = signal<LoginFormSteps>(LoginFormSteps.EnterEmail);
   protected loginError = signal<string | undefined>(undefined);
   protected showResetPasswordButton = signal<boolean>(false);
   protected hidePassword = signal(true);
@@ -74,13 +74,13 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
       phone: new FormControl(null, {
         validators: [
           conditionalValidator(
-            () => this.showStep() === LoginFormSteps.EnterPhone,
+            () => this.currentStep() === LoginFormSteps.EnterPhone,
             Validators.required
           ),
           phoneValidator(),
         ],
       }),
-      password: new FormControl(null, { validators: [Validators.required] }),
+      passcode: new FormControl(null, { validators: [Validators.required] }),
     } satisfies ILoginForm);
 
     super(formGroup);
@@ -88,19 +88,29 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
     if (environment.production === false) {
       formGroup.patchValue({
         email: 'admin@domain.com',
-        password: 'P@ssWord!1',
+        passcode: 'P@ssWord!1',
       });
     }
   }
 
-  public login(): void {
+  public setLoginData(): void {
+    const email = this._authTokenService.getUserEmail();
+    this.controls.email.setValue(email);
+    this.goToStepEnterPhone();
+  }
+
+  public focusEmailInput(): void {
+    setTimeout(() => this._emailInput()?.nativeElement.focus(), 100);
+  }
+
+  protected login(): void {
     if (!this.isReadyToSubmit()) {
       this.showErrors();
       return;
     }
 
     this._authService
-      .login(this.controls.email.value, this.controls.phone.value, this.controls.password.value)
+      .login(this.controls.email.value, this.controls.phone.value, this.controls.passcode.value)
       .subscribe({
         next: () => {
           this.afterLogIn.emit(true);
@@ -115,48 +125,50 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
       });
   }
 
-  public goToStepEnterEmail(): void {
-    this.showStep.set(LoginFormSteps.EnterEmail);
+  protected goToStepEnterEmail(): void {
+    this.currentStep.set(LoginFormSteps.EnterEmail);
     this.loginError.set('');
     this.focusEmailInput();
   }
 
-  public goToStepEnterPhone(): void {
+  protected goToStepEnterPhone(): void {
     const controlEmail = this.controls.email;
     const email = controlEmail.value;
     if (!controlEmail.valid || !email) {
       return;
     }
 
-    this._authService.getAccountBeforeLogIn(email).subscribe((response: IAccountBeforeLogInDto) => {
-      if (response?.isActive === false) {
+    this._authService.getAccountBeforeLogIn(email).subscribe((response: AccountBeforeLogIn) => {
+      if (response.isActive() !== true) {
         this.goToStepUserNotActive();
         return;
       }
 
-      this.showResetPasswordButton.set(response.isPasswordSet === true);
+      this.showResetPasswordButton.set(response.isPasswordSet());
 
-      if (response.isPhoneRequired === true) {
-        this.showStep.set(LoginFormSteps.EnterPhone);
+      if (response.isPhoneRequired()) {
+        this.currentStep.set(LoginFormSteps.EnterPhone);
         this.focusPhoneInput();
         return;
       }
 
-      if (response.isPasswordSet === true) {
+      if (response.isPasswordSet()) {
         this.goToStepEnterPassword();
+      } else if (response.isPinSet()) {
+        this.goToStepEnterPin();
       } else {
         this.goToStepResetPassword();
       }
     });
   }
 
-  public goToStepEnterPassword(): void {
+  protected goToStepEnterPassword(): void {
     const showStepEnterPassword = (): void => {
-      this.showStep.set(LoginFormSteps.EnterPassword);
+      this.currentStep.set(LoginFormSteps.EnterPassword);
       this.focusPasswordInput();
     };
 
-    if (this.showStep() === LoginFormSteps.EnterPhone) {
+    if (this.currentStep() === LoginFormSteps.EnterPhone) {
       const controlPhone = this.controls.phone;
       const phone = controlPhone.value;
       if (!controlPhone.valid || !phone) {
@@ -165,16 +177,18 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
 
       this._authService
         .getAccountBeforeLogIn(this.controls.email.value, phone)
-        .subscribe((response: IAccountBeforeLogInDto) => {
-          if (response?.isActive === false) {
+        .subscribe((response: AccountBeforeLogIn) => {
+          if (response.isActive() !== true) {
             this.goToStepUserNotActive();
             return;
           }
 
-          this.showResetPasswordButton.set(response.isPasswordSet === true);
+          this.showResetPasswordButton.set(response.isPasswordSet());
 
-          if (response.isPasswordSet === true) {
-            showStepEnterPassword();
+          if (response.isPasswordSet()) {
+            this.goToStepEnterPassword();
+          } else if (response.isPinSet()) {
+            this.goToStepEnterPin();
           } else {
             this.goToStepResetPassword();
           }
@@ -184,12 +198,14 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
     }
   }
 
-  public goToStepResetPassword(): void {
+  protected goToStepEnterPin(): void {}
+
+  protected goToStepResetPassword(): void {
     this.loginError.set(undefined);
-    this.showStep.set(LoginFormSteps.ResetPassword);
+    this.currentStep.set(LoginFormSteps.ResetPasscode);
   }
 
-  public requestResetPassword(): void {
+  protected requestResetPassword(): void {
     this._resetPasswordService
       .requestResetPassword(
         new RequestResetPasswordDto(this.controls.email.value, this.controls.phone.value)
@@ -212,22 +228,12 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
       });
   }
 
-  public goToStepForgotPassword(): void {
+  protected goToStepForgotPassword(): void {
     this.loginError.set(undefined);
-    this.showStep.set(LoginFormSteps.ForgotPassword);
+    this.currentStep.set(LoginFormSteps.ForgotPassword);
   }
 
-  public focusEmailInput(): void {
-    setTimeout(() => this._emailInput()?.nativeElement.focus(), 100);
-  }
-
-  public setLoginData(): void {
-    const email = this._authTokenService.getUserEmail();
-    this.controls.email.setValue(email);
-    this.goToStepEnterPhone();
-  }
-
-  public togglePasswordVisibility(event: MouseEvent): void {
+  protected togglePasswordVisibility(event: MouseEvent): void {
     if (
       event instanceof PointerEvent &&
       (event.pointerType === 'mouse' || event.pointerType === 'touch')
@@ -247,6 +253,6 @@ export class LoginFormComponent extends WithForm<ILoginForm>() {
 
   private goToStepUserNotActive(): void {
     this.loginError.set(undefined);
-    this.showStep.set(LoginFormSteps.UserNotActive);
+    this.currentStep.set(LoginFormSteps.UserNotActive);
   }
 }

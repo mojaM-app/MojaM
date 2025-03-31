@@ -140,7 +140,7 @@ export class UserProfileComponent
       if (response) {
         this._snackBarService.translateAndShowSuccess({
           message: 'Management/UserProfileForm/UpdatedSuccessfully',
-          options: { duration: 2000 },
+          options: { duration: SnackBarService.LONG_SUCCESS_DURATION },
         });
       } else {
         this._snackBarService.translateAndShowError({

@@ -84,13 +84,13 @@ export class PermissionsTreeComponent extends WithUnsubscribe() {
 
           if (response) {
             this._snackBarService.translateAndShowSuccess({
-              message: 'Management/Permissions/MsgPermissionSavedSuccessfully',
+              message: 'Management/Permissions/PermissionSavedSuccessfully',
               interpolateParams: { userName: this.user().name },
-              options: { duration: 1000 },
+              options: { duration: SnackBarService.SUCCESS_DURATION },
             });
           } else {
             this._snackBarService.translateAndShowError({
-              message: 'Management/Permissions/MsgPermissionSaveFailed',
+              message: 'Management/Permissions/PermissionSaveFailed',
               interpolateParams: { userName: this.user().name },
             });
           }

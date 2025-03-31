@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { IResetPasswordResultDto } from 'src/interfaces/auth/auth.models';
+import { IResetPasswordResultDto } from 'src/services/auth/interfaces/IResetPasswordResultDto';
 import { BaseService } from 'src/services/common/base.service';
 import { HttpClientService } from 'src/services/common/httpClient.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
-import { ICheckResetPasswordTokenResult } from '../interfaces/reset-password.interfaces';
+import { ICheckResetPasswordTokenResultDto } from '../interfaces/reset-password.interfaces';
 import { RequestResetPasswordDto, ResetPasswordDto } from '../models/reset-password.models';
 
 @Injectable({
@@ -30,11 +30,11 @@ export class ResetPasswordService extends BaseService {
   public checkResetPasswordToken(
     userUuid: string,
     token: string
-  ): Observable<ICheckResetPasswordTokenResult> {
+  ): Observable<ICheckResetPasswordTokenResultDto> {
     return this._httpClient
       .request()
       .withUrl(this.API_ROUTES.auth.checkResetPasswordToken(userUuid, token))
-      .post<ICheckResetPasswordTokenResult>();
+      .post<ICheckResetPasswordTokenResultDto>();
   }
 
   public resetPassword(

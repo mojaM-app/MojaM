@@ -19,7 +19,8 @@
     "BtnPublish": "Opublikuj",
     "Location": "Lokalizacja",
     "Yes": "Tak",
-    "No": "Nie"
+    "No": "Nie",
+    "CopiedToClipboard": "Skopiowano do schowka"
   },
   "Header": {
     "Menu": {
@@ -154,7 +155,7 @@
     "HidePasswordAriaLabel": "Ukryj hasło",
     "AccountActivatedSuccessfully": "Twoje konto zostało aktywowane. Możesz się teraz zalogować.",
     "AccountNotActiveErrorTitle": "Konto nieaktywne",
-    "ErrorAccountNotActive": "<b>Nie możesz się zalogować ponieważ twoje konto nie zostało aktywowane</b>.<br>Podczas tworzenia konta, na podany w poprzednim kroku adres e-mail, została wysłana wiadomość ze wskazówkami jak aktywować konto. Sprawdź pocztę, sprawdź folder ze spamem, może wiadomość została usunięta.<br>W przypadku braku wiadomości, skontaktuj się proszę z liderem wspólnoty i poproś go o przesłanie nowego e-maila z informacją jak aktywować twoje konto."
+    "ErrorAccountNotActive": "<b>Nie możesz się zalogować ponieważ twoje konto nie zostało aktywowane</b>.<br>Podczas tworzenia konta, na podany w poprzednim kroku adres e-mail, została wysłana wiadomość ze wskazówkami jak aktywować konto. Sprawdź pocztę, sprawdź folder ze spamem, może wiadomość została usunięta.<br>W przypadku braku wiadomości, skontaktuj się proszę z liderem wspólnoty i poproś go o wysłanie kolejnego e-maila aktywującego konto."
   },
   "ResetPassword": {
     "ChangePasswordTitle": "Zmiana hasła",
@@ -264,7 +265,9 @@
         "Deactivate": "Dezaktywuj",
         "Activate": "Aktywuj"
       },
-      "DeleteConfirmText": "Czy na pewno chcesz usunąć użytkownika '{firstName} {lastName}'?"
+      "DeleteConfirmText": "Czy na pewno chcesz usunąć użytkownika '{firstName} {lastName}'?",
+      "AccountActivatedSuccessfully": "Konto zostało aktywowane.",
+      "AccountDeactivatedSuccessfully": "Konto zostało dezaktywowane."
     },
     "UserDetails": {
       "Email": "E-mail",
@@ -294,7 +297,9 @@
       "LastNameHint": "Proszę podać nazwisko użytkownika. Maksymalnie {maxLength} znaków.",
       "JoiningDate": "Data dołączenia do wspólnoty",
       "JoiningDatePlaceholder": "Wprowadź datę",
-      "JoiningDateHint": "Proszę podać datę dołączenia użytkownika do wspólnoty."
+      "JoiningDateHint": "Proszę podać datę dołączenia użytkownika do wspólnoty.",
+      "UserSavedSuccessfully": "Zmiany zostały zapisane",
+      "UserAddedSuccessfully": "Użytkownik został dodany"
     },
     "Permissions": {
       "Title": "Uprawnienia",
@@ -304,8 +309,8 @@
       "BtnClearLabel": "Kliknij, aby wyczyścić",
       "UsersFilterPlaceholder": "Znajdź użytkownika",
       "SelectUserHint": "Prosze wybrać użytkownika z listy po lewej, aby przypisać mu uprawnienia",
-      "MsgPermissionSavedSuccessfully": "Uprawnienia dla użytkownika '{userName}' zostały zapisane.",
-      "MsgPermissionSaveFailed": "Nie udało się zapisać uprawnień dla użytkownika '{userName}'."
+      "PermissionSavedSuccessfully": "Uprawnienia dla użytkownika '{userName}' zostały zapisane.",
+      "PermissionSaveFailed": "Nie udało się zapisać uprawnień dla użytkownika '{userName}'."
     },
     "UserProfile": {
       "Title": "Mój profil"
