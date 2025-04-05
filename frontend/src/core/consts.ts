@@ -17,5 +17,6 @@ export const VALIDATOR_SETTINGS = {
 
 export const REGEX_PATTERNS = {
   PHONE: /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})$/,
+  PIN: /^[a-zA-Z0-9]{4}$/,
   ALPHANUMERIC_ONE_CHAR: /^[a-zA-Z0-9]$/,
 };

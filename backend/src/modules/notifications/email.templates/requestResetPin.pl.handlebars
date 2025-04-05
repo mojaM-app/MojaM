@@ -14,7 +14,7 @@
     }
 
     p {
-      margin: 0 !important;
+      margin: 0;
     }
 
     a.btn {
@@ -37,19 +37,14 @@
       font-size: 80%;
       color: #595959;
     }
-
-    .mb-1 {
-      margin-bottom: 0.5rem !important;
-    }
   </style>
 </head>
 
 <body>
-  <p>Cześć {{name}}!</p><br>
-  <p class="mb-1">Dostaliśmy informację, że chcesz zacząć korzystać z aplikacji {{appName}}.<br>
-    Jest nam niezmiernie miło.</p>
-  <p>Aby rozpocząć przygodę z naszą aplikacją, najpierw musisz aktywować swoje konto.<br>
-    Kliknij poniższy przycisk</p><br>
+  <p>Cześć {{name}},</p><br>
+  <p>Chcesz zresetować kod PIN do aplikacji {{appName}}?<br>
+    Żaden problem! Wystarczy kliknąć poniższy przycisk.</p>
+  <br>
   <table cellpadding="0" cellmargin="0" border="0" style="border-collapse: collapse; border:5px solid #005cbb">
     <tr>
       <td bgcolor="#005cbb" valign="middle" align="center">
@@ -57,18 +52,21 @@
           style="font-size: 18px; color: #ffffff; line-height: 1; margin: 0; padding: 0; mso-table-lspace:0; mso-table-rspace:0;">
           <a class="btn" href="{{link}}" target="_blank" rel="noopener noreferrer"
             style="text-decoration: none; color: #ffffff; border: 0; font-family: Arial, arial, sans-serif; mso-table-lspace:0; mso-table-rspace:0;"
-            border="0">Aktywuj konto</a>
+            border="0">Resetuj kod PIN</a>
         </div>
       </td>
     </tr>
   </table>
   <br>
-  <p class="mb-1">Pozdrawiamy serdecznie i życzymy bezawaryjnego korzystania z aplikacji.</p>
-  <p class="text-small">Jeżeli to nie Ty wygenerował(aś/eś) prośbę o utworzenie konta w aplikacji {{appName}} zignoruj
-    niniejszą wiadomość.<br>Możesz skontaktować się z nami telefonicznie, nasz nr tel. <a
-      href="tel:{{contactPhone}}">{{contactPhone}}</a> lub e-mailowo, nasz e-mail <a
-      href="mailto:{{contactEmail}}">{{contactEmail}}</a>.<br>
-    Więcej informacji na nasz temat na stronie <a href="https://{{contactWebsite}}/">{{contactWebsite}}</a><br>
+  <p class="text-small">Link do resetu kodu PIN może być użyty tylko raz i jest ważny przez godzinę. Po tym czasie
+    traci
+    ważność i należy wysłać kolejną prośbę o zmianę kodu PIN.</p>
+  <p class="text-small">Jeżeli prośba o reset kodu PIN nie została wysłana przez Ciebie, możesz zignorować tę wiadomość
+    a kod PIN nie zostanie zmienione. Twoje dane są bezpieczne.</p>
+  <p class="text-small">Jeżeli to nie Ty wygenerował(aś/eś) niniejszą prośbę o reset kodu PIN skontaktuj się z nami
+    telefonicznie, nasz nr tel. <a href="tel:{{contactPhone}}">{{contactPhone}}</a> lub e-mailowo, nasz e-mail <a
+      href="mailto:{{contactEmail}}">{{contactEmail}}</a>. Więcej informacji na nasz temat na
+    stronie <a href="https://{{contactWebsite}}/">{{contactWebsite}}</a><br>
     W razie jakichkolwiek pytań służymy pomocą i zachęcamy do kontaktu.</p>
 </body>
 

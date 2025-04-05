@@ -47,6 +47,8 @@
         <mat-error>{{ 'ResetPin/PinNotEnoughStrongError' | gmessage }}</mat-error>
       } @else if (getControlErrors(form().controls.confirmPin)[errorNames.pattern]) {
         <mat-error>{{ 'ResetPin/PinContainsInvalidCharactersError' | gmessage }}</mat-error>
+      } @else if (getControlErrors(form().controls.confirmPin)[errorNames.invalid]) {
+        <mat-error>{{ 'ResetPin/PinIsInvalidError' | gmessage }}</mat-error>
       }
     </mat-form-field>
     <div class="mat-mdc-form-field-subscript-wrapper mat-mdc-form-field-subscript-dynamic-size">

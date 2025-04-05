@@ -279,6 +279,11 @@ export class MatOtpInputComponent
     this._disabledByCva.set(isDisabled);
   }
 
+  public focusFirstInput(): void {
+    this._focusMonitor.focusVia(this._p1(), 'program');
+    this._p1().nativeElement.select();
+  }
+
   protected autoFocusNext(control: AbstractControl, nextElement?: HTMLInputElement): void {
     if (!control.errors && nextElement) {
       this._focusMonitor.focusVia(nextElement, 'program');
@@ -305,6 +310,7 @@ export class MatOtpInputComponent
   protected onFocusIn(): void {
     if (!this._focused()) {
       this._focused.set(true);
+      this.stateChanges.next();
     }
   }
 
@@ -313,6 +319,7 @@ export class MatOtpInputComponent
       this.touched.set(true);
       this._focused.set(false);
       this.onTouched();
+      this.stateChanges.next();
     }
   }
 

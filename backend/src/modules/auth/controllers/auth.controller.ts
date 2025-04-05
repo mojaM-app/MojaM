@@ -6,12 +6,12 @@ import {
   AuthService,
   CheckResetPasscodeTokenReqDto,
   CheckResetPasscodeTokenResponseDto,
-  CheckResetPasscodeTokenResultDto,
   GetAccountBeforeLogInResponseDto,
   GetAccountToActivateReqDto,
   GetAccountToActivateResponseDto,
   IAccountToActivateResultDto,
   IActivateAccountResultDto,
+  ICheckResetPasscodeTokenResultDto,
   IGetAccountBeforeLogInResultDto,
   ILoginResult,
   IResetPasscodeResultDto,
@@ -62,7 +62,7 @@ export class AuthController extends BaseController {
       const userGuid = isGuid(req.params?.userId) ? req.params.userId : undefined;
       const token = req.params?.token?.length > 0 ? req.params.token : undefined;
       const reqDto = new CheckResetPasscodeTokenReqDto(userGuid, token);
-      const result: CheckResetPasscodeTokenResultDto = await this._authService.checkResetPasscodeToken(reqDto);
+      const result: ICheckResetPasscodeTokenResultDto = await this._authService.checkResetPasscodeToken(reqDto);
       res.status(200).json(new CheckResetPasscodeTokenResponseDto(result));
     } catch (error) {
       next(error);

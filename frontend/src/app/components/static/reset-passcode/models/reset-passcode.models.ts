@@ -1,4 +1,4 @@
-export class RequestResetPasswordDto {
+export class RequestResetPasscodeDto {
   public readonly email: string;
   public readonly phone?: string;
 
@@ -8,12 +8,12 @@ export class RequestResetPasswordDto {
   }
 }
 
-export class ResetPasswordDto {
+export class ResetPasscodeDto {
   public readonly token: string;
-  public readonly password: string;
+  public readonly passcode: string;
 
-  public constructor(token: string, password: string) {
-    this.password = password;
+  public constructor(token: string, passcode: string) {
+    this.passcode = passcode;
     this.token = token;
   }
 }

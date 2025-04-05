@@ -5,7 +5,6 @@ export const REGEX_PATTERNS = {
   GUID: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}',
   INT: '\\d+',
   PHONE: /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})$/,
-  ALPHANUMERIC_ONE_CHAR: /^[a-zA-Z0-9]$/,
   PIN: /^[a-zA-Z0-9]{4}$/,
 };
 /*

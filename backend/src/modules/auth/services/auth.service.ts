@@ -6,12 +6,12 @@ import {
   ActivateAccountDto,
   ActivateAccountReqDto,
   CheckResetPasscodeTokenReqDto,
-  CheckResetPasscodeTokenResultDto,
   CryptoService,
   FailedLoginAttemptEvent,
   GetAccountToActivateReqDto,
   IAccountToActivateResultDto,
   IActivateAccountResultDto,
+  ICheckResetPasscodeTokenResultDto,
   IDataStoredInToken,
   IGetAccountBeforeLogInResultDto,
   ILoginResult,
@@ -37,7 +37,7 @@ import {
   getTokenIssuer,
 } from '@modules/auth/middlewares/set-identity.middleware';
 import { BaseService, userToIUser } from '@modules/common';
-import { EmailService, LinkHelper } from '@modules/notifications';
+import { EmailService, IResetPasscodeEmailSettings, LinkHelper } from '@modules/notifications';
 import { UserPermissionsRepository } from '@modules/permissions';
 import { UpdateUserModel, UserActivatedEvent, UserRepository } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
@@ -70,15 +70,13 @@ export class AuthService extends BaseService {
   }
 
   public async getAccountBeforeLogIn(data: AccountTryingToLogInDto): Promise<IGetAccountBeforeLogInResultDto> {
-    const result = {
-      authType: AuthenticationTypes.Password,
-      isActive: true,
-    } satisfies IGetAccountBeforeLogInResultDto;
-
     const users: User[] = await this._userRepository.findManyByLogin(data?.email, data?.phone);
 
     if ((users?.length ?? 0) === 0) {
-      return result;
+      return {
+        authType: AuthenticationTypes.Password,
+        isActive: true,
+      } satisfies IGetAccountBeforeLogInResultDto;
     }
 
     if (users.length > 1) {
@@ -103,8 +101,8 @@ export class AuthService extends BaseService {
     }
 
     const user = users[0];
-
-    if (!(await this._resetPasscodeTokensRepository.isLastTokenExpired(user.id))) {
+    const authType = getAuthenticationType(user);
+    if (isNullOrEmptyString(user.passcode) || authType === undefined || !(await this._resetPasscodeTokensRepository.isLastTokenExpired(user.id))) {
       return true;
     }
 
@@ -114,16 +112,20 @@ export class AuthService extends BaseService {
 
     const resetPasscodeToken = await this._resetPasscodeTokensRepository.createToken(user.id, token);
 
-    return await this._emailService.sendEmailResetPasscode(user, LinkHelper.resetPasscodeLink(user.uuid, resetPasscodeToken.token));
+    return await this._emailService.sendEmailResetPasscode({
+      user,
+      authType,
+      link: LinkHelper.resetPasscodeLink(user.uuid, resetPasscodeToken.token),
+    } satisfies IResetPasscodeEmailSettings);
   }
 
-  public async checkResetPasscodeToken(data: CheckResetPasscodeTokenReqDto): Promise<CheckResetPasscodeTokenResultDto> {
+  public async checkResetPasscodeToken(data: CheckResetPasscodeTokenReqDto): Promise<ICheckResetPasscodeTokenResultDto> {
     const userId = await this._userRepository.getIdByUuid(data.userGuid);
 
     if (isNullOrUndefined(userId)) {
       return {
         isValid: false,
-      } satisfies CheckResetPasscodeTokenResultDto;
+      } satisfies ICheckResetPasscodeTokenResultDto;
     }
 
     const token = await this._resetPasscodeTokensRepository.getLastToken(userId!);
@@ -131,7 +133,7 @@ export class AuthService extends BaseService {
     if (isNullOrUndefined(token) || this._resetPasscodeTokensRepository.isTokenExpired(token) || token!.token !== data.token) {
       return {
         isValid: false,
-      } satisfies CheckResetPasscodeTokenResultDto;
+      } satisfies ICheckResetPasscodeTokenResultDto;
     }
 
     const user = await this._userRepository.getById(userId);
@@ -139,7 +141,8 @@ export class AuthService extends BaseService {
     return {
       isValid: true,
       userEmail: user?.email,
-    } satisfies CheckResetPasscodeTokenResultDto;
+      authType: getAuthenticationType(user!),
+    } satisfies ICheckResetPasscodeTokenResultDto;
   }
 
   public async resetPasscode(data: ResetPasscodeReqDto): Promise<IResetPasscodeResultDto> {

@@ -139,23 +139,27 @@
     "Phone": "Telefon",
     "PhonePlaceholder": "Wprowadź numer telefonu",
     "PhoneHint": "Proszę podać numer telefonu podany podczas zapisów do wspólnoty.",
-    "PasswordNotSetError": "Twoje konto nie zostało w pełni aktywowane - nie ustawiono hasła.",
+    "PasscodeNotSetMessage": "<b>Nie możesz się zalogować ponieważ twoje konto nie zostało w pełni aktywowane - nie wybrano sposobu uwierzytelniania (logowania)</b>.<br><br>Podczas tworzenia konta, na podany w poprzednim kroku adres e-mail, została wysłana wiadomość ze wskazówkami jak aktywować konto. Aktywacja konta nie została przeprowadzona prawidłowo bądź się nie powiodła.<br>Skontaktuj się proszę z jednym z animatorów bądź z liderem wspólnoty i poproś o wysłanie kolejnego e-maila aktywującego konto.",
     "Password": "Hasło",
     "PasswordPlaceholder": "Wprowadź hasło",
+    "Pin": "Kod PIN",
+    "PinPlaceholder": "Wprowadź kod PIN",
+    "HidePinAriaLabel": "Ukryj kod PIN",
     "BtnLogin": "Zaloguj",
-    "BtnSetPassword": "Ustaw hasło teraz",
-    "BtnSetPasswordHint": "Kliknij, aby ustawić hasło do swojego konta.",
-    "RequestResetPasswordSent": "Na podany adres e-mail został wysłany link do resetowania hasła. Sprawdź pocztę. Jeśli nie otrzymano wiadomości, sprawdź folder ze spamem.",
     "ForgotPassword": "Nie pamiętasz hasła?",
-    "ResetPasswordMessage": "Na podany adres e-mail zostanie wysłana wiadomość z instrukcją do resetowania hasła.",
+    "ForgotPin": "Nie pamiętasz kodu PIN?",
+    "ResetPasswordHint": "Aby uzyskać informacje jak zresetować hasło kliknij w przycisk.",
+    "ResetPinHint": "Aby uzyskać informacje jak zresetować kod PIN kliknij w przycisk.",
     "BtnResetPassword": "Resetuj hasło",
-    "BtnResetPasswordHint": "Kliknij w powyższy przycisk, aby zresetować hasło do swojego konta. Następnie sprawdź pocztę. Jeśli nie otrzymano wiadomości, sprawdź folder ze spamem.",
-    "ResetPasswordSuccess": "Hasło zostało zresetowane.",
-    "ResetPasswordFailed": "Wystąpił błąd podczas resetowania hasła.",
+    "BtnResetPin": "Resetuj kod PIN",
+    "BtnResetPasswordHint": "Na podany w poprzednim kroku adres e-mail przyjdzie wiadomość z instrukcją jak zresetować hasło. Jeśli nie otrzymano wiadomości, sprawdź folder ze spamem.",
+    "BtnResetPinHint": "Na podany w poprzednim kroku adres e-mail przyjdzie wiadomość z instrukcją jak zresetować kod PIN. Jeśli nie otrzymano wiadomości, sprawdź folder ze spamem.",
     "HidePasswordAriaLabel": "Ukryj hasło",
-    "AccountActivatedSuccessfully": "Twoje konto zostało aktywowane. Możesz się teraz zalogować.",
+    "AccountActivatedSuccessfully": "Twoje konto zostało aktywowane. Teraz możesz się zalogować.",
     "AccountNotActiveErrorTitle": "Konto nieaktywne",
-    "ErrorAccountNotActive": "<b>Nie możesz się zalogować ponieważ twoje konto nie zostało aktywowane</b>.<br>Podczas tworzenia konta, na podany w poprzednim kroku adres e-mail, została wysłana wiadomość ze wskazówkami jak aktywować konto. Sprawdź pocztę, sprawdź folder ze spamem, może wiadomość została usunięta.<br>W przypadku braku wiadomości, skontaktuj się proszę z liderem wspólnoty i poproś go o wysłanie kolejnego e-maila aktywującego konto."
+    "ErrorAccountNotActive": "<b>Nie możesz się zalogować ponieważ twoje konto nie zostało aktywowane</b>.<br>Podczas tworzenia konta, na podany w poprzednim kroku adres e-mail, została wysłana wiadomość ze wskazówkami jak aktywować konto. Sprawdź pocztę, sprawdź folder ze spamem, może wiadomość została usunięta.<br>W przypadku braku wiadomości, skontaktuj się proszę z jednym z animatorów bądź z liderem wspólnoty i poproś o wysłanie kolejnego e-maila aktywującego konto.",
+    "RequestResetPasswordSent": "Na podany adres e-mail został wysłany link do resetowania hasła. Sprawdź pocztę. Jeśli nie otrzymano wiadomości, sprawdź folder ze spamem.",
+    "RequestResetPinSent": "Na podany adres e-mail został wysłany link do resetowania kodu PIN. Sprawdź pocztę. Jeśli nie otrzymano wiadomości, sprawdź folder ze spamem."
   },
   "ResetPassword": {
     "ChangePasswordTitle": "Zmiana hasła",
@@ -175,18 +179,20 @@
     "InvalidToken": "Nieprawidłowy token resetujący hasło!",
     "TryAgain": "Spróbuj ponownie raz jeszcze.",
     "InvalidTokenHint": "Link do resetu hasła może być użyty tylko raz i jest ważny przez godzinę. Po tym czasie traci ważność i należy wysłać kolejną prośbę o zmianę hasła.",
-    "HideAriaLabel": "Ukryj hasło"
+    "HideAriaLabel": "Ukryj hasło",
+    "ResetPasswordSuccess": "Hasło zostało zresetowane.",
+    "ResetPasswordFailed": "Wystąpił błąd podczas resetowania hasła."
   },
   "ResetPin": {
-    "ChangePinTitle": "Zmień nr PIN",
-    "ChangePinDescription": "Wprowadź nowy nr PIN dla konta <b>{email}</b>",
+    "ChangePinTitle": "Zmień kod PIN",
+    "ChangePinDescription": "Wprowadź nowy kod PIN dla konta <b>{email}</b>",
     "ChangePinHint": "Pamiętaj, że silny PIN to podstawa bezpieczeństwa Twojego konta.<br>PIN może zawierać same cyfry jak również duże i małe litery.",
-    "Pin": "Nowy nr PIN",
-    "PinPlaceholder": "wprowadź nowy nr PIN",
-    "PinRequiredError": "Wprowadź nowy nr PIN",
-    "ConfirmPin": "Potwierdź nr PIN",
-    "ConfirmPinPlaceholder": "potwierdź nowy nr PIN",
-    "ConfirmPinRequiredError": "Potwierdź nowy nr PIN",
+    "Pin": "Nowy kod PIN",
+    "PinPlaceholder": "wprowadź nowy kod PIN",
+    "PinRequiredError": "Wprowadź nowy kod PIN",
+    "ConfirmPin": "Potwierdź kod PIN",
+    "ConfirmPinPlaceholder": "potwierdź nowy kod PIN",
+    "ConfirmPinRequiredError": "Potwierdź nowy kod PIN",
     "ConfirmPinMismatchError": "Numery PIN nie są takie same",
     "PinNotEnoughStrongError": "PIN jest zbyt słaby. Musi zawierać cztery znaki.",
     "PinContainsInvalidCharactersError": "PIN zawiera niedozwolone znaki. Dozwolone są tylko cyfry oraz duże i małe litery.",
@@ -195,7 +201,10 @@
     "InvalidToken": "Nieprawidłowy token resetujący PIN!",
     "TryAgain": "Spróbuj ponownie raz jeszcze.",
     "InvalidTokenHint": "Link do resetu PIN-u może być użyty tylko raz i jest ważny przez godzinę. Po tym czasie traci ważność i należy wysłać kolejną prośbę o zmianę PIN-u.",
-    "HideAriaLabel": "Ukryj PIN"
+    "HideAriaLabel": "Ukryj PIN",
+    "ResetPinSuccess": "PIN został zresetowany.",
+    "ResetPinFailed": "Wystąpił błąd podczas resetowania kodu PIN.",
+    "PinIsInvalidError": "Nieprawidłowy kod PIN"
   },
   "ActivateAccount": {
     "Title": "Aktywacja konta",
@@ -233,7 +242,7 @@
           "Pin": "PIN"
         },
         "ChangePasswordHint": "Pamiętaj, że silne hasło to podstawa bezpieczeństwa Twojego konta.<br>Hasło musi zawierać co najmniej dziewięć znaków.",
-        "ChangePinHint": "Pamiętaj, że silny PIN to podstawa bezpieczeństwa Twojego konta.<br>PIN może zawierać same cyfry jak również duże i małe litery.",
+        "ChangePinHint": "Pamiętaj, że silny PIN to podstawa bezpieczeństwa Twojego konta.<br>PIN może składać się z samych cyfr jak również może być kombinacją cyfr oraz małych i dużych liter.",
         "BtnNext": "Dalej",
         "BtnBack": "Wstecz"
       },
@@ -317,7 +326,7 @@
     },
     "UserProfileForm": {
       "Title": "Mój profil",
-      "EmailPhoneHint": "<strong>E-mail i telefon są danymi wymaganymi</strong>.<br>Są to dane kontaktowe oraz służą do identyfikacji użytkownika podczas logowania się do aplikacji.<br>Jeżeli chcesz zmienić e-mail lub telefon, skontaktuj się z liderem wspólnoty lub z animatorem diakonii do której należysz i poproś o zmianę.",
+      "EmailPhoneHint": "<strong>E-mail i telefon są danymi wymaganymi</strong>.<br>Są to dane kontaktowe oraz służą do identyfikacji użytkownika podczas logowania się do aplikacji.<br>Jeżeli chcesz zmienić e-mail lub telefon, skontaktuj się z jednym z animatorów lub z liderem wspólnoty i poproś o zmianę.",
       "UpdatedSuccessfully": "Dane zostały zaktualizowane poprawnie.",
       "UpdateFailed": "Wystąpił błąd podczas aktualizacji danych."
     }

@@ -1,7 +1,6 @@
-import { ResetPasscodeTokensRepository } from '@/modules/auth/repositories/reset-passcode-tokens.repository';
 import { relatedDataNames } from '@db';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { CryptoService, PasscodeService } from '@modules/auth';
+import { CryptoService, PasscodeService, ResetPasscodeTokensRepository } from '@modules/auth';
 import {
   ActivateUserReqDto,
   CreateUserDto,

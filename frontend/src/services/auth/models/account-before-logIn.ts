@@ -23,4 +23,8 @@ export class AccountBeforeLogIn {
   public isPhoneRequired(): boolean {
     return this._accountBeforeLogIn?.isPhoneRequired === true;
   }
+
+  public getAuthType(): AuthenticationTypes | undefined {
+    return this._accountBeforeLogIn?.authType;
+  }
 }

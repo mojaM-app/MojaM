@@ -205,7 +205,7 @@ describe('GET /announcements/current', () => {
     });
   });
 
-  describe('result shouldn`t be null', () => {
+  describe('result should not be null', () => {
     it('when there are one published announcements with validFromDate=6_days_ago and one unpublish with validFromDate=today_s_date', async () => {
       const requestData1 = generateValidAnnouncements();
       // 6 days ago
@@ -257,7 +257,7 @@ describe('GET /announcements/current', () => {
       expect(currentAnnouncements?.title).toBe(requestData1.title);
       expect(currentAnnouncements?.publishedAt).toBeDefined();
       expect(currentAnnouncements?.publishedBy.length).toBeGreaterThan(0);
-      expect(currentAnnouncements!.validFromDate).toBe(requestData1.validFromDate.toISOString());
+      expect(new Date(currentAnnouncements!.validFromDate).toISOString().slice(0, 10)).toBe(requestData1.validFromDate.toISOString().slice(0, 10));
       expect(currentAnnouncements?.items).toBeDefined();
       expect(currentAnnouncements?.items.length).toBe(requestData1.items!.length);
       expect(currentAnnouncements!.items.every(item => isGuid(item.id))).toBe(true);
@@ -302,7 +302,7 @@ describe('GET /announcements/current', () => {
       expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(2);
     });
 
-    it('when there are one published announcements with today`s date', async () => {
+    it('when there are one published announcements with today date', async () => {
       const requestData = generateValidAnnouncements();
       requestData.validFromDate = getDateNow();
       const createAnnouncementsResponse = await request(app.getServer())

@@ -12,9 +12,9 @@ import {
   ResetPasscodeDto,
   ResetPasscodeResponseDto,
 } from '@modules/auth';
-import { EmailService } from '@modules/notifications';
+import { EmailService, IResetPasscodeEmailSettings } from '@modules/notifications';
 import { PermissionsRoute } from '@modules/permissions';
-import { CreateUserResponseDto, IUser, UserRoute } from '@modules/users';
+import { CreateUserResponseDto, UserRoute } from '@modules/users';
 import { generateRandomEmail, getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import nodemailer from 'nodemailer';
@@ -28,7 +28,7 @@ describe('POST /auth/request-reset-passcode', () => {
   let adminAccessToken: string | undefined;
   let mockSendMail: any;
   let sendWelcomeEmailSpy: any;
-  let originalSendEmailResetPasscode: (user: IUser, link: string) => Promise<boolean>;
+  let originalSendEmailResetPasscode: (settings: IResetPasscodeEmailSettings) => Promise<boolean>;
 
   beforeAll(async () => {
     const emailService = new EmailService();
@@ -358,7 +358,7 @@ describe('POST /auth/request-reset-passcode', () => {
   });
 
   describe('when login data are valid (given email is unique, not exist, etc.)', () => {
-    it('when exist only one active user with given e-mail and user passcode is NOT set', async () => {
+    it('RequestResetPasscode email should not be sent when exist only one active user with given e-mail and user passcode is NOT set', async () => {
       const user = generateValidUserWithPassword();
       user.passcode = undefined;
 
@@ -390,10 +390,10 @@ describe('POST /auth/request-reset-passcode', () => {
       expect(deleteResponse.statusCode).toBe(200);
 
       expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
-      expect(mockSendMail).toHaveBeenCalledTimes(2);
+      expect(mockSendMail).toHaveBeenCalledTimes(1);
     });
 
-    it('when exist only one inactive user with given e-mail and user passcode is NOT set', async () => {
+    it('RequestResetPasscode email should not be sent when exist only one inactive user with given e-mail and user passcode is NOT set', async () => {
       const user = generateValidUserWithPassword();
       user.passcode = undefined;
 
@@ -419,7 +419,7 @@ describe('POST /auth/request-reset-passcode', () => {
       expect(deleteResponse.statusCode).toBe(200);
 
       expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
-      expect(mockSendMail).toHaveBeenCalledTimes(2);
+      expect(mockSendMail).toHaveBeenCalledTimes(1);
     });
 
     it('when NO user with given e-mail (or email is invalid)', async () => {
@@ -437,9 +437,51 @@ describe('POST /auth/request-reset-passcode', () => {
       }
     });
 
-    it('email is sent only once when token is still valid (not expired)', async () => {
+    it('RequestResetPasscode email should not be sent when user passcode is not set', async () => {
       const user = generateValidUserWithPassword();
       user.passcode = undefined;
+
+      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(201);
+      const { data: newUserDto, message: createUserMessage }: CreateUserResponseDto = createUserResponse.body;
+      expect(newUserDto?.id).toBeDefined();
+      expect(createUserMessage).toBe(events.users.userCreated);
+      expect(newUserDto.email).toBe(user.email);
+
+      const activateNewUserResponse = await request(app.getServer())
+        .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateNewUserResponse.statusCode).toBe(200);
+
+      let response = await request(app.getServer())
+        .post(authRoute.requestResetPasscodePath)
+        .send({ email: user.email } satisfies AccountTryingToLogInDto);
+      expect(response.statusCode).toBe(200);
+      let body: RequestResetPasscodeResponseDto = response.body;
+      expect(typeof body).toBe('object');
+      expect(body.data).toBe(true);
+
+      response = await request(app.getServer())
+        .post(authRoute.requestResetPasscodePath)
+        .send({ email: user.email } satisfies AccountTryingToLogInDto);
+      expect(response.statusCode).toBe(200);
+      body = response.body;
+      expect(typeof body).toBe('object');
+      expect(body.data).toBe(true);
+
+      expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
+      expect(mockSendMail).toHaveBeenCalledTimes(1);
+
+      const deleteResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + newUserDto.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteResponse.statusCode).toBe(200);
+    });
+
+    it('email is sent only once when token is still valid (not expired)', async () => {
+      const user = generateValidUserWithPassword();
 
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -482,9 +524,9 @@ describe('POST /auth/request-reset-passcode', () => {
 
     it('when exist only one user (via e-mail) and user password is set', async () => {
       let url = '';
-      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (user: IUser, link: string) => {
-        url = link;
-        return await originalSendEmailResetPasscode(user, link);
+      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (settings: IResetPasscodeEmailSettings) => {
+        url = settings.link;
+        return await originalSendEmailResetPasscode(settings);
       });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
@@ -535,9 +577,9 @@ describe('POST /auth/request-reset-passcode', () => {
 
     it('when exist only one user (via e-mail and phone) and user password is set', async () => {
       let url = '';
-      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (user: IUser, link: string) => {
-        url = link;
-        return await originalSendEmailResetPasscode(user, link);
+      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (settings: IResetPasscodeEmailSettings) => {
+        url = settings.link;
+        return await originalSendEmailResetPasscode(settings);
       });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 

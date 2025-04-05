@@ -1,7 +1,7 @@
-import { VALIDATOR_SETTINGS } from '@/config';
-import { generateRandomNumber, generateRandomPassword } from '@/utils/tests.utils';
+import { VALIDATOR_SETTINGS } from '@config';
 import { generateValidUserWithPassword } from '@helpers/user-tests.helpers';
 import { CreateUserDto } from '@modules/users';
+import { generateRandomNumber, generateRandomPassword } from '@utils/tests.utils';
 import { plainToInstance } from 'class-transformer';
 import { validateSync, ValidationError } from 'class-validator';
 import 'reflect-metadata';

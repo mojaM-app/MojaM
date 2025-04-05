@@ -1,4 +1,4 @@
-import { isNullOrEmptyString } from '@/utils';
+import { isNullOrEmptyString } from '@utils';
 import Container, { Service } from 'typedi';
 import { AuthenticationTypes } from '../enums/authentication-type.enum';
 import { getAuthenticationType } from '../helpers/auth.helper';
@@ -28,8 +28,8 @@ export class PasscodeService {
       return false;
     }
 
-    const authenticationType = getAuthenticationType(user);
-    switch (authenticationType) {
+    const authType = getAuthenticationType(user);
+    switch (authType) {
       case AuthenticationTypes.Password:
         return this._passwordService.match(passcode!, user.salt, user.passcode!);
       case AuthenticationTypes.Pin:

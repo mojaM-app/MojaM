@@ -1,4 +1,5 @@
 import { IResponse } from '@interfaces';
+import { AuthenticationTypes } from '../enums/authentication-type.enum';
 
 export class CheckResetPasscodeTokenReqDto {
   public readonly userGuid: string | undefined;
@@ -10,15 +11,16 @@ export class CheckResetPasscodeTokenReqDto {
   }
 }
 
-export interface CheckResetPasscodeTokenResultDto {
+export interface ICheckResetPasscodeTokenResultDto {
   isValid: boolean;
   userEmail?: string;
+  authType?: AuthenticationTypes;
 }
 
-export class CheckResetPasscodeTokenResponseDto implements IResponse<CheckResetPasscodeTokenResultDto> {
-  public readonly data: CheckResetPasscodeTokenResultDto;
+export class CheckResetPasscodeTokenResponseDto implements IResponse<ICheckResetPasscodeTokenResultDto> {
+  public readonly data: ICheckResetPasscodeTokenResultDto;
 
-  public constructor(result: CheckResetPasscodeTokenResultDto) {
+  public constructor(result: ICheckResetPasscodeTokenResultDto) {
     this.data = result;
   }
 }

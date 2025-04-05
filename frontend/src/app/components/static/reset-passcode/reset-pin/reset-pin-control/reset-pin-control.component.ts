@@ -20,7 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { errorNames } from 'src/validators/error-names.const';
-import { IResetPinForm } from '../reset-pin.form';
+import { IResetPinForm } from '../../reset-pin.form';
 import { MatOtpInputComponent } from './mat-otp-input/mat-otp-input.component';
 
 @Component({

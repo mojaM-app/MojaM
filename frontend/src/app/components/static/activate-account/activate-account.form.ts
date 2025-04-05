@@ -1,6 +1,6 @@
 import { FormControl, FormGroup } from '@angular/forms';
-import { IResetPasswordForm } from '../reset-password/reset-password.form';
-import { IResetPinForm } from '../reset-password/reset-pin.form';
+import { IResetPasswordForm } from '../reset-passcode/reset-passcode.form';
+import { IResetPinForm } from '../reset-passcode/reset-pin.form';
 import { AuthenticationTypes } from './enums/authentication-type.enum';
 
 export interface IContactFormGroup {

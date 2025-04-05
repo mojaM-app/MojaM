@@ -512,11 +512,13 @@ describe('POST /announcements', () => {
   });
 
   describe.each([
+    new Date('2024-03-23'),
     new Date('2024-03-24'),
     new Date('2024-03-25'),
     new Date('2024-03-26'),
     new Date('2024-03-27'),
 
+    new Date('2024-10-24'),
     new Date('2024-10-25'),
     new Date('2024-10-26'),
     new Date('2024-10-27'),

@@ -12,7 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { errorNames } from 'src/validators/error-names.const';
-import { IResetPasswordForm } from '../reset-password.form';
+import { IResetPasswordForm } from '../../reset-passcode.form';
 
 @Component({
   selector: 'app-reset-password-control',

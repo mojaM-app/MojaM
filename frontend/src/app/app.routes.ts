@@ -48,10 +48,10 @@ export const routes: Routes = [
       import('./components/management/management.module').then(m => m.ManagementModule),
   },
   {
-    path: 'reset-password/:userId/:token',
+    path: 'reset-passcode/:userId/:token',
     loadComponent: () =>
-      import('./components/static/reset-password/reset-password.component').then(
-        m => m.ResetPasswordComponent
+      import('./components/static/reset-passcode/reset-passcode.component').then(
+        m => m.ResetPasscodeComponent
       ),
     data: { closeSideNav: true, hideFooter: true } satisfies IRouteData,
   },

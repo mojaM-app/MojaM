@@ -7,16 +7,18 @@ import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-han
 import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import {
   AccountTryingToLogInDto,
+  AuthenticationTypes,
   AuthRoute,
   CheckResetPasscodeTokenResponseDto,
+  ICheckResetPasscodeTokenResultDto,
   LoginDto,
   RequestResetPasscodeResponseDto,
   ResetPasscodeDto,
   ResetPasscodeResponseDto,
 } from '@modules/auth';
-import { EmailService } from '@modules/notifications';
+import { EmailService, IResetPasscodeEmailSettings } from '@modules/notifications';
 import { PermissionsRoute } from '@modules/permissions';
-import { CreateUserResponseDto, IUser, UserRoute } from '@modules/users';
+import { CreateUserResponseDto, UserRoute } from '@modules/users';
 import * as Utils from '@utils';
 import { generateRandomNumber, generateRandomPassword, getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
@@ -32,7 +34,7 @@ describe('POST /auth/reset-passcode', () => {
   const app = new App();
   let adminAccessToken: string | undefined;
   let mockSendMail: any;
-  let originalSendEmailResetPasscode: (user: IUser, link: string) => Promise<boolean>;
+  let originalSendEmailResetPasscode: (settings: IResetPasscodeEmailSettings) => Promise<boolean>;
 
   beforeAll(async () => {
     const emailService = new EmailService();
@@ -70,9 +72,9 @@ describe('POST /auth/reset-passcode', () => {
       expect(newUserDto.email).toBe(user.email);
 
       let url = '';
-      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (user: IUser, link: string) => {
-        url = link;
-        return await originalSendEmailResetPasscode(user, link);
+      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (settings: IResetPasscodeEmailSettings) => {
+        url = settings.link;
+        return await originalSendEmailResetPasscode(settings);
       });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
@@ -98,8 +100,16 @@ describe('POST /auth/reset-passcode', () => {
       body = checkResetPasscodeTokenResponse.body as CheckResetPasscodeTokenResponseDto;
       expect(typeof body).toBe('object');
       const { data: checkResetPasscodeTokenResult } = body;
-      expect(checkResetPasscodeTokenResult.isValid).toBe(true);
-      expect(checkResetPasscodeTokenResult.userEmail).toBe(newUserDto.email);
+      expect(checkResetPasscodeTokenResult).toStrictEqual({
+        isValid: true,
+        userEmail: newUserDto.email,
+        authType: AuthenticationTypes.Password,
+      } satisfies ICheckResetPasscodeTokenResultDto);
+      expect(checkResetPasscodeTokenResult).toEqual({
+        isValid: true,
+        userEmail: newUserDto.email,
+        authType: AuthenticationTypes.Password,
+      } satisfies ICheckResetPasscodeTokenResultDto);
 
       const newPassword = generateRandomPassword();
       const resetPasscodeDto = {
@@ -162,9 +172,9 @@ describe('POST /auth/reset-passcode', () => {
       expect(activateUserResponse.statusCode).toBe(200);
 
       let url = '';
-      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (user: IUser, link: string) => {
-        url = link;
-        return await originalSendEmailResetPasscode(user, link);
+      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (settings: IResetPasscodeEmailSettings) => {
+        url = settings.link;
+        return await originalSendEmailResetPasscode(settings);
       });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
@@ -190,8 +200,16 @@ describe('POST /auth/reset-passcode', () => {
       body = checkResetPasscodeTokenResponse.body as CheckResetPasscodeTokenResponseDto;
       expect(typeof body).toBe('object');
       const { data: checkResetPasscodeTokenResult } = body;
-      expect(checkResetPasscodeTokenResult.isValid).toBe(true);
-      expect(checkResetPasscodeTokenResult.userEmail).toBe(newUserDto.email);
+      expect(checkResetPasscodeTokenResult).toStrictEqual({
+        isValid: true,
+        userEmail: newUserDto.email,
+        authType: AuthenticationTypes.Password,
+      } satisfies ICheckResetPasscodeTokenResultDto);
+      expect(checkResetPasscodeTokenResult).toEqual({
+        isValid: true,
+        userEmail: newUserDto.email,
+        authType: AuthenticationTypes.Password,
+      } satisfies ICheckResetPasscodeTokenResultDto);
 
       const newPassword = generateRandomPassword();
       const resetPasscodeDto = {
@@ -269,9 +287,9 @@ describe('POST /auth/reset-passcode', () => {
       }
 
       let url = '';
-      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (user: IUser, link: string) => {
-        url = link;
-        return await originalSendEmailResetPasscode(user, link);
+      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (settings: IResetPasscodeEmailSettings) => {
+        url = settings.link;
+        return await originalSendEmailResetPasscode(settings);
       });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
@@ -297,8 +315,16 @@ describe('POST /auth/reset-passcode', () => {
       body = checkResetPasscodeTokenResponse.body as CheckResetPasscodeTokenResponseDto;
       expect(typeof body).toBe('object');
       const { data: checkResetPasscodeTokenResult } = body;
-      expect(checkResetPasscodeTokenResult.isValid).toBe(true);
-      expect(checkResetPasscodeTokenResult.userEmail).toBe(newUserDto.email);
+      expect(checkResetPasscodeTokenResult).toStrictEqual({
+        isValid: true,
+        userEmail: newUserDto.email,
+        authType: AuthenticationTypes.Password,
+      } satisfies ICheckResetPasscodeTokenResultDto);
+      expect(checkResetPasscodeTokenResult).toEqual({
+        isValid: true,
+        userEmail: newUserDto.email,
+        authType: AuthenticationTypes.Password,
+      } satisfies ICheckResetPasscodeTokenResultDto);
 
       const newPassword = generateRandomPassword();
       const resetPasscodeDto = {
@@ -559,9 +585,9 @@ describe('POST /auth/reset-passcode', () => {
       expect(newUserDto.email).toBe(user.email);
 
       let url = '';
-      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (user: IUser, link: string) => {
-        url = link;
-        return await originalSendEmailResetPasscode(user, link);
+      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (settings: IResetPasscodeEmailSettings) => {
+        url = settings.link;
+        return await originalSendEmailResetPasscode(settings);
       });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
@@ -616,9 +642,9 @@ describe('POST /auth/reset-passcode', () => {
       expect(newUserDto.email).toBe(user.email);
 
       let url = '';
-      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (user: IUser, link: string) => {
-        url = link;
-        return await originalSendEmailResetPasscode(user, link);
+      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (settings: IResetPasscodeEmailSettings) => {
+        url = settings.link;
+        return await originalSendEmailResetPasscode(settings);
       });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
@@ -648,8 +674,12 @@ describe('POST /auth/reset-passcode', () => {
       body = checkResetPasscodeTokenResponse.body as CheckResetPasscodeTokenResponseDto;
       expect(typeof body).toBe('object');
       const { data: checkResetPasscodeTokenResult } = body;
-      expect(checkResetPasscodeTokenResult.isValid).toBe(false);
-      expect(checkResetPasscodeTokenResult).toEqual({ isValid: false });
+      expect(checkResetPasscodeTokenResult).toStrictEqual({
+        isValid: false,
+      } satisfies ICheckResetPasscodeTokenResultDto);
+      expect(checkResetPasscodeTokenResult).toEqual({
+        isValid: false,
+      } satisfies ICheckResetPasscodeTokenResultDto);
 
       const resetPasscodeDto = {
         token,

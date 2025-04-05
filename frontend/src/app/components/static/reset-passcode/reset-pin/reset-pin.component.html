@@ -1,0 +1,43 @@
+@if (isTokenValid() === true) {
+  <div class="container">
+    <form [formGroup]="formGroup">
+      <div class="row">
+        <div class="col-12 fw-bold mt-3">
+          {{ 'ResetPin/ChangePinTitle' | gmessage }}
+        </div>
+        <div
+          class="col-12 my-3"
+          [innerHtml]="'ResetPin/ChangePinDescription' | gmessage: { email: userEmail() }"></div>
+        <div class="col-12">
+          <div
+            class="alert alert-light"
+            role="alert"
+            [innerHtml]="'ResetPin/ChangePinHint' | gmessage"></div>
+        </div>
+      </div>
+      <app-reset-pin-control class="row mb-3" [formGroup]="formGroup"> </app-reset-pin-control>
+      <div class="row mb-4">
+        <div class="col text-end">
+          <button mat-raised-button color="primary" [disabled]="!formGroup.valid" (click)="save()">
+            {{ 'ResetPin/ChangePin' | gmessage }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+} @else if (isTokenValid() !== true) {
+  <div class="container">
+    <div class="row">
+      <div class="col-12 error-container fw-bold my-3 p-2">
+        {{ 'ResetPin/ChangePinNotPossible' | gmessage }}
+      </div>
+      <div class="col-12">
+        {{ 'ResetPin/InvalidToken' | gmessage }}
+      </div>
+      <div class="col-12">
+        {{ 'ResetPin/TryAgain' | gmessage }}
+      </div>
+      <p class="small my-3">{{ 'ResetPin/InvalidTokenHint' | gmessage }}</p>
+    </div>
+  </div>
+}

@@ -1,4 +1,4 @@
-import { isNullOrEmptyString } from '@/utils';
+import { isNullOrEmptyString } from '@utils';
 import { AuthenticationTypes } from '../enums/authentication-type.enum';
 import { PasswordService } from '../services/password.service';
 import { PinService } from '../services/pin.service';

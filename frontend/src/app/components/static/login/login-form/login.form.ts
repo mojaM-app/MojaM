@@ -9,10 +9,9 @@ export interface ILoginForm {
 export enum LoginFormSteps {
   EnterEmail,
   EnterPhone,
-  ResetPasscode,
+  AuthenticationTypeNotSet,
   EnterPassword,
-  ForgotPassword,
   EnterPin,
-  ForgotPin,
+  ResetPasscode,
   UserNotActive,
 }

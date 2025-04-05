@@ -242,7 +242,7 @@
 
                 @if (this.selectedAuthenticationType() === AuthenticationTypes.Password) {
                   <app-reset-password-control
-                    class="row"
+                    class="row mb-3"
                     [formGroup]="formGroup.controls.authentication">
                   </app-reset-password-control>
                 } @else if (this.selectedAuthenticationType() === AuthenticationTypes.Pin) {

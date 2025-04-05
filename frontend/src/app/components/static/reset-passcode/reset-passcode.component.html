@@ -1,0 +1,21 @@
+@switch (authenticationType()) {
+  @case (AuthenticationTypes.Password) {
+    <app-reset-password
+      [isTokenValid]="isTokenValid() === true"
+      [userEmail]="userEmail()"
+      [token]="token()"
+      [userId]="userId()">
+    </app-reset-password>
+  }
+  @case (AuthenticationTypes.Pin) {
+    <app-reset-pin
+      [isTokenValid]="isTokenValid() === true"
+      [userEmail]="userEmail()"
+      [token]="token()"
+      [userId]="userId()">
+    </app-reset-pin>
+  }
+  @default {
+    <div class="row"><div class="col-12 mt-3">Not supported authentication type</div></div>
+  }
+}

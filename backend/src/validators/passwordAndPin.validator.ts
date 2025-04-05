@@ -1,4 +1,4 @@
-import { PasswordService, PinService } from '@/modules/auth';
+import { PasswordService, PinService } from '@modules/auth';
 import { isNullOrUndefined } from '@utils';
 import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
 

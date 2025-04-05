@@ -38,6 +38,7 @@ describe('POST /auth/check-reset-passcode-token/:userId/:token', () => {
       const { data: checkResetPasscodeTokenResult } = body;
       expect(checkResetPasscodeTokenResult.isValid).toBe(false);
       expect(checkResetPasscodeTokenResult.userEmail).toBeUndefined();
+      expect(checkResetPasscodeTokenResult.authType).toBeUndefined();
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {

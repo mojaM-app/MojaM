@@ -25,7 +25,7 @@ import { MatStepperModule, StepperOrientation } from '@angular/material/stepper'
 import { ActivatedRoute, Router } from '@angular/router';
 import { PATHS } from 'src/app/app.routes';
 import { SnackBarService } from 'src/app/components/static/snackbar/snack-bar.service';
-import { REGEX_PATTERNS, VALIDATOR_SETTINGS } from 'src/core/consts';
+import { VALIDATOR_SETTINGS } from 'src/core/consts';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
@@ -35,9 +35,10 @@ import { ObjectUtils } from 'src/utils/object.utils';
 import { conditionalValidator } from 'src/validators/conditional.validator';
 import { ControlValidators } from 'src/validators/control.validators';
 import { PasswordValidator } from 'src/validators/password.validator';
+import { pinValidator } from 'src/validators/pin.validator';
 import { NewsMenu } from '../../news/news.menu';
-import { ResetPasswordControlComponent } from '../reset-password/reset-password-control/reset-password-control.component';
-import { ResetPinControlComponent } from '../reset-password/reset-pin-control/reset-pin-control.component';
+import { ResetPasswordControlComponent } from '../reset-passcode/reset-password/reset-password-control/reset-password-control.component';
+import { ResetPinControlComponent } from '../reset-passcode/reset-pin/reset-pin-control/reset-pin-control.component';
 import {
   IActivateAccountForm,
   IAuthenticationFormGroup,
@@ -174,12 +175,7 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
             validators: [
               conditionalValidator(
                 () => this.selectedAuthenticationType() === AuthenticationTypes.Pin,
-                [
-                  Validators.required,
-                  Validators.minLength(VALIDATOR_SETTINGS.PIN_LENGTH),
-                  Validators.maxLength(VALIDATOR_SETTINGS.PIN_LENGTH),
-                  Validators.pattern(REGEX_PATTERNS.ALPHANUMERIC_ONE_CHAR),
-                ]
+                pinValidator()
               ),
             ],
           }),

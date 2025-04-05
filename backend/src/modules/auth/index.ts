@@ -10,7 +10,7 @@ export { ActivateAccountDto, ActivateAccountReqDto, ActivateAccountResponseDto, 
 export {
   CheckResetPasscodeTokenReqDto,
   CheckResetPasscodeTokenResponseDto,
-  type CheckResetPasscodeTokenResultDto,
+  type ICheckResetPasscodeTokenResultDto,
 } from './dtos/check-reset-passcode-token.dto';
 export {
   AccountTryingToLogInDto,
@@ -30,6 +30,7 @@ export type { ILoginResult } from './interfaces/login.interfaces';
 export type { TLoginResult } from './types/login.types';
 
 export { AuthController } from './controllers/auth.controller';
+export { ResetPasscodeTokensRepository } from './repositories/reset-passcode-tokens.repository';
 export { AuthRoute } from './routes/auth.routes';
 export { AuthService } from './services/auth.service';
 export { CryptoService } from './services/crypto.service';

@@ -3,6 +3,7 @@ export const errorNames = {
   required: 'required',
   minLength: 'minlength',
   invalidPassword: 'invalidPassword',
+  invalid: 'invalid',
   notEqual: 'notEqual',
   pattern: 'pattern',
 };

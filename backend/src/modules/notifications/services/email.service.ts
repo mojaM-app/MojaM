@@ -1,14 +1,15 @@
 /* eslint-disable n/no-callback-literal */
 import {
   NOTIFICATIONS_EMAIL,
-  REQ_RESET_PASSWORD_TITLE,
   SMTP_SERVICE_HOST,
   SMTP_SERVICE_PORT,
   SMTP_USER_NAME,
   SMTP_USER_PASSWORD,
-  WELCOME_EMAIL_TITLE,
+  TPL_VAR_RESET_PASSWORD_TITLE,
+  TPL_VAR_RESET_PIN_TITLE,
+  TPL_VAR_WELCOME_EMAIL_TITLE,
 } from '@config';
-import { IUser } from '@modules/users';
+import { AuthenticationTypes } from '@modules/auth';
 import { toNumber } from '@utils';
 import { readFileSync } from 'fs';
 import { compile } from 'handlebars';
@@ -18,12 +19,15 @@ import SMTPConnection from 'nodemailer/lib/smtp-connection';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { join } from 'path';
 import { Service } from 'typedi';
+import { IResetPasscodeEmailSettings } from '../interfaces/reset-passcode-email-settings.interface';
+import { IWelcomeEmailSettings } from '../interfaces/welcome-email-settings.interface';
+import { TemplateVariablesHelper } from './template-variables.helper';
 
 @Service()
 export class EmailService {
   private readonly language: string = 'pl';
 
-  public async sendWelcomeEmail(user: IUser, link: string): Promise<boolean> {
+  public async sendWelcomeEmail(settings: IWelcomeEmailSettings): Promise<boolean> {
     return await new Promise((resolve, reject) => {
       try {
         const templatePath = join(__dirname, `./../email.templates/welcomeEmail.${this.language}.handlebars`);
@@ -33,15 +37,17 @@ export class EmailService {
         const compiledTemplate = compile(source);
 
         const templateVariables = {
-          link,
-          name: user.getFirstLastNameOrEmail(),
+          ...TemplateVariablesHelper.get(),
+          title: TPL_VAR_WELCOME_EMAIL_TITLE,
+          link: settings.link,
+          name: settings.user.getFirstLastNameOrEmail(),
         };
 
         const options = (): Mail.Options => {
           return {
             from: NOTIFICATIONS_EMAIL,
-            to: user.email,
-            subject: WELCOME_EMAIL_TITLE,
+            to: settings.user.email,
+            subject: TPL_VAR_WELCOME_EMAIL_TITLE,
             html: compiledTemplate(templateVariables),
           };
         };
@@ -55,25 +61,40 @@ export class EmailService {
     });
   }
 
-  public async sendEmailResetPasscode(user: IUser, link: string): Promise<boolean> {
+  public async sendEmailResetPasscode(settings: IResetPasscodeEmailSettings): Promise<boolean> {
     return await new Promise((resolve, reject) => {
       try {
-        const templatePath = join(__dirname, `./../email.templates/requestResetPassword.${this.language}.handlebars`);
+        let templatePath: string;
+        let title: string;
+        switch (settings.authType) {
+          case AuthenticationTypes.Password:
+            templatePath = join(__dirname, `./../email.templates/requestResetPassword.${this.language}.handlebars`);
+            title = TPL_VAR_RESET_PASSWORD_TITLE!;
+            break;
+          case AuthenticationTypes.Pin:
+            templatePath = join(__dirname, `./../email.templates/requestResetPin.${this.language}.handlebars`);
+            title = TPL_VAR_RESET_PIN_TITLE!;
+            break;
+          default:
+            throw new Error('Invalid authentication type');
+        }
 
         const source = readFileSync(templatePath, 'utf8');
 
         const compiledTemplate = compile(source);
 
         const templateVariables = {
-          link,
-          name: user.getFirstLastNameOrEmail(),
+          ...TemplateVariablesHelper.get(),
+          title,
+          link: settings.link,
+          name: settings.user.getFirstLastNameOrEmail(),
         };
 
         const options = (): Mail.Options => {
           return {
             from: NOTIFICATIONS_EMAIL,
-            to: user.email,
-            subject: REQ_RESET_PASSWORD_TITLE,
+            to: settings.user.email,
+            subject: title,
             html: compiledTemplate(templateVariables),
           };
         };
