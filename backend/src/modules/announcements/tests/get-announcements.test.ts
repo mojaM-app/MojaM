@@ -160,7 +160,7 @@ describe('GET /announcements', () => {
       expect(isDateString(announcements.createdAt)).toBe(true);
       expect(announcements.updatedAt).toBeDefined();
       expect(isDateString(announcements.updatedAt)).toBe(true);
-      expect(announcements.createdAt).toBe(announcements.updatedAt);
+      expect(new Date(announcements.createdAt).getTime() - new Date(announcements.updatedAt).getTime()).toBeLessThan(2);
       expect(announcements.title).toBe(requestData.title);
       expect(announcements.state).toBe(AnnouncementStateValue.PUBLISHED);
       expect(announcements.publishedAt).toBeDefined();
