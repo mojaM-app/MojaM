@@ -33,7 +33,7 @@ export class UserListController extends BaseController {
 
   private getSortData(req: IRequestWithIdentity): ISortData {
     return {
-      column: req?.query?.column?.toString() ?? UserListViewColumns.firstName!,
+      column: req?.query?.column?.toString() ?? UserListViewColumns.firstName,
       direction: req?.query?.direction?.toString() ?? 'asc',
     } satisfies ISortData;
   }

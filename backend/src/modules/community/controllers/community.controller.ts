@@ -1,6 +1,6 @@
 import { IRequestWithIdentity } from '@interfaces';
 import { BaseController } from '@modules/common';
-import { CommunityService, GetCommunityDto, GetCommunityResponseDto } from '@modules/community';
+import { CommunityService, GetCommunityResponseDto, IGetCommunityDto } from '@modules/community';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
 
@@ -13,7 +13,7 @@ export class CommunityController extends BaseController {
 
   public get = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const result: GetCommunityDto = await this._communityService.get();
+      const result: IGetCommunityDto = await this._communityService.get();
       res.status(200).json(new GetCommunityResponseDto(result));
     } catch (error) {
       next(error);
