@@ -27,7 +27,7 @@ export class CommunityService extends BaseService {
         {
           title: 'Sample Tab',
           content:
-            'Prepare endpoint that returns community data. Community data is an object with "info" and "tabs" properties. Info is an object with logoUrl, email, webPage, phone, and address properties. Tabs is an array of objects with title and content properties.',
+            'Prepare endpoint that returns community data. Community data is an object with "info" and "tabs" properties. Info is an object with logoUrl, email, webPage, phone, and address properties. Tabs is an array of objects with title and content properties.<br><br>{<br>"info": {<br>&nbsp;&nbsp;&nbsp;&nbsp;"logoUrl": "./images/community/community-logo.png",<br>&nbsp;&nbsp;&nbsp;&nbsp;"email": "community@email.com",<br>&nbsp;&nbsp;&nbsp;&nbsp;"address": "Community Address&lt;br&gt;City, Country&lt;br&gt;Postal Code",<br>&nbsp;&nbsp;&nbsp;&nbsp;"phone": "+1234567890",<br>&nbsp;&nbsp;&nbsp;&nbsp;"webPage": "https://community.webpage.com"<br>},<br>"tabs": [<br>&nbsp;&nbsp;&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"title": "Sample Tab1",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"content": "Content of Sample Tab1"<br>&nbsp;&nbsp;&nbsp;&nbsp;},<br>&nbsp;&nbsp;&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"title": "Sample Tab2",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"content": "Content of Sample Tab2"<br>&nbsp;&nbsp;&nbsp;&nbsp;},<br>&nbsp;&nbsp;&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"title": "Sample Tab3",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"content": "Content of Sample Tab3"<br>&nbsp;&nbsp;&nbsp;&nbsp;}<br>]<br>}',
         },
         {
           title: 'Meetings',
