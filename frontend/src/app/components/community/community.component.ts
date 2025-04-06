@@ -4,8 +4,8 @@ import { MatTabGroup, MatTabsModule } from '@angular/material/tabs';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
+import { TabComponent } from '../static/tab/tab.component';
 import { InfoComponent } from './components/info/info.component';
-import { TabComponent } from './components/tab/tab.component';
 import { ICommunity } from './interfaces/community.interfaces';
 import { CommunityService } from './services/community.service';
 
