@@ -163,7 +163,10 @@ describe('POST /auth/activate-account/', () => {
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
     it('while activating when passcode is UNDEFINED, passcode should not be changed', async () => {
@@ -221,7 +224,10 @@ describe('POST /auth/activate-account/', () => {
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
     it('while activating when passcode is empty, passcode should not be changed', async () => {
@@ -279,7 +285,10 @@ describe('POST /auth/activate-account/', () => {
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
     it('while activating when password is set, password should be changed', async () => {
@@ -344,7 +353,11 @@ describe('POST /auth/activate-account/', () => {
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onFailedLoginAttempt).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
     it('while activating when pin is set, pin should be changed', async () => {
@@ -409,7 +422,11 @@ describe('POST /auth/activate-account/', () => {
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onFailedLoginAttempt).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
     it('while activating when first and last name are set, first and last name should be set', async () => {
@@ -478,10 +495,13 @@ describe('POST /auth/activate-account/', () => {
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
-    it('while activating user without passcode, when passcode is set, passcode should be set', async () => {
+    it('while activating user without password, when password is set, password should be set', async () => {
       const requestData = generateValidUserWithPassword();
       delete requestData.passcode;
       const createUserResponse = await request(app.getServer())
@@ -540,7 +560,6 @@ describe('POST /auth/activate-account/', () => {
             ![
               testEventHandlers.onUserCreated,
               testEventHandlers.onUserActivated,
-              testEventHandlers.onFailedLoginAttempt,
               testEventHandlers.onUserLoggedIn,
               testEventHandlers.onUserDeleted,
             ].includes(eventHandler),
@@ -548,7 +567,10 @@ describe('POST /auth/activate-account/', () => {
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
     it('while activating user without pin, when pin is set, pin should be set', async () => {
@@ -610,7 +632,6 @@ describe('POST /auth/activate-account/', () => {
             ![
               testEventHandlers.onUserCreated,
               testEventHandlers.onUserActivated,
-              testEventHandlers.onFailedLoginAttempt,
               testEventHandlers.onUserLoggedIn,
               testEventHandlers.onUserDeleted,
             ].includes(eventHandler),
@@ -618,7 +639,10 @@ describe('POST /auth/activate-account/', () => {
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -725,6 +749,48 @@ describe('POST /auth/activate-account/', () => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
       }
+    });
+
+    it('while activating user without pin, when pin is NOT set', async () => {
+      const requestData = generateValidUserWithPin();
+      delete requestData.passcode;
+      const createUserResponse = await request(app.getServer())
+        .post(userRoute.path)
+        .send(requestData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(201);
+      let body = createUserResponse.body;
+      const { data: user }: CreateUserResponseDto = body;
+      expect(user?.id).toBeDefined();
+
+      const getAccountBeforeLogInResponse = await request(app.getServer())
+        .post(authRoute.getAccountBeforeLogInPath)
+        .send({ email: requestData.email } satisfies AccountTryingToLogInDto);
+      expect(getAccountBeforeLogInResponse.statusCode).toBe(200);
+      body = getAccountBeforeLogInResponse.body as GetAccountBeforeLogInResponseDto;
+      expect(body.data).toStrictEqual({ isActive: false } satisfies IGetAccountBeforeLogInResultDto);
+      expect(body.data).toEqual({ isActive: false } satisfies IGetAccountBeforeLogInResultDto);
+
+      const activateResponse = await request(app.getServer())
+        .post(authRoute.activateAccountPath + '/' + user.id)
+        .send({} satisfies ActivateAccountDto);
+      expect(activateResponse.statusCode).toBe(400);
+      const data = activateResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
+      expect(errors.filter(x => !x.includes(errorKeys.login.User_Passcode_Is_Not_Set)).length).toBe(0);
+
+      const deleteResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + user.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteResponse.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
     });
   });
 

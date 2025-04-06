@@ -234,4 +234,8 @@ export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser, IUse
   public isAdmin(): boolean {
     return this.uuid === getAdminLoginData().uuid;
   }
+
+  public isPasscodeSet(): boolean {
+    return (this.passcode?.length ?? 0) > 0;
+  }
 }
