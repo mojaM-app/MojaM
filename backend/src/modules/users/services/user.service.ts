@@ -156,6 +156,10 @@ export class UsersService extends BaseService {
       return true;
     }
 
+    if (!user!.isPasscodeSet()) {
+      throw new BadRequestException(errorKeys.users.Activation_Failed_Passcode_Is_Not_Set);
+    }
+
     const activatedUser = await this._userRepository.activate(user!.id, reqDto);
 
     this._eventDispatcher.dispatch(events.users.userActivated, new UserActivatedEvent(activatedUser!, reqDto.currentUserId));

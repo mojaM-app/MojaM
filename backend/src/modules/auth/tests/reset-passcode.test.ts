@@ -442,12 +442,6 @@ describe('POST /auth/reset-passcode', () => {
       expect(createUserMessage).toBe(events.users.userCreated);
       expect(newUserDto.email).toBe(user.email);
 
-      const activateNewUserResponse = await request(app.getServer())
-        .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(activateNewUserResponse.statusCode).toBe(200);
-
       const deleteUserResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()

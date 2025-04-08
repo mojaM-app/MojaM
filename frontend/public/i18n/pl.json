@@ -375,7 +375,8 @@
     "Cannot_Save_Published_Announcements_Without_ValidFromDate": "Nie można zapisać opublikowanych ogłoszeń bez daty rozpoczęcia obowiązywania.",
     "Cannot_Activate_Locked_Account": "Twoje konto jest zablokowane, nie można aktywować zablokowanego konta. Skontaktuj się z liderem.",
     "Failed_To_Activate_Account": "Nie udało się aktywować konta. Skontaktuj się z liderem wspólnoty.",
-    "Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted": "Nie można usunąć tego rekordu ponieważ jest on powiązany z innymi rekordami w bazie."
+    "Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted": "Nie można usunąć tego rekordu ponieważ jest on powiązany z innymi rekordami w bazie.",
+    "Activation_Failed_Passcode_Is_Not_Set": "Nie można aktywować konta, ponieważ nie ustawiono sposobu uwierzytelniania (logowania). Metodę logowania wybiera się w jednym z kroków kreatora aktywacji konta. Kreator ten otwiera link aktywacyjny wysłany na adres e-mail podany podczas tworzenia użytkownika."
   },
   "Grid": {
     "NoColumns": "Brak kolumn",

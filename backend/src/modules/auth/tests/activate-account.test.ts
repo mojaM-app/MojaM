@@ -777,7 +777,7 @@ describe('POST /auth/activate-account/', () => {
       expect(activateResponse.statusCode).toBe(400);
       const data = activateResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
-      expect(errors.filter(x => !x.includes(errorKeys.login.User_Passcode_Is_Not_Set)).length).toBe(0);
+      expect(errors.filter(x => !x.includes(errorKeys.users.Activation_Failed_Passcode_Is_Not_Set)).length).toBe(0);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + user.id)

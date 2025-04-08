@@ -30,6 +30,7 @@ export const errorKeys = {
     Invalid_FirstName: 'Invalid_FirstName',
     Invalid_LastName: 'Invalid_LastName',
     Invalid_JoiningDate: 'Invalid_JoiningDate',
+    Activation_Failed_Passcode_Is_Not_Set: 'Activation_Failed_Passcode_Is_Not_Set',
   },
   announcements: {
     Announcements_With_Given_ValidFromDate_Already_Exists: 'Announcements_With_Given_ValidFromDate_Already_Exists',

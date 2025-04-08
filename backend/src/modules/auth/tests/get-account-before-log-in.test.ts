@@ -3,7 +3,7 @@ import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers } from '@helpers/event-handler-test.helpers';
-import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword, generateValidUserWithPin, loginAs } from '@helpers/user-tests.helpers';
 import { AccountTryingToLogInDto, AuthRoute, GetAccountBeforeLogInResponseDto, IGetAccountBeforeLogInResultDto, LoginDto } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
@@ -62,36 +62,36 @@ describe('POST /auth/get-account-before-log-in', () => {
     });
 
     it('when exist only one activated user with given e-mail and user passcode is NOT set', async () => {
-      const user1 = generateValidUserWithPassword();
-      user1.passcode = undefined;
+      const user = generateValidUserWithPassword();
+      user.passcode = undefined;
 
-      const createUser1Response = await request(app.getServer()).post(userRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUser1Response = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser1Response.statusCode).toBe(201);
-      const { data: newUser1Dto, message: createUser1Message }: CreateUserResponseDto = createUser1Response.body;
-      expect(newUser1Dto?.id).toBeDefined();
+      const { data: newUserDto, message: createUser1Message }: CreateUserResponseDto = createUser1Response.body;
+      expect(newUserDto?.id).toBeDefined();
       expect(createUser1Message).toBe(events.users.userCreated);
-      expect(newUser1Dto.email).toBe(user1.email);
+      expect(newUserDto.email).toBe(user.email);
 
       const activateNewUserResponse = await request(app.getServer())
-        .post(userRoute.path + '/' + newUser1Dto.id + '/' + userRoute.activatePath)
+        .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(activateNewUserResponse.statusCode).toBe(200);
+      expect(activateNewUserResponse.statusCode).toBe(400);
 
       const response = await request(app.getServer())
         .post(authRoute.getAccountBeforeLogInPath)
-        .send({ email: newUser1Dto.email } satisfies AccountTryingToLogInDto);
+        .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
       const body: GetAccountBeforeLogInResponseDto = response.body;
       expect(typeof body).toBe('object');
       expect(typeof body.data).toBe('object');
       expect(body.data).toStrictEqual({
-        isActive: true,
+        isActive: false,
       } satisfies IGetAccountBeforeLogInResultDto);
-      expect(body.data).toEqual({ isActive: true } satisfies IGetAccountBeforeLogInResultDto);
+      expect(body.data).toEqual({ isActive: false } satisfies IGetAccountBeforeLogInResultDto);
 
       const deleteResponse = await request(app.getServer())
-        .delete(userRoute.path + '/' + newUser1Dto.id)
+        .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -107,6 +107,12 @@ describe('POST /auth/get-account-before-log-in', () => {
       expect(newUserDto?.id).toBeDefined();
       expect(createUserMessage).toBe(events.users.userCreated);
       expect(newUserDto.email).toBe(user.email);
+
+      const activateNewUserResponse = await request(app.getServer())
+        .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateNewUserResponse.statusCode).toBe(400);
 
       const response = await request(app.getServer())
         .post(authRoute.getAccountBeforeLogInPath)
@@ -367,6 +373,64 @@ describe('POST /auth/get-account-before-log-in', () => {
         .post(userRoute.path + '/' + newUser2Dto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateNewUserResponse.statusCode).toBe(400);
+
+      expect(newUser1Dto.email).toBe(newUser2Dto.email);
+
+      const response = await request(app.getServer())
+        .post(authRoute.getAccountBeforeLogInPath)
+        .send({ email } satisfies AccountTryingToLogInDto);
+      expect(response.statusCode).toBe(200);
+      const body: GetAccountBeforeLogInResponseDto = response.body;
+      expect(typeof body).toBe('object');
+      expect(typeof body.data).toBe('object');
+      expect(body.data).toStrictEqual({ isPhoneRequired: true } satisfies IGetAccountBeforeLogInResultDto);
+      expect(body.data).toEqual({ isPhoneRequired: true } satisfies IGetAccountBeforeLogInResultDto);
+
+      let deleteResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + newUser1Dto.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteResponse.statusCode).toBe(200);
+      deleteResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + newUser2Dto.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteResponse.statusCode).toBe(200);
+    });
+
+    it('when exist more then one activated users with given email and one has set passcode and another has set pin', async () => {
+      const user1 = generateValidUserWithPassword();
+      const user2 = generateValidUserWithPin();
+      const email = user1.email;
+      user2.email = email;
+      expect(user1.email).toBe(user2.email);
+      expect(user1.phone).not.toBe(user2.phone);
+
+      const createUser1Response = await request(app.getServer()).post(userRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUser1Response.statusCode).toBe(201);
+      const { data: newUser1Dto, message: createUser1Message }: CreateUserResponseDto = createUser1Response.body;
+      expect(newUser1Dto?.id).toBeDefined();
+      expect(createUser1Message).toBe(events.users.userCreated);
+      expect(newUser1Dto.email).toBe(email);
+
+      let activateNewUserResponse = await request(app.getServer())
+        .post(userRoute.path + '/' + newUser1Dto.id + '/' + userRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateNewUserResponse.statusCode).toBe(200);
+
+      const createUser2Response = await request(app.getServer()).post(userRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUser2Response.statusCode).toBe(201);
+      const { data: newUser2Dto, message: createUser2Message }: CreateUserResponseDto = createUser2Response.body;
+      expect(newUser2Dto?.id).toBeDefined();
+      expect(createUser2Message).toBe(events.users.userCreated);
+      expect(newUser2Dto.email).toBe(email);
+
+      activateNewUserResponse = await request(app.getServer())
+        .post(userRoute.path + '/' + newUser2Dto.id + '/' + userRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
@@ -414,7 +478,7 @@ describe('POST /auth/get-account-before-log-in', () => {
         .post(userRoute.path + '/' + newUser1Dto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(activateNewUserResponse.statusCode).toBe(200);
+      expect(activateNewUserResponse.statusCode).toBe(400);
 
       const createUser2Response = await request(app.getServer()).post(userRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser2Response.statusCode).toBe(201);
@@ -427,7 +491,7 @@ describe('POST /auth/get-account-before-log-in', () => {
         .post(userRoute.path + '/' + newUser2Dto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(activateNewUserResponse.statusCode).toBe(200);
+      expect(activateNewUserResponse.statusCode).toBe(400);
 
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 

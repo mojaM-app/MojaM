@@ -322,7 +322,7 @@ export class AuthService extends BaseService {
     const userData: ActivateAccountDto = reqDto.model!;
 
     if (isNullOrEmptyString(userData.passcode) && !user!.isPasscodeSet()) {
-      throw new TranslatableHttpException(StatusCode.ClientErrorBadRequest, errorKeys.login.User_Passcode_Is_Not_Set);
+      throw new BadRequestException(errorKeys.users.Activation_Failed_Passcode_Is_Not_Set);
     }
 
     if (!isNullOrEmptyString(userData.passcode)) {

@@ -252,7 +252,7 @@ describe('POST /auth/request-reset-passcode', () => {
         .post(userRoute.path + '/' + newUser2Dto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(activateNewUserResponse.statusCode).toBe(200);
+      expect(activateNewUserResponse.statusCode).toBe(400);
 
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
@@ -300,7 +300,7 @@ describe('POST /auth/request-reset-passcode', () => {
         .post(userRoute.path + '/' + newUser1Dto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(activateNewUserResponse.statusCode).toBe(200);
+      expect(activateNewUserResponse.statusCode).toBe(400);
 
       const createUser2Response = await request(app.getServer()).post(userRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser2Response.statusCode).toBe(201);
@@ -313,7 +313,7 @@ describe('POST /auth/request-reset-passcode', () => {
         .post(userRoute.path + '/' + newUser2Dto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(activateNewUserResponse.statusCode).toBe(200);
+      expect(activateNewUserResponse.statusCode).toBe(400);
 
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
@@ -373,7 +373,7 @@ describe('POST /auth/request-reset-passcode', () => {
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(activateNewUserResponse.statusCode).toBe(200);
+      expect(activateNewUserResponse.statusCode).toBe(400);
 
       const response = await request(app.getServer())
         .post(authRoute.requestResetPasscodePath)
@@ -403,6 +403,12 @@ describe('POST /auth/request-reset-passcode', () => {
       expect(newUserDto?.id).toBeDefined();
       expect(createUserMessage).toBe(events.users.userCreated);
       expect(newUserDto.email).toBe(user.email);
+
+      const activateNewUserResponse = await request(app.getServer())
+        .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateNewUserResponse.statusCode).toBe(400);
 
       const response = await request(app.getServer())
         .post(authRoute.requestResetPasscodePath)
@@ -452,7 +458,7 @@ describe('POST /auth/request-reset-passcode', () => {
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(activateNewUserResponse.statusCode).toBe(200);
+      expect(activateNewUserResponse.statusCode).toBe(400);
 
       let response = await request(app.getServer())
         .post(authRoute.requestResetPasscodePath)
