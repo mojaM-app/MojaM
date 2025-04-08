@@ -376,7 +376,7 @@
     "Cannot_Activate_Locked_Account": "Twoje konto jest zablokowane, nie można aktywować zablokowanego konta. Skontaktuj się z liderem.",
     "Failed_To_Activate_Account": "Nie udało się aktywować konta. Skontaktuj się z liderem wspólnoty.",
     "Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted": "Nie można usunąć tego rekordu ponieważ jest on powiązany z innymi rekordami w bazie.",
-    "Activation_Failed_Passcode_Is_Not_Set": "Nie można aktywować konta, ponieważ nie ustawiono sposobu uwierzytelniania (logowania). Metodę logowania wybiera się w jednym z kroków kreatora aktywacji konta. Kreator ten otwiera link aktywacyjny wysłany na adres e-mail podany podczas tworzenia użytkownika."
+    "Activation_Failed_Passcode_Is_Not_Set": "Nie można aktywować konta ponieważ nie ma ono ustawionego sposobu uwierzytelniania (logowania). Gdy użytkownik ten został dodany do aplikacji, został wysłany do niego e-mail z instrukcją jak aktywować konto. Podczas aktywacji wybierany jest sposób uwierzytelniania. Poproś użytkownika aby dokończył aktywację konta lub wyślij do niego ponownie e-mail aktywujący."
   },
   "Grid": {
     "NoColumns": "Brak kolumn",
