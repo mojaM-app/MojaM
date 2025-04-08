@@ -123,7 +123,9 @@ export class LoginFormComponent extends WithForm<ILoginForm>() implements OnDest
 
   public focusEmailInput(): void {
     setTimeout(() => {
-      this._focusMonitor.focusVia(this._emailInput()?.nativeElement, 'program');
+      if (this._emailInput()?.nativeElement) {
+        this._focusMonitor.focusVia(this._emailInput()!.nativeElement, 'program');
+      }
     }, 100);
   }
 
