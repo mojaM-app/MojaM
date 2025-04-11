@@ -14,4 +14,5 @@ export enum LoginFormSteps {
   EnterPin,
   ResetPasscode,
   UserNotActive,
+  AccountIsLockedOut,
 }

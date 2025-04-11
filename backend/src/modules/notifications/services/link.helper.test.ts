@@ -11,7 +11,19 @@ describe('LinkHelper', () => {
     it('should generate the correct activation link', () => {
       jest.replaceProperty(config, 'CLIENT_APP_URL', mockClientAppUrl);
       const link = LinkHelper.activateAccountLink(userUuid);
-      expect(link).toContain(`${mockClientAppUrl}/account/${userUuid}/activate?t=`);
+      expect(link).toContain(`${mockClientAppUrl}/account/${userUuid}/activate/`);
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+  });
+
+  describe('unlockAccountLink', () => {
+    it('should generate the correct unlock account link', () => {
+      jest.replaceProperty(config, 'CLIENT_APP_URL', mockClientAppUrl);
+      const link = LinkHelper.unlockAccountLink(userUuid);
+      expect(link).toContain(`${mockClientAppUrl}/account/${userUuid}/unlock/`);
     });
 
     afterEach(() => {
@@ -23,7 +35,7 @@ describe('LinkHelper', () => {
     it('should generate the correct reset password link', () => {
       jest.replaceProperty(config, 'CLIENT_APP_URL', mockClientAppUrl);
       const link = LinkHelper.resetPasscodeLink(userUuid, resetPasswordToken);
-      expect(link).toBe(`${mockClientAppUrl}/${AuthRoute.resetPasscode}/${userUuid}/${resetPasswordToken}`);
+      expect(link).toBe(`${mockClientAppUrl}/account/${userUuid}/${AuthRoute.resetPasscode}/${resetPasswordToken}`);
     });
 
     afterEach(() => {

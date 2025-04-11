@@ -48,14 +48,6 @@ export const routes: Routes = [
       import('./components/management/management.module').then(m => m.ManagementModule),
   },
   {
-    path: 'reset-passcode/:userId/:token',
-    loadComponent: () =>
-      import('./components/static/reset-passcode/reset-passcode.component').then(
-        m => m.ResetPasscodeComponent
-      ),
-    data: { closeSideNav: true, hideFooter: true } satisfies IRouteData,
-  },
-  {
     path: PATHS.NotFound,
     loadComponent: () =>
       import('./components/static/not-found/not-found.component').then(m => m.NotFoundComponent),
@@ -68,12 +60,29 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'account/:userId/activate',
+    path: 'account/:userId/reset-passcode/:token',
+    loadComponent: () =>
+      import('./components/static/reset-passcode/reset-passcode.component').then(
+        m => m.ResetPasscodeComponent
+      ),
+    data: { closeSideNav: true, hideFooter: true } satisfies IRouteData,
+  },
+  {
+    path: 'account/:userId/activate/:token',
     loadComponent: () =>
       import('./components/static/activate-account/activate-account.component').then(
         m => m.ActivateAccountComponent
       ),
     data: { closeSideNav: true, hideFooter: true } satisfies IRouteData,
   },
+  {
+    path: 'account/:userId/unlock/:token',
+    loadComponent: () =>
+      import('./components/static/unlock-account/unlock-account.component').then(
+        m => m.UnlockAccountComponent
+      ),
+    data: { closeSideNav: true, hideFooter: true } satisfies IRouteData,
+  },
+
   { path: '**', redirectTo: '/' + PATHS.NotFound },
 ];

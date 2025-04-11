@@ -5,6 +5,7 @@ import {
   SMTP_SERVICE_PORT,
   SMTP_USER_NAME,
   SMTP_USER_PASSWORD,
+  TPL_VAR_ACCOUNT_BLOCKED_EMAIL_TITLE,
   TPL_VAR_RESET_PASSWORD_TITLE,
   TPL_VAR_RESET_PIN_TITLE,
   TPL_VAR_WELCOME_EMAIL_TITLE,
@@ -20,6 +21,7 @@ import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { join } from 'path';
 import { Service } from 'typedi';
 import { IResetPasscodeEmailSettings } from '../interfaces/reset-passcode-email-settings.interface';
+import { IUnlockAccountEmailSettings } from '../interfaces/unlock-account-email-settings.interface';
 import { IWelcomeEmailSettings } from '../interfaces/welcome-email-settings.interface';
 import { TemplateVariablesHelper } from './template-variables.helper';
 
@@ -28,78 +30,75 @@ export class EmailService {
   private readonly language: string = 'pl';
 
   public async sendWelcomeEmail(settings: IWelcomeEmailSettings): Promise<boolean> {
-    return await new Promise((resolve, reject) => {
-      try {
-        const templatePath = join(__dirname, `./../email.templates/welcomeEmail.${this.language}.handlebars`);
+    const templatePath = join(__dirname, `./../email.templates/welcomeEmail.${this.language}.handlebars`);
 
-        const source = readFileSync(templatePath, 'utf8');
+    const templateVariables = {
+      ...TemplateVariablesHelper.get(),
+      title: TPL_VAR_WELCOME_EMAIL_TITLE,
+      link: settings.link,
+      name: settings.user.getFirstLastNameOrEmail(),
+    };
 
-        const compiledTemplate = compile(source);
-
-        const templateVariables = {
-          ...TemplateVariablesHelper.get(),
-          title: TPL_VAR_WELCOME_EMAIL_TITLE,
-          link: settings.link,
-          name: settings.user.getFirstLastNameOrEmail(),
-        };
-
-        const options = (): Mail.Options => {
-          return {
-            from: NOTIFICATIONS_EMAIL,
-            to: settings.user.email,
-            subject: TPL_VAR_WELCOME_EMAIL_TITLE,
-            html: compiledTemplate(templateVariables),
-          };
-        };
-
-        this.sendEmail(options(), (success: boolean) => {
-          resolve(success);
-        });
-      } catch (error) {
-        resolve(false);
-      }
-    });
+    return await this.fillTemplateAndSendEmail(settings.user.email, templatePath, templateVariables);
   }
 
   public async sendEmailResetPasscode(settings: IResetPasscodeEmailSettings): Promise<boolean> {
+    let templatePath: string;
+    let title: string;
+    switch (settings.authType) {
+      case AuthenticationTypes.Password:
+        templatePath = join(__dirname, `./../email.templates/requestResetPassword.${this.language}.handlebars`);
+        title = TPL_VAR_RESET_PASSWORD_TITLE!;
+        break;
+      case AuthenticationTypes.Pin:
+        templatePath = join(__dirname, `./../email.templates/requestResetPin.${this.language}.handlebars`);
+        title = TPL_VAR_RESET_PIN_TITLE!;
+        break;
+      default:
+        throw new Error('Invalid authentication type');
+    }
+
+    const templateVariables = {
+      ...TemplateVariablesHelper.get(),
+      title,
+      link: settings.link,
+      name: settings.user.getFirstLastNameOrEmail(),
+    };
+
+    return await this.fillTemplateAndSendEmail(settings.user.email, templatePath, templateVariables);
+  }
+
+  public async sendUnlockAccountEmail(settings: IUnlockAccountEmailSettings): Promise<boolean> {
+    const templatePath = join(__dirname, `./../email.templates/unlockAccount.${this.language}.handlebars`);
+
+    const templateVariables = {
+      ...TemplateVariablesHelper.get(),
+      title: TPL_VAR_ACCOUNT_BLOCKED_EMAIL_TITLE,
+      link: settings.link,
+      name: settings.user.getFirstLastNameOrEmail(),
+      lockDateTime: `${settings.lockDateTime.toLocaleDateString(this.language)} ${settings.lockDateTime.toLocaleTimeString(this.language)}`,
+    };
+
+    return await this.fillTemplateAndSendEmail(settings.user.email, templatePath, templateVariables);
+  }
+
+  private async fillTemplateAndSendEmail(recipient: string, templatePath: string, templateVariables: Record<string, any>): Promise<boolean> {
     return await new Promise((resolve, reject) => {
       try {
-        let templatePath: string;
-        let title: string;
-        switch (settings.authType) {
-          case AuthenticationTypes.Password:
-            templatePath = join(__dirname, `./../email.templates/requestResetPassword.${this.language}.handlebars`);
-            title = TPL_VAR_RESET_PASSWORD_TITLE!;
-            break;
-          case AuthenticationTypes.Pin:
-            templatePath = join(__dirname, `./../email.templates/requestResetPin.${this.language}.handlebars`);
-            title = TPL_VAR_RESET_PIN_TITLE!;
-            break;
-          default:
-            throw new Error('Invalid authentication type');
-        }
-
         const source = readFileSync(templatePath, 'utf8');
 
         const compiledTemplate = compile(source);
 
-        const templateVariables = {
-          ...TemplateVariablesHelper.get(),
-          title,
-          link: settings.link,
-          name: settings.user.getFirstLastNameOrEmail(),
-        };
-
         const options = (): Mail.Options => {
           return {
             from: NOTIFICATIONS_EMAIL,
-            to: settings.user.email,
-            subject: title,
+            to: recipient,
+            subject: templateVariables.title,
             html: compiledTemplate(templateVariables),
           };
         };
 
-        this.sendEmail(options(), (success: boolean) => {
+        this.sendMail(options(), (success: boolean) => {
           resolve(success);
         });
       } catch (error) {
@@ -108,7 +107,7 @@ export class EmailService {
     });
   }
 
-  private sendEmail(options: Mail.Options, callback: (success: boolean) => void): void {
+  private sendMail(options: Mail.Options, callback: (success: boolean) => void): void {
     const transporter = this.createTransporter();
 
     transporter.sendMail(options, (error, info) => {

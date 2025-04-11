@@ -546,17 +546,18 @@ describe('POST /auth/request-reset-passcode', () => {
       expect(resetPasscodeBody.data).toBe(true);
 
       const splittedUrl = url?.split('/') ?? [];
-      expect(splittedUrl.length).toBe(7);
+      expect(splittedUrl.length).toBe(8);
       expect(splittedUrl[0]).toBe('http:');
       expect(splittedUrl[1]).toBe('');
       expect(splittedUrl[2]).toBe('localhost:4200');
       expect(splittedUrl[3]).toBe('#');
-      expect(splittedUrl[4]).toBe('reset-passcode');
+      expect(splittedUrl[4]).toBe('account');
       expect(splittedUrl[5].length).toBe(36); // UUID v4
       expect(splittedUrl[5]).toBe(userId);
-      expect(splittedUrl[6].length).toBe(64);
+      expect(splittedUrl[6]).toBe('reset-passcode');
+      expect(splittedUrl[7].length).toBe(64);
 
-      const token = splittedUrl[6];
+      const token = splittedUrl[splittedUrl.length - 1];
 
       response = await request(app.getServer())
         .post(authRoute.resetPasscodePath + `/${userId}`)
@@ -609,17 +610,18 @@ describe('POST /auth/request-reset-passcode', () => {
       expect(resetPasscodeBody.data).toBe(true);
 
       const splittedUrl = url?.split('/') ?? [];
-      expect(splittedUrl.length).toBe(7);
+      expect(splittedUrl.length).toBe(8);
       expect(splittedUrl[0]).toBe('http:');
       expect(splittedUrl[1]).toBe('');
       expect(splittedUrl[2]).toBe('localhost:4200');
       expect(splittedUrl[3]).toBe('#');
-      expect(splittedUrl[4]).toBe('reset-passcode');
+      expect(splittedUrl[4]).toBe('account');
       expect(splittedUrl[5].length).toBe(36); // UUID v4
       expect(splittedUrl[5]).toBe(newUserDto.id);
-      expect(splittedUrl[6].length).toBe(64);
+      expect(splittedUrl[6]).toBe('reset-passcode');
+      expect(splittedUrl[7].length).toBe(64);
 
-      const token = splittedUrl[6];
+      const token = splittedUrl[splittedUrl.length - 1];
 
       response = await request(app.getServer())
         .post(authRoute.resetPasscodePath + `/${newUserDto.id}`)

@@ -88,7 +88,7 @@ describe('POST /auth/reset-passcode', () => {
       expect(body.data).toBe(true);
 
       const splittedUrl = url?.split('/') ?? [];
-      expect(splittedUrl.length).toBe(7);
+      expect(splittedUrl.length).toBe(8);
       expect(splittedUrl[5]).toBe(newUserDto.id);
       const token = splittedUrl[splittedUrl.length - 1];
       expect(token?.length).toBe(64);
@@ -188,7 +188,7 @@ describe('POST /auth/reset-passcode', () => {
       expect(body.data).toBe(true);
 
       const splittedUrl = url?.split('/') ?? [];
-      expect(splittedUrl.length).toBe(7);
+      expect(splittedUrl.length).toBe(8);
       expect(splittedUrl[5]).toBe(newUserDto.id);
       const token = splittedUrl[splittedUrl.length - 1];
       expect(token?.length).toBe(64);
@@ -303,7 +303,7 @@ describe('POST /auth/reset-passcode', () => {
       expect(body.data).toBe(true);
 
       const splittedUrl = url?.split('/') ?? [];
-      expect(splittedUrl.length).toBe(7);
+      expect(splittedUrl.length).toBe(8);
       expect(splittedUrl[5]).toBe(newUserDto.id);
       const token = splittedUrl[splittedUrl.length - 1];
       expect(token?.length).toBe(64);
@@ -349,7 +349,7 @@ describe('POST /auth/reset-passcode', () => {
       const data = loginResponse.body.data as BadRequestException;
       expect(typeof data).toBe('object');
       const { message: loginMessage }: { message: string } = data;
-      expect(loginMessage).toBe(errorKeys.login.User_Is_Locked_Out);
+      expect(loginMessage).toBe(errorKeys.login.Account_Is_Locked_Out);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
@@ -594,7 +594,7 @@ describe('POST /auth/reset-passcode', () => {
       expect(body.data).toBe(true);
 
       const splittedUrl = url?.split('/') ?? [];
-      expect(splittedUrl.length).toBe(7);
+      expect(splittedUrl.length).toBe(8);
       expect(splittedUrl[5]).toBe(newUserDto.id);
       const token = splittedUrl[splittedUrl.length - 1];
       expect(token?.length).toBe(64);
@@ -652,7 +652,7 @@ describe('POST /auth/reset-passcode', () => {
       expect(body.data).toBe(true);
 
       const splittedUrl = url?.split('/') ?? [];
-      expect(splittedUrl.length).toBe(7);
+      expect(splittedUrl.length).toBe(8);
       expect(splittedUrl[5]).toBe(newUserDto.id);
       const token = splittedUrl[splittedUrl.length - 1];
       expect(token?.length).toBe(64);

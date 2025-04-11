@@ -22,6 +22,7 @@ import { ControlValidators } from 'src/validators/control.validators';
 import { PasswordValidator } from 'src/validators/password.validator';
 import { ResetPasscodeDto } from '../models/reset-passcode.models';
 import { IResetPasswordForm } from '../reset-passcode.form';
+import { InvalidResetPasswordTokenComponent } from './invalid-reset-password-token/invalid-reset-password-token.component';
 import { ResetPasswordControlComponent } from './reset-password-control/reset-password-control.component';
 
 @Component({
@@ -35,6 +36,7 @@ import { ResetPasswordControlComponent } from './reset-password-control/reset-pa
     MatInputModule,
     MatIconModule,
     ResetPasswordControlComponent,
+    InvalidResetPasswordTokenComponent,
   ],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss',

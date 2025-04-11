@@ -188,6 +188,24 @@
           </button>
         </div>
       </div>
+    } @else if (currentStep() === formSteps.AccountIsLockedOut) {
+      <div>
+        <div class="row mb-3">
+          <div class="col-12 error-container fw-bold p-2">
+            {{ 'Login/AccountIsLockedOutTitle' | gmessage }}
+          </div>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-12" [innerHtml]="'Login/ErrorAccountIsLockedOut' | gmessage"></div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-6">
+          <button mat-raised-button class="w-100" type="button" (click)="goToStepEnterEmail()">
+            {{ 'Shared/BtnBack' | gmessage }}
+          </button>
+        </div>
+      </div>
     }
 
     @if (loginError()) {

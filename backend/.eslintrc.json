@@ -27,6 +27,6 @@
     ],
     "@typescript-eslint/no-non-null-assertion": "off",
     "no-use-before-define": ["error", { "variables": true }],
-    "@typescript-eslint/no-extraneous-class": "warn"
+    "@typescript-eslint/no-extraneous-class": "off"
   }
 }

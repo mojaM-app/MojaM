@@ -30,6 +30,62 @@
     }
   },
   "Footer": {},
+  "WysiwygEditor": {
+    "Placeholder": "Wprowadź treść"
+  },
+  "Dialog": {
+    "CloseBtnAriaLabel": "Zamknij okno"
+  },
+  "ConfirmDialog": {
+    "DefaultTitle": "Uwaga"
+  },
+  "Errors": {
+    "Unhandled_Error": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.",
+    "No_Connection": "Brak połączenia z serwerem. Upewnij się, że masz połączenie z internetem.",
+    "Unauthorized": "Nie masz uprawnień do wykonania tej operacji.",
+    "Bad_Request": "Wystąpił błąd podczas przetwarzania żądania. Spróbuj ponownie później.",
+    "Wrong_Authentication_Token": "Nieprawidłowy token autoryzacyjny. Zaloguj się ponownie.",
+    "Invalid_Login_Or_Passcode": "Wprowadzono nieprawidłowe dane logowania.",
+    "Invalid_Phone": "Wprowadzono nieprawidłowy numer telefonu.",
+    "User_Passcode_Is_Not_Set": "Hasło użytkownika nie zostało ustawione.",
+    "User_Does_Not_Exist": "Użytkownik nie istnieje.",
+    "User_Not_Authenticated": "Użytkownik nie jest uwierzytelniony. Zaloguj się.",
+    "User_Not_Authorized": "Brak uprawnień do wykonania tej operacji.",
+    "User_Is_Not_Active": "Twoje konto nie zostało aktywowane.",
+    "User_Already_Exists": "Istnieje już użytkownik o podanym adresie e-mail i numerze telefonu.",
+    "Session_Expired": "<b>Twoja sesja wygasła!</b><br>Zaloguj się ponownie lub kliknij przycisk 'Odśwież sesję'.",
+    "Invalid_Activated_Account_Identifier": "Nie udało się aktywować konta, link aktywujący konto jest nieprawidłowy.",
+    "Invalid_Unlocked_Account_Identifier": "Nie udało się odblokować konta, link aktywujący konto jest nieprawidłowy.",
+    "Invalid_User_Profile_Identifier": "Wystąpił błąd podczas próby pobierania danych. Przekazano nieprawidłowy identyfikator profilu użytkownika.",
+    "Announcements_Does_Not_Exist": "Ogłoszenia nie istnieje.",
+    "Announcements_With_Given_ValidFromDate_Already_Exists": "Istnieją już ogłoszenia z wprowadzoną datą rozpoczęcia obowiązywania.",
+    "Announcements_Published_Announcements_Cant_Be_Deleted": "Nie można usunąć opublikowanych ogłoszeń. Można przenieść je do archiwum.",
+    "Announcements_Archived_Announcements_Cant_Be_Deleted": "Nie można usunąć zarchiwizowanych ogłoszeń.",
+    "Announcements_Archived_Announcements_Cant_Be_Edited": "Nie można edytować zarchiwizowanych ogłoszeń.",
+    "Announcements_Without_ValidFromDate_Can_Not_Be_Published": "Nie można opublikować ogłoszeń bez daty rozpoczęcia obowiązywania.",
+    "Cannot_Save_Published_Announcements_Without_ValidFromDate": "Nie można zapisać opublikowanych ogłoszeń bez daty rozpoczęcia obowiązywania.",
+    "Cannot_Activate_Locked_Account": "Twoje konto jest zablokowane, nie można aktywować zablokowanego konta. Skontaktuj się z liderem.",
+    "Failed_To_Activate_Account": "Nie udało się aktywować konta. Zgłoś ten problem jednemu z animatorów lub liderowi wspólnoty.",
+    "Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted": "Nie można usunąć tego rekordu ponieważ jest on powiązany z innymi rekordami w bazie.",
+    "Activation_Failed_Passcode_Is_Not_Set": "Nie można aktywować konta ponieważ nie ma ono ustawionego sposobu uwierzytelniania (logowania). Gdy użytkownik ten został dodany do aplikacji, został wysłany do niego e-mail z instrukcją jak aktywować konto. Podczas aktywacji wybierany jest sposób uwierzytelniania. Poproś użytkownika aby dokończył aktywację konta lub wyślij do niego ponownie e-mail aktywujący."
+  },
+  "Error404": {
+    "Message": "Strona nie istnieje"
+  },
+  "Error403": {
+    "Message": "Nie masz dostępu do tej strony"
+  },
+  "Pipes": {
+    "date-ago": {
+      "just-now": "Teraz",
+      "minutes": "ponad {0, plural, zero {{0} minut} one {minutę} two {{0} minuty} few {{0} minuty} many {{0} minut} other {{0} minuty} } temu",
+      "hours": "ponad {0, plural, zero {{0} godzin} one {godzinę} two {{0} godziny} few {{0} godziny} many {{0} godzin} other {{0} godziny} } temu",
+      "days": "ponad {0, plural, zero {{0} dni} one {dzień} two {{0} dni} few {{0} dni} many {{0} dni} other {{0} dni} } temu",
+      "weeks": "ponad {0, plural, zero {{0} tygodni} one {tydzień} two {{0} tygodnie} few {{0} tygodnie} many {{0} tygodni} other {{0} tygodnie} } temu",
+      "months": "ponad {0, plural, zero {{0} miesięcy} one {miesiąc} two {{0} miesiące} few {{0} miesiące} many {{0} miesięcy} other {{0} miesiące} } temu",
+      "years": "ponad {0, plural, zero {{0} lat} one {rok} two {{0} lata} few {{0} lata} many {{0} lat} other {{0} lata} } temu"
+    }
+  },
   "Community": {
     "Title": "Wspólnota",
     "Contact": {
@@ -152,19 +208,21 @@
     "ResetPinHint": "Aby uzyskać informacje jak zresetować kod PIN kliknij w przycisk.",
     "BtnResetPassword": "Resetuj hasło",
     "BtnResetPin": "Resetuj kod PIN",
-    "BtnResetPasswordHint": "Na podany w poprzednim kroku adres e-mail przyjdzie wiadomość z instrukcją jak zresetować hasło. Jeśli nie otrzymano wiadomości, sprawdź folder ze spamem.",
-    "BtnResetPinHint": "Na podany w poprzednim kroku adres e-mail przyjdzie wiadomość z instrukcją jak zresetować kod PIN. Jeśli nie otrzymano wiadomości, sprawdź folder ze spamem.",
+    "BtnResetPasswordHint": "Po kliknięciu w powyższy przycisk, na podany w poprzednim kroku adres e-mail, zostanie wysłana wiadomość z instrukcją jak zresetować hasło.",
+    "BtnResetPinHint": "Po kliknięciu w powyższy przycisk, na podany w poprzednim kroku adres e-mail, zostanie wysłana wiadomość z instrukcją jak zresetować kod PIN.",
     "HidePasswordAriaLabel": "Ukryj hasło",
-    "AccountActivatedSuccessfully": "Twoje konto zostało aktywowane. Teraz możesz się zalogować.",
+    "AccountActivatedSuccessfully": "Twoje konto zostało aktywowane. Możesz się zalogować.",
     "AccountNotActiveErrorTitle": "Konto nieaktywne",
-    "ErrorAccountNotActive": "<b>Nie możesz się zalogować ponieważ twoje konto nie zostało aktywowane</b>.<br>Podczas tworzenia konta, na podany w poprzednim kroku adres e-mail, została wysłana wiadomość ze wskazówkami jak aktywować konto. Sprawdź pocztę, sprawdź folder ze spamem, może wiadomość została usunięta.<br>W przypadku braku wiadomości, skontaktuj się proszę z jednym z animatorów bądź z liderem wspólnoty i poproś o wysłanie kolejnego e-maila aktywującego konto.",
+    "ErrorAccountNotActive": "<b>Nie możesz się zalogować ponieważ twoje konto nie zostało aktywowane</b>.<br>Podczas tworzenia konta, na podany w poprzednim kroku adres e-mail, została wysłana wiadomość ze wskazówkami jak aktywować konto - sprawdź pocztę. Jeśli nie otrzymano wiadomości sprawdź folder ze spamem, może wiadomość została usunięta.<br>W przypadku braku wiadomości, skontaktuj się proszę z jednym z animatorów bądź z liderem wspólnoty i poproś o wysłanie kolejnego e-maila aktywującego konto.",
     "RequestResetPasswordSent": "Na podany adres e-mail został wysłany link do resetowania hasła. Sprawdź pocztę. Jeśli nie otrzymano wiadomości, sprawdź folder ze spamem.",
-    "RequestResetPinSent": "Na podany adres e-mail został wysłany link do resetowania kodu PIN. Sprawdź pocztę. Jeśli nie otrzymano wiadomości, sprawdź folder ze spamem."
+    "RequestResetPinSent": "Na podany adres e-mail został wysłany link do resetowania kodu PIN. Sprawdź pocztę. Jeśli nie otrzymano wiadomości, sprawdź folder ze spamem.",
+    "AccountIsLockedOutTitle": "Twoje konto zostało tymczasowo zablokowane.",
+    "ErrorAccountIsLockedOut": "<b>Po kilku nieudanych próbach logowania, twoje konto zostało zablokowane</b>.<br>Gdy doszło do blokady konta, na podany w poprzednim kroku adres e-mail, została wysłana wiadomość z informacją jak odblokować konto - sprawdź pocztę. Jeśli nie otrzymano wiadomości sprawdź folder ze spamem, może wiadomość została usunięta.<br>W przypadku braku wiadomości, skontaktuj się proszę z jednym z animatorów bądź z liderem wspólnoty i poproś o odblokowanie konta."
   },
   "ResetPassword": {
     "ChangePasswordTitle": "Zmiana hasła",
     "ChangePasswordDescription": "Wprowadź nowe hasło dla konta <b>{email}</b>",
-    "ChangePasswordHint": "Pamiętaj, że silne hasło to podstawa bezpieczeństwa Twojego konta.<br>Hasło musi zawierać co najmniej dziewięć znaków w tym minimum jedną dużą literę i minimum jedną małą literę. Cyfry i znaki specjalne są opcjonalne.",
+    "ChangePasswordHint": "Pamiętaj, że silne hasło to podstawa bezpieczeństwa twojego konta.<br>Hasło musi zawierać co najmniej dziewięć znaków w tym minimum jedną dużą literę i minimum jedną małą literę. Cyfry i znaki specjalne są opcjonalne.",
     "Password": "Nowe hasło",
     "PasswordPlaceholder": "wprowadź nowe hasło",
     "PasswordRequiredError": "Wprowadź nowe hasło",
@@ -186,7 +244,7 @@
   "ResetPin": {
     "ChangePinTitle": "Zmień kod PIN",
     "ChangePinDescription": "Wprowadź nowy kod PIN dla konta <b>{email}</b>",
-    "ChangePinHint": "Pamiętaj, że silny PIN to podstawa bezpieczeństwa Twojego konta.<br>PIN może zawierać same cyfry jak również duże i małe litery.",
+    "ChangePinHint": "Pamiętaj, że silny PIN to podstawa bezpieczeństwa twojego konta.<br>PIN może zawierać same cyfry jak również duże i małe litery.",
     "Pin": "Nowy kod PIN",
     "PinPlaceholder": "wprowadź nowy kod PIN",
     "PinRequiredError": "Wprowadź nowy kod PIN",
@@ -207,7 +265,7 @@
     "PinIsInvalidError": "Nieprawidłowy kod PIN"
   },
   "ActivateAccount": {
-    "Title": "Aktywacja konta",
+    "Title": "Aktywacja konta <b>{accountName}</b>",
     "Steps": {
       "Welcome": {
         "Title": "Witaj!",
@@ -241,8 +299,8 @@
           "Password": "Hasło",
           "Pin": "PIN"
         },
-        "ChangePasswordHint": "Pamiętaj, że silne hasło to podstawa bezpieczeństwa Twojego konta.<br>Hasło musi zawierać co najmniej dziewięć znaków.",
-        "ChangePinHint": "Pamiętaj, że silny PIN to podstawa bezpieczeństwa Twojego konta.<br>PIN może składać się z samych cyfr jak również może być kombinacją cyfr oraz małych i dużych liter.",
+        "ChangePasswordHint": "Pamiętaj, że silne hasło to podstawa bezpieczeństwa twojego konta.<br>Hasło musi zawierać co najmniej dziewięć znaków.",
+        "ChangePinHint": "Pamiętaj, że silny PIN to podstawa bezpieczeństwa twojego konta.<br>PIN może składać się z samych cyfr jak również może być kombinacją cyfr oraz małych i dużych liter.",
         "BtnNext": "Dalej",
         "BtnBack": "Wstecz"
       },
@@ -253,6 +311,10 @@
         "BtnBack": "Wstecz"
       }
     }
+  },
+  "UnlockAccount": {
+    "AccountUnlockedSuccessfully": "Twoje konto zostało odblokowane. Możesz się zalogować.",
+    "UnlockingAccountFailed": "Wystąpił błąd podczas odblokowywania konta. Skontaktuj się z jednym z animatorów lub z liderem wspólnoty."
   },
   "Management": {
     "Title": "Zarządzanie",
@@ -331,53 +393,6 @@
       "UpdateFailed": "Wystąpił błąd podczas aktualizacji danych."
     }
   },
-  "Error404": {
-    "PageNotFound": "Strona nie istnieje"
-  },
-  "Error403": {
-    "AccessDenied": "Nie masz dostępu do tej strony"
-  },
-  "Pipes": {
-    "date-ago": {
-      "just-now": "Teraz",
-      "minutes": "ponad {0, plural, zero {{0} minut} one {minutę} two {{0} minuty} few {{0} minuty} many {{0} minut} other {{0} minuty} } temu",
-      "hours": "ponad {0, plural, zero {{0} godzin} one {godzinę} two {{0} godziny} few {{0} godziny} many {{0} godzin} other {{0} godziny} } temu",
-      "days": "ponad {0, plural, zero {{0} dni} one {dzień} two {{0} dni} few {{0} dni} many {{0} dni} other {{0} dni} } temu",
-      "weeks": "ponad {0, plural, zero {{0} tygodni} one {tydzień} two {{0} tygodnie} few {{0} tygodnie} many {{0} tygodni} other {{0} tygodnie} } temu",
-      "months": "ponad {0, plural, zero {{0} miesięcy} one {miesiąc} two {{0} miesiące} few {{0} miesiące} many {{0} miesięcy} other {{0} miesiące} } temu",
-      "years": "ponad {0, plural, zero {{0} lat} one {rok} two {{0} lata} few {{0} lata} many {{0} lat} other {{0} lata} } temu"
-    }
-  },
-  "Errors": {
-    "Unhandled_Error": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.",
-    "No_Connection": "Brak połączenia z serwerem. Upewnij się, że masz połączenie z internetem.",
-    "Unauthorized": "Nie masz uprawnień do wykonania tej operacji.",
-    "Bad_Request": "Wystąpił błąd podczas przetwarzania żądania. Spróbuj ponownie później.",
-    "Wrong_Authentication_Token": "Nieprawidłowy token autoryzacyjny. Zaloguj się ponownie.",
-    "Invalid_Login_Or_Passcode": "Wprowadzono nieprawidłowe dane logowania.",
-    "Invalid_Phone": "Wprowadzono nieprawidłowy numer telefonu.",
-    "User_Passcode_Is_Not_Set": "Hasło użytkownika nie zostało ustawione.",
-    "User_Does_Not_Exist": "Użytkownik nie istnieje.",
-    "User_Not_Authenticated": "Użytkownik nie jest uwierzytelniony. Zaloguj się.",
-    "User_Not_Authorized": "Brak uprawnień do wykonania tej operacji.",
-    "User_Is_Not_Active": "Twoje konto nie zostało aktywowane.",
-    "User_Already_Exists": "Istnieje już użytkownik o podanym adresie e-mail i numerze telefonu.",
-    "User_Is_Locked_Out": "Twoje konto zostało zablokowane. Skontaktuj się z liderem.",
-    "Session_Expired": "<b>Twoja sesja wygasła!</b><br>Zaloguj się ponownie lub kliknij przycisk 'Odśwież sesję'.",
-    "Invalid_Activated_Account_Identifier": "Nie udało się aktywować konta, link aktywujący konto jest nieprawidłowy.",
-    "Invalid_User_Profile_Identifier": "Wystąpił błąd podczas próby pobierania danych. Przekazano nieprawidłowy identyfikator profilu użytkownika.",
-    "Announcements_Does_Not_Exist": "Ogłoszenia nie istnieje.",
-    "Announcements_With_Given_ValidFromDate_Already_Exists": "Istnieją już ogłoszenia z wprowadzoną datą rozpoczęcia obowiązywania.",
-    "Announcements_Published_Announcements_Cant_Be_Deleted": "Nie można usunąć opublikowanych ogłoszeń. Można przenieść je do archiwum.",
-    "Announcements_Archived_Announcements_Cant_Be_Deleted": "Nie można usunąć zarchiwizowanych ogłoszeń.",
-    "Announcements_Archived_Announcements_Cant_Be_Edited": "Nie można edytować zarchiwizowanych ogłoszeń.",
-    "Announcements_Without_ValidFromDate_Can_Not_Be_Published": "Nie można opublikować ogłoszeń bez daty rozpoczęcia obowiązywania.",
-    "Cannot_Save_Published_Announcements_Without_ValidFromDate": "Nie można zapisać opublikowanych ogłoszeń bez daty rozpoczęcia obowiązywania.",
-    "Cannot_Activate_Locked_Account": "Twoje konto jest zablokowane, nie można aktywować zablokowanego konta. Skontaktuj się z liderem.",
-    "Failed_To_Activate_Account": "Nie udało się aktywować konta. Skontaktuj się z liderem wspólnoty.",
-    "Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted": "Nie można usunąć tego rekordu ponieważ jest on powiązany z innymi rekordami w bazie.",
-    "Activation_Failed_Passcode_Is_Not_Set": "Nie można aktywować konta ponieważ nie ma ono ustawionego sposobu uwierzytelniania (logowania). Gdy użytkownik ten został dodany do aplikacji, został wysłany do niego e-mail z instrukcją jak aktywować konto. Podczas aktywacji wybierany jest sposób uwierzytelniania. Poproś użytkownika aby dokończył aktywację konta lub wyślij do niego ponownie e-mail aktywujący."
-  },
   "Grid": {
     "NoColumns": "Brak kolumn",
     "NoData": "Brak danych",
@@ -394,15 +409,6 @@
     "RangePageLabel1": "0 z {length}",
     "RangePageLabel2": "{startIndex} - {endIndex} z {length}",
     "AriaLabel": "Wybierz stronę"
-  },
-  "WysiwygEditor": {
-    "Placeholder": "Wprowadź treść"
-  },
-  "Dialog": {
-    "CloseBtnAriaLabel": "Zamknij okno"
-  },
-  "ConfirmDialog": {
-    "DefaultTitle": "Uwaga"
   },
   "Permissions": {
     "AnnouncementsAdministration": {

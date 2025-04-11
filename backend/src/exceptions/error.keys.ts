@@ -10,7 +10,7 @@ export const errorKeys = {
     User_Not_Authenticated: 'User_Not_Authenticated',
     User_Not_Authorized: 'User_Not_Authorized',
     User_Is_Not_Active: 'User_Is_Not_Active',
-    User_Is_Locked_Out: 'User_Is_Locked_Out',
+    Account_Is_Locked_Out: 'Account_Is_Locked_Out',
     Invalid_Authentication_Type: 'Invalid_Authentication_Type',
     Invalid_Reset_Passcode_Token: 'Invalid_Reset_Passcode_Token',
     Refresh_Token_Expired: 'Refresh_Token_Expired',

@@ -17,11 +17,13 @@ import {
   ILoginResult,
   InactiveUserTriesToLogInEvent,
   IResetPasscodeResultDto,
+  IUnlockAccountResultDto,
   LockedUserTriesToLogInEvent,
   LoginDto,
   PasscodeService,
   RefreshTokenDto,
   ResetPasscodeReqDto,
+  UnlockAccountReqDto,
   UserLockedOutEvent,
   UserLoggedInEvent,
   UserPasscodeChangedEvent,
@@ -39,7 +41,7 @@ import {
 import { BaseService, userToIUser } from '@modules/common';
 import { EmailService, IResetPasscodeEmailSettings, LinkHelper } from '@modules/notifications';
 import { UserPermissionsRepository } from '@modules/permissions';
-import { UpdateUserModel, UserActivatedEvent, UserRepository } from '@modules/users';
+import { UpdateUserModel, UserActivatedEvent, UserRepository, UserUnlockedEvent } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
 import { IUpdateUser } from '@modules/users/interfaces/update-user.interfaces';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
@@ -205,7 +207,7 @@ export class AuthService extends BaseService {
 
     if (user.isLockedOut) {
       this._eventDispatcher.dispatch(events.users.lockedUserTriesToLogIn, new LockedUserTriesToLogInEvent(user));
-      throw new BadRequestException(errorKeys.login.User_Is_Locked_Out);
+      throw new BadRequestException(errorKeys.login.Account_Is_Locked_Out);
     }
 
     const isPasscodeMatching: boolean = this._passcodeService.match(user, data.passcode);
@@ -347,6 +349,23 @@ export class AuthService extends BaseService {
     return {
       isActive: updatedUser!.isActive,
     } satisfies IActivateAccountResultDto;
+  }
+
+  public async unlockAccount(reqDto: UnlockAccountReqDto): Promise<IUnlockAccountResultDto> {
+    const user: User | null = await this._userRepository.getByUuid(reqDto.userGuid);
+
+    if (isNullOrUndefined(user) || !user!.isLockedOut) {
+      return {
+        success: true,
+      } satisfies IUnlockAccountResultDto;
+    }
+    const updatedUser = await this._userRepository.unlock(user!.id);
+
+    this._eventDispatcher.dispatch(events.users.userUnlocked, new UserUnlockedEvent(updatedUser!, undefined));
+
+    return {
+      success: true,
+    } satisfies IUnlockAccountResultDto;
   }
 
   // public async logout(userData: IUserDto): Promise<IUserDto> {

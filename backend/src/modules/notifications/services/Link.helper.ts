@@ -3,11 +3,17 @@ import { AuthRoute } from '@modules/auth';
 
 export class LinkHelper {
   public static activateAccountLink(userUuid: string): string {
-    return `${LinkHelper.getClientAppUrl()}/account/${userUuid}/activate?t=${new Date().getTime()}`;
+    const token = encodeURIComponent(btoa(new Date().getTime().toString()));
+    return `${LinkHelper.getClientAppUrl()}/account/${userUuid}/activate/${token}`;
   }
 
   public static resetPasscodeLink(userUuid: string, token: string): string {
-    return `${LinkHelper.getClientAppUrl()}/${AuthRoute.resetPasscode}/${userUuid}/${token}`;
+    return `${LinkHelper.getClientAppUrl()}/account/${userUuid}/${AuthRoute.resetPasscode}/${token}`;
+  }
+
+  public static unlockAccountLink(userUuid: string): string {
+    const token = encodeURIComponent(btoa(new Date().getTime().toString()));
+    return `${LinkHelper.getClientAppUrl()}/account/${userUuid}/unlock/${token}`;
   }
 
   private static getClientAppUrl(): string {

@@ -22,6 +22,7 @@ export { LoginDto, LoginResponseDto } from './dtos/login.dto';
 export { RefreshTokenDto, RefreshTokenResponseDto } from './dtos/refresh-token.dto';
 export { RequestResetPasscodeResponseDto } from './dtos/request-reset-passcode.dto';
 export { ResetPasscodeDto, ResetPasscodeReqDto, ResetPasscodeResponseDto, type IResetPasscodeResultDto } from './dtos/reset-passcode.dto';
+export { UnlockAccountReqDto, UnlockAccountResponseDto, type IUnlockAccountResultDto } from './dtos/unlock-account.dto';
 
 export type { IDataStoredInToken } from './interfaces/data-stored-in-token.interface';
 export { Identity } from './models/Identity';

@@ -4,7 +4,6 @@ import {
   Component,
   ElementRef,
   inject,
-  Inject,
   OnDestroy,
   output,
   signal,
@@ -21,9 +20,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { IS_MOBILE } from 'src/app/app.config';
-import { ResetPasscodeService } from 'src/app/components/static/reset-passcode/services/reset-passcode.service';
-import { SnackBarService } from 'src/app/components/static/snackbar/snack-bar.service';
 import { environment } from 'src/environments/environment';
 import { IResponseError } from 'src/interfaces/errors/response.error';
 import { WithForm } from 'src/mixins/with-form.mixin';
@@ -31,6 +27,7 @@ import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthTokenService } from 'src/services/auth/auth-token.service';
 import { AuthService } from 'src/services/auth/auth.service';
 import { AccountBeforeLogIn } from 'src/services/auth/models/account-before-logIn';
+import { ErrorUtils } from 'src/utils/error.utils';
 import { conditionalValidator } from 'src/validators/conditional.validator';
 import { phoneValidator } from 'src/validators/phone.validator';
 import { pinValidator } from 'src/validators/pin.validator';
@@ -57,6 +54,10 @@ import { ILoginForm, LoginFormSteps } from './login.form';
 })
 export class LoginFormComponent extends WithForm<ILoginForm>() implements OnDestroy {
   public afterLogIn = output<boolean>();
+  public afterRequestedResetPasscode = output<{
+    dto: RequestResetPasscodeDto;
+    authType: AuthenticationTypes | undefined;
+  }>();
 
   protected readonly formSteps = LoginFormSteps;
   protected currentStep = signal<LoginFormSteps>(LoginFormSteps.EnterEmail);
@@ -77,10 +78,7 @@ export class LoginFormComponent extends WithForm<ILoginForm>() implements OnDest
   public constructor(
     formBuilder: FormBuilder,
     private _authService: AuthService,
-    private _authTokenService: AuthTokenService,
-    private _snackBarService: SnackBarService,
-    private _resetPasswordService: ResetPasscodeService,
-    @Inject(IS_MOBILE) private _isMobile: boolean
+    private _authTokenService: AuthTokenService
   ) {
     const formGroup = formBuilder.group<ILoginForm>({
       email: new FormControl(null, { validators: [Validators.required, Validators.email] }),
@@ -142,7 +140,9 @@ export class LoginFormComponent extends WithForm<ILoginForm>() implements OnDest
           this.afterLogIn.emit(true);
         },
         error: (error: unknown) => {
-          if ((error as IResponseError)?.errorMessage) {
+          if (ErrorUtils.isAccountIsLockedOutError(error)) {
+            this.goToStepisAccountIsLockedOut();
+          } else if ((error as IResponseError)?.errorMessage) {
             this.loginError.set((error as IResponseError).errorMessage);
           } else {
             throw error;
@@ -157,6 +157,11 @@ export class LoginFormComponent extends WithForm<ILoginForm>() implements OnDest
     this.focusEmailInput();
   }
 
+  protected goToStepisAccountIsLockedOut(): void {
+    this.loginError.set(undefined);
+    this.currentStep.set(LoginFormSteps.AccountIsLockedOut);
+  }
+
   protected goToStepEnterPhone(): void {
     const controlEmail = this.controls.email;
     const email = controlEmail.value;
@@ -165,6 +170,12 @@ export class LoginFormComponent extends WithForm<ILoginForm>() implements OnDest
     }
 
     this._authService.getAccountBeforeLogIn(email).subscribe((response: AccountBeforeLogIn) => {
+      if (response.isPhoneRequired()) {
+        this.currentStep.set(LoginFormSteps.EnterPhone);
+        this.focusPhoneInput();
+        return;
+      }
+
       if (response.isActive() !== true) {
         this.goToStepUserNotActive();
         return;
@@ -172,12 +183,6 @@ export class LoginFormComponent extends WithForm<ILoginForm>() implements OnDest
 
       this.showResetPasscodeButton.set(response.isPasswordSet() || response.isPinSet());
       this.authType.set(response.getAuthType());
-
-      if (response.isPhoneRequired()) {
-        this.currentStep.set(LoginFormSteps.EnterPhone);
-        this.focusPhoneInput();
-        return;
-      }
 
       if (response.isPasswordSet()) {
         this.goToStepEnterPassword();
@@ -214,7 +219,7 @@ export class LoginFormComponent extends WithForm<ILoginForm>() implements OnDest
           this.authType.set(response.getAuthType());
 
           if (response.isPasswordSet()) {
-            this.goToStepEnterPassword();
+            showStepEnterPassword();
           } else if (response.isPinSet()) {
             this.goToStepEnterPin();
           } else {
@@ -253,7 +258,7 @@ export class LoginFormComponent extends WithForm<ILoginForm>() implements OnDest
           if (response.isPasswordSet()) {
             this.goToStepEnterPassword();
           } else if (response.isPinSet()) {
-            this.goToStepEnterPin();
+            showStepEnterPin();
           } else {
             this.showStepAuthenticationTypeNotSet();
           }
@@ -269,39 +274,10 @@ export class LoginFormComponent extends WithForm<ILoginForm>() implements OnDest
   }
 
   protected requestResetPasscode(): void {
-    this._resetPasswordService
-      .requestResetPasscode(
-        new RequestResetPasscodeDto(this.controls.email.value, this.controls.phone.value)
-      )
-      .subscribe({
-        next: () => {
-          this.loginError.set('');
-
-          switch (this.authType()) {
-            case AuthenticationTypes.Password:
-              this.goToStepEnterPassword();
-              this._snackBarService.translateAndShowSuccess({
-                message: 'Login/RequestResetPasswordSent',
-              });
-              break;
-            case AuthenticationTypes.Pin:
-              this.goToStepEnterPin();
-              this._snackBarService.translateAndShowSuccess({
-                message: 'Login/RequestResetPinSent',
-              });
-              break;
-            default:
-              throw new Error('Invalid authentication type');
-          }
-        },
-        error: (error: unknown) => {
-          if ((error as IResponseError)?.errorMessage) {
-            this.loginError.set((error as IResponseError).errorMessage);
-          } else {
-            throw error;
-          }
-        },
-      });
+    this.afterRequestedResetPasscode.emit({
+      dto: new RequestResetPasscodeDto(this.controls.email.value, this.controls.phone.value),
+      authType: this.authType(),
+    });
   }
 
   protected goToStepForgotPassword(): void {

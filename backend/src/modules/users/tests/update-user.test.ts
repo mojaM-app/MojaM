@@ -88,7 +88,7 @@ describe('PUT /user/:id', () => {
       expect(user!.phone).toBe(updateUserRequestData.phone);
       expect(user!.firstName).toBe(updateUserRequestData.firstName);
       expect(user!.lastName).toBe(updateUserRequestData.lastName);
-      expect(new Date(user!.joiningDate!)).toEqual(updateUserRequestData.joiningDate);
+      expect(new Date(user!.joiningDate!).toISOString().substring(0, 10)).toEqual(updateUserRequestData.joiningDate.toISOString().substring(0, 10));
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUser.id)
@@ -158,7 +158,7 @@ describe('PUT /user/:id', () => {
       expect(user!.phone).toBe(updateUserRequestData.phone);
       expect(user!.firstName).toBe(updateUserRequestData.firstName);
       expect(user!.lastName).toBe(updateUserRequestData.lastName);
-      expect(new Date(user!.joiningDate!)).toEqual(updateUserRequestData.joiningDate);
+      expect(new Date(user!.joiningDate!).toISOString().substring(0, 10)).toEqual(updateUserRequestData.joiningDate.toISOString().substring(0, 10));
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUser.id)

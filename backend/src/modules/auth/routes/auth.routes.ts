@@ -15,6 +15,7 @@ export class AuthRoute implements IRoutes {
   public refreshTokenPath = `${this.path}/refresh-token`;
   public getAccountToActivatePath = `${this.path}/get-account-to-activate`;
   public activateAccountPath = `${this.path}/activate-account`;
+  public unlockAccountPath = `${this.path}/unlock-account`;
   public router = express.Router();
 
   private readonly _authController: AuthController;
@@ -41,6 +42,8 @@ export class AuthRoute implements IRoutes {
       [validateData(ActivateAccountDto)],
       this._authController.activateAccount,
     );
+    this.router.post(this.unlockAccountPath + `/:userId(${REGEX_PATTERNS.GUID})`, this._authController.unlockAccount);
+
     // this.router.post(`${this.path}logout`, verifyToken, this._authController.logOut);
   }
 }

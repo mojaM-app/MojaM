@@ -14,7 +14,7 @@
     }
 
     p {
-      margin: 0;
+      margin: 0 !important;
     }
 
     a.btn {
@@ -38,14 +38,24 @@
       font-size: 80%;
       color: #595959;
     }
+
+    .mb-1 {
+      margin-bottom: 0.5rem !important;
+    }
   </style>
 </head>
 
 <body>
-  <p>Cześć {{name}},</p><br>
-  <p>Chcesz zresetować hasło do aplikacji {{appName}}?<br>
-    Żaden problem! Wystarczy kliknąć poniższy przycisk.</p>
-  <br>
+  <p>Cześć {{name}}!</p><br>
+  <p class="mb-1">Twoje konto w aplikacji {{appName}} zostało tymczasowo zablokowane.<br>
+    Blokada konta spowodowana jest dużą ilością błędnych logowań.</p>
+  <p>Konto zostało zablokowane {{lockDateTime}}, przypomnij sobie czy w tym czasie próbował(aś/eś) zalogować się do
+    aplikacji.<br>
+    Czy podczas próby logowania kilka razy podano błędne dane?<br>
+    Jeżeli tak, jest to przyczyna blokady konta.<br>
+    Jeżeli nie, to być może ktoś inny próbował się zalogować na Twoje konto. Spokojnie, nie udało mu się. Twoje dane są
+    bezpieczne.<br>
+    Kliknij poniższy przycisk aby odblokować konto.</p><br>
   <table cellpadding="0" cellmargin="0" border="0" style="border-collapse: collapse; border:5px solid #005cbb">
     <tr>
       <td bgcolor="#005cbb" valign="middle" align="center">
@@ -53,21 +63,16 @@
           style="font-size: 18px; color: #ffffff; line-height: 1; margin: 0; padding: 0; mso-table-lspace:0; mso-table-rspace:0;">
           <a class="btn" href="{{link}}" target="_blank" rel="noopener noreferrer"
             style="text-decoration: none; color: #ffffff; border: 0; font-family: Arial, arial, sans-serif; mso-table-lspace:0; mso-table-rspace:0;"
-            border="0">Resetuj hasło</a>
+            border="0">Odblokuj konto</a>
         </div>
       </td>
     </tr>
   </table>
   <br>
-  <p class="text-small">Link do resetu hasła może być użyty tylko raz i jest ważny przez godzinę. Po tym czasie
-    traci
-    ważność i należy wysłać kolejną prośbę o zmianę hasła.</p>
-  <p class="text-small">Jeżeli prośba o reset hasła nie została wysłana przez Ciebie, możesz zignorować tę wiadomość
-    a hasło nie zostanie zmienione. Twoje dane są bezpieczne.</p>
-  <p class="text-small">Jeżeli to nie Ty wygenerował(aś/eś) niniejszą prośbę o reset hasła skontaktuj się z nami
-    telefonicznie, nasz nr tel. <a href="tel:{{contactPhone}}">{{contactPhone}}</a> lub e-mailowo, nasz e-mail <a
-      href="mailto:{{contactEmail}}">{{contactEmail}}</a>. Więcej informacji na nasz temat na
-    stronie <a href="https://{{contactWebsite}}/">{{contactWebsite}}</a><br>
+  <p class="text-small">W razie jakichkolwiek pytań możesz skontaktować się z nami telefonicznie, nasz nr tel. <a
+      href="tel:{{contactPhone}}">{{contactPhone}}</a> lub e-mailowo, nasz e-mail <a
+      href="mailto:{{contactEmail}}">{{contactEmail}}</a>.<br>
+    Więcej informacji na nasz temat na stronie <a href="https://{{contactWebsite}}/">{{contactWebsite}}</a><br>
     W razie jakichkolwiek pytań służymy pomocą i zachęcamy do kontaktu.</p>
   <p class="text-small">Niniejsza wiadomość została wygenerowana automatycznie. Prosimy na nią nie odpowiadać.</p>
 </body>

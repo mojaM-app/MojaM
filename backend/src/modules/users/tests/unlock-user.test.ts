@@ -82,7 +82,7 @@ describe('POST /user/:id/unlock', () => {
       const data = loginResponse.body.data as BadRequestException;
       expect(typeof data).toBe('object');
       const { message: login1Message }: { message: string } = data;
-      expect(login1Message).toBe(errorKeys.login.User_Is_Locked_Out);
+      expect(login1Message).toBe(errorKeys.login.Account_Is_Locked_Out);
 
       const unlockUserResponse = await request(app.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.unlockPath)

@@ -9,5 +9,9 @@
   </button>
 </div>
 <mat-dialog-content>
-  <app-login-form #loginForm (afterLogIn)="afterLogIn($event)"> </app-login-form>
+  <app-login-form
+    #loginForm
+    (afterLogIn)="afterLogIn($event)"
+    (afterRequestedResetPasscode)="afterRequestedResetPasscode($event)">
+  </app-login-form>
 </mat-dialog-content>

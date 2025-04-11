@@ -15,6 +15,7 @@ import {
   IGetAccountBeforeLogInResultDto,
   ILoginResult,
   IResetPasscodeResultDto,
+  IUnlockAccountResultDto,
   LoginDto,
   LoginResponseDto,
   RefreshTokenDto,
@@ -23,6 +24,8 @@ import {
   ResetPasscodeDto,
   ResetPasscodeReqDto,
   ResetPasscodeResponseDto,
+  UnlockAccountReqDto,
+  UnlockAccountResponseDto,
 } from '@modules/auth';
 import { BaseController } from '@modules/common';
 import { isGuid } from '@utils';
@@ -125,6 +128,16 @@ export class AuthController extends BaseController {
       const model: ActivateAccountDto = req.body;
       const result: IActivateAccountResultDto = await this._authService.activateAccount(new ActivateAccountReqDto(userGuid, model));
       res.status(200).json(new ActivateAccountResponseDto(result));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public unlockAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userGuid = isGuid(req.params?.userId) ? req.params.userId : undefined;
+      const result: IUnlockAccountResultDto = await this._authService.unlockAccount(new UnlockAccountReqDto(userGuid));
+      res.status(200).json(new UnlockAccountResponseDto(result));
     } catch (error) {
       next(error);
     }

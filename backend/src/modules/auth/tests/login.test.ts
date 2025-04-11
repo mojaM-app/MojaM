@@ -712,7 +712,7 @@ describe('POST /login', () => {
       expect(typeof body).toBe('object');
       const data = body.data as BadRequestException;
       const { message: loginMessage, args: loginArgs } = data;
-      expect(loginMessage).toBe(errorKeys.login.User_Is_Locked_Out);
+      expect(loginMessage).toBe(errorKeys.login.Account_Is_Locked_Out);
       expect(loginArgs).toBeUndefined();
 
       const deleteResponse = await request(app.getServer())
@@ -781,7 +781,7 @@ describe('POST /login', () => {
       expect(typeof body).toBe('object');
       const data = body.data as BadRequestException;
       const { message: loginMessage, args: loginArgs } = data;
-      expect(loginMessage).toBe(errorKeys.login.User_Is_Locked_Out);
+      expect(loginMessage).toBe(errorKeys.login.Account_Is_Locked_Out);
       expect(loginArgs).toBeUndefined();
 
       const deleteResponse = await request(app.getServer())

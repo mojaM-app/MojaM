@@ -3,12 +3,19 @@ import { ActivatedRoute } from '@angular/router';
 import { ResetPasscodeService } from 'src/app/components/static/reset-passcode/services/reset-passcode.service';
 import { AuthenticationTypes } from '../activate-account/enums/authentication-type.enum';
 import { ICheckResetPasscodeTokenResultDto } from './interfaces/reset-passcode.interfaces';
+import { InvalidResetPasswordTokenComponent } from './reset-password/invalid-reset-password-token/invalid-reset-password-token.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { InvalidResetPinTokenComponent } from './reset-pin/invalid-reset-pin-token/invalid-reset-pin-token.component';
 import { ResetPinComponent } from './reset-pin/reset-pin.component';
 
 @Component({
   selector: 'app-reset-passcode',
-  imports: [ResetPasswordComponent, ResetPinComponent],
+  imports: [
+    ResetPasswordComponent,
+    ResetPinComponent,
+    InvalidResetPasswordTokenComponent,
+    InvalidResetPinTokenComponent,
+  ],
   templateUrl: './reset-passcode.component.html',
   styleUrl: './reset-passcode.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

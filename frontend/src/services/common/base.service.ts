@@ -47,6 +47,8 @@ export class BaseService {
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/get-account-to-activate/${uuid}`,
       activateAccount: (uuid: string): string =>
         `${environment.backendUrl}/${this.API_ROUTES.auth.path}/activate-account/${uuid}`,
+      unlock: (uuid: string): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.auth.path}/unlock-account/${uuid}`,
     },
     userList: {
       path: 'user-list',

@@ -32,6 +32,7 @@ export const ValidateEnv = (): void => {
     TPL_VAR_RESET_PASSWORD_TITLE: str(),
     TPL_VAR_RESET_PIN_TITLE: str(),
     TPL_VAR_WELCOME_EMAIL_TITLE: str(),
+    TPL_VAR_ACCOUNT_BLOCKED_EMAIL_TITLE: str(),
 
     NOTIFICATIONS_EMAIL: email(),
     RESET_PASSWORD_TOKEN_EXPIRE_IN: str(),

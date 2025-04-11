@@ -1,9 +1,9 @@
 <div class="container">
   @if (user()) {
     <div class="row">
-      <div class="col-12 mt-3">
-        {{ 'ActivateAccount/Title' | gmessage }}
-      </div>
+      <div
+        class="col-12 mt-3"
+        [innerHtml]="'ActivateAccount/Title' | gmessage: { accountName: user()!.email }"></div>
     </div>
     <div class="row">
       <div class="col-12">

@@ -21,6 +21,7 @@ import { ControlValidators } from 'src/validators/control.validators';
 import { pinValidator } from 'src/validators/pin.validator';
 import { ResetPasscodeDto } from '../models/reset-passcode.models';
 import { IResetPinForm } from '../reset-pin.form';
+import { InvalidResetPinTokenComponent } from './invalid-reset-pin-token/invalid-reset-pin-token.component';
 import { ResetPinControlComponent } from './reset-pin-control/reset-pin-control.component';
 
 @Component({
@@ -34,6 +35,7 @@ import { ResetPinControlComponent } from './reset-pin-control/reset-pin-control.
     MatInputModule,
     MatIconModule,
     ResetPinControlComponent,
+    InvalidResetPinTokenComponent,
   ],
   templateUrl: './reset-pin.component.html',
   styleUrl: './reset-pin.component.scss',

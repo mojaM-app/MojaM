@@ -188,6 +188,7 @@ export class UserRepository extends BaseUserRepository {
       userId,
       userData: {
         isLockedOut: false,
+        failedLoginAttempts: 0,
       } satisfies IUpdateUser,
     } satisfies UpdateUserModel;
 

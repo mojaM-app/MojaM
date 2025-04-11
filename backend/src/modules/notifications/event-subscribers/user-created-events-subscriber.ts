@@ -16,7 +16,7 @@ export class UserCreatedEventSubscriber {
   }
 
   @On(events.users.userCreated)
-  public onUserCreated(data: UserCreatedEvent): void {
+  public eventHandler(data: UserCreatedEvent): void {
     this._emailService
       .sendWelcomeEmail({
         user: data.user,

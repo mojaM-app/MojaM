@@ -1,21 +1,31 @@
-@switch (authenticationType()) {
-  @case (AuthenticationTypes.Password) {
-    <app-reset-password
-      [isTokenValid]="isTokenValid() === true"
-      [userEmail]="userEmail()"
-      [token]="token()"
-      [userId]="userId()">
-    </app-reset-password>
+<div class="container">
+  @if (isTokenValid() === true) {
+    @switch (authenticationType()) {
+      @case (AuthenticationTypes.Password) {
+        <app-reset-password
+          [isTokenValid]="isTokenValid() === true"
+          [userEmail]="userEmail()"
+          [token]="token()"
+          [userId]="userId()">
+        </app-reset-password>
+      }
+      @case (AuthenticationTypes.Pin) {
+        <app-reset-pin
+          [isTokenValid]="isTokenValid() === true"
+          [userEmail]="userEmail()"
+          [token]="token()"
+          [userId]="userId()">
+        </app-reset-pin>
+      }
+      @default {
+        <div class="row"><div class="col-12 mt-3">Not supported authentication type</div></div>
+      }
+    }
+  } @else {
+    @if (authenticationType() === AuthenticationTypes.Pin) {
+      <app-invalid-reset-pin-token></app-invalid-reset-pin-token>
+    } @else {
+      <app-invalid-reset-password-token></app-invalid-reset-password-token>
+    }
   }
-  @case (AuthenticationTypes.Pin) {
-    <app-reset-pin
-      [isTokenValid]="isTokenValid() === true"
-      [userEmail]="userEmail()"
-      [token]="token()"
-      [userId]="userId()">
-    </app-reset-pin>
-  }
-  @default {
-    <div class="row"><div class="col-12 mt-3">Not supported authentication type</div></div>
-  }
-}
+</div>
