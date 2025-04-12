@@ -19,7 +19,7 @@ export class UserListRoute implements IRoutes {
   }
 
   private readonly checkPreviewPermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity?.isAuthenticated()) {
+    if (!req.identity.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToPreviewUserList()) {
       next(new ForbiddenException());

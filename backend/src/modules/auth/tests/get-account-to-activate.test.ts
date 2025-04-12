@@ -99,7 +99,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
 
       const loginData: LoginDto = { email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' };
 
-      for (let index = 1; index <= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
+      for (let index = 1; index < USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
         const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
         expect(loginResponse.statusCode).toBe(400);
         expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -110,6 +110,15 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
         expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Passcode);
         expect(loginArgs).toBeUndefined();
       }
+      const loginResponse = await request(app.getServer())
+        .post(authRoute.loginPath)
+        .send({ email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' } satisfies LoginDto);
+      expect(loginResponse.statusCode).toBe(400);
+      expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const data = loginResponse.body.data as BadRequestException;
+      expect(typeof data).toBe('object');
+      const { message: login1Message }: { message: string } = data;
+      expect(login1Message).toBe(errorKeys.login.Account_Is_Locked_Out);
 
       const toActivateResponse = await request(app.getServer())
         .post(authRoute.getAccountToActivatePath + '/' + newUserDto.id)
@@ -162,7 +171,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
 
       const loginData: LoginDto = { email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' };
 
-      for (let index = 1; index <= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
+      for (let index = 1; index < USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
         const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
         expect(loginResponse.statusCode).toBe(400);
         expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -173,6 +182,15 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
         expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Passcode);
         expect(loginArgs).toBeUndefined();
       }
+      const loginResponse = await request(app.getServer())
+        .post(authRoute.loginPath)
+        .send({ email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' } satisfies LoginDto);
+      expect(loginResponse.statusCode).toBe(400);
+      expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const data = loginResponse.body.data as BadRequestException;
+      expect(typeof data).toBe('object');
+      const { message: login1Message }: { message: string } = data;
+      expect(login1Message).toBe(errorKeys.login.Account_Is_Locked_Out);
 
       const deactivateUserResponse = await request(app.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.deactivatePath)

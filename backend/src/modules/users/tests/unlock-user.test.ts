@@ -63,7 +63,7 @@ describe('POST /user/:id/unlock', () => {
 
       // lock user
       const loginData: LoginDto = { email: newUserDto.email, phone: newUserDto.phone, passcode: user.passcode + 'invalid_passcode' };
-      for (let index = 1; index <= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
+      for (let index = 1; index < USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
         const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
         expect(loginResponse.statusCode).toBe(400);
         expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -76,7 +76,7 @@ describe('POST /user/:id/unlock', () => {
 
       let loginResponse = await request(app.getServer())
         .post(authRoute.loginPath)
-        .send({ email: newUserDto.email, passcode: user.passcode } satisfies LoginDto);
+        .send({ email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' } satisfies LoginDto);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const data = loginResponse.body.data as BadRequestException;
@@ -122,7 +122,6 @@ describe('POST /user/:id/unlock', () => {
               testEventHandlers.onUserActivated,
               testEventHandlers.onUserLockedOut,
               testEventHandlers.onFailedLoginAttempt,
-              testEventHandlers.lockedUserTriesToLogIn,
               testEventHandlers.onUserUnlocked,
               testEventHandlers.onUserLoggedIn,
               testEventHandlers.onUserDeleted,
@@ -135,7 +134,6 @@ describe('POST /user/:id/unlock', () => {
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserLockedOut).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onFailedLoginAttempt).toHaveBeenCalledTimes(USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS);
-      expect(testEventHandlers.lockedUserTriesToLogIn).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });

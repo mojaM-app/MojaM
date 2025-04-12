@@ -11,7 +11,6 @@ export { GetUserDetailsReqDto, GetUserDetailsResponseDto } from './dtos/get-user
 export { GetUserListReqDto, GetUserListResponseDto, type IUserGridItemDto, type UsersGridPageDto } from './dtos/get-user-list.dto';
 export { GetUserProfileReqDto, GetUserProfileResponseDto, type IGetUserProfileDto } from './dtos/get-user-profile.dto';
 export { GetUserReqDto, GetUserResponseDto } from './dtos/get-user.dto';
-export { LockUserReqDto, LockUserResponseDto } from './dtos/lock-user.dto';
 export { UnlockUserReqDto, UnlockUserResponseDto } from './dtos/unlock-user.dto';
 export { UpdateUserProfileDto, UpdateUserProfileReqDto, UpdateUserProfileResponseDto } from './dtos/update-user-profile.dto';
 export { UpdateUserDto, UpdateUserReqDto, UpdateUserResponseDto } from './dtos/update-user.dto';

@@ -107,10 +107,10 @@ export class EmailService {
     });
   }
 
-  private sendMail(options: Mail.Options, callback: (success: boolean) => void): void {
+  private sendMail(mailOptions: Mail.Options, callback: (success: boolean) => void): void {
     const transporter = this.createTransporter();
 
-    transporter.sendMail(options, (error, info) => {
+    transporter.sendMail(mailOptions, (error, info) => {
       if (error !== null && error !== undefined) {
         transporter.close();
         callback(false);

@@ -3,7 +3,7 @@ import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
-import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
+import { generateValidUserWithPassword, generateValidUserWithPin, loginAs } from '@helpers/user-tests.helpers';
 import {
   AccountTryingToLogInDto,
   AuthRoute,
@@ -591,6 +591,150 @@ describe('POST /auth/request-reset-passcode', () => {
       jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
       const user = generateValidUserWithPassword();
+      user.email = getAdminLoginData().email;
+      expect(user.phone).not.toBe(getAdminLoginData().phone);
+
+      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(201);
+      const { data: newUserDto, message: createUserMessage }: CreateUserResponseDto = createUserResponse.body;
+      expect(newUserDto?.id).toBeDefined();
+      expect(createUserMessage).toBe(events.users.userCreated);
+      expect(newUserDto.email).toBe(user.email);
+
+      let response = await request(app.getServer())
+        .post(authRoute.requestResetPasscodePath)
+        .send({ email: user.email, phone: user.phone } satisfies AccountTryingToLogInDto);
+      expect(response.statusCode).toBe(200);
+      const resetPasscodeBody: RequestResetPasscodeResponseDto = response.body;
+      expect(typeof resetPasscodeBody).toBe('object');
+      expect(resetPasscodeBody.data).toBe(true);
+
+      const splittedUrl = url?.split('/') ?? [];
+      expect(splittedUrl.length).toBe(8);
+      expect(splittedUrl[0]).toBe('http:');
+      expect(splittedUrl[1]).toBe('');
+      expect(splittedUrl[2]).toBe('localhost:4200');
+      expect(splittedUrl[3]).toBe('#');
+      expect(splittedUrl[4]).toBe('account');
+      expect(splittedUrl[5].length).toBe(36); // UUID v4
+      expect(splittedUrl[5]).toBe(newUserDto.id);
+      expect(splittedUrl[6]).toBe('reset-passcode');
+      expect(splittedUrl[7].length).toBe(64);
+
+      const token = splittedUrl[splittedUrl.length - 1];
+
+      response = await request(app.getServer())
+        .post(authRoute.resetPasscodePath + `/${newUserDto.id}`)
+        .send({ token, passcode: user.passcode! } satisfies ResetPasscodeDto);
+      expect(response.statusCode).toBe(200);
+
+      const resetPasscodeResultBody: ResetPasscodeResponseDto = response.body;
+      expect(typeof resetPasscodeResultBody).toBe('object');
+      const { data, message }: ResetPasscodeResponseDto = resetPasscodeResultBody;
+      expect(data.isPasscodeSet).toBe(true);
+      expect(message).toBe(events.users.userPasscodeChanged);
+
+      const deleteResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + newUserDto.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteResponse.statusCode).toBe(200);
+
+      expect(mockSendEmailResetPasscode).toHaveBeenCalledTimes(1);
+      expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
+      expect(mockSendMail).toHaveBeenCalledTimes(2);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onUserCreated, testEventHandlers.onUserPasscodeChanged, testEventHandlers.onUserDeleted].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserPasscodeChanged).toHaveBeenCalledTimes(1);
+    });
+
+    it('when exist only one user (via e-mail) and user PIN is set', async () => {
+      let url = '';
+      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (settings: IResetPasscodeEmailSettings) => {
+        url = settings.link;
+        return await originalSendEmailResetPasscode(settings);
+      });
+      jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
+
+      const user = generateValidUserWithPin();
+      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createUserResponse.statusCode).toBe(201);
+      const { data: newUserDto, message: createUserMessage }: CreateUserResponseDto = createUserResponse.body;
+      expect(newUserDto?.id).toBeDefined();
+      expect(createUserMessage).toBe(events.users.userCreated);
+      expect(newUserDto.email).toBe(user.email);
+
+      let response = await request(app.getServer())
+        .post(authRoute.requestResetPasscodePath)
+        .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
+      expect(response.statusCode).toBe(200);
+      const resetPasscodeBody: RequestResetPasscodeResponseDto = response.body;
+      expect(typeof resetPasscodeBody).toBe('object');
+      expect(resetPasscodeBody.data).toBe(true);
+
+      const splittedUrl = url?.split('/') ?? [];
+      expect(splittedUrl.length).toBe(8);
+      expect(splittedUrl[0]).toBe('http:');
+      expect(splittedUrl[1]).toBe('');
+      expect(splittedUrl[2]).toBe('localhost:4200');
+      expect(splittedUrl[3]).toBe('#');
+      expect(splittedUrl[4]).toBe('account');
+      expect(splittedUrl[5].length).toBe(36); // UUID v4
+      expect(splittedUrl[5]).toBe(newUserDto.id);
+      expect(splittedUrl[6]).toBe('reset-passcode');
+      expect(splittedUrl[7].length).toBe(64);
+
+      const token = splittedUrl[splittedUrl.length - 1];
+
+      response = await request(app.getServer())
+        .post(authRoute.resetPasscodePath + `/${newUserDto.id}`)
+        .send({ token, passcode: user.passcode! } satisfies ResetPasscodeDto);
+      expect(response.statusCode).toBe(200);
+
+      const resetPasscodeResultBody: ResetPasscodeResponseDto = response.body;
+      expect(typeof resetPasscodeResultBody).toBe('object');
+      const { data, message }: ResetPasscodeResponseDto = resetPasscodeResultBody;
+      expect(data.isPasscodeSet).toBe(true);
+      expect(message).toBe(events.users.userPasscodeChanged);
+
+      expect(mockSendEmailResetPasscode).toHaveBeenCalledTimes(1);
+      expect(mockSendMail).toHaveBeenCalledTimes(2);
+
+      const deleteResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + newUserDto.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteResponse.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onUserCreated, testEventHandlers.onUserPasscodeChanged, testEventHandlers.onUserDeleted].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserPasscodeChanged).toHaveBeenCalledTimes(1);
+    });
+
+    it('when exist only one user (via e-mail and phone) and user PIN is set', async () => {
+      let url = '';
+      const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (settings: IResetPasscodeEmailSettings) => {
+        url = settings.link;
+        return await originalSendEmailResetPasscode(settings);
+      });
+      jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
+
+      const user = generateValidUserWithPin();
       user.email = getAdminLoginData().email;
       expect(user.phone).not.toBe(getAdminLoginData().phone);
 

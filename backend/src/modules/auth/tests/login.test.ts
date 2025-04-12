@@ -693,7 +693,7 @@ describe('POST /login', () => {
 
       const loginData: LoginDto = { email: newUserDto.email, passcode: user.passcode + 'invalid_password' };
 
-      for (let index = 1; index <= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
+      for (let index = 1; index < USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
         const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
         expect(loginResponse.statusCode).toBe(400);
         expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -731,7 +731,6 @@ describe('POST /login', () => {
               testEventHandlers.onUserDeleted,
               testEventHandlers.onFailedLoginAttempt,
               testEventHandlers.onUserLockedOut,
-              testEventHandlers.lockedUserTriesToLogIn,
             ].includes(eventHandler),
         )
         .forEach(([, eventHandler]) => {
@@ -741,7 +740,6 @@ describe('POST /login', () => {
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onFailedLoginAttempt).toHaveBeenCalledTimes(USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS);
       expect(testEventHandlers.onUserLockedOut).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.lockedUserTriesToLogIn).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
@@ -762,7 +760,7 @@ describe('POST /login', () => {
 
       const loginData: LoginDto = { email: newUserDto.email, phone: newUserDto.phone, passcode: user.passcode + 'invalid_password' };
 
-      for (let index = 1; index <= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
+      for (let index = 1; index < USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
         const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
         expect(loginResponse.statusCode).toBe(400);
         expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -800,7 +798,6 @@ describe('POST /login', () => {
               testEventHandlers.onUserDeleted,
               testEventHandlers.onFailedLoginAttempt,
               testEventHandlers.onUserLockedOut,
-              testEventHandlers.lockedUserTriesToLogIn,
             ].includes(eventHandler),
         )
         .forEach(([, eventHandler]) => {
@@ -810,7 +807,6 @@ describe('POST /login', () => {
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onFailedLoginAttempt).toHaveBeenCalledTimes(USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS);
       expect(testEventHandlers.onUserLockedOut).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.lockedUserTriesToLogIn).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserLockedOut).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
@@ -854,6 +850,69 @@ describe('POST /login', () => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    it('login should respond with a status code of 400 when try to login to a locked out account', async () => {
+      const user = generateValidUserWithPassword();
+
+      const createResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createResponse.statusCode).toBe(201);
+      const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createResponse.body;
+      expect(newUserDto?.id).toBeDefined();
+      expect(createMessage).toBe(events.users.userCreated);
+
+      const activateUserResponse = await request(app.getServer())
+        .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(activateUserResponse.statusCode).toBe(200);
+
+      const loginData: LoginDto = { email: newUserDto.email, phone: newUserDto.phone, passcode: user.passcode + 'invalid_password' };
+
+      for (let index = 1; index <= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
+        const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
+        expect(loginResponse.statusCode).toBe(400);
+      }
+
+      const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
+      expect(loginResponse.statusCode).toBe(400);
+      expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = loginResponse.body;
+      expect(typeof body).toBe('object');
+      const data = body.data as BadRequestException;
+      const { message: loginMessage, args: loginArgs } = data;
+      expect(loginMessage).toBe(errorKeys.login.Account_Is_Locked_Out);
+      expect(loginArgs).toBeUndefined();
+
+      const deleteResponse = await request(app.getServer())
+        .delete(userRoute.path + '/' + newUserDto.id)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteResponse.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onUserDeleted,
+              testEventHandlers.onFailedLoginAttempt,
+              testEventHandlers.onUserLockedOut,
+              testEventHandlers.lockedUserTriesToLogIn,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onFailedLoginAttempt).toHaveBeenCalledTimes(USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS);
+      expect(testEventHandlers.onUserLockedOut).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.lockedUserTriesToLogIn).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onUserLockedOut).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
   });

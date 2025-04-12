@@ -2,7 +2,7 @@
   "$schema": "./node_modules/@angular/service-worker/config/schema.json",
   "index": "/index.html",
   "appData": {
-    "version": "2025.04.05",
+    "version": "2025.04.12",
     "name": "Moja Miriam"
   },
   "assetGroups": [

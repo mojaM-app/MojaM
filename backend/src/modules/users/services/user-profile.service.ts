@@ -1,5 +1,4 @@
 import { events } from '@events';
-import { BadRequestException, errorKeys } from '@exceptions';
 import { BaseService } from '@modules/common';
 import {
   GetUserProfileReqDto,
@@ -11,7 +10,6 @@ import {
   UserProfileUpdatedEvent,
   UserRepository,
 } from '@modules/users';
-import { isNullOrUndefined } from '@utils';
 import { Container, Service } from 'typedi';
 import { User } from '../entities/user.entity';
 import { IUpdateUser } from '../interfaces/update-user.interfaces';
@@ -28,10 +26,6 @@ export class UserProfileService extends BaseService {
   public async get(reqDto: GetUserProfileReqDto): Promise<IGetUserProfileDto | null> {
     const user = await this._userRepository.getById(reqDto.currentUserId);
 
-    if (isNullOrUndefined(user)) {
-      throw new BadRequestException(errorKeys.users.User_Does_Not_Exist, { id: null });
-    }
-
     const userDto = this.userToIGetUserProfileDto(user!);
 
     this._eventDispatcher.dispatch(events.users.userProfileRetrieved, new UserProfileRetrievedEvent(userDto, reqDto.currentUserId));
@@ -41,10 +35,6 @@ export class UserProfileService extends BaseService {
 
   public async update(reqDto: UpdateUserProfileReqDto): Promise<boolean> {
     const user = await this._userRepository.getById(reqDto.currentUserId);
-
-    if (isNullOrUndefined(user)) {
-      throw new BadRequestException(errorKeys.users.User_Does_Not_Exist, { id: null });
-    }
 
     const userData: UpdateUserProfileDto = reqDto.userData;
 

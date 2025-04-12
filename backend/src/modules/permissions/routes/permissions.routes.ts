@@ -30,7 +30,7 @@ export class PermissionsRoute implements IRoutes {
   }
 
   private readonly checkGet = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity?.isAuthenticated()) {
+    if (!req.identity.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToAddPermission() && !req.identity.hasPermissionToDeletePermission()) {
       next(new ForbiddenException());
@@ -40,7 +40,7 @@ export class PermissionsRoute implements IRoutes {
   };
 
   private readonly checkAdd = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity?.isAuthenticated()) {
+    if (!req.identity.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToAddPermission()) {
       next(new ForbiddenException());
@@ -50,7 +50,7 @@ export class PermissionsRoute implements IRoutes {
   };
 
   private readonly checkDelete = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity?.isAuthenticated()) {
+    if (!req.identity.isAuthenticated()) {
       next(new UnauthorizedException());
     } else if (!req.identity.hasPermissionToDeletePermission()) {
       next(new ForbiddenException());

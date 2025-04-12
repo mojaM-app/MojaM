@@ -21,7 +21,7 @@ export class UserProfileRoute implements IRoutes {
   }
 
   private readonly checkGetPermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity?.isAuthenticated()) {
+    if (!req.identity.isAuthenticated()) {
       next(new UnauthorizedException());
     } else {
       next();
@@ -29,7 +29,7 @@ export class UserProfileRoute implements IRoutes {
   };
 
   private readonly checkUpdatePermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity?.isAuthenticated()) {
+    if (!req.identity.isAuthenticated()) {
       next(new UnauthorizedException());
     } else {
       next();

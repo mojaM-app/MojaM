@@ -12,6 +12,7 @@ import {
   CheckResetPasscodeTokenResponseDto,
   ICheckResetPasscodeTokenResultDto,
   LoginDto,
+  LoginResponseDto,
   RequestResetPasscodeResponseDto,
   ResetPasscodeDto,
   ResetPasscodeResponseDto,
@@ -259,7 +260,7 @@ describe('POST /auth/reset-passcode', () => {
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
 
-    it('when user is lockedOut, after reset password user should be active and should stay lockedOut (should not be able to log in)', async () => {
+    it('when user is lockedOut, after reset password user should be active and should be unlocked (should be able to log in)', async () => {
       const user = generateValidUserWithPassword();
       const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -274,17 +275,25 @@ describe('POST /auth/reset-passcode', () => {
       expect(activateUserResponse.statusCode).toBe(200);
 
       const loginData: LoginDto = { email: newUserDto.email, phone: newUserDto.phone, passcode: user.passcode + 'invalid_password' };
-      for (let index = 1; index <= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
+      for (let index = 1; index < USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
         const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
         expect(loginResponse.statusCode).toBe(400);
         expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-        const body = loginResponse.body;
-        expect(typeof body).toBe('object');
-        const data = body.data as BadRequestException;
+        expect(typeof loginResponse.body).toBe('object');
+        const data = loginResponse.body.data as BadRequestException;
         const { message: loginMessage, args: loginArgs } = data;
         expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Passcode);
         expect(loginArgs).toBeUndefined();
       }
+
+      let loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
+      expect(loginResponse.statusCode).toBe(400);
+      expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      expect(typeof loginResponse.body).toBe('object');
+      const data = loginResponse.body.data as BadRequestException;
+      const { message: loginMessage1, args: loginArgs } = data;
+      expect(loginMessage1).toBe(errorKeys.login.Account_Is_Locked_Out);
+      expect(loginArgs).toBeUndefined();
 
       let url = '';
       const mockSendEmailResetPasscode = jest.fn().mockImplementation(async (settings: IResetPasscodeEmailSettings) => {
@@ -297,8 +306,7 @@ describe('POST /auth/reset-passcode', () => {
         .post(authRoute.requestResetPasscodePath)
         .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
       expect(requestResetPasscodeResponse.statusCode).toBe(200);
-      let body: RequestResetPasscodeResponseDto | ResetPasscodeResponseDto | CheckResetPasscodeTokenResponseDto | BadRequestException =
-        requestResetPasscodeResponse.body as RequestResetPasscodeResponseDto;
+      let body: any = requestResetPasscodeResponse.body as RequestResetPasscodeResponseDto;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
@@ -341,15 +349,15 @@ describe('POST /auth/reset-passcode', () => {
       expect(resetPasscodeMessage).toBe(events.users.userPasscodeChanged);
       expect(resetPasscodeResult.isPasscodeSet).toBe(true);
 
-      const loginResponse = await request(app.getServer())
+      loginResponse = await request(app.getServer())
         .post(authRoute.loginPath)
         .send({ email: newUserDto.email, passcode: newPassword } satisfies LoginDto);
-      expect(loginResponse.statusCode).toBe(400);
-      expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-      const data = loginResponse.body.data as BadRequestException;
-      expect(typeof data).toBe('object');
-      const { message: loginMessage }: { message: string } = data;
-      expect(loginMessage).toBe(errorKeys.login.Account_Is_Locked_Out);
+      expect(loginResponse.statusCode).toBe(200);
+      body = loginResponse.body as LoginResponseDto;
+      const { data: userLoggedIn, message: loginMessage } = body;
+      expect(loginMessage).toBe(events.users.userLoggedIn);
+      expect(userLoggedIn.email).toBe(newUserDto.email);
+      expect(userLoggedIn.phone).toBe(newUserDto.phone);
 
       const deleteResponse = await request(app.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
@@ -367,21 +375,20 @@ describe('POST /auth/reset-passcode', () => {
               testEventHandlers.onUserLockedOut,
               testEventHandlers.onFailedLoginAttempt,
               testEventHandlers.onUserPasscodeChanged,
-              testEventHandlers.lockedUserTriesToLogIn,
               testEventHandlers.onUserDeleted,
+              testEventHandlers.onUserLoggedIn,
             ].includes(eventHandler),
         )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
 
-      expect(testEventHandlers.onUserLoggedIn).not.toHaveBeenCalled();
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserLockedOut).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onFailedLoginAttempt).toHaveBeenCalledTimes(USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS);
       expect(testEventHandlers.onUserPasscodeChanged).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.lockedUserTriesToLogIn).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
   });

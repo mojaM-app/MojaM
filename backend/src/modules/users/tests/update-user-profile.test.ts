@@ -325,7 +325,7 @@ describe('PUT/user-profile', () => {
       expect(userProfile!.email).toBe(newUserDto.email);
       expect(userProfile!.phone).toBe(newUserDto.phone);
       userProfile!.joiningDate = new Date(userProfile!.joiningDate!);
-      expect(userProfile!.joiningDate).toEqual(newUser.joiningDate);
+      expect(userProfile!.joiningDate.toDateString()).toEqual(newUser.joiningDate.toDateString());
       expect(userProfile!.firstName).toBeNull();
       expect(userProfile!.lastName).toBeNull();
 

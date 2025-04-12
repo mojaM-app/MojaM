@@ -25,20 +25,24 @@ export { ResetPasscodeDto, ResetPasscodeReqDto, ResetPasscodeResponseDto, type I
 export { UnlockAccountReqDto, UnlockAccountResponseDto, type IUnlockAccountResultDto } from './dtos/unlock-account.dto';
 
 export type { IDataStoredInToken } from './interfaces/data-stored-in-token.interface';
-export { Identity } from './models/Identity';
-
 export type { ILoginResult } from './interfaces/login.interfaces';
 export type { TLoginResult } from './types/login.types';
 
 export { AuthController } from './controllers/auth.controller';
+
 export { ResetPasscodeTokensRepository } from './repositories/reset-passcode-tokens.repository';
+
 export { AuthRoute } from './routes/auth.routes';
+
+export { AccountService } from './services/account.service';
 export { AuthService } from './services/auth.service';
 export { CryptoService } from './services/crypto.service';
 export { PasscodeService } from './services/passcode.service';
 export { PasswordService } from './services/password.service';
 export { PinService } from './services/pin.service';
+export { ResetPasscodeService } from './services/reset-passcode.service';
 
 export { setIdentity } from './middlewares/set-identity.middleware';
+export { Identity } from './models/Identity';
 
 export { AuthenticationTypes } from './enums/authentication-type.enum';

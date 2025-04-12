@@ -49,6 +49,15 @@ describe('arrays.utils', () => {
           ],
         ),
       ).toBe(true);
+      class Dog {
+        public readonly name: string;
+        public constructor(name: string) {
+          this.name = name;
+        }
+      }
+      (Dog as any).prototype.numLegs = 4;
+      const beagle = new Dog('Dog');
+      expect(arraysEquals([beagle], [beagle])).toBe(true);
     });
     it('Check if arrays are NOT equal', () => {
       expect(arraysEquals(null, [1])).toBe(false);

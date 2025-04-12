@@ -7,7 +7,6 @@ import {
   CreateUserReqDto,
   DeactivateUserReqDto,
   DeleteUserReqDto,
-  LockUserReqDto,
   UnlockUserReqDto,
   UpdateUserModel,
 } from '@modules/users';
@@ -161,18 +160,16 @@ export class UserRepository extends BaseUserRepository {
     const model = {
       userId,
       userData: {
-        failedLoginAttempts: currentFailedLoginAttempts,
+        failedLoginAttempts: currentFailedLoginAttempts + 1,
       },
     } satisfies UpdateUserModel;
 
-    model.userData.failedLoginAttempts++;
-
     const user = await this._update(model);
 
-    return user?.failedLoginAttempts ?? 0;
+    return user!.failedLoginAttempts;
   }
 
-  public async lockOut(userId: number, reqDto?: LockUserReqDto): Promise<User | null> {
+  public async lockOut(userId: number): Promise<User | null> {
     const model = {
       userId,
       userData: {
