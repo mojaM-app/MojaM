@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { App } from '@/app';
 import { VALIDATOR_SETTINGS } from '@config';
 import { EventDispatcherService } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
@@ -22,6 +21,7 @@ import { Guid } from 'guid-typescript';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
 import { AuthenticationTypes } from '../enums/authentication-type.enum';
+import { App } from './../../../app';
 
 describe('POST /auth/activate-account/', () => {
   const userRoute = new UserRoute();

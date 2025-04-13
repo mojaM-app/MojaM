@@ -1,6 +1,5 @@
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { App } from '@/app';
 import { VALIDATOR_SETTINGS } from '@config';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
@@ -14,6 +13,7 @@ import { generateRandomDate, generateRandomNumber, getAdminLoginData } from '@ut
 import { EventDispatcher } from 'event-dispatch';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
+import { App } from './../../../app';
 
 describe('PUT /user/:id', () => {
   const userRoute = new UserRoute();

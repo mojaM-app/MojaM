@@ -1,6 +1,5 @@
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
@@ -15,6 +14,7 @@ import { Guid } from 'guid-typescript';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
 import { GetUserResponseDto } from '../dtos/get-user.dto';
+import { App } from './../../../app';
 
 describe('GET/user/:id', () => {
   const userRoute = new UserRoute();

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
@@ -27,6 +26,7 @@ import nodemailer from 'nodemailer';
 import StatusCode from 'status-code-enum';
 import request from 'supertest';
 import { getAccessTokenExpiration, getRefreshTokenExpiration } from '../middlewares/set-identity.middleware';
+import { App } from './../../../app';
 
 describe('POST /auth/refresh-token', () => {
   const userRoute = new UserRoute();

@@ -1,9 +1,9 @@
-import { App } from '@/app';
 import { VALIDATOR_SETTINGS } from '@config';
 import { AuthRoute, LoginDto, TLoginResult } from '@modules/auth';
 import { CreateUserDto, IUser } from '@modules/users';
 import { generateRandomEmail, generateRandomNumber, generateRandomPassword } from '@utils/tests.utils';
 import request from 'supertest';
+import { App } from './../app';
 
 const generateValidUser = (): any => {
   return {

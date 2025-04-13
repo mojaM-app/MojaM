@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { App } from '@/app';
 import { RESET_PASSWORD_TOKEN_EXPIRE_IN, USER_ACCOUNT_LOCKOUT_SETTINGS, VALIDATOR_SETTINGS } from '@config';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
@@ -27,6 +26,7 @@ import { Guid } from 'guid-typescript';
 import ms from 'ms';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
+import { App } from './../../../app';
 
 describe('POST /auth/reset-passcode', () => {
   const userRoute = new UserRoute();

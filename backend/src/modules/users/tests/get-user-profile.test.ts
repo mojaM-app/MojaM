@@ -1,6 +1,5 @@
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys, UnauthorizedException } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
@@ -12,6 +11,7 @@ import { generateRandomDate, getAdminLoginData } from '@utils/tests.utils';
 import { EventDispatcher } from 'event-dispatch';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
+import { App } from './../../../app';
 
 describe('GET/user-profile', () => {
   const userProfileRoute = new UserProfileRoute();

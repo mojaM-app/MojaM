@@ -1,4 +1,3 @@
-import { App } from '@/app';
 import { DbConnection } from '@db';
 import { loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
@@ -7,6 +6,7 @@ import { IUser, UserRoute } from '@modules/users';
 import { User } from '@modules/users/entities/user.entity';
 import { getAdminLoginData } from '@utils/tests.utils';
 import request from 'supertest';
+import { App } from './../../../app';
 
 describe('Cache user data tests', () => {
   let userRoute: UserRoute;

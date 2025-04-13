@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
 import { loginAs } from '@helpers/user-tests.helpers';
@@ -18,6 +17,7 @@ import { isDateString } from 'class-validator';
 import { EventDispatcher } from 'event-dispatch';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
+import { App } from './../../../app';
 import './../../../utils/date.extensions';
 import { generateValidAnnouncements } from './announcements-tests.helpers';
 

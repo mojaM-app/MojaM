@@ -23,7 +23,6 @@
     "noImplicitAny": true,
     "baseUrl": "src",
     "paths": {
-      "@/*": ["*"],
       "@config": ["config"],
       "@events": ["events"],
       "@events/*": ["events/*"],

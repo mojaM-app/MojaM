@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { App } from '@/app';
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
 import { EventDispatcherService } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
@@ -13,6 +12,7 @@ import { EventDispatcher } from 'event-dispatch';
 import { Guid } from 'guid-typescript';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
+import { App } from './../../../app';
 
 describe('POST /auth/get-account-to-activate/:userId/', () => {
   const userRoute = new UserRoute();

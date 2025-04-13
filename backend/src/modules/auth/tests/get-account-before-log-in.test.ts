@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { registerTestEventHandlers } from '@helpers/event-handler-test.helpers';
@@ -12,6 +11,7 @@ import { EventDispatcher } from 'event-dispatch';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
 import { AuthenticationTypes } from '../enums/authentication-type.enum';
+import { App } from './../../../app';
 
 describe('POST /auth/get-account-before-log-in', () => {
   const userRoute = new UserRoute();

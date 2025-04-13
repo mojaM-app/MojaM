@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { App } from '@/app';
 import { relatedDataNames } from '@db';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
@@ -16,6 +15,7 @@ import { EventDispatcher } from 'event-dispatch';
 import { Guid } from 'guid-typescript';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
+import { App } from './../../../app';
 
 describe('DELETE /user', () => {
   const userRoute = new UserRoute();

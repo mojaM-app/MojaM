@@ -1,6 +1,5 @@
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { App } from '@/app';
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
 import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
@@ -19,6 +18,7 @@ import { AnnouncementsListRetrievedEvent } from '../events/announcements-list-re
 import { AnnouncementsListRoute } from '../routes/announcements-list.routes';
 import { AnnouncementsRout } from '../routes/announcements.routes';
 import { AnnouncementsListService } from '../services/announcements-list.service';
+import { App } from './../../../app';
 import { generateValidAnnouncements } from './announcements-tests.helpers';
 
 describe('GET/announcements-list', () => {
