@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { relatedDataNames } from '@db';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
+import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-tests.helper';
 import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import { AnnouncementsRout, CreateAnnouncementsResponseDto, GetAnnouncementsResponseDto, UpdateAnnouncementsDto } from '@modules/announcements';
-import { generateValidAnnouncements } from '@modules/announcements/tests/announcements-tests.helpers';
+import { generateValidAnnouncements } from '@modules/announcements/tests/announcements-tests.helper';
 import { AccountTryingToLogInDto, AuthRoute, LoginDto } from '@modules/auth';
 import { AddPermissionsResponseDto, PermissionsRoute, SystemPermissions } from '@modules/permissions';
 import { CreateUserResponseDto, DeleteUserResponseDto, UserRoute } from '@modules/users';

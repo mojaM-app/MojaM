@@ -21,7 +21,7 @@ export class GetAnnouncementListReqDto extends BaseReqDto {
   public readonly page: IPageData;
   public readonly sort: ISortData;
 
-  public constructor(page: IPageData, sort: ISortData, currentUserId: number | undefined) {
+  constructor(page: IPageData, sort: ISortData, currentUserId: number | undefined) {
     super(currentUserId);
     this.page = page;
     this.sort = sort;
@@ -32,7 +32,7 @@ export class GetAnnouncementListResponseDto implements IResponse<AnnouncementsGr
   public readonly data: AnnouncementsGridPageDto;
   public readonly message: string;
 
-  public constructor(data: AnnouncementsGridPageDto) {
+  constructor(data: AnnouncementsGridPageDto) {
     this.data = data;
     this.message = events.announcements.announcementsListRetrieved;
   }

@@ -8,7 +8,7 @@ import { Container } from 'typedi';
 export class UserDetailsController extends BaseController {
   private readonly _service: UsersDetailsService;
 
-  public constructor() {
+  constructor() {
     super();
     this._service = Container.get(UsersDetailsService);
   }

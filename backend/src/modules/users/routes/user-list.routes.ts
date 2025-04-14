@@ -9,7 +9,7 @@ export class UserListRoute implements IRoutes {
   public router = express.Router();
   private readonly _controller: UserListController;
 
-  public constructor() {
+  constructor() {
     this._controller = new UserListController();
     this.initializeRoutes();
   }

@@ -26,7 +26,7 @@ export class AccountService extends BaseService {
   private readonly _userRepository: UserRepository;
   private readonly _resetPasscodeTokensRepository: ResetPasscodeTokensRepository;
 
-  public constructor() {
+  constructor() {
     super();
     this._userRepository = Container.get(UserRepository);
     this._resetPasscodeTokensRepository = Container.get(ResetPasscodeTokensRepository);

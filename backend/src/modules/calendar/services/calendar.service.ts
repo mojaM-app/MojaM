@@ -6,7 +6,7 @@ import Container, { Service } from 'typedi';
 export class CalendarService extends BaseService {
   private readonly _googleCalendarService: GoogleCalendarService;
 
-  public constructor() {
+  constructor() {
     super();
     this._googleCalendarService = Container.get(GoogleCalendarService);
   }

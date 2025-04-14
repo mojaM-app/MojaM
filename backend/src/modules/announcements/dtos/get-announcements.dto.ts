@@ -27,7 +27,7 @@ export interface IAnnouncementsDto {
 export class GetAnnouncementsReqDto extends BaseReqDto {
   public readonly announcementsId: string | undefined;
 
-  public constructor(announcementsId: string | undefined, currentUserId: number) {
+  constructor(announcementsId: string | undefined, currentUserId: number) {
     super(currentUserId);
     this.announcementsId = announcementsId;
   }
@@ -37,7 +37,7 @@ export class GetAnnouncementsResponseDto implements IResponse<IAnnouncementsDto>
   public readonly data: IAnnouncementsDto;
   public readonly message: string;
 
-  public constructor(data: IAnnouncementsDto) {
+  constructor(data: IAnnouncementsDto) {
     this.data = data;
     this.message = events.announcements.announcementsRetrieved;
   }

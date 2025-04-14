@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { VALIDATOR_SETTINGS } from '@config';
 import { generateRandomNumber } from '@utils/tests.utils';
 import { CryptoService } from './crypto.service';

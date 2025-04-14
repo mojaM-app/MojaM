@@ -16,7 +16,7 @@ export class CurrentAnnouncementsService extends BaseService {
   private readonly _currentAnnouncementsRepository: CurrentAnnouncementsRepository;
   private readonly _announcementsRepository: AnnouncementsRepository;
 
-  public constructor() {
+  constructor() {
     super();
     this._currentAnnouncementsRepository = Container.get(CurrentAnnouncementsRepository);
     this._announcementsRepository = Container.get(AnnouncementsRepository);

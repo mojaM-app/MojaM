@@ -7,7 +7,7 @@ import { AnnouncementsCacheService } from '../services/announcements-cache.servi
 export abstract class BaseAnnouncementsRepository extends BaseRepository {
   protected readonly _cacheService: AnnouncementsCacheService;
 
-  public constructor() {
+  constructor() {
     super();
     this._cacheService = Container.get(AnnouncementsCacheService);
   }

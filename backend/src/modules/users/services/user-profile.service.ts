@@ -18,7 +18,7 @@ import { IUpdateUser } from '../interfaces/update-user.interfaces';
 export class UserProfileService extends BaseService {
   private readonly _userRepository: UserRepository;
 
-  public constructor() {
+  constructor() {
     super();
     this._userRepository = Container.get(UserRepository);
   }

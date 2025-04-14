@@ -1,4 +1,3 @@
-/* eslint-disable no-new-wrappers */
 import { isNumber, isPositiveNumber, toNumber } from './numbers.utils';
 
 describe('numbers.utils', () => {

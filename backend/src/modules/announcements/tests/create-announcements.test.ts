@@ -1,9 +1,7 @@
-/* eslint-disable no-prototype-builtins */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { VALIDATOR_SETTINGS } from '@config';
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
-import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
+import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-tests.helper';
 import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import { AnnouncementsRout, AnnouncementStateValue, CreateAnnouncementsResponseDto, GetAnnouncementsResponseDto } from '@modules/announcements';
 import { LoginDto } from '@modules/auth';
@@ -16,7 +14,7 @@ import { EventDispatcher } from 'event-dispatch';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
 import { App } from './../../../app';
-import { generateValidAnnouncements } from './announcements-tests.helpers';
+import { generateValidAnnouncements } from './announcements-tests.helper';
 
 describe('POST /announcements', () => {
   const announcementRoute = new AnnouncementsRout();

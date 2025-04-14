@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
 import { EventDispatcherService } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
+import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-tests.helper';
 import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import { AuthRoute, GetAccountToActivateResponseDto, IAccountToActivateResultDto, LoginDto } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';

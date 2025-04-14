@@ -2,12 +2,12 @@ import { AnnouncementStateValue } from '@modules/announcements';
 import { getDateNow } from '@utils';
 import { Service } from 'typedi';
 import { FindOneOptions, FindOptionsOrder, FindOptionsRelations, FindOptionsWhere, LessThanOrEqual } from 'typeorm';
-import { Announcement } from '../entities/announcement.entity';
 import { BaseAnnouncementsRepository } from './base.announcements.repository';
+import { Announcement } from '../entities/announcement.entity';
 
 @Service()
 export class CurrentAnnouncementsRepository extends BaseAnnouncementsRepository {
-  public constructor() {
+  constructor() {
     super();
   }
 

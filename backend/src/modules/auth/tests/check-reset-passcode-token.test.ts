@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { EventDispatcherService } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
+import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-tests.helper';
 import { AuthRoute, CheckResetPasscodeTokenResponseDto } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import { UserRoute } from '@modules/users';

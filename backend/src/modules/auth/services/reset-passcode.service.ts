@@ -27,7 +27,7 @@ export class ResetPasscodeService extends BaseService {
   private readonly _passcodeService: PasscodeService;
   private readonly _emailService: EmailService;
 
-  public constructor() {
+  constructor() {
     super();
     this._userRepository = Container.get(UserRepository);
     this._resetPasscodeTokensRepository = Container.get(ResetPasscodeTokensRepository);

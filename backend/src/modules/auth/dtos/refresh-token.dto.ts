@@ -20,7 +20,7 @@ export class RefreshTokenResponseDto implements IResponse<string | null> {
   public readonly data: string | null;
   public readonly message: string;
 
-  public constructor(newAccessToken: string | null) {
+  constructor(newAccessToken: string | null) {
     this.data = newAccessToken;
     this.message = events.users.userRefreshedToken;
   }

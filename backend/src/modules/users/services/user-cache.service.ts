@@ -4,7 +4,7 @@ import { User } from '../entities/user.entity';
 
 @Service()
 export class UserCacheService extends CacheService<User> {
-  public constructor() {
+  constructor() {
     super();
   }
 

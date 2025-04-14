@@ -1,8 +1,6 @@
-/* eslint-disable no-prototype-builtins */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { EventDispatcherService, events } from '@events';
 import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
-import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
+import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-tests.helper';
 import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import { AnnouncementsRout, CreateAnnouncementsResponseDto } from '@modules/announcements';
 import { LoginDto } from '@modules/auth';
@@ -15,7 +13,7 @@ import { Guid } from 'guid-typescript';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
 import { App } from './../../../app';
-import { generateValidAnnouncements } from './announcements-tests.helpers';
+import { generateValidAnnouncements } from './announcements-tests.helper';
 
 describe('DELETE /announcements', () => {
   const announcementRoute = new AnnouncementsRout();

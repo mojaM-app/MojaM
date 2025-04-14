@@ -20,7 +20,7 @@ export class AuthRoute implements IRoutes {
 
   private readonly _authController: AuthController;
 
-  public constructor() {
+  constructor() {
     this._authController = new AuthController();
     this.initializeRoutes();
   }

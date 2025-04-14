@@ -23,14 +23,14 @@ const toNumber = (value: any): number | null => {
   }
 
   return null;
-}
+};
 
 const isNumber = (value: any): boolean => {
   return toNumber(value) !== null;
-}
+};
 
 const isPositiveNumber = (value: any): boolean => {
   return (toNumber(value) ?? 0) > 0;
-}
+};
 
 export { isNumber, isPositiveNumber, toNumber };

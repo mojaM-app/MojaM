@@ -26,7 +26,7 @@ import { Container } from 'typedi';
 export class UserController extends BaseController {
   private readonly _service: UsersService;
 
-  public constructor() {
+  constructor() {
     super();
     this._service = Container.get(UsersService);
   }

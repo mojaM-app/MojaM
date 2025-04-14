@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-extraneous-class */
-
 import { isString } from '@utils';
 import { TransformFnParams } from 'class-transformer';
 

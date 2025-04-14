@@ -51,7 +51,7 @@ export class ActivateAccountReqDto extends BaseReqDto {
   public readonly userGuid: string | undefined;
   public readonly model: ActivateAccountDto | undefined;
 
-  public constructor(userGuid: string | undefined, model: ActivateAccountDto | undefined) {
+  constructor(userGuid: string | undefined, model: ActivateAccountDto | undefined) {
     super(undefined);
     this.userGuid = userGuid;
     this.model = model;
@@ -66,7 +66,7 @@ export class ActivateAccountResponseDto implements IResponse<IActivateAccountRes
   public readonly data: IActivateAccountResultDto;
   public readonly message: string;
 
-  public constructor(data: IActivateAccountResultDto) {
+  constructor(data: IActivateAccountResultDto) {
     this.data = data;
     this.message = events.users.userActivated;
   }

@@ -12,7 +12,7 @@ export class Identity {
   private readonly _user: { id: number | undefined; uuid: string | undefined };
   private readonly _permissions: SystemPermissions[] = [];
 
-  public constructor(user: { id?: number; uuid?: string } | undefined | null, permissions: SystemPermissions[]) {
+  constructor(user: { id?: number; uuid?: string } | undefined | null, permissions: SystemPermissions[]) {
     this._user = {
       id: user?.id,
       uuid: user?.uuid,

@@ -17,7 +17,7 @@ export class AnnouncementsRout implements IRoutes {
   private readonly _announcementsController: AnnouncementsController;
   private readonly _currentAnnouncementsController: CurrentAnnouncementsController;
 
-  public constructor() {
+  constructor() {
     this._announcementsController = new AnnouncementsController();
     this._currentAnnouncementsController = new CurrentAnnouncementsController();
     this.initializeRoutes();

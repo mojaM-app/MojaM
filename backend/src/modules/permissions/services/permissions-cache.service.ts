@@ -7,7 +7,7 @@ import { SystemPermissions } from '../enums/system-permissions.enum';
 export class PermissionsCacheService {
   private readonly cache: CacheContainer;
 
-  public constructor() {
+  constructor() {
     this.cache = new CacheContainer(new MemoryStorage());
   }
 

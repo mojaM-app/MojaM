@@ -25,7 +25,7 @@ import { Announcement } from '../entities/announcement.entity';
 export class AnnouncementsService extends BaseService {
   private readonly _announcementsRepository: AnnouncementsRepository;
 
-  public constructor() {
+  constructor() {
     super();
     this._announcementsRepository = Container.get(AnnouncementsRepository);
   }

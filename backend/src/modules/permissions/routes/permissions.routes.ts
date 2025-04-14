@@ -10,7 +10,7 @@ export class PermissionsRoute implements IRoutes {
   public router = express.Router();
   private readonly _permissionsController: PermissionsController;
 
-  public constructor() {
+  constructor() {
     this._permissionsController = new PermissionsController();
     this.initializeRoutes();
   }

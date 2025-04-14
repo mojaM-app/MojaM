@@ -7,7 +7,7 @@ export class GetNewsResponseDto implements IResponse<GetNewsDto> {
   public readonly data: GetNewsDto;
   public readonly message?: string | undefined;
 
-  public constructor(data: GetNewsDto) {
+  constructor(data: GetNewsDto) {
     this.data = data;
     this.message = events.news.retrieved;
   }

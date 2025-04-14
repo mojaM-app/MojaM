@@ -24,8 +24,7 @@ const getErrorConstraints = (error: ValidationError | null | undefined): string[
 };
 
 export const validateData = (type: any, skipMissingProperties = false, whitelist = false, forbidNonWhitelisted = false) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  return (req: Request, res: Response, next: NextFunction): void => {
     const dto = plainToInstance(type, req.body);
     if ('setDefaultValues' in dto) {
       (dto as IHasDefaultValues).setDefaultValues();

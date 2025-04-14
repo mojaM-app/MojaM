@@ -32,7 +32,7 @@ import { IUpdateUser } from '../interfaces/update-user.interfaces';
 export class UsersService extends BaseService {
   private readonly _userRepository: UserRepository;
 
-  public constructor() {
+  constructor() {
     super();
     this._userRepository = Container.get(UserRepository);
   }
@@ -160,7 +160,7 @@ export class UsersService extends BaseService {
       throw new BadRequestException(errorKeys.users.Activation_Failed_Passcode_Is_Not_Set);
     }
 
-    const activatedUser = await this._userRepository.activate(user!.id, reqDto);
+    const activatedUser = await this._userRepository.activate(user!.id);
 
     this._eventDispatcher.dispatch(events.users.userActivated, new UserActivatedEvent(activatedUser!, reqDto.currentUserId));
 
@@ -178,7 +178,7 @@ export class UsersService extends BaseService {
       return true;
     }
 
-    const deactivatedUser = await this._userRepository.deactivate(user!.id, reqDto);
+    const deactivatedUser = await this._userRepository.deactivate(user!.id);
 
     this._eventDispatcher.dispatch(events.users.userDeactivated, new UserDeactivatedEvent(deactivatedUser!, reqDto.currentUserId));
 
@@ -196,7 +196,7 @@ export class UsersService extends BaseService {
       return true;
     }
 
-    const unlockedUser = await this._userRepository.unlock(user!.id, reqDto);
+    const unlockedUser = await this._userRepository.unlock(user!.id);
 
     this._eventDispatcher.dispatch(events.users.userUnlocked, new UserUnlockedEvent(unlockedUser!, reqDto.currentUserId));
 

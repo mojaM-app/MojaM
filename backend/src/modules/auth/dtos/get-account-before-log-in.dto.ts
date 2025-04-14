@@ -45,7 +45,7 @@ export interface IGetAccountBeforeLogInResultDto {
 export class GetAccountBeforeLogInResponseDto implements IResponse<IGetAccountBeforeLogInResultDto> {
   public readonly data: IGetAccountBeforeLogInResultDto;
 
-  public constructor(account: IGetAccountBeforeLogInResultDto) {
+  constructor(account: IGetAccountBeforeLogInResultDto) {
     this.data = account;
   }
 }

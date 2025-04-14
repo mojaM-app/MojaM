@@ -53,7 +53,7 @@ export class LoginResponseDto implements IResponse<TLoginResult> {
   public readonly data: TLoginResult;
   public readonly message: string;
 
-  public constructor(loginResult: TLoginResult) {
+  constructor(loginResult: TLoginResult) {
     this.data = loginResult;
     this.message = events.users.userLoggedIn;
   }

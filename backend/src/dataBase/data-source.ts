@@ -1,4 +1,6 @@
 import 'reflect-metadata';
+import { DbContext } from './dbContext';
+import { TitleCaseNamingStrategy } from './pascal-naming.strategy';
 import { DATABASE_HOST, DATABASE_MIGRATIONS_PATH, DATABASE_NAME, DATABASE_PASSWORD, DATABASE_PORT, DATABASE_USERNAME } from '../config/index';
 import { AnnouncementItem } from '../modules/announcements/entities/announcement-item.entity';
 import { Announcement } from '../modules/announcements/entities/announcement.entity';
@@ -9,8 +11,6 @@ import { UserSystemPermission } from '../modules/users/entities/user-system-perm
 import { User } from '../modules/users/entities/user.entity';
 import { vUser } from '../modules/users/entities/vUser.entity';
 import { toNumber } from '../utils/numbers.utils';
-import { DbContext } from './dbContext';
-import { TitleCaseNamingStrategy } from './pascal-naming.strategy';
 
 export const AppDataSource = new DbContext({
   type: 'mysql',

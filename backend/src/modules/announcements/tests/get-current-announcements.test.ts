@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { EventDispatcherService, events } from '@events';
-import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
+import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-tests.helper';
 import { loginAs } from '@helpers/user-tests.helpers';
 import {
   AnnouncementsRout,
@@ -19,7 +18,7 @@ import nodemailer from 'nodemailer';
 import request from 'supertest';
 import { App } from './../../../app';
 import './../../../utils/date.extensions';
-import { generateValidAnnouncements } from './announcements-tests.helpers';
+import { generateValidAnnouncements } from './announcements-tests.helper';
 
 describe('GET /announcements/current', () => {
   const announcementRoute = new AnnouncementsRout();

@@ -33,7 +33,7 @@ export class ResetPasscodeReqDto {
   public readonly userGuid: string | undefined;
   public readonly model: ResetPasscodeDto | undefined;
 
-  public constructor(userGuid: string | undefined, model: ResetPasscodeDto | undefined) {
+  constructor(userGuid: string | undefined, model: ResetPasscodeDto | undefined) {
     this.userGuid = userGuid;
     this.model = model;
   }
@@ -47,7 +47,7 @@ export class ResetPasscodeResponseDto implements IResponse<IResetPasscodeResultD
   public readonly data: IResetPasscodeResultDto;
   public readonly message: string;
 
-  public constructor(result: IResetPasscodeResultDto) {
+  constructor(result: IResetPasscodeResultDto) {
     this.data = result;
     this.message = events.users.userPasscodeChanged;
   }

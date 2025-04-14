@@ -51,7 +51,7 @@ export class UpdateAnnouncementsReqDto extends BaseReqDto {
   public readonly announcementsId: string | undefined;
   public readonly announcements: UpdateAnnouncementsDto;
 
-  public constructor(announcementsId: string | undefined, announcements: UpdateAnnouncementsDto, currentUserId: number | undefined) {
+  constructor(announcementsId: string | undefined, announcements: UpdateAnnouncementsDto, currentUserId: number | undefined) {
     super(currentUserId);
     this.announcementsId = announcementsId;
     this.announcements = announcements;
@@ -62,7 +62,7 @@ export class UpdateAnnouncementsResponseDto implements IResponse<string> {
   public readonly data: string;
   public readonly message: string;
 
-  public constructor(data: string) {
+  constructor(data: string) {
     this.data = data;
     this.message = events.announcements.announcementsUpdated;
   }

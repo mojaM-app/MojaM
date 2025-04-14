@@ -14,7 +14,7 @@ import { AnnouncementListViewColumns } from '../entities/vAnnouncement.entity';
 export class AnnouncementsListController extends BaseController {
   private readonly _service: AnnouncementsListService;
 
-  public constructor() {
+  constructor() {
     super();
     this._service = Container.get(AnnouncementsListService);
   }

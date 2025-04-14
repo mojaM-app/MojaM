@@ -37,7 +37,7 @@ export class UpdateUserProfileDto {
 export class UpdateUserProfileReqDto extends BaseReqDto {
   public readonly userData: UpdateUserProfileDto;
 
-  public constructor(currentUserId: number | undefined, userData: UpdateUserProfileDto) {
+  constructor(currentUserId: number | undefined, userData: UpdateUserProfileDto) {
     super(currentUserId);
     this.userData = userData;
   }
@@ -47,7 +47,7 @@ export class UpdateUserProfileResponseDto implements IResponse<boolean> {
   public readonly data: boolean;
   public readonly message: string;
 
-  public constructor(data: boolean) {
+  constructor(data: boolean) {
     this.data = data;
     this.message = events.users.userProfileUpdated;
   }

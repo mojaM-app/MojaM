@@ -1,4 +1,3 @@
-/* eslint-disable no-new-wrappers */
 import { arraysEquals, isArray } from './arrays.utils';
 
 describe('arrays.utils', () => {

@@ -4,7 +4,7 @@ import { IUser } from '@modules/users';
 export class FailedLoginAttemptEvent extends Event {
   public readonly user: IUser;
 
-  public constructor(user: IUser) {
+  constructor(user: IUser) {
     super();
     this.user = user;
   }

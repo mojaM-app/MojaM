@@ -1,4 +1,3 @@
-/* eslint-disable no-use-before-define */
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, Relation } from 'typeorm';
 import { IAddUserSystemPermission } from '../interfaces/add-user-system-permission.interfaces';
 import { EntityDefaultFunctions } from './../../../dataBase/EntityDefaultFunctions';

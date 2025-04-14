@@ -38,7 +38,7 @@ export class AuthService extends BaseService {
   private readonly _permissionRepository: UserPermissionsRepository;
   private readonly _passcodeService: PasscodeService;
 
-  public constructor() {
+  constructor() {
     super();
     this._userRepository = Container.get(UserRepository);
     this._permissionRepository = Container.get(UserPermissionsRepository);
@@ -125,7 +125,7 @@ export class AuthService extends BaseService {
         audience: getTokenAudience(),
         issuer: getTokenIssuer(),
       },
-      (err: VerifyErrors | null, decoded): void => {
+      (err: VerifyErrors | null): void => {
         if (!isNullOrUndefined(err)) {
           throw new TranslatableHttpException(StatusCode.ClientErrorLoginTimeOut, errorKeys.login.Refresh_Token_Expired);
         }

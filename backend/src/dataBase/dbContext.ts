@@ -36,7 +36,7 @@ export class DbContext extends DataSource {
     return this.getRepository(vAnnouncement);
   }
 
-  public constructor(options: DataSourceOptions) {
+  constructor(options: DataSourceOptions) {
     super(options);
   }
 }

@@ -11,7 +11,7 @@ export class UserPermissionsRepository extends BaseRepository {
   private readonly _userRepository: UserRepository;
   private readonly _permissionsCacheService: PermissionsCacheService;
 
-  public constructor() {
+  constructor() {
     super();
     this._userRepository = Container.get(UserRepository);
     this._permissionsCacheService = Container.get(PermissionsCacheService);

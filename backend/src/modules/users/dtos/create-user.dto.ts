@@ -82,7 +82,7 @@ export class CreateUserDto {
 export class CreateUserReqDto extends BaseReqDto {
   public readonly userData: CreateUserDto;
 
-  public constructor(userData: CreateUserDto, currentUserId: number | undefined) {
+  constructor(userData: CreateUserDto, currentUserId: number | undefined) {
     super(currentUserId);
     this.userData = userData;
   }
@@ -92,7 +92,7 @@ export class CreateUserResponseDto implements IResponse<IUserDto> {
   public readonly data: IUserDto;
   public readonly message: string;
 
-  public constructor(data: IUserDto) {
+  constructor(data: IUserDto) {
     this.data = data;
     this.message = events.users.userCreated;
   }

@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { HttpException, TranslatableHttpException } from '@exceptions';
 import { logger } from '@modules/logger';
 import { NextFunction, Request, Response } from 'express';

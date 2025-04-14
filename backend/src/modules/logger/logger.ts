@@ -1,4 +1,3 @@
-/* eslint-disable new-cap */
 import { LOG_DIR } from '@config';
 import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
@@ -58,7 +57,7 @@ logger.add(
 );
 
 const stream = {
-  write: (message: string) => {
+  write: (message: string): void => {
     logger.info(message.substring(0, message.lastIndexOf('\n')));
   },
 };

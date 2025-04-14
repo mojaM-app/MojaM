@@ -12,7 +12,7 @@ import Schema$EventDateTime = calendar_v3.Schema$EventDateTime;
 export class GoogleCalendarService {
   private readonly googleAuthClient: any | undefined;
 
-  public constructor() {
+  constructor() {
     if (isNullOrEmptyString(GOOGLE_API_CLIENT_ID) || isNullOrEmptyString(GOOGLE_API_CLIENT_SECRET)) {
       this.googleAuthClient = undefined;
     } else {

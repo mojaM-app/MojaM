@@ -5,7 +5,7 @@ import { vAnnouncement } from '../entities/vAnnouncement.entity';
 
 @Service()
 export class AnnouncementsListRepository extends BaseRepository {
-  public constructor() {
+  constructor() {
     super();
   }
 

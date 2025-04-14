@@ -48,7 +48,7 @@ export class CreateAnnouncementsDto implements IHasDefaultValues {
 export class CreateAnnouncementsReqDto extends BaseReqDto {
   public readonly announcements: CreateAnnouncementsDto;
 
-  public constructor(announcements: CreateAnnouncementsDto, currentUserId: number | undefined) {
+  constructor(announcements: CreateAnnouncementsDto, currentUserId: number | undefined) {
     super(currentUserId);
     this.announcements = announcements;
   }
@@ -58,7 +58,7 @@ export class CreateAnnouncementsResponseDto implements IResponse<string> {
   public readonly data: string;
   public readonly message: string;
 
-  public constructor(data: string) {
+  constructor(data: string) {
     this.data = data;
     this.message = events.announcements.announcementsCreated;
   }

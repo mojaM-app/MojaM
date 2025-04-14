@@ -9,7 +9,7 @@ import { UserListViewColumns } from '../entities/vUser.entity';
 export class UserListController extends BaseController {
   private readonly _service: UserListService;
 
-  public constructor() {
+  constructor() {
     super();
     this._service = Container.get(UserListService);
   }

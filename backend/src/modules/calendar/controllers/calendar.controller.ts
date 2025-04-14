@@ -7,7 +7,7 @@ import { Container } from 'typedi';
 export class CalendarController extends BaseController {
   private readonly _calendarService: CalendarService;
 
-  public constructor() {
+  constructor() {
     super();
     this._calendarService = Container.get(CalendarService);
   }

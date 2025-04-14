@@ -1,4 +1,3 @@
-/* eslint-disable n/no-callback-literal */
 import {
   NOTIFICATIONS_EMAIL,
   SMTP_SERVICE_HOST,
@@ -11,6 +10,7 @@ import {
   TPL_VAR_WELCOME_EMAIL_TITLE,
 } from '@config';
 import { AuthenticationTypes } from '@modules/auth';
+import { logger } from '@modules/logger';
 import { toNumber } from '@utils';
 import { readFileSync } from 'fs';
 import { compile } from 'handlebars';
@@ -20,10 +20,10 @@ import SMTPConnection from 'nodemailer/lib/smtp-connection';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { join } from 'path';
 import { Service } from 'typedi';
+import { TemplateVariablesHelper } from './template-variables.helper';
 import { IResetPasscodeEmailSettings } from '../interfaces/reset-passcode-email-settings.interface';
 import { IUnlockAccountEmailSettings } from '../interfaces/unlock-account-email-settings.interface';
 import { IWelcomeEmailSettings } from '../interfaces/welcome-email-settings.interface';
-import { TemplateVariablesHelper } from './template-variables.helper';
 
 @Service()
 export class EmailService {
@@ -83,7 +83,7 @@ export class EmailService {
   }
 
   private async fillTemplateAndSendEmail(recipient: string, templatePath: string, templateVariables: Record<string, any>): Promise<boolean> {
-    return await new Promise((resolve, reject) => {
+    return await new Promise((resolve, _reject) => {
       try {
         const source = readFileSync(templatePath, 'utf8');
 
@@ -102,6 +102,7 @@ export class EmailService {
           resolve(success);
         });
       } catch (error) {
+        logger.error('Error sending email', error);
         resolve(false);
       }
     });
@@ -112,11 +113,16 @@ export class EmailService {
 
     transporter.sendMail(mailOptions, (error, info) => {
       if (error !== null && error !== undefined) {
+        logger.error('Error sending email', error);
         transporter.close();
         callback(false);
       } else {
         transporter.close();
         callback(true);
+      }
+
+      if (info !== null && info !== undefined) {
+        logger.debug('Email sent', info);
       }
     });
   }

@@ -20,7 +20,7 @@ export class PermissionsService extends BaseService {
   private readonly _userPermissionsRepository: UserPermissionsRepository;
   private readonly _permissionsRepository: PermissionsRepository;
 
-  public constructor() {
+  constructor() {
     super();
     this._userPermissionsRepository = Container.get(UserPermissionsRepository);
     this._permissionsRepository = Container.get(PermissionsRepository);

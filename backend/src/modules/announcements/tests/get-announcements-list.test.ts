@@ -1,8 +1,6 @@
-/* eslint-disable no-prototype-builtins */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { EventDispatcherService, events } from '@events';
 import { errorKeys } from '@exceptions';
-import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-test.helpers';
+import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-tests.helper';
 import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute, SystemPermissions } from '@modules/permissions';
@@ -19,7 +17,7 @@ import { AnnouncementsListRoute } from '../routes/announcements-list.routes';
 import { AnnouncementsRout } from '../routes/announcements.routes';
 import { AnnouncementsListService } from '../services/announcements-list.service';
 import { App } from './../../../app';
-import { generateValidAnnouncements } from './announcements-tests.helpers';
+import { generateValidAnnouncements } from './announcements-tests.helper';
 
 describe('GET/announcements-list', () => {
   const announcementRoute = new AnnouncementsRout();

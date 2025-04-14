@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { VALIDATOR_SETTINGS } from '@config';
 import { generateRandomPassword, getAdminLoginData } from '@utils/tests.utils';
 import { CryptoService } from './crypto.service';

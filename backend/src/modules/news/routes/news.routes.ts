@@ -9,7 +9,7 @@ export class NewsRoutes implements IRoutes {
 
   private readonly _controller: NewsController;
 
-  public constructor(
+  constructor(
   ) {
     this._controller = new NewsController();
     this.initializeRoutes();

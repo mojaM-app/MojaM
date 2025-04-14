@@ -11,7 +11,7 @@ import { LinkHelper } from '../services/link.helper';
 export class UserLockedOutEventSubscriber {
   private readonly _emailService: EmailService;
 
-  public constructor() {
+  constructor() {
     this._emailService = Container.get(EmailService);
   }
 

@@ -1,5 +1,3 @@
-/* eslint-disable n/no-callback-literal */
-
 import { TPL_VAR_APP_NAME, TPL_VAR_CONTACT_EMAIL, TPL_VAR_CONTACT_PHONE, TPL_VAR_CONTACT_WEBSITE } from '@config';
 
 export class TemplateVariablesHelper {

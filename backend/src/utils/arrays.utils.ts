@@ -1,5 +1,3 @@
-/* eslint-disable no-prototype-builtins */
-/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { isNullOrUndefined } from './object.utils';
 
 const objectsEqual = (x: any, y: any): boolean => {

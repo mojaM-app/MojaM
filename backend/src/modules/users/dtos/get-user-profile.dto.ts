@@ -3,7 +3,7 @@ import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
 
 export class GetUserProfileReqDto extends BaseReqDto {
-  public constructor(currentUserId: number | undefined) {
+  constructor(currentUserId: number | undefined) {
     super(currentUserId);
   }
 }
@@ -20,7 +20,7 @@ export class GetUserProfileResponseDto implements IResponse<IGetUserProfileDto |
   public readonly data: IGetUserProfileDto | null;
   public readonly message: string;
 
-  public constructor(data: IGetUserProfileDto | null) {
+  constructor(data: IGetUserProfileDto | null) {
     this.data = data;
     this.message = events.users.userProfileRetrieved;
   }

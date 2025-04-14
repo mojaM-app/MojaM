@@ -1,4 +1,3 @@
-/* eslint-disable no-use-before-define */
 import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from 'typeorm';
 import { ICreateAnnouncementItem } from '../interfaces/create-announcement.interfaces';
 import { IUpdateAnnouncementItem } from '../interfaces/update-announcement.interfaces';

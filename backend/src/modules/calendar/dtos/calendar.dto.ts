@@ -13,7 +13,7 @@ export class GetCalendarEventsResponseDto implements IResponse<ICalendarEventDto
   public readonly data: ICalendarEventDto[];
   public readonly message?: string | undefined;
 
-  public constructor(data: ICalendarEventDto[]) {
+  constructor(data: ICalendarEventDto[]) {
     this.data = data;
     this.message = events.calendar.retrieved;
   }

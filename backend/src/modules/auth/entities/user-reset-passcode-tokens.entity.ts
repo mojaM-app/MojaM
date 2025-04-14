@@ -1,4 +1,3 @@
-/* eslint-disable no-use-before-define */
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryColumn, Relation } from 'typeorm';
 import { EntityDefaultFunctions } from '../../../dataBase/EntityDefaultFunctions';
 import { User } from '../../users/entities/user.entity';

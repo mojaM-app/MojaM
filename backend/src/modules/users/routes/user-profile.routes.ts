@@ -10,7 +10,7 @@ export class UserProfileRoute implements IRoutes {
   public router = express.Router();
   private readonly _controller: UserProfileController;
 
-  public constructor() {
+  constructor() {
     this._controller = new UserProfileController();
     this.initializeRoutes();
   }

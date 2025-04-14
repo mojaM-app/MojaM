@@ -2,6 +2,7 @@ import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_EXPIRE_IN, REFRESH_TOKEN_SECRET, SEC
 import { UnauthorizedException, errorKeys } from '@exceptions';
 import { IRequestWithIdentity } from '@interfaces';
 import { Identity } from '@modules/auth';
+import { logger } from '@modules/logger';
 import { UserPermissionsRepository } from '@modules/permissions';
 import { UserRepository } from '@modules/users';
 import { isNullOrEmptyString, isNullOrUndefined, isString } from '@utils';
@@ -111,6 +112,7 @@ export const setIdentity = async (req: IRequestWithIdentity, res: Response, next
       }
     }
   } catch (error) {
+    logger.error('Error in setIdentity middleware:', error);
     req.identity = new Identity(undefined, []);
     next();
   }

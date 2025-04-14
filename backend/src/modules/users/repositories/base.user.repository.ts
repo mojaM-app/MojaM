@@ -7,7 +7,7 @@ import { UserCacheService } from '../services/user-cache.service';
 export abstract class BaseUserRepository extends BaseRepository {
   protected readonly _cacheService: UserCacheService;
 
-  public constructor() {
+  constructor() {
     super();
     this._cacheService = Container.get(UserCacheService);
   }

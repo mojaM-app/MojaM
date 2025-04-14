@@ -9,7 +9,7 @@ export class CalendarRoutes implements IRoutes {
 
   private readonly _controller: CalendarController;
 
-  public constructor() {
+  constructor() {
     this._controller = new CalendarController();
     this.initializeRoutes();
   }

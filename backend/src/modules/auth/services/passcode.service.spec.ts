@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/unbound-method */
 import { VALIDATOR_SETTINGS } from '@config';
 import { generateRandomNumber, generateRandomPassword } from '@utils/tests.utils';
 import 'reflect-metadata';

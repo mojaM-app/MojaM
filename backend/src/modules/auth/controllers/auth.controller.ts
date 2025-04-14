@@ -39,7 +39,7 @@ export class AuthController extends BaseController {
   private readonly _accountService: AccountService;
   private readonly _resetPasscodeService: ResetPasscodeService;
 
-  public constructor() {
+  constructor() {
     super();
     this._authService = Container.get(AuthService);
     this._accountService = Container.get(AccountService);

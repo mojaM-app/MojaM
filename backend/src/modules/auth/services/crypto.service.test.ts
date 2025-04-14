@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { CryptoService } from './crypto.service';
 
 describe('CryptoService', () => {

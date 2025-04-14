@@ -1,65 +1,36 @@
 import { DefaultNamingStrategy, NamingStrategyInterface } from 'typeorm';
 import { titleCase } from 'typeorm/util/StringUtils';
 
-export class TitleCaseNamingStrategy
-  extends DefaultNamingStrategy
-  implements NamingStrategyInterface {
-  tableName(className: string, customName: string): string {
+export class TitleCaseNamingStrategy extends DefaultNamingStrategy implements NamingStrategyInterface {
+  public tableName(className: string, customName: string): string {
     return (customName?.length ?? 0) > 0 ? customName : titleCase(className);
   }
 
-  columnName(
-    propertyName: string,
-    customName: string,
-    embeddedPrefixes: string[],
-  ): string {
-    return (
-      titleCase(embeddedPrefixes.concat('').join('_')) +
-      ((customName?.length ?? 0) > 0 ? customName : titleCase(propertyName))
-    );
+  public columnName(propertyName: string, customName: string, embeddedPrefixes: string[]): string {
+    return titleCase(embeddedPrefixes.concat('').join('_')) + ((customName?.length ?? 0) > 0 ? customName : titleCase(propertyName));
   }
 
-  relationName(propertyName: string): string {
+  public relationName(propertyName: string): string {
     return titleCase(propertyName);
   }
 
-  joinColumnName(relationName: string, referencedColumnName: string): string {
+  public joinColumnName(relationName: string, referencedColumnName: string): string {
     return titleCase(relationName + '_' + referencedColumnName);
   }
 
-  joinTableName(
-    firstTableName: string,
-    secondTableName: string,
-    firstPropertyName: string,
-    secondPropertyName: string,
-  ): string {
-    return titleCase(
-      firstTableName +
-        '_' +
-        firstPropertyName.replace(/\./gi, '_') +
-        '_' +
-        secondTableName,
-    );
+  public joinTableName(firstTableName: string, secondTableName: string, firstPropertyName: string): string {
+    return titleCase(firstTableName + '_' + firstPropertyName.replace(/\./gi, '_') + '_' + secondTableName);
   }
 
-  joinTableColumnName(
-    tableName: string,
-    propertyName: string,
-    columnName?: string,
-  ): string {
-    return titleCase(
-      tableName + '_' + ((columnName?.length ?? 0) > 0 ? columnName : propertyName),
-    );
+  public joinTableColumnName(tableName: string, propertyName: string, columnName?: string): string {
+    return titleCase(tableName + '_' + ((columnName?.length ?? 0) > 0 ? columnName : propertyName));
   }
 
-  classTableInheritanceParentColumnName(
-    parentTableName: any,
-    parentTableIdPropertyName: any,
-  ): string {
+  public classTableInheritanceParentColumnName(parentTableName: any, parentTableIdPropertyName: any): string {
     return titleCase(parentTableName + '_' + parentTableIdPropertyName);
   }
 
-  eagerJoinRelationAlias(alias: string, propertyPath: string): string {
+  public eagerJoinRelationAlias(alias: string, propertyPath: string): string {
     return alias + '__' + propertyPath.replace('.', '_');
   }
 }

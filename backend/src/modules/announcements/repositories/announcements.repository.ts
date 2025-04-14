@@ -5,6 +5,7 @@ import { isDate } from '@utils/date.utils';
 import { Service } from 'typedi';
 import { Equal, FindManyOptions, FindOptionsOrder, FindOptionsRelations, FindOptionsSelect, FindOptionsWhere } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+import { BaseAnnouncementsRepository } from './base.announcements.repository';
 import { CreateAnnouncementsReqDto } from '../dtos/create-announcements.dto';
 import { DeleteAnnouncementsReqDto } from '../dtos/delete-announcements.dto';
 import { PublishAnnouncementsReqDto } from '../dtos/publish-announcements.dto';
@@ -14,11 +15,10 @@ import { Announcement } from '../entities/announcement.entity';
 import { AnnouncementStateValue } from '../enums/announcement-state.enum';
 import { ICreateAnnouncement, ICreateAnnouncementItem } from '../interfaces/create-announcement.interfaces';
 import { IAnnouncementId } from '../interfaces/IAnnouncementId';
-import { BaseAnnouncementsRepository } from './base.announcements.repository';
 
 @Service()
 export class AnnouncementsRepository extends BaseAnnouncementsRepository {
-  public constructor() {
+  constructor() {
     super();
   }
 

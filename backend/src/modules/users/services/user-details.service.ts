@@ -10,7 +10,7 @@ import { vUser } from '../entities/vUser.entity';
 export class UsersDetailsService extends BaseService {
   private readonly _repository: vUserRepository;
 
-  public constructor() {
+  constructor() {
     super();
     this._repository = Container.get(vUserRepository);
   }

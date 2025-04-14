@@ -1,22 +1,14 @@
 import { relatedDataNames } from '@db';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { CryptoService, PasscodeService, ResetPasscodeTokensRepository } from '@modules/auth';
-import {
-  ActivateUserReqDto,
-  CreateUserDto,
-  CreateUserReqDto,
-  DeactivateUserReqDto,
-  DeleteUserReqDto,
-  UnlockUserReqDto,
-  UpdateUserModel,
-} from '@modules/users';
+import { CreateUserDto, CreateUserReqDto, DeleteUserReqDto, UpdateUserModel } from '@modules/users';
 import { getDateTimeNow, isNullOrEmptyString } from '@utils';
 import Container, { Service } from 'typedi';
 import { Not } from 'typeorm';
+import { BaseUserRepository } from './base.user.repository';
 import { User } from '../entities/user.entity';
 import { ICreateUser } from '../interfaces/create-user.interfaces';
 import { IUpdateUser, IUpdateUserPasscode } from '../interfaces/update-user.interfaces';
-import { BaseUserRepository } from './base.user.repository';
 
 @Service()
 export class UserRepository extends BaseUserRepository {
@@ -24,7 +16,7 @@ export class UserRepository extends BaseUserRepository {
   private readonly _passcodeService: PasscodeService;
   private readonly _resetPasscodeTokensRepository: ResetPasscodeTokensRepository;
 
-  public constructor() {
+  constructor() {
     super();
     this._cryptoService = Container.get(CryptoService);
     this._passcodeService = Container.get(PasscodeService);
@@ -140,7 +132,7 @@ export class UserRepository extends BaseUserRepository {
     return true;
   }
 
-  public async activate(userId: number, reqDto?: ActivateUserReqDto): Promise<User | null> {
+  public async activate(userId: number): Promise<User | null> {
     const model = new UpdateUserModel(userId, {
       isActive: true,
     } satisfies IUpdateUser);
@@ -148,7 +140,7 @@ export class UserRepository extends BaseUserRepository {
     return await this._update(model);
   }
 
-  public async deactivate(userId: number, reqDto?: DeactivateUserReqDto): Promise<User | null> {
+  public async deactivate(userId: number): Promise<User | null> {
     const model = new UpdateUserModel(userId, {
       isActive: false,
     } satisfies IUpdateUser) satisfies UpdateUserModel;
@@ -180,7 +172,7 @@ export class UserRepository extends BaseUserRepository {
     return await this._update(model);
   }
 
-  public async unlock(userId: number, reqDto?: UnlockUserReqDto): Promise<User | null> {
+  public async unlock(userId: number): Promise<User | null> {
     const model = {
       userId,
       userData: {

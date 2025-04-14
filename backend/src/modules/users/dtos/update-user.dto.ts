@@ -74,7 +74,7 @@ export class UpdateUserReqDto extends BaseReqDto {
   public readonly userGuid: string | undefined;
   public readonly userData: UpdateUserDto;
 
-  public constructor(userGuid: string | undefined, userData: UpdateUserDto, currentUserId: number | undefined) {
+  constructor(userGuid: string | undefined, userData: UpdateUserDto, currentUserId: number | undefined) {
     super(currentUserId);
     this.userGuid = userGuid;
     this.userData = userData;
@@ -85,7 +85,7 @@ export class UpdateUserResponseDto implements IResponse<IUserDto> {
   public readonly data: IUserDto;
   public readonly message: string;
 
-  public constructor(data: IUserDto) {
+  constructor(data: IUserDto) {
     this.data = data;
     this.message = events.users.userUpdated;
   }

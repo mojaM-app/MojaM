@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-extraneous-class */
 import { toBoolean } from './../utils/boolean.utils';
 import { isDate } from './../utils/date.utils';
 import { toNumber } from './../utils/numbers.utils';

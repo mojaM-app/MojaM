@@ -4,7 +4,7 @@ import { Announcement } from '../entities/announcement.entity';
 
 @Service()
 export class AnnouncementsCacheService extends CacheService<Announcement> {
-  public constructor() {
+  constructor() {
     super();
   }
 

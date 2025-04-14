@@ -9,7 +9,7 @@ export class AnnouncementsListRoute implements IRoutes {
   public router = express.Router();
   private readonly _controller: AnnouncementsListController;
 
-  public constructor() {
+  constructor() {
     this._controller = new AnnouncementsListController();
     this.initializeRoutes();
   }

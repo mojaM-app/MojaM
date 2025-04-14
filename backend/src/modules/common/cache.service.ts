@@ -6,7 +6,7 @@ import { MemoryStorage } from 'node-ts-cache-storage-memory';
 export abstract class CacheService<TEntity extends IHasGuidId> {
   private readonly cache: CacheContainer;
 
-  public constructor() {
+  constructor() {
     this.cache = new CacheContainer(new MemoryStorage());
   }
 

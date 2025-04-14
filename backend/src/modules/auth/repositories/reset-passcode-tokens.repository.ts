@@ -11,7 +11,7 @@ import { ICreateResetPasscodeToken } from '../interfaces/create-reset-passcode-t
 export class ResetPasscodeTokensRepository extends BaseRepository {
   private readonly _cryptoService: CryptoService;
 
-  public constructor() {
+  constructor() {
     super();
     this._cryptoService = Container.get(CryptoService);
   }

@@ -4,7 +4,7 @@ import { vUser } from '../entities/vUser.entity';
 
 @Service()
 export class vUserRepository extends BaseRepository {
-  public constructor() {
+  constructor() {
     super();
   }
 

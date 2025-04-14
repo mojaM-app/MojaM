@@ -5,7 +5,7 @@ import { BaseReqDto } from '@modules/common';
 export class UnlockAccountReqDto extends BaseReqDto {
   public readonly userGuid: string | undefined;
 
-  public constructor(userGuid: string | undefined) {
+  constructor(userGuid: string | undefined) {
     super(undefined);
     this.userGuid = userGuid;
   }
@@ -19,7 +19,7 @@ export class UnlockAccountResponseDto implements IResponse<IUnlockAccountResultD
   public readonly data: IUnlockAccountResultDto;
   public readonly message: string;
 
-  public constructor(data: IUnlockAccountResultDto) {
+  constructor(data: IUnlockAccountResultDto) {
     this.data = data;
     this.message = events.users.userUnlocked;
   }

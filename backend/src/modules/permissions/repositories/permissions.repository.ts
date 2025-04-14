@@ -8,7 +8,7 @@ import { Not } from 'typeorm';
 export class PermissionsRepository extends BaseRepository {
   private readonly _userPermissionsRepository: UserPermissionsRepository;
   private readonly _adminUserUuid: string;
-  public constructor() {
+  constructor() {
     super();
     this._userPermissionsRepository = Container.get(UserPermissionsRepository);
     this._adminUserUuid = getAdminLoginData().uuid;

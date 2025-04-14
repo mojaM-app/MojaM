@@ -31,7 +31,7 @@ export class GetCurrentAnnouncementsResponseDto implements IResponse<IGetCurrent
   public readonly data: IGetCurrentAnnouncementsDto;
   public readonly message: string;
 
-  public constructor(data: IGetCurrentAnnouncementsDto) {
+  constructor(data: IGetCurrentAnnouncementsDto) {
     this.data = data;
     this.message = events.announcements.currentAnnouncementsRetrieved;
   }

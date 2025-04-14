@@ -1,6 +1,6 @@
 import { PasswordService, PinService } from '@modules/auth';
 import { isNullOrUndefined } from '@utils';
-import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
+import { registerDecorator, ValidationOptions } from 'class-validator';
 
 /**
  * Check if both password and pin are valid
@@ -14,7 +14,7 @@ export function IsPasswordOrPinValid(validationOptions?: ValidationOptions): Pro
       constraints: [],
       options: validationOptions,
       validator: {
-        validate(value: any, args: ValidationArguments) {
+        validate(value: any) {
           if (isNullOrUndefined(value)) {
             return false;
           }

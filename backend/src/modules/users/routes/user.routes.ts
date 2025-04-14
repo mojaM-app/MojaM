@@ -14,7 +14,7 @@ export class UserRoute implements IRoutes {
   public router = express.Router();
   private readonly _controller: UserController;
 
-  public constructor() {
+  constructor() {
     this._controller = new UserController();
     this.initializeRoutes();
   }

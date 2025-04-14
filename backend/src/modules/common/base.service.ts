@@ -4,7 +4,7 @@ import { EventDispatcher } from 'event-dispatch';
 export abstract class BaseService {
   protected readonly _eventDispatcher: EventDispatcher;
 
-  public constructor() {
+  constructor() {
     this._eventDispatcher = EventDispatcherService.getEventDispatcher();
   }
 }

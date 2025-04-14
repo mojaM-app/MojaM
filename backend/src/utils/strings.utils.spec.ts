@@ -1,4 +1,3 @@
-/* eslint-disable no-new-wrappers */
 import { isNullOrEmptyString, isString } from './strings.utils';
 
 describe('isNullOrEmptyString', () => {

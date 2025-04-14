@@ -7,7 +7,7 @@ import { Container } from 'typedi';
 export class NewsController extends BaseController {
   private readonly _newsService: NewsService;
 
-  public constructor() {
+  constructor() {
     super();
     this._newsService = Container.get(NewsService);
   }
