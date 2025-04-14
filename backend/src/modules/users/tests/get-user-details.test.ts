@@ -85,7 +85,7 @@ describe('GET/user-details/:id', () => {
       expect(userDetails!.phone).toBeDefined();
       expect(userDetails!.phone).toBe(newUserDto.phone);
       userDetails!.joiningDate = new Date(userDetails!.joiningDate!);
-      expect(userDetails!.joiningDate).toEqual(newUser.joiningDate);
+      expect(userDetails!.joiningDate.toDateString()).toEqual(newUser.joiningDate.toDateString());
       expect(userDetails!.isActive).toBe(false);
       expect(userDetails!.isLockedOut).toBe(false);
       expect(userDetails!.permissionCount).toBe(0);

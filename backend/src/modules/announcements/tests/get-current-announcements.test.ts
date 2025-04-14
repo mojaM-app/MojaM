@@ -256,7 +256,7 @@ describe('GET /announcements/current', () => {
       expect(currentAnnouncements?.title).toBe(requestData1.title);
       expect(currentAnnouncements?.publishedAt).toBeDefined();
       expect(currentAnnouncements?.publishedBy.length).toBeGreaterThan(0);
-      expect(new Date(currentAnnouncements!.validFromDate).toISOString().slice(0, 10)).toBe(requestData1.validFromDate.toISOString().slice(0, 10));
+      expect(new Date(currentAnnouncements!.validFromDate).toDateString()).toBe(requestData1.validFromDate.toDateString());
       expect(currentAnnouncements?.items).toBeDefined();
       expect(currentAnnouncements?.items.length).toBe(requestData1.items!.length);
       expect(currentAnnouncements!.items.every(item => isGuid(item.id))).toBe(true);

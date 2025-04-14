@@ -83,7 +83,7 @@ describe('GET /announcements', () => {
       expect(announcements.state).toBe(AnnouncementStateValue.DRAFT);
       expect(announcements.publishedAt).toBeUndefined();
       expect(announcements.publishedBy).toBeUndefined();
-      expect(new Date(announcements.validFromDate!).toISOString().slice(0, 10)).toBe(requestData.validFromDate!.toISOString().slice(0, 10));
+      expect(new Date(announcements.validFromDate!).toDateString()).toBe(requestData.validFromDate!.toDateString());
       expect(announcements.items).toBeDefined();
       expect(Array.isArray(announcements.items)).toBe(true);
       expect(announcements.items.length).toBe(requestData.items!.length);
@@ -163,7 +163,7 @@ describe('GET /announcements', () => {
       expect(announcements.state).toBe(AnnouncementStateValue.PUBLISHED);
       expect(announcements.publishedAt).toBeDefined();
       expect(announcements.publishedBy).toBeDefined();
-      expect(new Date(announcements.validFromDate!).toISOString().slice(0, 10)).toBe(requestData.validFromDate!.toISOString().slice(0, 10));
+      expect(new Date(announcements.validFromDate!).toDateString()).toBe(requestData.validFromDate!.toDateString());
       expect(announcements.items).toBeDefined();
       expect(Array.isArray(announcements.items)).toBe(true);
       expect(announcements.items.length).toBe(requestData.items!.length);

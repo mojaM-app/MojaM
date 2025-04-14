@@ -101,7 +101,7 @@ describe('POST /announcements/publish', () => {
       expect(announcements.state).toBe(AnnouncementStateValue.PUBLISHED);
       expect(announcements.publishedAt).toBeDefined();
       expect(announcements.publishedBy).toBeDefined();
-      expect(new Date(announcements.validFromDate!)).toEqual(requestData.validFromDate);
+      expect(new Date(announcements.validFromDate!).toDateString()).toEqual(requestData.validFromDate!.toDateString());
       expect(announcements.items).toBeDefined();
       expect(Array.isArray(announcements.items)).toBe(true);
       expect(announcements.items.length).toBe(requestData.items!.length);

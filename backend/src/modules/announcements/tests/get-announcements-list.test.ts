@@ -84,7 +84,7 @@ describe('GET/announcements-list', () => {
       expect(gridPage.items.length).toBeGreaterThan(0);
 
       const announcements = gridPage.items[0];
-      expect(new Date(announcements.validFromDate!).toISOString().slice(0, 10)).toBe(newAnnouncements.validFromDate!.toISOString().slice(0, 10));
+      expect(new Date(announcements.validFromDate!).toDateString()).toBe(newAnnouncements.validFromDate!.toDateString());
       expect(announcements.itemsCount).toBeDefined();
       expect(announcements.itemsCount).toBe(newAnnouncements.items!.length);
 

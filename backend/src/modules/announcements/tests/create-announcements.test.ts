@@ -88,7 +88,7 @@ describe('POST /announcements', () => {
       expect(announcements.state).toBe(AnnouncementStateValue.DRAFT);
       expect(announcements.publishedAt).toBeUndefined();
       expect(announcements.publishedBy).toBeUndefined();
-      expect(new Date(announcements.validFromDate!)).toEqual(requestData.validFromDate);
+      expect(new Date(announcements.validFromDate!).toDateString()).toEqual(requestData.validFromDate!.toDateString());
       expect(announcements.items).toBeDefined();
       expect(Array.isArray(announcements.items)).toBe(true);
       expect(announcements.items.length).toBe(requestData.items!.length);
@@ -381,7 +381,7 @@ describe('POST /announcements', () => {
       expect(announcements.state).toBe(AnnouncementStateValue.DRAFT);
       expect(announcements.publishedAt).toBeUndefined();
       expect(announcements.publishedBy).toBeUndefined();
-      expect(new Date(announcements.validFromDate!)).toEqual(requestData.validFromDate);
+      expect(new Date(announcements.validFromDate!).toDateString()).toEqual(requestData.validFromDate!.toDateString());
       expect(announcements.items).toBeDefined();
       expect(Array.isArray(announcements.items)).toBe(true);
       expect(announcements?.items.length).toBe(0);

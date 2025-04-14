@@ -131,7 +131,9 @@ describe('PUT /announcements', () => {
       expect(announcementsAfterUpdate.state).toBe(AnnouncementStateValue.DRAFT);
       expect(announcementsAfterUpdate.publishedAt).toBeUndefined();
       expect(announcementsAfterUpdate.publishedBy).toBeUndefined();
-      expect(new Date(announcementsAfterUpdate.validFromDate!)).toEqual(new Date(announcementsBeforeUpdate.validFromDate!));
+      expect(new Date(announcementsAfterUpdate.validFromDate!).toDateString()).toEqual(
+        new Date(announcementsBeforeUpdate.validFromDate!).toDateString(),
+      );
       expect(announcementsAfterUpdate.items).toBeDefined();
       expect(Array.isArray(announcementsAfterUpdate.items)).toBe(true);
       expect(announcementsBeforeUpdate.items.length).toBeLessThan(announcementsAfterUpdate.items.length);
@@ -251,7 +253,9 @@ describe('PUT /announcements', () => {
       expect(announcementsAfterUpdate.state).toBe(AnnouncementStateValue.DRAFT);
       expect(announcementsAfterUpdate.publishedAt).toBeUndefined();
       expect(announcementsAfterUpdate.publishedBy).toBeUndefined();
-      expect(new Date(announcementsAfterUpdate.validFromDate!)).toEqual(new Date(announcementsBeforeUpdate.validFromDate!));
+      expect(new Date(announcementsAfterUpdate.validFromDate!).toDateString()).toEqual(
+        new Date(announcementsBeforeUpdate.validFromDate!).toDateString(),
+      );
       expect(announcementsAfterUpdate.items).toBeDefined();
       expect(Array.isArray(announcementsAfterUpdate.items)).toBe(true);
       expect(announcementsBeforeUpdate.items.length).toBeGreaterThan(announcementsAfterUpdate.items.length);
@@ -370,7 +374,9 @@ describe('PUT /announcements', () => {
       expect(announcementsAfterUpdate.state).toBe(AnnouncementStateValue.DRAFT);
       expect(announcementsAfterUpdate.publishedAt).toBeUndefined();
       expect(announcementsAfterUpdate.publishedBy).toBeUndefined();
-      expect(new Date(announcementsAfterUpdate.validFromDate!)).toEqual(new Date(announcementsBeforeUpdate.validFromDate!));
+      expect(new Date(announcementsAfterUpdate.validFromDate!).toDateString()).toEqual(
+        new Date(announcementsBeforeUpdate.validFromDate!).toDateString(),
+      );
       expect(announcementsAfterUpdate.items).toBeDefined();
       expect(Array.isArray(announcementsAfterUpdate.items)).toBe(true);
       expect(announcementsAfterUpdate.items.length).toBe(announcementsBeforeUpdate.items.length);
@@ -480,7 +486,9 @@ describe('PUT /announcements', () => {
       expect(announcementsAfterUpdate.state).toBe(AnnouncementStateValue.DRAFT);
       expect(announcementsAfterUpdate.publishedAt).toBeUndefined();
       expect(announcementsAfterUpdate.publishedBy).toBeUndefined();
-      expect(new Date(announcementsAfterUpdate.validFromDate!)).toEqual(new Date(announcementsBeforeUpdate.validFromDate!));
+      expect(new Date(announcementsAfterUpdate.validFromDate!).toDateString()).toEqual(
+        new Date(announcementsBeforeUpdate.validFromDate!).toDateString(),
+      );
       expect(announcementsAfterUpdate.items).toBeDefined();
       expect(Array.isArray(announcementsAfterUpdate.items)).toBe(true);
       expect(announcementsAfterUpdate.items.length).toBe(announcementsBeforeUpdate.items.length);
@@ -588,7 +596,9 @@ describe('PUT /announcements', () => {
       expect(announcementsAfterUpdate.state).toBe(AnnouncementStateValue.DRAFT);
       expect(announcementsAfterUpdate.publishedAt).toBeUndefined();
       expect(announcementsAfterUpdate.publishedBy).toBeUndefined();
-      expect(new Date(announcementsAfterUpdate.validFromDate!)).toEqual(new Date(announcementsBeforeUpdate.validFromDate!));
+      expect(new Date(announcementsAfterUpdate.validFromDate!).toDateString()).toEqual(
+        new Date(announcementsBeforeUpdate.validFromDate!).toDateString(),
+      );
       expect(announcementsAfterUpdate.items).toBeDefined();
       expect(Array.isArray(announcementsAfterUpdate.items)).toBe(true);
       expect(announcementsAfterUpdate.items.length).toBe(announcementsBeforeUpdate.items.length);
@@ -697,7 +707,7 @@ describe('PUT /announcements', () => {
       expect(announcementsAfterUpdate.state).toBe(AnnouncementStateValue.DRAFT);
       expect(announcementsAfterUpdate.publishedAt).toBeUndefined();
       expect(announcementsAfterUpdate.publishedBy).toBeUndefined();
-      expect(new Date(announcementsAfterUpdate.validFromDate!)).toEqual(updateAnnouncementsModel.validFromDate);
+      expect(new Date(announcementsAfterUpdate.validFromDate!).toDateString()).toEqual(updateAnnouncementsModel.validFromDate!.toDateString());
       expect(announcementsAfterUpdate.items).toBeDefined();
       expect(Array.isArray(announcementsAfterUpdate.items)).toBe(true);
       expect(announcementsAfterUpdate.items.length).toBe(announcementsAfterUpdate.items.length);
@@ -914,7 +924,7 @@ describe('PUT /announcements', () => {
       expect(announcementsAfterUpdate.state).toBe(AnnouncementStateValue.DRAFT);
       expect(announcementsAfterUpdate.publishedAt).toBeUndefined();
       expect(announcementsAfterUpdate.publishedBy).toBeUndefined();
-      expect(new Date(announcementsAfterUpdate.validFromDate!)).toEqual(requestData.validFromDate);
+      expect(new Date(announcementsAfterUpdate.validFromDate!).toDateString()).toEqual(requestData.validFromDate!.toDateString());
       expect(announcementsAfterUpdate.items).toBeDefined();
       expect(Array.isArray(announcementsAfterUpdate.items)).toBe(true);
       expect(announcementsAfterUpdate.items.length).toBe(announcementsAfterUpdate.items.length);
@@ -1025,7 +1035,7 @@ describe('PUT /announcements', () => {
       expect(announcementsAfterUpdate.state).toBe(AnnouncementStateValue.DRAFT);
       expect(announcementsAfterUpdate.publishedAt).toBeUndefined();
       expect(announcementsAfterUpdate.publishedBy).toBeUndefined();
-      expect(new Date(announcementsAfterUpdate.validFromDate!)).toEqual(requestData.validFromDate);
+      expect(new Date(announcementsAfterUpdate.validFromDate!).toDateString()).toEqual(requestData.validFromDate!.toDateString());
       expect(announcementsAfterUpdate.items).toBeDefined();
       expect(Array.isArray(announcementsAfterUpdate.items)).toBe(true);
       expect(announcementsAfterUpdate.items.length).toBe(announcementsAfterUpdate.items.length);

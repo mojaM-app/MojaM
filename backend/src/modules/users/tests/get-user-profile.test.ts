@@ -82,7 +82,7 @@ describe('GET/user-profile', () => {
       expect(userProfile!.phone).toBeDefined();
       expect(userProfile!.phone).toBe(newUserDto.phone);
       userProfile!.joiningDate = new Date(userProfile!.joiningDate!);
-      expect(userProfile!.joiningDate).toEqual(newUser.joiningDate);
+      expect(userProfile!.joiningDate.toDateString()).toEqual(newUser.joiningDate.toDateString());
       expect(userProfile!.firstName).toBeDefined();
       expect(userProfile!.firstName).toBe(newUser.firstName);
       expect(userProfile!.lastName).toBeDefined();

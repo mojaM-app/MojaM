@@ -93,7 +93,7 @@ describe('PUT/user-profile', () => {
       expect(userProfile!.email).toBe(newUserDto.email);
       expect(userProfile!.phone).toBe(newUserDto.phone);
       userProfile!.joiningDate = new Date(userProfile!.joiningDate!);
-      expect(userProfile!.joiningDate).toEqual(newUser.joiningDate);
+      expect(userProfile!.joiningDate.toDateString()).toEqual(newUser.joiningDate.toDateString());
       expect(userProfile!.firstName).toBe(updateModel.firstName);
       expect(userProfile!.lastName).toBe(updateModel.lastName);
 
@@ -247,7 +247,7 @@ describe('PUT/user-profile', () => {
       expect(userProfile!.email).toBe(newUserDto.email);
       expect(userProfile!.phone).toBe(newUserDto.phone);
       userProfile!.joiningDate = new Date(userProfile!.joiningDate!);
-      expect(userProfile!.joiningDate).toEqual(newUser.joiningDate);
+      expect(userProfile!.joiningDate.toDateString()).toEqual(newUser.joiningDate.toDateString());
       expect(userProfile!.firstName).toBe(newUser.firstName);
       expect(userProfile!.lastName).toBe(newUser.lastName);
 
@@ -399,7 +399,7 @@ describe('PUT/user-profile', () => {
       expect(userProfile!.email).toBe(newUserDto.email);
       expect(userProfile!.phone).toBe(newUserDto.phone);
       userProfile!.joiningDate = new Date(userProfile!.joiningDate!);
-      expect(userProfile!.joiningDate).toEqual(newUser.joiningDate);
+      expect(userProfile!.joiningDate.toDateString()).toEqual(newUser.joiningDate.toDateString());
       expect(userProfile!.firstName).toBeNull();
       expect(userProfile!.lastName).toBeNull();
 

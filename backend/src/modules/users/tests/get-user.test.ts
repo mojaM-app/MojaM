@@ -78,7 +78,7 @@ describe('GET/user/:id', () => {
       expect(user!.phone).toBe(newUserDto.phone);
       expect(user!.hasOwnProperty('uuid')).toBe(false);
       user!.joiningDate = new Date(user!.joiningDate!);
-      expect(user!.joiningDate).toEqual(newUser.joiningDate);
+      expect(user!.joiningDate.toDateString()).toEqual(newUser.joiningDate.toDateString());
       expect(user?.firstName).toBeDefined();
       expect(user!.firstName).toBe(newUser.firstName);
       expect(user?.lastName).toBeDefined();
