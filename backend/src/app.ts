@@ -94,16 +94,24 @@ export class App {
 
   private async initializeDatabase(): Promise<void> {
     // establish database connection
-    logger.info('=== establish database connection ===');
+    logger.info('=== establishing database connection ===');
 
     this._connection = DbConnection.getConnection();
-    await this._connection
-      .connect()
-      .then(() => {
-        logger.info('Data Source has been initialized!');
-      })
-      .catch((err: any) => {
-        logger.error('Error during Data Source initialization:', err);
-      });
+    try {
+      await this._connection.connect();
+      logger.info('Data Source has been initialized successfully!');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      logger.error(`Fatal error during Data Source initialization: ${errorMessage}`);
+
+      // In production, we might want to exit the process if we can't connect to the database
+      if (this.env === 'production') {
+        logger.error('Could not connect to database in production environment. Exiting process...');
+        process.exit(1);
+      } else {
+        // In development/test, we might want to continue but with a warning
+        logger.warn('Continuing without database connection. Some features may not work correctly.');
+      }
+    }
   }
 }
