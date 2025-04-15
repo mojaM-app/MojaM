@@ -29,4 +29,24 @@ export const AppDataSource = new DbContext({
   metadataTableName: '_typeorm_metadata',
   migrations: [DATABASE_MIGRATIONS_PATH!],
   dateStrings: ['DATE'],
+
+  // Connection pool settings
+  poolSize: 10, // Maximum number of connections in the pool
+  connectTimeout: 15000, // Connection timeout in ms (15 seconds)
+
+  // Maximum query execution time in milliseconds
+  maxQueryExecutionTime: 10000, // 10 seconds
+
+  // Extra connection options
+  extra: {
+    // Idle timeout
+    idleTimeout: 60000,
+    // Wait for connections to close before stopping the server
+    waitForConnections: true,
+    // Maximum query size
+    maxPreparedStatements: 250,
+    // Connection stability - automatic reconnect
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 30000,
+  },
 });
