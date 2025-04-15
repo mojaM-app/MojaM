@@ -24,67 +24,67 @@ export class Identity {
     return (this.userId ?? 0) > 0;
   }
 
-  public hasPermissionToGetAnnouncements(): boolean {
+  public canGetAnnouncements(): boolean {
     return this.hasAnyPermission([SystemPermissions.PreviewAnnouncementsList, SystemPermissions.EditAnnouncements]);
   }
 
-  public hasPermissionToPublishAnnouncements(): boolean {
+  public canPublishAnnouncements(): boolean {
     return this.hasPermission(SystemPermissions.PublishAnnouncements);
   }
 
-  public hasPermissionToPreviewAnnouncementsList(): boolean {
+  public canPreviewAnnouncementsList(): boolean {
     return this.hasPermission(SystemPermissions.PreviewAnnouncementsList);
   }
 
-  public hasPermissionToDeleteAnnouncements(): boolean {
+  public canDeleteAnnouncements(): boolean {
     return this.hasPermission(SystemPermissions.DeleteAnnouncements);
   }
 
-  public hasPermissionToEditAnnouncements(): boolean {
+  public canEditAnnouncements(): boolean {
     return this.hasPermission(SystemPermissions.EditAnnouncements);
   }
 
-  public hasPermissionToAddAnnouncements(): boolean {
+  public canAddAnnouncements(): boolean {
     return this.hasPermission(SystemPermissions.AddAnnouncements);
   }
 
-  public hasPermissionToPreviewUserList(): boolean {
+  public canPreviewUserList(): boolean {
     return this.hasPermission(SystemPermissions.PreviewUserList);
   }
 
-  public hasPermissionToPreviewUserDetails(): boolean {
+  public canPreviewUserDetails(): boolean {
     return this.hasPermission(SystemPermissions.PreviewUserDetails);
   }
 
-  public hasPermissionToEditUser(): boolean {
+  public canEditUser(): boolean {
     return this.hasPermission(SystemPermissions.EditUser);
   }
 
-  public hasPermissionToAddUser(): boolean {
+  public canAddUser(): boolean {
     return this.hasPermission(SystemPermissions.AddUser);
   }
 
-  public hasPermissionToDeactivateUser(): boolean {
+  public canDeactivateUser(): boolean {
     return this.hasPermission(SystemPermissions.DeactivateUser);
   }
 
-  public hasPermissionToActivateUser(): boolean {
+  public canActivateUser(): boolean {
     return this.hasPermission(SystemPermissions.ActivateUser);
   }
 
-  public hasPermissionToDeleteUser(): boolean {
+  public canDeleteUser(): boolean {
     return this.hasPermission(SystemPermissions.DeleteUser);
   }
 
-  public hasPermissionToUnlockUser(): boolean {
+  public canUnlockUser(): boolean {
     return this.hasPermission(SystemPermissions.UnlockUser);
   }
 
-  public hasPermissionToAddPermission(): boolean {
+  public canAddPermission(): boolean {
     return this.hasPermission(SystemPermissions.AddPermission);
   }
 
-  public hasPermissionToDeletePermission(): boolean {
+  public canDeletePermission(): boolean {
     return this.hasPermission(SystemPermissions.DeletePermission);
   }
 

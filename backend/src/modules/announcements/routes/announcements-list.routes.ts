@@ -1,8 +1,8 @@
-import { ForbiddenException, UnauthorizedException } from '@exceptions';
-import { IRequestWithIdentity, IRoutes } from '@interfaces';
+import { IRoutes } from '@interfaces';
+import { requirePermission } from '@middlewares';
 import { AnnouncementsListController } from '@modules/announcements';
 import { setIdentity } from '@modules/auth';
-import express, { NextFunction, Response } from 'express';
+import express from 'express';
 
 export class AnnouncementsListRoute implements IRoutes {
   public path = '/announcements-list';
@@ -15,16 +15,6 @@ export class AnnouncementsListRoute implements IRoutes {
   }
 
   private initializeRoutes(): void {
-    this.router.get(`${this.path}`, [setIdentity, this.checkPreviewPermission], this._controller.get);
+    this.router.get(`${this.path}`, [setIdentity, requirePermission(user => user.canPreviewAnnouncementsList())], this._controller.get);
   }
-
-  private readonly checkPreviewPermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity.isAuthenticated()) {
-      next(new UnauthorizedException());
-    } else if (!req.identity.hasPermissionToPreviewAnnouncementsList()) {
-      next(new ForbiddenException());
-    } else {
-      next();
-    }
-  };
 }

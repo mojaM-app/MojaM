@@ -1,9 +1,8 @@
-import { UnauthorizedException } from '@exceptions';
-import { IRequestWithIdentity, IRoutes } from '@interfaces';
-import { validateData } from '@middlewares';
+import { IRoutes } from '@interfaces';
+import { requirePermission, validateData } from '@middlewares';
 import { setIdentity } from '@modules/auth';
 import { UpdateUserProfileDto, UserProfileController } from '@modules/users';
-import express, { NextFunction, Response } from 'express';
+import express from 'express';
 
 export class UserProfileRoute implements IRoutes {
   public path = '/user-profile';
@@ -16,23 +15,23 @@ export class UserProfileRoute implements IRoutes {
   }
 
   private initializeRoutes(): void {
-    this.router.get(`${this.path}`, [setIdentity, this.checkGetPermission], this._controller.get);
-    this.router.put(`${this.path}`, [validateData(UpdateUserProfileDto), setIdentity, this.checkUpdatePermission], this._controller.update);
+    this.router.get(
+      `${this.path}`,
+      [
+        setIdentity,
+        requirePermission(() => true), // Just requires authentication
+      ],
+      this._controller.get,
+    );
+
+    this.router.put(
+      `${this.path}`,
+      [
+        validateData(UpdateUserProfileDto),
+        setIdentity,
+        requirePermission(() => true), // Just requires authentication
+      ],
+      this._controller.update,
+    );
   }
-
-  private readonly checkGetPermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity.isAuthenticated()) {
-      next(new UnauthorizedException());
-    } else {
-      next();
-    }
-  };
-
-  private readonly checkUpdatePermission = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity.isAuthenticated()) {
-      next(new UnauthorizedException());
-    } else {
-      next();
-    }
-  };
 }

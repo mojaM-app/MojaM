@@ -1,9 +1,9 @@
 import { REGEX_PATTERNS } from '@config';
-import { ForbiddenException, UnauthorizedException } from '@exceptions';
-import { IRequestWithIdentity, IRoutes } from '@interfaces';
+import { IRoutes } from '@interfaces';
+import { requirePermission } from '@middlewares';
 import { setIdentity } from '@modules/auth';
 import { PermissionsController } from '@modules/permissions';
-import express, { NextFunction, Response } from 'express';
+import express from 'express';
 
 export class PermissionsRoute implements IRoutes {
   public path = '/permissions';
@@ -16,46 +16,22 @@ export class PermissionsRoute implements IRoutes {
   }
 
   private initializeRoutes(): void {
-    this.router.get(`${this.path}`, [setIdentity, this.checkGet], this._permissionsController.get);
+    this.router.get(
+      `${this.path}`,
+      [setIdentity, requirePermission(user => user.canAddPermission() || user.canDeletePermission())],
+      this._permissionsController.get,
+    );
+
     this.router.post(
       `${this.path}/:userId(${REGEX_PATTERNS.GUID})/:permissionId(${REGEX_PATTERNS.INT})`,
-      [setIdentity, this.checkAdd],
+      [setIdentity, requirePermission(user => user.canAddPermission())],
       this._permissionsController.add,
     );
+
     this.router.delete(
       `${this.path}/:userId(${REGEX_PATTERNS.GUID})/:permissionId(${REGEX_PATTERNS.INT})?`,
-      [setIdentity, this.checkDelete],
+      [setIdentity, requirePermission(user => user.canDeletePermission())],
       this._permissionsController.delete,
     );
   }
-
-  private readonly checkGet = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity.isAuthenticated()) {
-      next(new UnauthorizedException());
-    } else if (!req.identity.hasPermissionToAddPermission() && !req.identity.hasPermissionToDeletePermission()) {
-      next(new ForbiddenException());
-    } else {
-      next();
-    }
-  };
-
-  private readonly checkAdd = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity.isAuthenticated()) {
-      next(new UnauthorizedException());
-    } else if (!req.identity.hasPermissionToAddPermission()) {
-      next(new ForbiddenException());
-    } else {
-      next();
-    }
-  };
-
-  private readonly checkDelete = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.identity.isAuthenticated()) {
-      next(new UnauthorizedException());
-    } else if (!req.identity.hasPermissionToDeletePermission()) {
-      next(new ForbiddenException());
-    } else {
-      next();
-    }
-  };
 }

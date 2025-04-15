@@ -69,7 +69,7 @@ describe('POST /login', () => {
       const next: NextFunction = jest.fn();
       await setIdentity(req as any, {} as any, next);
       expect((req as unknown as IRequestWithIdentity).identity.userUuid).toEqual(userLoggedIn.id);
-      expect((req as unknown as IRequestWithIdentity).identity.hasPermissionToEditUser()).toBeTruthy();
+      expect((req as unknown as IRequestWithIdentity).identity.canEditUser()).toBeTruthy();
       expect(next).toHaveBeenCalled();
 
       const token = decode(userLoggedIn.accessToken, { json: true });
@@ -116,7 +116,7 @@ describe('POST /login', () => {
       const next: NextFunction = jest.fn();
       await setIdentity(req as any, {} as any, next);
       expect((req as unknown as IRequestWithIdentity).identity.userUuid).toEqual(userLoggedIn.id);
-      expect((req as unknown as IRequestWithIdentity).identity.hasPermissionToEditUser()).toBeTruthy();
+      expect((req as unknown as IRequestWithIdentity).identity.canEditUser()).toBeTruthy();
       expect(next).toHaveBeenCalled();
 
       const token = decode(userLoggedIn.accessToken, { json: true });
