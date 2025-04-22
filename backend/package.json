@@ -74,7 +74,6 @@
     "@typescript-eslint/parser": "^8.30.0",
     "cross-env": "^7.0.3",
     "eslint": "^9.24.0",
-    "eslint-config-love": "^119.0.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-n": "^17.17.0",
