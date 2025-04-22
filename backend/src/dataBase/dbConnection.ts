@@ -18,6 +18,7 @@ export class DbConnection {
   private _healthCheckInterval: NodeJS.Timeout | null = null;
   private _reconnectAttempts = 0;
   private readonly _healthCheckTimeMs = 30 * 60 * 1000; // 30 minutes
+  private readonly _maxReconnectAttempts = 10; // Maximum number of reconnection attempts before exiting
 
   // Default retry options
   private readonly _retryOptions: RetryOptions = {
@@ -40,17 +41,16 @@ export class DbConnection {
   }
 
   public async connect(): Promise<void> {
-    // If we're already connecting, return the existing promise
     if (this._connectPromise) {
       return this._connectPromise;
     }
 
-    // Otherwise, create a new connection promise
-    this._connectPromise = this._connectWithRetry();
+    this._connectPromise = this.connectWithRetry();
 
     try {
       await this._connectPromise;
-      this._setupHealthCheck();
+      this.setupHealthCheck();
+      this._reconnectAttempts = 0;
     } catch (error) {
       this._connectPromise = null;
       throw error;
@@ -78,7 +78,7 @@ export class DbConnection {
     return connection._dataContext;
   }
 
-  private async _connectWithRetry(retryCount = 0): Promise<void> {
+  private async connectWithRetry(retryCount = 0): Promise<void> {
     try {
       if ((DbConnection.instance?._dataContext ?? null) !== null && !DbConnection.instance!._dataContext.isInitialized) {
         await DbConnection.instance!._dataContext.initialize();
@@ -93,7 +93,7 @@ export class DbConnection {
         logger.error(`Connection error: ${error instanceof Error ? error.message : String(error)}`);
 
         await new Promise(resolve => setTimeout(resolve, delay));
-        return this._connectWithRetry(retryCount + 1);
+        return this.connectWithRetry(retryCount + 1);
       } else {
         logger.error(`Failed to connect to database after ${this._retryOptions.maxRetries} attempts`);
         throw error;
@@ -101,7 +101,7 @@ export class DbConnection {
     }
   }
 
-  private _setupHealthCheck(): void {
+  private setupHealthCheck(): void {
     if (this._healthCheckInterval) {
       clearInterval(this._healthCheckInterval);
     }
@@ -110,16 +110,17 @@ export class DbConnection {
       try {
         if (this._dataContext.isInitialized) {
           await this._dataContext.query('SELECT 1');
+
+          if (this._reconnectAttempts > 0) {
+            logger.info('Database connection restored successfully');
+            this._reconnectAttempts = 0;
+          }
         } else {
           logger.warn('Database connection lost. Attempting to reconnect...');
           this._connectPromise = null;
           this._reconnectAttempts++;
 
-          if (this._reconnectAttempts > 10) {
-            logger.error('Failed to reconnect to database after multiple attempts. Exiting...');
-            process.exit(1);
-          }
-
+          this.logReconnectionAttempt();
           await this.connect();
         }
       } catch (error) {
@@ -137,15 +138,21 @@ export class DbConnection {
         this._connectPromise = null;
         this._reconnectAttempts++;
 
+        this.logReconnectionAttempt();
         await this.connect().catch(e => {
           logger.error(`Failed to reconnect: ${e instanceof Error ? e.message : String(e)}`);
-
-          if (this._reconnectAttempts > 10) {
-            logger.error('Failed to reconnect to database after multiple attempts. Exiting...');
-            process.exit(1);
-          }
+          this.logReconnectionAttempt();
         });
       }
     }, this._healthCheckTimeMs);
+  }
+
+  private logReconnectionAttempt(): void {
+    if (this._reconnectAttempts >= this._maxReconnectAttempts) {
+      logger.error(`Failed to reconnect to database after ${this._maxReconnectAttempts} attempts. Exiting...`);
+      process.exit(1);
+    } else {
+      logger.warn(`Reconnection attempt ${this._reconnectAttempts}/${this._maxReconnectAttempts}`);
+    }
   }
 }
