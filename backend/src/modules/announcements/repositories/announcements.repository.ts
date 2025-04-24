@@ -15,6 +15,7 @@ import { Announcement } from '../entities/announcement.entity';
 import { AnnouncementStateValue } from '../enums/announcement-state.enum';
 import { ICreateAnnouncement, ICreateAnnouncementItem } from '../interfaces/create-announcement.interfaces';
 import { IAnnouncementId } from '../interfaces/IAnnouncementId';
+import { IUpdateAnnouncementItem } from '../interfaces/update-announcement.interfaces';
 
 @Service()
 export class AnnouncementsRepository extends BaseAnnouncementsRepository {
@@ -27,13 +28,15 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
       const announcementsRepository = transactionalEntityManager.getRepository(Announcement);
 
       const announcement = await announcementsRepository.save({
-        createdBy: { id: reqDto.currentUserId! } satisfies IUserId,
+        createdBy: {
+          id: reqDto.currentUserId!,
+        } satisfies IUserId,
         state: AnnouncementStateValue.DRAFT,
         validFromDate: reqDto.announcements.validFromDate ?? null,
         title: reqDto.announcements.title ?? null,
       } satisfies ICreateAnnouncement);
 
-      if (announcement.items === undefined) {
+      if (isNullOrUndefined(announcement.items)) {
         announcement.items = [];
       }
 
@@ -65,12 +68,11 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
     await this._dbContext.transaction(async transactionalEntityManager => {
       const announcementsRepository = transactionalEntityManager.getRepository(Announcement);
 
-      const announcements = await announcementsRepository.findOne({
-        where: { id },
-        relations: {
-          items: true,
-        },
-      });
+      const announcements = await announcementsRepository
+        .createQueryBuilder('announcement')
+        .leftJoinAndSelect('announcement.items', 'items')
+        .where('announcement.id = :id', { id })
+        .getOne();
 
       if (isNullOrUndefined(announcements)) {
         throw new BadRequestException(errorKeys.announcements.Announcements_Does_Not_Exist, {
@@ -83,6 +85,7 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
       }
 
       const updateAnnouncementModel = this.getUpdateAnnouncementModel(announcements!, reqDto.announcements);
+
       if (updateAnnouncementModel !== null) {
         await announcementsRepository.update(
           {
@@ -98,7 +101,7 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
         const existingItems = announcements!.items || [];
         const existingItemsMap = new Map(existingItems.map(item => [item.id, item]));
         const itemsToCreate: ICreateAnnouncementItem[] = [];
-        const itemsToUpdate: any[] = [];
+        const itemsToUpdate: IUpdateAnnouncementItem[] = [];
         const itemIdsToDelete: string[] = [];
         const processedItemIds = new Set<string>();
 
@@ -120,9 +123,11 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
               itemsToUpdate.push({
                 id: existingItem.id,
                 content: itemDto.content,
-                updatedBy: { id: reqDto.currentUserId! } satisfies IUserId,
+                updatedBy: {
+                  id: reqDto.currentUserId!,
+                } satisfies IUserId,
                 order,
-              });
+              } satisfies IUpdateAnnouncementItem);
             }
           }
         });
@@ -138,18 +143,20 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
         }
 
         if (itemsToUpdate.length > 0) {
-          await Promise.all(
-            itemsToUpdate.map(item =>
-              announcementItemsRepository.update(
-                { id: item.id } satisfies FindOptionsWhere<AnnouncementItem>,
-                {
-                  content: item.content,
-                  updatedBy: item.updatedBy,
-                  order: item.order,
-                } satisfies QueryDeepPartialEntity<AnnouncementItem>,
-              ),
+          const bulkUpdates = itemsToUpdate.map(item =>
+            announcementItemsRepository.update(
+              {
+                id: item.id,
+              } satisfies FindOptionsWhere<AnnouncementItem>,
+              {
+                content: item.content,
+                updatedBy: item.updatedBy,
+                order: item.order,
+              } satisfies QueryDeepPartialEntity<AnnouncementItem>,
             ),
           );
+
+          await Promise.all(bulkUpdates);
         }
 
         if (itemIdsToDelete.length > 0) {

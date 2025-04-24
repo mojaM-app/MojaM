@@ -1,10 +1,10 @@
 import { IUserId } from '@modules/users';
-import { IAnnouncementId } from './IAnnouncementId';
 
 export interface IUpdateAnnouncementItem {
-  announcement: IAnnouncementId;
-  content?: string;
-  updatedBy?: IUserId;
+  id: string;
+  content: string;
+  updatedBy: IUserId;
+  order: number;
 }
 
 export interface IUpdateAnnouncement {

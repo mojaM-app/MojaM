@@ -1,8 +1,8 @@
 import { BaseRepository } from '@modules/common';
-import { IUserPermissionsDto, UserPermissionsRepository } from '@modules/permissions';
+import { IUserPermissionsDto, SystemPermissions, UserPermissionsRepository } from '@modules/permissions';
+import { UserSystemPermission } from '@modules/users/entities/user-system-permission.entity';
 import { getAdminLoginData } from '@utils/tests.utils';
 import Container, { Service } from 'typedi';
-import { Not } from 'typeorm';
 
 @Service()
 export class PermissionsRepository extends BaseRepository {
@@ -15,24 +15,29 @@ export class PermissionsRepository extends BaseRepository {
   }
 
   public async get(): Promise<IUserPermissionsDto[]> {
-    const users = await this._dbContext.users.find({
-      where: {
-        uuid: Not(this._adminUserUuid),
-      },
-    });
+    const users = await this._dbContext.users
+      .createQueryBuilder('user')
+      .leftJoinAndSelect(UserSystemPermission, 'permissions', 'permissions.UserId = user.Id')
+      .leftJoinAndSelect('permissions.systemPermission', 'systemPermission')
+      .where('user.uuid != :adminUuid', { adminUuid: this._adminUserUuid })
+      .getMany();
 
-    const result = await Promise.all(
-      users.map(async user => {
-        const userPermissions = await this._userPermissionsRepository.get(user);
-        const readonlyPermissions = await this._userPermissionsRepository.getByAttributes(user);
-        return {
-          id: user.uuid,
-          name: user.getLastFirstNameOrEmail(),
-          permissions: userPermissions.join(','),
-          readonlyPermissions: readonlyPermissions.join(','),
-        } satisfies IUserPermissionsDto;
-      }),
-    );
+    const result: IUserPermissionsDto[] = [];
+
+    for (const user of users) {
+      const userPermissions: SystemPermissions[] = user.systemPermissions
+        ? user.systemPermissions.map(p => p.systemPermission?.id as SystemPermissions)
+        : [];
+
+      const readonlyPermissions = await this._userPermissionsRepository.getByAttributes(user);
+
+      result.push({
+        id: user.uuid,
+        name: user.getLastFirstNameOrEmail(),
+        permissions: userPermissions.join(','),
+        readonlyPermissions: readonlyPermissions.join(','),
+      } satisfies IUserPermissionsDto);
+    }
 
     return result;
   }
