@@ -3,7 +3,7 @@ import { IUserId } from '@modules/users';
 import { isNullOrUndefined } from '@utils';
 import { isDate } from '@utils/date.utils';
 import { Service } from 'typedi';
-import { Equal, FindManyOptions, FindOptionsOrder, FindOptionsRelations, FindOptionsSelect, FindOptionsWhere } from 'typeorm';
+import { FindOptionsWhere } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { BaseAnnouncementsRepository } from './base.announcements.repository';
 import { CreateAnnouncementsReqDto } from '../dtos/create-announcements.dto';
@@ -38,19 +38,21 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
       }
 
       const announcementItemsRepository = transactionalEntityManager.getRepository(AnnouncementItem);
-
       const items = reqDto.announcements.items ?? [];
 
-      let order = 1;
-      for await (const item of items) {
-        const announcementItem = await announcementItemsRepository.save({
-          announcement,
-          content: item.content,
-          order: order++,
-          createdBy: { id: reqDto.currentUserId! } satisfies IUserId,
-        } satisfies ICreateAnnouncementItem);
+      if (items.length > 0) {
+        const itemsToSave = items.map(
+          (item, index) =>
+            ({
+              announcement,
+              content: item.content,
+              order: index + 1,
+              createdBy: { id: reqDto.currentUserId! } satisfies IUserId,
+            }) satisfies ICreateAnnouncementItem,
+        );
 
-        announcement.items.push(announcementItem);
+        const savedItems = await announcementItemsRepository.save(itemsToSave);
+        announcement.items = savedItems;
       }
 
       return announcement;
@@ -65,6 +67,9 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
 
       const announcements = await announcementsRepository.findOne({
         where: { id },
+        relations: {
+          items: true,
+        },
       });
 
       if (isNullOrUndefined(announcements)) {
@@ -89,57 +94,66 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
 
       if ((reqDto.announcements.items?.length ?? 0) > 0) {
         const announcementItemsRepository = transactionalEntityManager.getRepository(AnnouncementItem);
-        const announcementItems = await announcementItemsRepository.find({
-          where: {
-            announcement: Equal(`${id}`),
-          } satisfies FindOptionsWhere<AnnouncementItem>,
-          relations: {
-            announcement: true,
-          } satisfies FindOptionsRelations<AnnouncementItem>,
-          select: {
-            announcement: {
-              id: false,
-            },
-            id: true,
-            content: true,
-            order: true,
-          } satisfies FindOptionsSelect<AnnouncementItem>,
-        } satisfies FindManyOptions<AnnouncementItem>);
 
-        let order = 1;
-        for await (const itemDto of reqDto.announcements.items!) {
-          const existingItem = announcementItems.find(x => x.id === itemDto.id);
+        const existingItems = announcements!.items || [];
+        const existingItemsMap = new Map(existingItems.map(item => [item.id, item]));
+        const itemsToCreate: ICreateAnnouncementItem[] = [];
+        const itemsToUpdate: any[] = [];
+        const itemIdsToDelete: string[] = [];
+        const processedItemIds = new Set<string>();
 
-          if (existingItem === undefined) {
-            await announcementItemsRepository.save({
+        reqDto.announcements.items!.forEach((itemDto, index) => {
+          const order = index + 1;
+          const existingItem = existingItemsMap.get(itemDto.id!);
+
+          if (!existingItem) {
+            itemsToCreate.push({
               announcement: { id: id! } satisfies IAnnouncementId,
               content: itemDto.content,
               createdBy: { id: reqDto.currentUserId! } satisfies IUserId,
               order,
             } satisfies ICreateAnnouncementItem);
           } else {
+            processedItemIds.add(existingItem.id);
+
             if (this.checkIfUpdateAnnouncementItem(existingItem, itemDto, order)) {
-              await announcementItemsRepository.update(
-                {
-                  id: existingItem.id,
-                } satisfies FindOptionsWhere<AnnouncementItem>,
-                {
-                  content: itemDto.content,
-                  updatedBy: { id: reqDto.currentUserId! } satisfies IUserId,
-                  order,
-                } satisfies QueryDeepPartialEntity<AnnouncementItem>,
-              );
+              itemsToUpdate.push({
+                id: existingItem.id,
+                content: itemDto.content,
+                updatedBy: { id: reqDto.currentUserId! } satisfies IUserId,
+                order,
+              });
             }
           }
-          order++;
+        });
+
+        existingItems.forEach(item => {
+          if (!processedItemIds.has(item.id)) {
+            itemIdsToDelete.push(item.id);
+          }
+        });
+
+        if (itemsToCreate.length > 0) {
+          await announcementItemsRepository.save(itemsToCreate);
         }
 
-        for await (const item of announcementItems) {
-          const existingItem = reqDto.announcements.items!.find(x => x.id === item.id);
+        if (itemsToUpdate.length > 0) {
+          await Promise.all(
+            itemsToUpdate.map(item =>
+              announcementItemsRepository.update(
+                { id: item.id } satisfies FindOptionsWhere<AnnouncementItem>,
+                {
+                  content: item.content,
+                  updatedBy: item.updatedBy,
+                  order: item.order,
+                } satisfies QueryDeepPartialEntity<AnnouncementItem>,
+              ),
+            ),
+          );
+        }
 
-          if (existingItem === undefined) {
-            await announcementItemsRepository.delete({ id: item.id });
-          }
+        if (itemIdsToDelete.length > 0) {
+          await announcementItemsRepository.delete(itemIdsToDelete);
         }
       }
     });
@@ -172,22 +186,16 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
   }
 
   public async get(announcementsId: number): Promise<Announcement | null> {
-    return await this._dbContext.announcements.findOne({
-      where: { id: announcementsId },
-      relations: {
-        createdBy: true,
-        publishedBy: true,
-        items: {
-          createdBy: true,
-          updatedBy: true,
-        },
-      } satisfies FindOptionsRelations<Announcement>,
-      order: {
-        items: {
-          order: 'ASC',
-        },
-      } satisfies FindOptionsOrder<Announcement>,
-    });
+    return await this._dbContext.announcements
+      .createQueryBuilder('announcement')
+      .leftJoinAndSelect('announcement.createdBy', 'createdBy')
+      .leftJoinAndSelect('announcement.publishedBy', 'publishedBy')
+      .leftJoinAndSelect('announcement.items', 'items')
+      .leftJoinAndSelect('items.createdBy', 'itemsCreatedBy')
+      .leftJoinAndSelect('items.updatedBy', 'itemsUpdatedBy')
+      .where('announcement.id = :announcementsId', { announcementsId })
+      .orderBy('items.order', 'ASC')
+      .getOne();
   }
 
   public async delete(announcementId: number, reqDto: DeleteAnnouncementsReqDto): Promise<boolean> {

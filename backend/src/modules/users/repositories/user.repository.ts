@@ -216,6 +216,6 @@ export class UserRepository extends BaseUserRepository {
   private async _update(model: UpdateUserModel): Promise<User | null> {
     await this._dbContext.users.update(model.userId, model.userData);
 
-    return await this._dbContext.users.findOne({ where: { id: model.userId } });
+    return await this._dbContext.users.createQueryBuilder('user').where('user.id = :userId', { userId: model.userId }).getOne();
   }
 }

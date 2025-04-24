@@ -39,6 +39,36 @@ describe('Cache user data tests', () => {
       } as unknown as Promise<User>);
     });
 
+    const findBy = () => {
+      return [
+        {
+          _is_from_mock_: true,
+          id: 1,
+          uuid: '2eaa394a-649d-44c1-b797-4a9e4ed2f836',
+          salt: '22fae28a2abbb54a638cb5b7f1acb2e9',
+          refreshTokenKey: 'aedc7970d693ea6e4d71e39bffa7dc4034bae8e858b1ad2bb65a5ffd8356db41',
+          passcode:
+            '0054475aec0228265ef119a559090cf84fe6a986ce5fa6a621ea22d965087408aaab71efcb84eff4df5106bdd8304b0b8e446ff3ebdd555b588549e586df5c52',
+          isActive: true,
+          email: 'admin@domain.com',
+          phone: '123456789',
+          getFirstLastName: () => 'John Doe',
+          getFirstLastNameOrEmail: () => 'John Doe',
+          getLastFirstName: () => 'Doe John',
+          getLastFirstNameOrEmail: () => 'Doe John',
+          isAdmin: () => true,
+        } satisfies IUser & {
+          _is_from_mock_: boolean;
+          id: number;
+          uuid: string;
+          salt: string;
+          refreshTokenKey: string;
+          passcode: string;
+          isActive: boolean;
+        },
+      ];
+    };
+
     const dbMock = {
       users: {
         findOneBy: findOneByFn,
@@ -46,39 +76,22 @@ describe('Cache user data tests', () => {
           return 1;
         },
         findBy: () => {
-          return [
-            {
-              _is_from_mock_: true,
-              id: 1,
-              uuid: '2eaa394a-649d-44c1-b797-4a9e4ed2f836',
-              salt: '22fae28a2abbb54a638cb5b7f1acb2e9',
-              refreshTokenKey: 'aedc7970d693ea6e4d71e39bffa7dc4034bae8e858b1ad2bb65a5ffd8356db41',
-              passcode:
-                '0054475aec0228265ef119a559090cf84fe6a986ce5fa6a621ea22d965087408aaab71efcb84eff4df5106bdd8304b0b8e446ff3ebdd555b588549e586df5c52',
-              isActive: true,
-              email: 'admin@domain.com',
-              phone: '123456789',
-              getFirstLastName: () => 'John Doe',
-              getFirstLastNameOrEmail: () => 'John Doe',
-              getLastFirstName: () => 'Doe John',
-              getLastFirstNameOrEmail: () => 'Doe John',
-              isAdmin: () => true,
-            } satisfies IUser & {
-              _is_from_mock_: boolean;
-              id: number;
-              uuid: string;
-              salt: string;
-              refreshTokenKey: string;
-              passcode: string;
-              isActive: boolean;
-            },
-          ];
+          return findBy();
         },
         update: () => {
           return { _is_from_mock_: true };
         },
         findOne: () => {
           return { _is_from_mock_: true };
+        },
+        createQueryBuilder: () => {
+          return {
+            where: () => {
+              return {
+                getOne: findBy,
+              };
+            },
+          };
         },
       },
       userSystemPermissions: {
