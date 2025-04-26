@@ -57,16 +57,12 @@ const objectsEqual = (x: any, y: any): boolean => {
 export const arraysEquals = (arr1: any[] | null | undefined, arr2: any[] | null | undefined): boolean => {
   if (
     (isNullOrUndefined(arr1) && isNullOrUndefined(arr2)) ||
-    (isNullOrUndefined(arr1) && (arr2?.length ?? 0) === 0) ||
-    (isNullOrUndefined(arr2) && (arr1?.length ?? 0) === 0) ||
-    ((arr1?.length ?? 0) === 0 && (arr2?.length ?? 0) === 0)
+    (isNullOrUndefined(arr1) && arr2!.length === 0) ||
+    (isNullOrUndefined(arr2) && arr1!.length === 0) ||
+    ((arr1?.length ?? 0) === 0 && arr2!.length === 0)
   ) {
     return true;
-  } else if (
-    (isNullOrUndefined(arr1) && (arr2?.length ?? 0) > 0) ||
-    (isNullOrUndefined(arr2) && (arr1?.length ?? 0) > 0) ||
-    arr1?.length !== arr2?.length
-  ) {
+  } else if ((isNullOrUndefined(arr1) && arr2!.length > 0) || (isNullOrUndefined(arr2) && arr1!.length > 0) || arr1!.length !== arr2!.length) {
     return false;
   }
 
@@ -78,7 +74,7 @@ export const arraysEquals = (arr1: any[] | null | undefined, arr2: any[] | null 
     return !arr1!.some(obj2 => objectsEqual(obj, obj2));
   });
 
-  return arr1?.length === arr2?.length && uniqueArr1?.length === 0 && uniqueArr2?.length === 0;
+  return arr1!.length === arr2!.length && uniqueArr1.length === 0 && uniqueArr2.length === 0;
 };
 
 export const isArray = (array: any): boolean => {
