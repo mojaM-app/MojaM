@@ -7,5 +7,3 @@ export type { IRequestWithIdentity } from './request.interfaces';
 export type { IGridPageResponseDto, IPageData, ISortData } from './grid/grid-page.response.dto';
 
 export type { IHasGuidId } from './IHasGuidId';
-
-export type { IHasDefaultValues } from './IHasDefaultValues';

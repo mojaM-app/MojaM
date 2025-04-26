@@ -80,12 +80,11 @@ describe('PUT /announcements', () => {
       expect(announcementsBeforeUpdate.createdAt).toBe(announcementsBeforeUpdate.updatedAt);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        setDefaultValues: () => {},
         items: announcementsBeforeUpdate.items.map(item => {
-          return { id: item.id, content: item.content, setDefaultValues: () => {} };
+          return { id: item.id, content: item.content };
         }),
       };
-      updateAnnouncementsModel.items!.push({ id: '', content: 'new item', setDefaultValues: () => {} });
+      updateAnnouncementsModel.items!.push({ id: '', content: 'new item' });
       expect(updateAnnouncementsModel.title).toBeUndefined();
       expect(updateAnnouncementsModel.validFromDate).toBeUndefined();
       announcementsBeforeUpdate.items.forEach((item, index) => {
@@ -201,11 +200,9 @@ describe('PUT /announcements', () => {
       expect(announcementsBeforeUpdate.createdAt).toBe(announcementsBeforeUpdate.updatedAt);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        setDefaultValues: () => {},
         items: announcementsBeforeUpdate.items.splice(-1).map((item, index) => ({
           id: item.id,
           content: `${index + 1}_New_Content_${item.id}`,
-          setDefaultValues: () => {},
         })),
       };
       expect(updateAnnouncementsModel.title).toBeUndefined();
@@ -323,11 +320,9 @@ describe('PUT /announcements', () => {
       expect(announcementsBeforeUpdate.createdAt).toBe(announcementsBeforeUpdate.updatedAt);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        setDefaultValues: () => {},
         items: announcementsBeforeUpdate.items.map((item, index) => ({
           id: item.id,
           content: `${index + 1}_New_Content_${item.id}`,
-          setDefaultValues: () => {},
         })),
       };
       expect(updateAnnouncementsModel.title).toBeUndefined();
@@ -442,7 +437,6 @@ describe('PUT /announcements', () => {
       expect(announcementsBeforeUpdate.createdAt).toBe(announcementsBeforeUpdate.updatedAt);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        setDefaultValues: () => {},
         title: 'New Title',
       };
       expect(requestData.title).not.toBe(updateAnnouncementsModel.title);
@@ -553,7 +547,6 @@ describe('PUT /announcements', () => {
       expect(announcementsBeforeUpdate.createdAt).toBe(announcementsBeforeUpdate.updatedAt);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        setDefaultValues: () => {},
         title: null,
       };
       expect(requestData.title).not.toBe(updateAnnouncementsModel.title);
@@ -663,7 +656,6 @@ describe('PUT /announcements', () => {
       expect(announcementsBeforeUpdate.createdAt).toBe(announcementsBeforeUpdate.updatedAt);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        setDefaultValues: () => {},
         validFromDate: generateRandomDate(),
       };
       expect(requestData.title).not.toBe(updateAnnouncementsModel.title);
@@ -772,7 +764,6 @@ describe('PUT /announcements', () => {
       expect(announcementsBeforeUpdate.createdAt).toBe(announcementsBeforeUpdate.updatedAt);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        setDefaultValues: () => {},
         validFromDate: null,
       };
       expect(requestData.title).not.toBe(updateAnnouncementsModel.title);
@@ -880,9 +871,7 @@ describe('PUT /announcements', () => {
       const { data: announcementsBeforeUpdate }: GetAnnouncementsResponseDto = body;
       expect(announcementsBeforeUpdate.createdAt).toBe(announcementsBeforeUpdate.updatedAt);
 
-      const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        setDefaultValues: () => {},
-      };
+      const updateAnnouncementsModel: UpdateAnnouncementsDto = {};
       expect(requestData.title).not.toBe(updateAnnouncementsModel.title);
       expect(requestData.validFromDate).not.toBe(updateAnnouncementsModel.validFromDate);
       const updateAnnouncementsResponse = await request(app.getServer())
@@ -989,7 +978,6 @@ describe('PUT /announcements', () => {
       expect(announcementsBeforeUpdate.createdAt).toBe(announcementsBeforeUpdate.updatedAt);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        setDefaultValues: () => {},
         title: undefined,
         validFromDate: undefined,
         items: undefined,
@@ -1093,7 +1081,6 @@ describe('PUT /announcements', () => {
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
         title: 'a'.repeat(VALIDATOR_SETTINGS.ANNOUNCEMENTS_TITLE_MAX_LENGTH + 1),
-        setDefaultValues: () => {},
       };
       const updateAnnouncementsResponse = await request(app.getServer())
         .put(announcementRoute.path + '/' + announcementsId)
@@ -1135,11 +1122,9 @@ describe('PUT /announcements', () => {
       expect(announcementsId).toBeDefined();
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        setDefaultValues: () => {},
         items: [
           {
             content: 'a'.repeat(VALIDATOR_SETTINGS.ANNOUNCEMENT_ITEM_CONTENT_MAX_LENGTH + 1),
-            setDefaultValues: () => {},
           },
         ],
       };
@@ -1184,11 +1169,9 @@ describe('PUT /announcements', () => {
       expect(announcementsId).toBeDefined();
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        setDefaultValues: () => {},
         items: [
           {
             content: '',
-            setDefaultValues: () => {},
           },
         ],
       };
@@ -1233,11 +1216,9 @@ describe('PUT /announcements', () => {
       expect(announcementsId).toBeDefined();
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        setDefaultValues: () => {},
         items: [
           {
             content: null as any,
-            setDefaultValues: () => {},
           },
         ],
       };
@@ -1282,11 +1263,9 @@ describe('PUT /announcements', () => {
       expect(announcementsId).toBeDefined();
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        setDefaultValues: () => {},
         items: [
           {
             content: undefined as any,
-            setDefaultValues: () => {},
           },
         ],
       };
@@ -1344,7 +1323,6 @@ describe('PUT /announcements', () => {
       expect(announcements2Id).toBeDefined();
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        setDefaultValues: () => {},
         validFromDate: d1,
       };
       expect(requestData.title).not.toBe(updateAnnouncementsModel.title);
@@ -1402,7 +1380,6 @@ describe('PUT /announcements', () => {
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        setDefaultValues: () => {},
         validFromDate: generateRandomDate(),
       };
       expect(requestData.validFromDate).not.toBe(updateAnnouncementsModel.validFromDate);
@@ -1445,7 +1422,6 @@ describe('PUT /announcements', () => {
       expect(publishAnnouncementsResponse.statusCode).toBe(200);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        setDefaultValues: () => {},
         validFromDate: null,
       };
       expect(requestData.validFromDate).not.toBe(updateAnnouncementsModel.validFromDate);

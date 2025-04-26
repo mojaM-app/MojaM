@@ -1,26 +1,25 @@
 import { VALIDATOR_SETTINGS } from '@config';
 import { events } from '@events';
 import { errorKeys } from '@exceptions';
-import { IHasDefaultValues, IResponse } from '@interfaces';
+import { DtoTransformFunctions } from '@helpers/DtoTransformFunctions';
+import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
-import { isNullOrUndefined } from '@utils';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsArray, IsDate, IsNotEmpty, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
 
-export class CreateAnnouncementItemDto implements IHasDefaultValues {
+export class CreateAnnouncementItemDto {
   @IsNotEmpty({ message: errorKeys.announcements.Item_Content_Is_Required })
   @IsString({ message: errorKeys.announcements.Item_Content_Is_Required })
   @MaxLength(VALIDATOR_SETTINGS.ANNOUNCEMENT_ITEM_CONTENT_MAX_LENGTH, { message: errorKeys.announcements.Item_Content_Too_Long })
+  @Transform(DtoTransformFunctions.getEmptyStringIfNotSet)
   public content: string;
 
-  public setDefaultValues(): void {
-    if (isNullOrUndefined(this.content)) {
-      this.content = '';
-    }
+  constructor() {
+    this.content = '';
   }
 }
 
-export class CreateAnnouncementsDto implements IHasDefaultValues {
+export class CreateAnnouncementsDto {
   @IsOptional()
   @MaxLength(VALIDATOR_SETTINGS.ANNOUNCEMENTS_TITLE_MAX_LENGTH, { message: errorKeys.announcements.Title_Too_Long })
   public title?: string | undefined;
@@ -35,14 +34,6 @@ export class CreateAnnouncementsDto implements IHasDefaultValues {
   @Type(() => CreateAnnouncementItemDto)
   @ValidateNested({ each: true })
   public items?: CreateAnnouncementItemDto[];
-
-  public setDefaultValues(): void {
-    if ((this.items?.length ?? 0) > 0) {
-      this.items!.forEach((item: CreateAnnouncementItemDto) => {
-        item.setDefaultValues();
-      });
-    }
-  }
 }
 
 export class CreateAnnouncementsReqDto extends BaseReqDto {

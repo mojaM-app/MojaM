@@ -785,14 +785,12 @@ describe('DELETE /user', () => {
         ?.accessToken;
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        setDefaultValues: () => {},
         items: announcementsBeforeUpdate.items.map(item => ({
           id: item.id,
           content: item.content,
-          setDefaultValues: () => {},
         })),
       };
-      updateAnnouncementsModel.items?.push({ id: '', content: 'new item', setDefaultValues: () => {} });
+      updateAnnouncementsModel.items?.push({ id: '', content: 'new item' });
       const updateAnnouncementsResponse = await request(app.getServer())
         .put(announcementRoute.path + '/' + announcementsId)
         .send(updateAnnouncementsModel)
@@ -905,11 +903,9 @@ describe('DELETE /user', () => {
         ?.accessToken;
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        setDefaultValues: () => {},
         items: announcementsBeforeUpdate.items.map((item, index) => ({
           id: item.id,
           content: `${index + 1}_New_Content_${item.id}`,
-          setDefaultValues: () => {},
         })),
       };
       const updateAnnouncementsResponse = await request(app.getServer())

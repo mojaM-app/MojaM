@@ -20,4 +20,11 @@ export abstract class DtoTransformFunctions {
   public static returnNullIfEmpty = (params: TransformFnParams): string | null => {
     return params.value === '' ? null : params.value;
   };
+
+  /**
+   * Return empty string if value is null or undefined
+   */
+  public static getEmptyStringIfNotSet = (params: TransformFnParams): string => {
+    return params.value === null || params.value === undefined ? '' : params.value;
+  };
 }

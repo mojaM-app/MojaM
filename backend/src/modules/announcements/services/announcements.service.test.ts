@@ -17,7 +17,6 @@ describe('UserRepository tests', () => {
           title: 'title',
           validFromDate: new Date(),
           items: [],
-          setDefaultValues: (): void => {},
         } satisfies UpdateAnnouncementsDto,
         currentUserId: undefined,
       } satisfies UpdateAnnouncementsReqDto);
@@ -31,7 +30,6 @@ describe('UserRepository tests', () => {
           title: 'title',
           validFromDate: new Date(),
           items: [],
-          setDefaultValues: (): void => {},
         } satisfies UpdateAnnouncementsDto,
         currentUserId: undefined,
       } satisfies UpdateAnnouncementsReqDto);

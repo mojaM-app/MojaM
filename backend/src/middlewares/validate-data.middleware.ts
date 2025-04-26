@@ -1,5 +1,4 @@
 import { BadRequestException } from '@exceptions';
-import { IHasDefaultValues } from '@interfaces';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject, ValidationError } from 'class-validator';
 import { NextFunction, Request, Response } from 'express';
@@ -26,9 +25,7 @@ const getErrorConstraints = (error: ValidationError | null | undefined): string[
 export const validateData = (type: any, skipMissingProperties = false, whitelist = false, forbidNonWhitelisted = false) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     const dto = plainToInstance(type, req.body);
-    if ('setDefaultValues' in dto) {
-      (dto as IHasDefaultValues).setDefaultValues();
-    }
+
     validateOrReject(dto, { skipMissingProperties, whitelist, forbidNonWhitelisted })
       .then(() => {
         req.body = dto;

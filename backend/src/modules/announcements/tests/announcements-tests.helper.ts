@@ -8,22 +8,17 @@ const generateValidAnnouncements = (): CreateAnnouncementsDto => {
     items: [
       {
         content: '1' + generateRandomString(400),
-        setDefaultValues: () => {},
       } satisfies CreateAnnouncementItemDto,
       {
         content: '2' + generateRandomString(800),
-        setDefaultValues: () => {},
       } satisfies CreateAnnouncementItemDto,
       {
         content: '3' + generateRandomString(1500),
-        setDefaultValues: () => {},
       } satisfies CreateAnnouncementItemDto,
       {
         content: '4' + generateRandomString(255),
-        setDefaultValues: () => {},
       } satisfies CreateAnnouncementItemDto,
     ],
-    setDefaultValues: () => {},
   } satisfies CreateAnnouncementsDto;
 };
 
