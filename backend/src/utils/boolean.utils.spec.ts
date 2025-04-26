@@ -51,4 +51,27 @@ describe('toBoolean', () => {
     expect(toBoolean({})).toBe(false);
     expect(toBoolean([])).toBe(false);
   });
+
+  it('should return false for case-sensitive variants of true', () => {
+    expect(toBoolean('True')).toBe(false);
+    expect(toBoolean('TRUE')).toBe(false);
+  });
+
+  it('should return false for whitespace-padded strings', () => {
+    expect(toBoolean(' true')).toBe(false);
+    expect(toBoolean('true ')).toBe(false);
+    expect(toBoolean(' 1')).toBe(false);
+    expect(toBoolean('1 ')).toBe(false);
+  });
+
+  it('should return false for boolean-like objects', () => {
+    expect(toBoolean(new Boolean(true))).toBe(false);
+    expect(toBoolean(Boolean(1))).toBe(true); // This will be coerced to primitive true
+  });
+
+  it('should return false for numeric values other than 1', () => {
+    expect(toBoolean(2)).toBe(false);
+    expect(toBoolean(-1)).toBe(false);
+    expect(toBoolean(1.1)).toBe(false);
+  });
 });
