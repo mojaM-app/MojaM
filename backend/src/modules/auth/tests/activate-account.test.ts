@@ -9,6 +9,7 @@ import {
   ActivateAccountResponseDto,
   AuthRoute,
   GetAccountBeforeLogInResponseDto,
+  IActivateAccountResultDto,
   IGetAccountBeforeLogInResultDto,
   LoginDto,
 } from '@modules/auth';
@@ -70,7 +71,7 @@ describe('POST /auth/activate-account/', () => {
       const { data: userToActivateResult } = body;
       expect(userToActivateResult).toStrictEqual({
         isActive: true,
-      });
+      } satisfies IActivateAccountResultDto);
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
         expect(eventHandler).not.toHaveBeenCalled();
@@ -88,7 +89,7 @@ describe('POST /auth/activate-account/', () => {
       const { data: userToActivateResult } = body as ActivateAccountResponseDto;
       expect(userToActivateResult).toStrictEqual({
         isActive: true,
-      });
+      } satisfies IActivateAccountResultDto);
 
       response = await request(app.getServer())
         .post(authRoute.getAccountBeforeLogInPath)
@@ -129,7 +130,7 @@ describe('POST /auth/activate-account/', () => {
       const { data: userToActivateResult }: ActivateAccountResponseDto = body;
       expect(userToActivateResult).toStrictEqual({
         isActive: true,
-      });
+      } satisfies IActivateAccountResultDto);
 
       const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
       expect(newUserAccessToken).toBeDefined();
@@ -190,7 +191,7 @@ describe('POST /auth/activate-account/', () => {
       const { data: userToActivateResult }: ActivateAccountResponseDto = body;
       expect(userToActivateResult).toStrictEqual({
         isActive: true,
-      });
+      } satisfies IActivateAccountResultDto);
 
       const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
       expect(newUserAccessToken).toBeDefined();
@@ -251,7 +252,7 @@ describe('POST /auth/activate-account/', () => {
       const { data: userToActivateResult }: ActivateAccountResponseDto = body;
       expect(userToActivateResult).toStrictEqual({
         isActive: true,
-      });
+      } satisfies IActivateAccountResultDto);
 
       const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
       expect(newUserAccessToken).toBeDefined();
@@ -313,7 +314,7 @@ describe('POST /auth/activate-account/', () => {
       const { data: userToActivateResult }: ActivateAccountResponseDto = body;
       expect(userToActivateResult).toStrictEqual({
         isActive: true,
-      });
+      } satisfies IActivateAccountResultDto);
 
       const loginData: LoginDto = { email: requestData.email, passcode: requestData.passcode };
       let loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
@@ -382,7 +383,7 @@ describe('POST /auth/activate-account/', () => {
       const { data: userToActivateResult }: ActivateAccountResponseDto = body;
       expect(userToActivateResult).toStrictEqual({
         isActive: true,
-      });
+      } satisfies IActivateAccountResultDto);
 
       const loginData: LoginDto = { email: requestData.email, passcode: requestData.passcode };
       let loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
@@ -453,7 +454,7 @@ describe('POST /auth/activate-account/', () => {
       const { data: userToActivateResult }: ActivateAccountResponseDto = body;
       expect(userToActivateResult).toStrictEqual({
         isActive: true,
-      });
+      } satisfies IActivateAccountResultDto);
 
       const getUserResponse = await request(app.getServer())
         .get(userRoute.path + '/' + user.id)
@@ -532,7 +533,7 @@ describe('POST /auth/activate-account/', () => {
       const { data: userToActivateResult }: ActivateAccountResponseDto = body;
       expect(userToActivateResult).toStrictEqual({
         isActive: true,
-      });
+      } satisfies IActivateAccountResultDto);
 
       const loginData: LoginDto = { email: requestData.email, passcode: password };
       const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
@@ -604,7 +605,7 @@ describe('POST /auth/activate-account/', () => {
       const { data: userToActivateResult }: ActivateAccountResponseDto = body;
       expect(userToActivateResult).toStrictEqual({
         isActive: true,
-      });
+      } satisfies IActivateAccountResultDto);
 
       const loginData: LoginDto = { email: requestData.email, passcode: pin };
       const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
