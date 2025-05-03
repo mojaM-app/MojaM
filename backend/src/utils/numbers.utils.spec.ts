@@ -112,7 +112,26 @@ describe('numbers.utils', () => {
         }),
       ).toBe(null);
     });
+
+    it('Check if result is correct with very large and very small numbers', () => {
+      expect(toNumber(Number.MAX_SAFE_INTEGER)).toBe(Number.MAX_SAFE_INTEGER);
+      expect(toNumber(Number.MIN_SAFE_INTEGER)).toBe(Number.MIN_SAFE_INTEGER);
+      expect(toNumber(Number.MAX_SAFE_INTEGER + '')).toBe(Number.MAX_SAFE_INTEGER);
+      expect(toNumber(Number.MIN_SAFE_INTEGER + '')).toBe(Number.MIN_SAFE_INTEGER);
+      expect(toNumber('1e10')).toBe(10000000000);
+      expect(toNumber('1e-10')).toBe(0.0000000001);
+    });
+
+    it('Check if result is correct with scientific notation', () => {
+      expect(toNumber('1e3')).toBe(1000);
+      expect(toNumber('1.5e2')).toBe(150);
+      expect(toNumber('-1e3')).toBe(-1000);
+      expect(toNumber('-1.5e2')).toBe(-150);
+      expect(toNumber('1.23E+4')).toBe(12300);
+      expect(toNumber('1.23E-4')).toBe(0.000123);
+    });
   });
+
   describe('isNumber', () => {
     it('Check if result is TRUE', () => {
       expect(isNumber(0)).toBe(true);
@@ -204,7 +223,16 @@ describe('numbers.utils', () => {
       expect(isNumber([])).toBe(false);
       expect(isNumber(() => {})).toBe(false);
     });
+
+    it('Check if result is TRUE for scientific notation', () => {
+      expect(isNumber('1e3')).toBe(true);
+      expect(isNumber('1.5e2')).toBe(true);
+      expect(isNumber('-1e3')).toBe(true);
+      expect(isNumber('1.23E+4')).toBe(true);
+      expect(isNumber('1.23E-4')).toBe(true);
+    });
   });
+
   describe('isPositiveNumber', () => {
     it('Check if result is TRUE if we provide a valid positive string/number', () => {
       expect(isPositiveNumber(1)).toBe(true);
@@ -277,6 +305,48 @@ describe('numbers.utils', () => {
       expect(isPositiveNumber({})).toBe(false);
       expect(isPositiveNumber([])).toBe(false);
       expect(isPositiveNumber(() => {})).toBe(false);
+    });
+
+    it('Check if result is TRUE for positive numbers with scientific notation', () => {
+      expect(isPositiveNumber('1e3')).toBe(true);
+      expect(isPositiveNumber('1.5e2')).toBe(true);
+      expect(isPositiveNumber('1.23E+4')).toBe(true);
+      expect(isPositiveNumber('1.23E-4')).toBe(true);
+    });
+
+    it('Check behavior with edge cases and special values', () => {
+      expect(isPositiveNumber(Number.MIN_VALUE)).toBe(true); // Smallest positive number
+      expect(isPositiveNumber(Number.EPSILON)).toBe(true); // Smallest number larger than 0
+      expect(isPositiveNumber(Number.MAX_VALUE)).toBe(true); // Largest representable number
+      expect(isPositiveNumber('0.0000001')).toBe(true);
+      expect(isPositiveNumber('0.0')).toBe(false); // Should be false as it's zero
+      expect(isPositiveNumber(1e-10)).toBe(true); // Small positive number
+      expect(isPositiveNumber(-1e-10)).toBe(false); // Small negative number
+    });
+  });
+
+  describe('Special number formatting cases', () => {
+    it('should handle simple formatted numbers correctly', () => {
+      // When spaces are removed and comma is replaced with dot, '1,000' becomes '1.000' which is 1
+      expect(toNumber('1,000')).toBe(1);
+      expect(isNumber('1,000')).toBe(true);
+      expect(isPositiveNumber('1,000')).toBe(true);
+
+      // Current implementation only replaces first comma
+      expect(toNumber('1,000,000')).toBe(null);
+      expect(isNumber('1,000,000')).toBe(false);
+      expect(isPositiveNumber('1,000,000')).toBe(false);
+    });
+
+    it('should handle decimal notation as expected by implementation', () => {
+      expect(toNumber('1000.25')).toBe(1000.25);
+      expect(isNumber('1000.25')).toBe(true);
+      expect(isPositiveNumber('1000.25')).toBe(true);
+
+      // In the current implementation, only the first comma is replaced
+      expect(toNumber('1,000.25')).toBe(null);
+      expect(isNumber('1,000.25')).toBe(false);
+      expect(isPositiveNumber('1,000.25')).toBe(false);
     });
   });
 });
