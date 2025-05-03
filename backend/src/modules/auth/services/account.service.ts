@@ -131,11 +131,12 @@ export class AccountService extends BaseService {
   public async unlockAccount(reqDto: UnlockAccountReqDto): Promise<IUnlockAccountResultDto> {
     const user: User | null = await this._userRepository.getByUuid(reqDto.userGuid);
 
-    if (isNullOrUndefined(user) || !user!.isLockedOut) {
+    if (isNullOrUndefined(user) || (!user!.isLockedOut && user!.failedLoginAttempts === 0)) {
       return {
         success: true,
       } satisfies IUnlockAccountResultDto;
     }
+
     const updatedUser = await this._userRepository.unlock(user!.id);
 
     this._eventDispatcher.dispatch(events.users.userUnlocked, new UserUnlockedEvent(updatedUser!, undefined));
