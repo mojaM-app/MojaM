@@ -1,4 +1,4 @@
-import { isNullOrEmptyString, isString } from './strings.utils';
+import { isEmptyString, isNullOrEmptyString, isString } from './strings.utils';
 
 describe('isNullOrEmptyString', () => {
   it('should return true for empty string', () => {
@@ -14,6 +14,9 @@ describe('isNullOrEmptyString', () => {
     expect(isNullOrEmptyString(' Hello, world!')).toBe(false);
     expect(isNullOrEmptyString(' Hello, world! ')).toBe(false);
     expect(isNullOrEmptyString('Hello, world! ')).toBe(false);
+    expect(isNullOrEmptyString('0')).toBe(false);
+    expect(isNullOrEmptyString('false')).toBe(false);
+    expect(isNullOrEmptyString('true')).toBe(false);
   });
 
   it('should return true for null value', () => {
@@ -45,6 +48,8 @@ describe('isNullOrEmptyString', () => {
         return 'hello, world!';
       }),
     ).toBe(false);
+    expect(isNullOrEmptyString(true)).toBe(false);
+    expect(isNullOrEmptyString(false)).toBe(false);
   });
 });
 
@@ -56,6 +61,9 @@ describe('isString', () => {
     expect(isString('\n')).toBe(true);
     expect(isString('\r')).toBe(true);
     expect(isString('\t')).toBe(true);
+    expect(isString('0')).toBe(true);
+    expect(isString('false')).toBe(true);
+    expect(isString('true')).toBe(true);
   });
 
   it('should return false for non-string value', () => {
@@ -81,5 +89,44 @@ describe('isString', () => {
         return 'hello, world!';
       }),
     ).toBe(false);
+    expect(isString(true)).toBe(false);
+    expect(isString(false)).toBe(false);
+  });
+});
+
+describe('isEmptyString', () => {
+  it('should return true for empty string', () => {
+    expect(isEmptyString('')).toBe(true);
+  });
+
+  it('should return false for non-empty string', () => {
+    expect(isEmptyString('\n')).toBe(false);
+    expect(isEmptyString('\r')).toBe(false);
+    expect(isEmptyString('\t')).toBe(false);
+    expect(isEmptyString(' ')).toBe(false);
+    expect(isEmptyString('Hello, world!')).toBe(false);
+    expect(isEmptyString(' Hello, world!')).toBe(false);
+    expect(isEmptyString(' Hello, world! ')).toBe(false);
+    expect(isEmptyString('Hello, world! ')).toBe(false);
+  });
+
+  it('should return false for null value', () => {
+    expect(isEmptyString(null)).toBe(false);
+  });
+
+  it('should return false for undefined value', () => {
+    expect(isEmptyString(undefined)).toBe(false);
+  });
+
+  it('should return false for non-string value', () => {
+    expect(isEmptyString(123)).toBe(false);
+    expect(isEmptyString(new Date())).toBe(false);
+    expect(isEmptyString(new String())).toBe(false);
+    expect(isEmptyString(new Number())).toBe(false);
+    expect(isEmptyString({})).toBe(false);
+    expect(isEmptyString([])).toBe(false);
+    expect(isEmptyString(() => {})).toBe(false);
+    expect(isEmptyString(true)).toBe(false);
+    expect(isEmptyString(false)).toBe(false);
   });
 });
