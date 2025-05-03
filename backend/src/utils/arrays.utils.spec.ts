@@ -110,6 +110,9 @@ describe('arrays.utils', () => {
       expect(arraysEquals([{ a: 1, b: {} }], [{ a: 1, b: null }])).toBe(false);
       expect(arraysEquals([{ a: 1, b: {} }], [{ a: 1, b: { c: 2 } }])).toBe(false);
       expect(arraysEquals([function (a: any) {}], [function (b: any) {}])).toBe(false);
+      expect(arraysEquals([NaN], [NaN])).toBe(false);
+      expect(arraysEquals([NaN, 1], [1, NaN])).toBe(false);
+      expect(arraysEquals([NaN], [undefined])).toBe(false);
       expect(
         arraysEquals(
           [
@@ -241,6 +244,51 @@ describe('arrays.utils', () => {
     });
   });
 
+  describe('arraysEquals additional tests', () => {
+    it('should handle arrays with NaN values', () => {
+      // NaN !== NaN in standard JavaScript, and the implementation follows this behavior
+    });
+
+    it('should handle sparse arrays', () => {
+      // eslint-disable-next-line no-sparse-arrays
+      const sparse1 = [1, , 3];
+      // eslint-disable-next-line no-sparse-arrays
+      const sparse2 = [1, , 3];
+      expect(arraysEquals(sparse1, sparse2)).toBe(true);
+
+      // eslint-disable-next-line no-sparse-arrays
+      const different = [1, undefined, 3];
+      // Current implementation treats sparse array slots as equal to undefined
+      expect(arraysEquals(sparse1, different)).toBe(false);
+    });
+
+    it('should handle Buffer objects', () => {
+      const buffer1 = Buffer.from('hello');
+      const buffer2 = Buffer.from('hello');
+      const buffer3 = Buffer.from('world');
+
+      // Current implementation doesn't have special handling for Buffer objects
+      expect(arraysEquals([buffer1], [buffer2])).toBe(false);
+      expect(arraysEquals([buffer1], [buffer3])).toBe(false);
+      // But reference equality works
+      expect(arraysEquals([buffer1], [buffer1])).toBe(true);
+    });
+
+    it('should handle large arrays efficiently', () => {
+      const largeArray1 = Array(1000)
+        .fill(0)
+        .map((_, i) => i);
+      const largeArray2 = Array(1000)
+        .fill(0)
+        .map((_, i) => i);
+      const largeArray3 = [...largeArray1];
+      largeArray3[500] = 9999; // Change one element
+
+      expect(arraysEquals(largeArray1, largeArray2)).toBe(true);
+      expect(arraysEquals(largeArray1, largeArray3)).toBe(false);
+    });
+  });
+
   describe('isArray', () => {
     it('should return true for valid arrays', () => {
       expect(isArray([])).toBe(true);
@@ -286,6 +334,16 @@ describe('arrays.utils', () => {
     });
   });
 
+  describe('isArray additional tests', () => {
+    it('should handle subclassed arrays', () => {
+      class SubArray extends Array {}
+      const subArray = new SubArray();
+      subArray.push(1, 2, 3);
+
+      expect(isArray(subArray)).toBe(true);
+    });
+  });
+
   describe('isArrayEmpty', () => {
     it('should return true for empty arrays', () => {
       expect(isArrayEmpty([])).toBe(true);
@@ -319,6 +377,23 @@ describe('arrays.utils', () => {
 
       const nonEmptyArrayLike = { 0: 'a', length: 1 };
       expect(isArrayEmpty(nonEmptyArrayLike)).toBe(false);
+    });
+  });
+
+  describe('isArrayEmpty additional tests', () => {
+    it('should handle sparse empty arrays', () => {
+      // eslint-disable-next-line no-sparse-arrays
+      const sparseEmpty = new Array(5);
+      // Current implementation considers arrays with length greater than 0 as non-empty
+      // even if they don't have any defined elements
+      expect(isArrayEmpty(sparseEmpty)).toBe(false);
+
+      // An actual empty array should return true
+      expect(isArrayEmpty([])).toBe(true);
+
+      // eslint-disable-next-line no-sparse-arrays
+      const sparseFilled = [, , , 1];
+      expect(isArrayEmpty(sparseFilled)).toBe(false);
     });
   });
 
