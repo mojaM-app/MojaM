@@ -3,7 +3,7 @@ export const events = {
     retrieved: 'onInformationRetrieved',
   },
   calendar: {
-    retrieved: 'onCalendarRetrieved',
+    eventsRetrieved: 'onCalendarEventsRetrieved',
   },
   announcements: {
     currentAnnouncementsRetrieved: 'onCurrentAnnouncementsRetrieved',

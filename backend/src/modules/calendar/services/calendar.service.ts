@@ -1,4 +1,5 @@
-import { GoogleCalendarService, ICalendarEventDto } from '@modules/calendar';
+import { events } from '@events';
+import { CalendarEventsRetrievedEvent, GetCalendarEventsReqDto, GoogleCalendarService, ICalendarEventDto } from '@modules/calendar';
 import { BaseService } from '@modules/common';
 import Container, { Service } from 'typedi';
 
@@ -11,8 +12,14 @@ export class CalendarService extends BaseService {
     this._googleCalendarService = Container.get(GoogleCalendarService);
   }
 
-  public async getEvents(startDate: Date, endDate: Date): Promise<ICalendarEventDto[]> {
-    const events = await this._googleCalendarService.getEvents(startDate, endDate);
-    return events ?? [];
+  public async getEvents(reqDto: GetCalendarEventsReqDto): Promise<ICalendarEventDto[]> {
+    const result = await this._googleCalendarService.getEvents(reqDto.startDate, reqDto.endDate);
+
+    this._eventDispatcher.dispatch(
+      events.calendar.eventsRetrieved,
+      new CalendarEventsRetrievedEvent(reqDto.startDate, reqDto.endDate, reqDto.currentUserId),
+    );
+
+    return result ?? [];
   }
 }

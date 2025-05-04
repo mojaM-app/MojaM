@@ -1,0 +1,12 @@
+import { Event } from '@events';
+
+export class CalendarEventsRetrievedEvent extends Event {
+  public readonly startDate: Date;
+  public readonly endDate: Date;
+
+  constructor(startDate: Date, endDate: Date, currentUserId: number | undefined) {
+    super(currentUserId);
+    this.startDate = startDate;
+    this.endDate = endDate;
+  }
+}

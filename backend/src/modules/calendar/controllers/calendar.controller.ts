@@ -1,5 +1,6 @@
+import { BadRequestException, errorKeys } from '@exceptions';
 import { IRequestWithIdentity } from '@interfaces';
-import { CalendarService, GetCalendarEventsResponseDto } from '@modules/calendar';
+import { CalendarService, GetCalendarEventsReqDto, GetCalendarEventsResponseDto } from '@modules/calendar';
 import { BaseController } from '@modules/common';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
@@ -14,12 +15,48 @@ export class CalendarController extends BaseController {
 
   public getEvents = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const startDate = new Date(req?.query?.start?.toString() ?? new Date().toISOString());
-      const endDate = new Date(req?.query?.end?.toString() ?? new Date().toISOString());
-      const result = await this._calendarService.getEvents(startDate, endDate);
+      const startDate = req?.query?.start?.toString();
+      const isoStartDate = this.getISODate(startDate);
+      if (isoStartDate && !this.isValidISODate(isoStartDate)) {
+        throw new BadRequestException(errorKeys.calendar.Invalid_Start_Date, { startDate: startDate });
+      }
+
+      const endDate = req?.query?.end?.toString();
+      const isoEndDate = this.getISODate(endDate);
+      if (isoEndDate && !this.isValidISODate(isoEndDate)) {
+        throw new BadRequestException(errorKeys.calendar.Invalid_End_Date, { endDate: endDate });
+      }
+
+      const result = await this._calendarService.getEvents(new GetCalendarEventsReqDto(isoStartDate, isoEndDate, this.getCurrentUserId(req)));
       res.status(200).json(new GetCalendarEventsResponseDto(result));
     } catch (error) {
       next(error);
     }
   };
+
+  private isValidISODate(dateString: string): boolean {
+    try {
+      if (!dateString) {
+        return false;
+      }
+
+      const date = new Date(dateString);
+      return !isNaN(date.getTime()) && dateString === date.toISOString();
+    } catch {
+      return false;
+    }
+  }
+
+  private getISODate(date: string | undefined): string | undefined {
+    if (!date) {
+      return undefined;
+    }
+    let dateString = date.toString();
+
+    if (!dateString.includes('T')) {
+      dateString += 'T00:00:00.000Z';
+    }
+
+    return dateString;
+  }
 }

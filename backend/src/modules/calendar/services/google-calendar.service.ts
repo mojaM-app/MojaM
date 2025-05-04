@@ -1,7 +1,7 @@
 import { GOOGLE_API_CLIENT_ID, GOOGLE_API_CLIENT_SECRET, GOOGLE_API_REFRESH_TOKEN, GOOGLE_CALENDAR_ID } from '@config';
 import { ICalendarEventDto } from '@modules/calendar';
 import { logger } from '@modules/logger';
-import { isNullOrEmptyString } from '@utils';
+import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { calendar_v3, google } from 'googleapis';
 import { Service } from 'typedi';
 import Calendar = calendar_v3.Calendar;
@@ -45,53 +45,65 @@ export class GoogleCalendarService {
 
     const events = calendarResponse.data?.items;
 
+    return this.processEvents(events);
+  }
+
+  private processEvents(events: Schema$Event[] | undefined): ICalendarEventDto[] {
     if ((events?.length ?? 0) === 0) {
       return [];
     }
 
     return events!.map((event: Schema$Event) => {
-      return {
-        start: this.getStartDate(event.start),
-        end: this.getEndDate(event.end),
-        title: event.summary,
-        allDay: event.start?.date !== undefined,
-        location: event.location,
-      } satisfies ICalendarEventDto;
+      return this.processEvent(event);
     });
   }
 
-  private getEndDate(date: Schema$EventDateTime | undefined): Date | undefined {
-    if (date?.date !== undefined) {
-      const endDate = new Date(date.date!);
-      endDate.setDate(endDate.getDate() - 1);
+  private processEvent(event: Schema$Event): ICalendarEventDto {
+    return {
+      start: this.getStartDate(event.start),
+      end: this.getEndDate(event.end),
+      title: event.summary,
+      allDay: this.isAllDayEvent(event.start),
+      location: event.location,
+    } satisfies ICalendarEventDto;
+  }
 
-      return this.getDate({
-        date: endDate.toISOString().split('.')[0],
+  private getEndDate(date: Schema$EventDateTime | undefined): Date | undefined {
+    if (!isNullOrEmptyString(date?.date)) {
+      const endDate = this.getDate({
+        dateTime: date!.date + 'T00:00:00Z',
+        timeZone: 'UTC',
       } satisfies Schema$EventDateTime);
+
+      endDate!.setDate(endDate!.getDate() - 1);
+
+      return endDate;
     }
 
     return this.getDate(date);
   }
 
   private getStartDate(date: Schema$EventDateTime | undefined): Date | undefined {
-    if (date?.date !== undefined) {
+    if (!isNullOrEmptyString(date?.date)) {
       return this.getDate({
-        date: date.date + 'T00:00:00',
+        dateTime: date!.date + 'T00:00:00Z',
+        timeZone: 'UTC',
       } satisfies Schema$EventDateTime);
     }
 
     return this.getDate(date);
   }
 
-  private getDate(date?: Schema$EventDateTime | undefined): Date | undefined {
-    if (date === undefined) {
+  private getDate(date?: Schema$EventDateTime | undefined | null): Date | undefined {
+    if (isNullOrUndefined(date)) {
       return undefined;
     }
 
-    const value = date.dateTime ?? date.date;
+    const value = date!.dateTime ?? date!.date;
     if (isNullOrEmptyString(value)) {
       return undefined;
     }
+
     return this.parseDateTime(value);
   }
 
@@ -102,5 +114,9 @@ export class GoogleCalendarService {
     const date = new Date(value!);
 
     return date;
+  }
+
+  private isAllDayEvent(start?: Schema$EventDateTime): boolean {
+    return (start?.date?.length ?? 0) > 0;
   }
 }

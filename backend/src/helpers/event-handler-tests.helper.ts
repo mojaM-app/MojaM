@@ -16,6 +16,7 @@ import {
   UserPasscodeChangedEvent,
   UserRefreshedTokenEvent,
 } from '@modules/auth';
+import { CalendarEventsRetrievedEvent } from '@modules/calendar';
 import { PermissionAddedEvent, PermissionDeletedEvent, PermissionsRetrievedEvent } from '@modules/permissions';
 import {
   UserActivatedEvent,
@@ -61,6 +62,7 @@ const testEventHandlers: {
   onAnnouncementsPublished: (data: any) => void;
   onAnnouncementsDeleted: (data: any) => void;
   onAnnouncementsUpdated: (data: any) => void;
+  onCalendarEventsRetrieved: (data: any) => void;
 } = {
   onUserLoggedIn: jest.fn((data: UserLoggedInEvent) => {}),
   onUserRefreshedToken: jest.fn((data: UserRefreshedTokenEvent) => {}),
@@ -90,6 +92,7 @@ const testEventHandlers: {
   onAnnouncementsPublished: jest.fn((data: AnnouncementsPublishedEvent) => {}),
   onAnnouncementsDeleted: jest.fn((data: AnnouncementsDeletedEvent) => {}),
   onAnnouncementsUpdated: jest.fn((data: AnnouncementsUpdatedEvent) => {}),
+  onCalendarEventsRetrieved: jest.fn((data: CalendarEventsRetrievedEvent) => {}),
 };
 
 const registerTestEventHandlers = (eventDispatcher: EventDispatcher): void => {
