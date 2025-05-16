@@ -1,4 +1,4 @@
-import { IUserId } from '@modules/users';
+import { IUserId } from '../users/IUser.Id';
 
 export interface IUpdateAnnouncementItem {
   id: string;

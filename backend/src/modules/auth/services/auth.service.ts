@@ -1,4 +1,5 @@
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
+import { userToIUser } from '@db';
 import { events } from '@events';
 import { BadRequestException, errorKeys, TranslatableHttpException } from '@exceptions';
 import {
@@ -23,14 +24,14 @@ import {
   getTokenAudience,
   getTokenIssuer,
 } from '@modules/auth/middlewares/set-identity.middleware';
-import { BaseService, userToIUser } from '@modules/common';
+import { BaseService } from '@modules/common';
 import { UserPermissionsRepository } from '@modules/permissions';
 import { UserRepository } from '@modules/users';
-import { User } from '@modules/users/entities/user.entity';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { decode, JwtPayload, sign, verify, VerifyErrors } from 'jsonwebtoken';
 import StatusCode from 'status-code-enum';
 import { Container, Service } from 'typedi';
+import { User } from './../../../dataBase/entities/users/user.entity';
 
 @Service()
 export class AuthService extends BaseService {

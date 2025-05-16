@@ -4,7 +4,7 @@ import { GetUserListReqDto, GetUserListResponseDto, UserListService, UsersGridPa
 import { toNumber } from '@utils';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
-import { UserListViewColumns } from '../entities/vUser.entity';
+import { UserListViewColumns } from './../../../dataBase/entities/users/vUser.entity';
 
 export class UserListController extends BaseController {
   private readonly _service: UserListService;

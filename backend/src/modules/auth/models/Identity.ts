@@ -1,4 +1,4 @@
-import { SystemPermissions } from '@modules/permissions';
+import { SystemPermissions } from '@core';
 
 export class Identity {
   public get userId(): number | undefined {

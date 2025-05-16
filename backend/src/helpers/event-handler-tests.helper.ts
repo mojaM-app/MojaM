@@ -33,7 +33,7 @@ import {
 } from '@modules/users';
 import { EventDispatcher } from 'event-dispatch';
 
-const testEventHandlers: {
+export const testEventHandlers: {
   onUserLoggedIn: (data: any) => void;
   onUserRefreshedToken: (data: any) => void;
   inactiveUserTriesToLogIn: (data: any) => void;
@@ -95,10 +95,8 @@ const testEventHandlers: {
   onCalendarEventsRetrieved: jest.fn((data: CalendarEventsRetrievedEvent) => {}),
 };
 
-const registerTestEventHandlers = (eventDispatcher: EventDispatcher): void => {
+export const registerTestEventHandlers = (eventDispatcher: EventDispatcher): void => {
   Object.entries(testEventHandlers).forEach(([event, eventHandler]) => {
     eventDispatcher.on(event, eventHandler);
   });
 };
-
-export { registerTestEventHandlers, testEventHandlers };

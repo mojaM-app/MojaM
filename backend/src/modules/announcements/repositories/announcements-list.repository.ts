@@ -1,7 +1,7 @@
 import { IGridPageResponseDto, IPageData, ISortData } from '@interfaces';
 import { BaseRepository } from '@modules/common';
 import { Service } from 'typedi';
-import { vAnnouncement } from '../entities/vAnnouncement.entity';
+import { vAnnouncement } from '../../../dataBase/entities/announcements/vAnnouncement.entity';
 
 @Service()
 export class AnnouncementsListRepository extends BaseRepository {

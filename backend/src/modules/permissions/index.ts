@@ -8,8 +8,6 @@ export { PermissionAddedEvent } from './events/permission-added-event';
 export { PermissionDeletedEvent } from './events/permission-deleted-event';
 export { PermissionsRetrievedEvent } from './events/permissions-retrieved-event';
 
-export { SystemPermissions } from './enums/system-permissions.enum';
-
 export { PermissionsRepository } from './repositories/permissions.repository';
 export { UserPermissionsRepository } from './repositories/user-permissions.repository';
 
@@ -17,5 +15,3 @@ export { PermissionsRoute } from './routes/permissions.routes';
 
 export { PermissionsCacheService } from './services/permissions-cache.service';
 export { PermissionsService } from './services/permissions.service';
-
-export type { IPermissionId } from './interfaces/IPermissionId';

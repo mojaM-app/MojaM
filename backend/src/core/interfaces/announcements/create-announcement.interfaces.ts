@@ -1,5 +1,5 @@
-import { IUserId } from '@modules/users';
 import { IAnnouncementId } from './IAnnouncementId';
+import { IUserId } from '../users/IUser.Id';
 
 export interface ICreateAnnouncementItem {
   announcement: IAnnouncementId;

@@ -9,7 +9,7 @@ import { BaseController } from '@modules/common';
 import { toNumber } from '@utils';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
-import { AnnouncementListViewColumns } from '../entities/vAnnouncement.entity';
+import { AnnouncementListViewColumns } from '../../../dataBase/entities/announcements/vAnnouncement.entity';
 
 export class AnnouncementsListController extends BaseController {
   private readonly _service: AnnouncementsListService;

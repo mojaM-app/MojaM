@@ -1,21 +1,17 @@
+import { IAnnouncementId, ICreateAnnouncement, ICreateAnnouncementItem, IUpdateAnnouncementItem, IUserId } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { IUserId } from '@modules/users';
-import { isNullOrUndefined } from '@utils';
-import { isDate } from '@utils/date.utils';
+import { isDate, isNullOrUndefined } from '@utils';
 import { Service } from 'typedi';
 import { FindOptionsWhere } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+import { AnnouncementItem } from './../../../dataBase/entities/announcements/announcement-item.entity';
 import { BaseAnnouncementsRepository } from './base.announcements.repository';
 import { CreateAnnouncementsReqDto } from '../dtos/create-announcements.dto';
 import { DeleteAnnouncementsReqDto } from '../dtos/delete-announcements.dto';
 import { PublishAnnouncementsReqDto } from '../dtos/publish-announcements.dto';
 import { UpdateAnnouncementItemDto, UpdateAnnouncementsDto, UpdateAnnouncementsReqDto } from '../dtos/update-announcements.dto';
-import { AnnouncementItem } from '../entities/announcement-item.entity';
-import { Announcement } from '../entities/announcement.entity';
 import { AnnouncementStateValue } from '../enums/announcement-state.enum';
-import { ICreateAnnouncement, ICreateAnnouncementItem } from '../interfaces/create-announcement.interfaces';
-import { IAnnouncementId } from '../interfaces/IAnnouncementId';
-import { IUpdateAnnouncementItem } from '../interfaces/update-announcement.interfaces';
+import { Announcement } from './../../../dataBase/entities/announcements/announcement.entity';
 
 @Service()
 export class AnnouncementsRepository extends BaseAnnouncementsRepository {

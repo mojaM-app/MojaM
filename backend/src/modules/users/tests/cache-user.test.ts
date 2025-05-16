@@ -1,22 +1,22 @@
 import { DbConnection } from '@db';
-import { loginAs } from '@helpers/user-tests.helpers';
 import { LoginDto } from '@modules/auth';
-import { SystemPermissions } from '@modules/permissions';
-import { IUser, UserRoute } from '@modules/users';
-import { User } from '@modules/users/entities/user.entity';
-import { getAdminLoginData } from '@utils/tests.utils';
+import { UserRoute } from '@modules/users';
+import { getAdminLoginData } from '@utils';
+import { testUtils } from '@helpers';
 import request from 'supertest';
-import { App } from './../../../app';
+import { TestApp } from './../../../helpers/tests.utils';
+import { IUser, SystemPermissions } from '@core';
+import { User } from './../../../dataBase/entities/users/user.entity';
 
 describe('Cache user data tests', () => {
   let userRoute: UserRoute;
-  let app: App;
+  let app: TestApp | undefined;
   let findOneByFn: any;
   let adminAccessToken: string | undefined;
   let adminUuid: string | undefined;
 
   beforeAll(async () => {
-    jest.resetAllMocks();
+    jest.restoreAllMocks();
 
     findOneByFn = jest.fn().mockImplementation(async () => {
       return await ({
@@ -116,26 +116,25 @@ describe('Cache user data tests', () => {
     });
 
     userRoute = new UserRoute();
-    app = new App();
-    await app.initialize([userRoute]);
+    app = await testUtils.getTestApp([userRoute]);
     const { email, passcode } = getAdminLoginData();
-    const adminLoginResult = await loginAs(app, { email, passcode } satisfies LoginDto);
+    const adminLoginResult = await testUtils.loginAs(app, { email, passcode } satisfies LoginDto);
     adminAccessToken = adminLoginResult?.accessToken;
     adminUuid = adminLoginResult?.id;
   });
 
   it('Should store userId', async () => {
-    let response = await request(app.getServer()).get(`${userRoute.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);
+    let response = await request(app!.getServer()).get(`${userRoute.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);
     expect(response.statusCode).toBe(200);
 
-    response = await request(app.getServer()).get(`${userRoute.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);
+    response = await request(app!.getServer()).get(`${userRoute.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);
     expect(response.statusCode).toBe(200);
 
     expect(findOneByFn).toHaveBeenCalledTimes(5);
   });
 
   afterAll(async () => {
-    await app.closeDbConnection();
-    jest.resetAllMocks();
+    await testUtils.closeTestApp();
+    jest.restoreAllMocks();
   });
 });

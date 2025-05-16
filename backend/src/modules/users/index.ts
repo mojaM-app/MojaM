@@ -8,16 +8,13 @@ export { CreateUserDto, CreateUserReqDto, CreateUserResponseDto } from './dtos/c
 export { DeactivateUserReqDto, DeactivateUserResponseDto } from './dtos/deactivate-user.dto';
 export { DeleteUserReqDto, DeleteUserResponseDto } from './dtos/delete-user.dto';
 export { GetUserDetailsReqDto, GetUserDetailsResponseDto } from './dtos/get-user-details.dto';
-export { GetUserListReqDto, GetUserListResponseDto, type IUserGridItemDto, type UsersGridPageDto } from './dtos/get-user-list.dto';
+export { GetUserListReqDto, GetUserListResponseDto, type UsersGridPageDto } from './dtos/get-user-list.dto';
 export { GetUserProfileReqDto, GetUserProfileResponseDto, type IGetUserProfileDto } from './dtos/get-user-profile.dto';
 export { GetUserReqDto, GetUserResponseDto } from './dtos/get-user.dto';
 export { UnlockUserReqDto, UnlockUserResponseDto } from './dtos/unlock-user.dto';
 export { UpdateUserProfileDto, UpdateUserProfileReqDto, UpdateUserProfileResponseDto } from './dtos/update-user-profile.dto';
 export { UpdateUserDto, UpdateUserReqDto, UpdateUserResponseDto } from './dtos/update-user.dto';
 export { type IGetUserDto } from './interfaces/get-user.interfaces';
-export { type IUser } from './interfaces/IUser';
-export { type IUserDto } from './interfaces/IUser.dto';
-export { type IUserId } from './interfaces/IUser.Id';
 export { type IUserDetailsDto } from './interfaces/user-details.interfaces';
 
 export { UserActivatedEvent } from './events/user-activated-event';

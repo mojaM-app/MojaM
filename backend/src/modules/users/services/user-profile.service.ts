@@ -1,3 +1,4 @@
+import { IUpdateUser } from '@core';
 import { events } from '@events';
 import { BaseService } from '@modules/common';
 import {
@@ -11,8 +12,7 @@ import {
   UserRepository,
 } from '@modules/users';
 import { Container, Service } from 'typedi';
-import { User } from '../entities/user.entity';
-import { IUpdateUser } from '../interfaces/update-user.interfaces';
+import { User } from './../../../dataBase/entities/users/user.entity';
 
 @Service()
 export class UserProfileService extends BaseService {

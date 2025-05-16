@@ -1,6 +1,6 @@
 import { CacheService } from '@modules/common';
 import { Service } from 'typedi';
-import { Announcement } from '../entities/announcement.entity';
+import { Announcement } from '../../../dataBase/entities/announcements/announcement.entity';
 
 @Service()
 export class AnnouncementsCacheService extends CacheService<Announcement> {

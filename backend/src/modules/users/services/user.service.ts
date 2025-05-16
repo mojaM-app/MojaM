@@ -1,6 +1,8 @@
+import { IUpdateUser, IUserDto } from '@core';
+import { userToIUser } from '@db';
 import { events } from '@events';
 import { BadRequestException, ConflictException, errorKeys } from '@exceptions';
-import { BaseService, userToIUser } from '@modules/common';
+import { BaseService } from '@modules/common';
 import {
   ActivateUserReqDto,
   CreateUserDto,
@@ -9,7 +11,6 @@ import {
   DeleteUserReqDto,
   GetUserReqDto,
   IGetUserDto,
-  IUserDto,
   UnlockUserReqDto,
   UpdateUserDto,
   UpdateUserModel,
@@ -25,8 +26,7 @@ import {
 } from '@modules/users';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { Container, Service } from 'typedi';
-import { User } from '../entities/user.entity';
-import { IUpdateUser } from '../interfaces/update-user.interfaces';
+import { User } from './../../../dataBase/entities/users/user.entity';
 
 @Service()
 export class UsersService extends BaseService {

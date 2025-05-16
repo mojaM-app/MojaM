@@ -1,7 +1,7 @@
 import { BaseRepository } from '@modules/common';
 import { isGuid, isPositiveNumber } from '@utils';
 import Container from 'typedi';
-import { Announcement } from '../entities/announcement.entity';
+import { Announcement } from '../../../dataBase/entities/announcements/announcement.entity';
 import { AnnouncementsCacheService } from '../services/announcements-cache.service';
 
 export abstract class BaseAnnouncementsRepository extends BaseRepository {

@@ -1,6 +1,6 @@
 import { BaseRepository } from '@modules/common';
 import { Service } from 'typedi';
-import { vUser } from '../entities/vUser.entity';
+import { vUser } from './../../../dataBase/entities/users/vUser.entity';
 
 @Service()
 export class vUserRepository extends BaseRepository {

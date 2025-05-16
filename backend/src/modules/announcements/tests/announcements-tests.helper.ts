@@ -1,4 +1,4 @@
-import { generateRandomDate, generateRandomString } from '@utils/tests.utils';
+import { generateRandomDate, generateRandomString } from '@utils';
 import { CreateAnnouncementItemDto, CreateAnnouncementsDto } from '../dtos/create-announcements.dto';
 
 const generateValidAnnouncements = (): CreateAnnouncementsDto => {

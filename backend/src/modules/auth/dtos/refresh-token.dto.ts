@@ -1,5 +1,5 @@
 import { events } from '@events';
-import { DtoTransformFunctions } from '@helpers/DtoTransformFunctions';
+import { DtoTransformFunctions } from '@helpers';
 import { IResponse } from '@interfaces';
 import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';

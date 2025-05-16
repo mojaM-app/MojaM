@@ -1,16 +1,16 @@
 import 'reflect-metadata';
+import { toNumber } from './../utils/numbers.utils';
 import { DbContext } from './dbContext';
 import { TitleCaseNamingStrategy } from './pascal-naming.strategy';
 import { DATABASE_HOST, DATABASE_MIGRATIONS_PATH, DATABASE_NAME, DATABASE_PASSWORD, DATABASE_PORT, DATABASE_USERNAME } from '../config/index';
-import { AnnouncementItem } from '../modules/announcements/entities/announcement-item.entity';
-import { Announcement } from '../modules/announcements/entities/announcement.entity';
-import { vAnnouncement } from '../modules/announcements/entities/vAnnouncement.entity';
-import { UserResetPasscodeToken } from '../modules/auth/entities/user-reset-passcode-tokens.entity';
-import { SystemPermission } from '../modules/permissions/entities/system-permission.entity';
-import { UserSystemPermission } from '../modules/users/entities/user-system-permission.entity';
-import { User } from '../modules/users/entities/user.entity';
-import { vUser } from '../modules/users/entities/vUser.entity';
-import { toNumber } from '../utils/numbers.utils';
+import { AnnouncementItem } from './entities/announcements/announcement-item.entity';
+import { Announcement } from './entities/announcements/announcement.entity';
+import { vAnnouncement } from './entities/announcements/vAnnouncement.entity';
+import { SystemPermission } from './entities/permissions/system-permission.entity';
+import { UserResetPasscodeToken } from './entities/users/user-reset-passcode-tokens.entity';
+import { UserSystemPermission } from './entities/users/user-system-permission.entity';
+import { User } from './entities/users/user.entity';
+import { vUser } from './entities/users/vUser.entity';
 
 export const AppDataSource = new DbContext({
   type: 'mysql',

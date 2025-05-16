@@ -1,7 +1,7 @@
+import { ICreateResetPasscodeToken } from '@core';
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryColumn, Relation } from 'typeorm';
-import { EntityDefaultFunctions } from '../../../dataBase/EntityDefaultFunctions';
-import { User } from '../../users/entities/user.entity';
-import { ICreateResetPasscodeToken } from '../interfaces/create-reset-passcode-token.interfaces';
+import { EntityDefaultFunctions } from './../../EntityDefaultFunctions';
+import { User } from './user.entity';
 
 @Entity({
   name: 'user_reset_passcode_tokens',

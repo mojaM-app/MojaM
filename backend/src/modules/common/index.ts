@@ -6,5 +6,3 @@ export { BaseService } from './base.service';
 export { CacheService } from './cache.service';
 
 export { BaseReqDto } from './base.request.dto';
-
-export { userToIUser } from '@modules/users/helpers/users.helper';

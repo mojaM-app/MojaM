@@ -1,8 +1,8 @@
+import { IAnnouncementGridItemDto } from '@core';
 import { DataSource, PrimaryColumn, ViewColumn, ViewEntity } from 'typeorm';
-import { IAnnouncementGridItemDto } from '../dtos/get-announcement-list.dto';
-import { EntityTransformFunctions } from './../../../dataBase/EntityTransformFunctions';
-import { User } from './../../../modules/users/entities/user.entity';
 import { Announcement } from './announcement.entity';
+import { EntityTransformFunctions } from '../../EntityTransformFunctions';
+import { User } from '../users/user.entity';
 
 export const AnnouncementListViewColumns: { [K in keyof IAnnouncementGridItemDto]: string } = {
   id: 'id',

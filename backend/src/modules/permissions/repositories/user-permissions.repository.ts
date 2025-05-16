@@ -1,10 +1,10 @@
+import { IAddUserSystemPermission, SystemPermissions } from '@core';
 import { BaseRepository } from '@modules/common';
-import { AddPermissionReqDto, DeletePermissionsReqDto, PermissionsCacheService, SystemPermissions } from '@modules/permissions';
+import { AddPermissionReqDto, DeletePermissionsReqDto, PermissionsCacheService } from '@modules/permissions';
 import { UserRepository } from '@modules/users';
-import { User } from '@modules/users/entities/user.entity';
-import { IAddUserSystemPermission } from '@modules/users/interfaces/add-user-system-permission.interfaces';
 import { getDateTimeNow, isArrayEmpty, isEnumValue, isNullOrUndefined, isPositiveNumber } from '@utils';
 import Container, { Service } from 'typedi';
+import { User } from './../../../dataBase/entities/users/user.entity';
 
 @Service()
 export class UserPermissionsRepository extends BaseRepository {

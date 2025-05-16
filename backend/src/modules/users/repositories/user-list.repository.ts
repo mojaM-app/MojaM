@@ -1,9 +1,9 @@
 import { IGridPageResponseDto, IPageData, ISortData } from '@interfaces';
 import { BaseRepository } from '@modules/common';
-import { getAdminLoginData } from '@utils/tests.utils';
+import { getAdminLoginData } from '@utils';
 import { Service } from 'typedi';
 import { FindOptionsWhere, Not } from 'typeorm';
-import { vUser } from '../entities/vUser.entity';
+import { vUser } from './../../../dataBase/entities/users/vUser.entity';
 
 @Service()
 export class UserListRepository extends BaseRepository {

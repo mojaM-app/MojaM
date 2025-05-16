@@ -1,37 +1,31 @@
 import * as config from '@config';
-import { EventDispatcherService, events } from '@events';
-import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-tests.helper';
-import { loginAs } from '@helpers/user-tests.helpers';
+import { events } from '@events';
+import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { LoginDto } from '@modules/auth';
 import { GetCalendarEventsResponseDto, ICalendarEventDto } from '@modules/calendar';
-import { getAdminLoginData } from '@utils/tests.utils';
-import { EventDispatcher } from 'event-dispatch';
+import { getAdminLoginData } from '@utils';
+import { testUtils } from '@helpers';
 import request from 'supertest';
 import { CalendarRoutes } from '../routes/calendar.routes';
 import { GoogleCalendarService } from '../services/google-calendar.service';
-import { App } from './../../../app';
-import './../../../utils/date.extensions';
+import { TestApp } from './../../../helpers/tests.utils';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { google } from 'googleapis';
 
 describe('GET /calendar/events', () => {
   const calendarRoutes = new CalendarRoutes();
-  const app = new App();
+  let app: TestApp | undefined;
   let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
-    await app.initialize([calendarRoutes]);
-
+    app = await testUtils.getTestApp([calendarRoutes]);
+    app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-
-    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
-
-    const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
-    registerTestEventHandlers(eventDispatcher);
+    adminAccessToken = (await testUtils.loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
   });
 
   beforeEach(async () => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('GET should respond with a status code of 200', () => {
@@ -58,7 +52,7 @@ describe('GET /calendar/events', () => {
       const startDate = '2025-05-01';
       const endDate = '2025-05-07';
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .get(`${calendarRoutes.path}/events?start=${startDate}&end=${endDate}`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
 
@@ -98,7 +92,7 @@ describe('GET /calendar/events', () => {
       const startDate = '2025-06-01';
       const endDate = '2025-06-07';
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .get(`${calendarRoutes.path}/events?start=${startDate}&end=${endDate}`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
 
@@ -127,7 +121,7 @@ describe('GET /calendar/events', () => {
       const startDate = '2025-05-01';
       const endDate = '2025-05-07';
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .get(`${calendarRoutes.path}/events?start=${startDate}&end=${endDate}`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
 
@@ -163,7 +157,7 @@ describe('GET /calendar/events', () => {
 
       jest.spyOn(GoogleCalendarService.prototype, 'getEvents').mockResolvedValue(mockEvents);
 
-      const response = await request(app.getServer()).get(`${calendarRoutes.path}/events`).set('Authorization', `Bearer ${adminAccessToken}`);
+      const response = await request(app!.getServer()).get(`${calendarRoutes.path}/events`).set('Authorization', `Bearer ${adminAccessToken}`);
 
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -207,7 +201,7 @@ describe('GET /calendar/events', () => {
       const startDate = '2025-05-01';
       const endDate = '2025-05-31';
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .get(`${calendarRoutes.path}/events?start=${startDate}&end=${endDate}`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
 
@@ -262,7 +256,7 @@ describe('GET /calendar/events', () => {
       const startDate = '2025-05-01';
       const endDate = '2025-05-31';
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .get(`${calendarRoutes.path}/events?start=${startDate}&end=${endDate}`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
 
@@ -293,7 +287,7 @@ describe('GET /calendar/events', () => {
       const startDate = '2025-05-01';
       const endDate = '2025-05-07';
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .get(`${calendarRoutes.path}/events?start=${startDate}&end=${endDate}`)
         .set('Authorization', 'Bearer invalid-token-123');
 
@@ -304,7 +298,7 @@ describe('GET /calendar/events', () => {
       const startDate = '2025-05-01';
       const endDate = '2025-05-07';
 
-      const response = await request(app.getServer()).get(`${calendarRoutes.path}/events?start=${startDate}&end=${endDate}`);
+      const response = await request(app!.getServer()).get(`${calendarRoutes.path}/events?start=${startDate}&end=${endDate}`);
 
       expect(response.statusCode).toBe(200);
     });
@@ -325,7 +319,7 @@ describe('GET /calendar/events', () => {
       const startDate = '2020-01-01';
       const endDate = '2020-01-07';
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .get(`${calendarRoutes.path}/events?start=${startDate}&end=${endDate}`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
 
@@ -359,7 +353,7 @@ describe('GET /calendar/events', () => {
       const startDate = '2025-03-29';
       const endDate = '2025-03-31';
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .get(`${calendarRoutes.path}/events?start=${startDate}&end=${endDate}`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
 
@@ -384,7 +378,7 @@ describe('GET /calendar/events', () => {
 
       const startDate = '2025-05-15';
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .get(`${calendarRoutes.path}/events?start=${startDate}`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
 
@@ -409,7 +403,7 @@ describe('GET /calendar/events', () => {
 
       const endDate = '2025-05-21';
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .get(`${calendarRoutes.path}/events?end=${endDate}`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
 
@@ -436,7 +430,7 @@ describe('GET /calendar/events', () => {
         ];
       });
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .get(`${calendarRoutes.path}/events?start=2025-05-10&end=2025-05-11`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
 
@@ -465,7 +459,7 @@ describe('GET /calendar/events', () => {
         ];
       });
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .get(`${calendarRoutes.path}/events?start=2025-05-14&end=2025-05-17`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
 
@@ -499,7 +493,7 @@ describe('GET /calendar/events', () => {
         ];
       });
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .get(`${calendarRoutes.path}/events?start=2025-05-25&end=2025-05-26`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
 
@@ -515,7 +509,7 @@ describe('GET /calendar/events', () => {
         throw new Error('expect(received).toBe(expected)');
       });
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .get(`${calendarRoutes.path}/events?start=invalid-date&end=2025-05-07`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
 
@@ -523,7 +517,7 @@ describe('GET /calendar/events', () => {
     });
 
     test('when provided start date is non ISO format', async () => {
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .get(`${calendarRoutes.path}/events?start=05/01/2025&end=2025-05-07`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
 
@@ -542,7 +536,7 @@ describe('GET /calendar/events', () => {
     });
 
     test('when provided end date is non ISO format', async () => {
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .get(`${calendarRoutes.path}/events?start=2025-05-01&end=05/07/2025`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
 
@@ -570,7 +564,7 @@ describe('GET /calendar/events', () => {
       const startDate = '2025-05-01';
       const endDate = '2025-05-07';
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .get(`${calendarRoutes.path}/events?start=${startDate}&end=${endDate}`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
 
@@ -910,7 +904,7 @@ describe('GET /calendar/events', () => {
   });
 
   afterAll(async () => {
-    await app.closeDbConnection();
+    await testUtils.closeTestApp();
     jest.resetAllMocks();
     jest.restoreAllMocks();
   });

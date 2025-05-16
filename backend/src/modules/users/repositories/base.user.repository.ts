@@ -1,8 +1,8 @@
 import { BaseRepository } from '@modules/common';
 import { isGuid, isPositiveNumber } from '@utils';
 import Container from 'typedi';
-import { User } from '../entities/user.entity';
 import { UserCacheService } from '../services/user-cache.service';
+import { User } from './../../../dataBase/entities/users/user.entity';
 
 export abstract class BaseUserRepository extends BaseRepository {
   protected readonly _cacheService: UserCacheService;

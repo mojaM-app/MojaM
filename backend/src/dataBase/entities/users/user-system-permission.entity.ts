@@ -1,7 +1,7 @@
+import { IAddUserSystemPermission } from '@core';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, Relation } from 'typeorm';
-import { IAddUserSystemPermission } from '../interfaces/add-user-system-permission.interfaces';
-import { EntityDefaultFunctions } from './../../../dataBase/EntityDefaultFunctions';
-import { SystemPermission } from './../../../modules/permissions/entities/system-permission.entity';
+import { EntityDefaultFunctions } from './../../EntityDefaultFunctions';
+import { SystemPermission } from './../permissions/system-permission.entity';
 import { User } from './user.entity';
 
 @Entity({

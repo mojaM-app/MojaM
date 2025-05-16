@@ -4,7 +4,7 @@ import { BaseService } from '@modules/common';
 import { GetUserDetailsReqDto, IUserDetailsDto, UserDetailsRetrievedEvent, vUserRepository } from '@modules/users';
 import { isNullOrUndefined } from '@utils';
 import { Container, Service } from 'typedi';
-import { vUser } from '../entities/vUser.entity';
+import { vUser } from './../../../dataBase/entities/users/vUser.entity';
 
 @Service()
 export class UsersDetailsService extends BaseService {

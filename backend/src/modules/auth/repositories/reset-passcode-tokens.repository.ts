@@ -1,11 +1,11 @@
 import { RESET_PASSWORD_TOKEN_EXPIRE_IN } from '@config';
+import { ICreateResetPasscodeToken } from '@core';
 import { CryptoService } from '@modules/auth';
 import { BaseRepository } from '@modules/common';
 import { getDateTimeNow, isNullOrUndefined } from '@utils';
 import ms from 'ms';
 import Container, { Service } from 'typedi';
-import { UserResetPasscodeToken } from '../entities/user-reset-passcode-tokens.entity';
-import { ICreateResetPasscodeToken } from '../interfaces/create-reset-passcode-token.interfaces';
+import { UserResetPasscodeToken } from './../../../dataBase/entities/users/user-reset-passcode-tokens.entity';
 
 @Service()
 export class ResetPasscodeTokensRepository extends BaseRepository {

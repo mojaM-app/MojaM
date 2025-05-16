@@ -1,4 +1,4 @@
-import { IUserDto } from './IUser.dto';
+import { IUserDto } from '@core';
 
 export interface IUserDetailsDto extends IUserDto {
   firstName: string | null;

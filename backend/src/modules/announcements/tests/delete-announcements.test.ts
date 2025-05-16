@@ -1,55 +1,40 @@
-import { EventDispatcherService, events } from '@events';
+import { events } from '@events';
 import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
-import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-tests.helper';
-import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
+import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { AnnouncementsRout, CreateAnnouncementsResponseDto } from '@modules/announcements';
 import { LoginDto } from '@modules/auth';
-import { PermissionsRoute, SystemPermissions } from '@modules/permissions';
+import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
-import { isNumber } from '@utils';
-import { getAdminLoginData } from '@utils/tests.utils';
-import { EventDispatcher } from 'event-dispatch';
+import { getAdminLoginData, isNumber } from '@utils';
+import { testUtils } from '@helpers';
 import { Guid } from 'guid-typescript';
-import nodemailer from 'nodemailer';
 import request from 'supertest';
-import { App } from './../../../app';
+import { TestApp } from './../../../helpers/tests.utils';
 import { generateValidAnnouncements } from './announcements-tests.helper';
+import { SystemPermissions } from '@core';
 
 describe('DELETE /announcements', () => {
   const announcementRoute = new AnnouncementsRout();
   const userRoute = new UserRoute();
   const permissionsRoute = new PermissionsRoute();
-  const app = new App();
-  let mockSendMail: any;
+  let app: TestApp | undefined;
   let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
-    await app.initialize([userRoute, permissionsRoute, announcementRoute]);
+    app = await testUtils.getTestApp([announcementRoute, userRoute, permissionsRoute]);
+    app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-
-    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
-
-    const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
-    registerTestEventHandlers(eventDispatcher);
+    adminAccessToken = (await testUtils.loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
   });
 
   beforeEach(async () => {
-    jest.resetAllMocks();
-
-    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
-      callback(null, null);
-    });
-
-    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
-      sendMail: mockSendMail,
-      close: jest.fn().mockImplementation(() => {}),
-    } as any);
+    jest.clearAllMocks();
   });
 
   describe('DELETE should respond with a status code of 200 when data are valid and user has permission', () => {
     test('create announcement', async () => {
       const requestData = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app.getServer())
+      const createAnnouncementsResponse = await request(app!.getServer())
         .post(announcementRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -62,7 +47,7 @@ describe('DELETE /announcements', () => {
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
       // cleanup
-      const deleteAnnouncementsResponse = await request(app.getServer())
+      const deleteAnnouncementsResponse = await request(app!.getServer())
         .delete(announcementRoute.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -82,7 +67,7 @@ describe('DELETE /announcements', () => {
   describe('DELETE should respond with a status code of 400', () => {
     test('when announcements not exist', async () => {
       const userId: string = Guid.EMPTY;
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(announcementRoute.path + '/' + userId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -104,7 +89,7 @@ describe('DELETE /announcements', () => {
 
   describe('DELETE should respond with a status code of 404', () => {
     test('DELETE should respond with a status code of 404 when Id is not GUID', async () => {
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(announcementRoute.path + '/invalid-guid')
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -125,7 +110,7 @@ describe('DELETE /announcements', () => {
   describe('DELETE should respond with a status code of 403', () => {
     test('when token is not set', async () => {
       const id: string = Guid.EMPTY;
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(announcementRoute.path + '/' + id)
         .send();
       expect(deleteResponse.statusCode).toBe(401);
@@ -140,8 +125,8 @@ describe('DELETE /announcements', () => {
     });
 
     test('when user has no permission', async () => {
-      const userData = generateValidUserWithPassword();
-      const newUserResponse = await request(app.getServer()).post(userRoute.path).send(userData).set('Authorization', `Bearer ${adminAccessToken}`);
+      const userData = testUtils.generateValidUserWithPassword();
+      const newUserResponse = await request(app!.getServer()).post(userRoute.path).send(userData).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(newUserResponse.statusCode).toBe(201);
       let body = newUserResponse.body;
       expect(typeof body).toBe('object');
@@ -150,16 +135,17 @@ describe('DELETE /announcements', () => {
       expect(user?.email).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const activateNewUserResponse = await request(app.getServer())
+      const activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: userData.email, passcode: userData.passcode } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await testUtils.loginAs(app!, { email: userData.email, passcode: userData.passcode } satisfies LoginDto))
+        ?.accessToken;
 
       const id: string = Guid.EMPTY;
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(announcementRoute.path + '/' + id)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
@@ -169,7 +155,7 @@ describe('DELETE /announcements', () => {
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
-      const deleteUserResponse = await request(app.getServer())
+      const deleteUserResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -196,8 +182,8 @@ describe('DELETE /announcements', () => {
     });
 
     test('when user have all permissions expect DeleteAnnouncements', async () => {
-      const userData = generateValidUserWithPassword();
-      const newUserResponse = await request(app.getServer()).post(userRoute.path).send(userData).set('Authorization', `Bearer ${adminAccessToken}`);
+      const userData = testUtils.generateValidUserWithPassword();
+      const newUserResponse = await request(app!.getServer()).post(userRoute.path).send(userData).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(newUserResponse.statusCode).toBe(201);
       let body = newUserResponse.body;
       expect(typeof body).toBe('object');
@@ -206,7 +192,7 @@ describe('DELETE /announcements', () => {
       expect(user?.email).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const activateNewUserResponse = await request(app.getServer())
+      const activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -218,16 +204,17 @@ describe('DELETE /announcements', () => {
           const value = permission as number;
           if (value !== SystemPermissions.DeleteAnnouncements) {
             const path = permissionsRoute.path + '/' + user.id + '/' + permission.toString();
-            const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+            const addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
           }
         }
       });
 
-      const newUserAccessToken = (await loginAs(app, { email: userData.email, passcode: userData.passcode } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await testUtils.loginAs(app!, { email: userData.email, passcode: userData.passcode } satisfies LoginDto))
+        ?.accessToken;
 
       const id: string = Guid.EMPTY;
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(announcementRoute.path + '/' + id)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
@@ -237,7 +224,7 @@ describe('DELETE /announcements', () => {
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
-      const deleteUserResponse = await request(app.getServer())
+      const deleteUserResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -269,7 +256,7 @@ describe('DELETE /announcements', () => {
   describe('DELETE should respond with a status code of 401', () => {
     test('when token is invalid', async () => {
       const id: string = Guid.EMPTY;
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(announcementRoute.path + '/' + id)
         .send()
         .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
@@ -285,29 +272,29 @@ describe('DELETE /announcements', () => {
     });
 
     test('when try to use token from user that not exists', async () => {
-      const userBob = generateValidUserWithPassword();
+      const userBob = testUtils.generateValidUserWithPassword();
 
-      const createBobResponse = await request(app.getServer()).post(userRoute.path).send(userBob).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createBobResponse = await request(app!.getServer()).post(userRoute.path).send(userBob).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createBobResponse.statusCode).toBe(201);
       const { data: bobDto, message: bobCreateMessage }: CreateUserResponseDto = createBobResponse.body;
       expect(bobDto?.id).toBeDefined();
       expect(bobCreateMessage).toBe(events.users.userCreated);
 
-      const activateBobResponse = await request(app.getServer())
+      const activateBobResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + bobDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateBobResponse.statusCode).toBe(200);
 
-      const bobAccessToken = (await loginAs(app, { email: bobDto.email, passcode: userBob.passcode } satisfies LoginDto))?.accessToken;
+      const bobAccessToken = (await testUtils.loginAs(app!, { email: bobDto.email, passcode: userBob.passcode } satisfies LoginDto))?.accessToken;
 
-      const deleteBobResponse = await request(app.getServer())
+      const deleteBobResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + bobDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteBobResponse.statusCode).toBe(200);
 
-      const createAnnouncementsUsingBobAccessTokenResponse = await request(app.getServer())
+      const createAnnouncementsUsingBobAccessTokenResponse = await request(app!.getServer())
         .post(announcementRoute.path)
         .send(generateValidAnnouncements())
         .set('Authorization', `Bearer ${bobAccessToken}`);
@@ -342,7 +329,7 @@ describe('DELETE /announcements', () => {
   });
 
   afterAll(async () => {
-    await app.closeDbConnection();
+    await testUtils.closeTestApp();
     jest.resetAllMocks();
   });
 });

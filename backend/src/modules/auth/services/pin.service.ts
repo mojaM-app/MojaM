@@ -1,9 +1,9 @@
+import { REGEX_PATTERNS, VALIDATOR_SETTINGS } from '@config';
+import { isNullOrEmptyString } from '@utils';
 import { matches, maxLength, minLength } from 'class-validator';
 import * as crypto from 'crypto';
 import { Service } from 'typedi';
 import { IAuthenticationTypeService } from '../interfaces/IAuthenticationTypeService';
-import { REGEX_PATTERNS, VALIDATOR_SETTINGS } from './../../../config/constants';
-import { isNullOrEmptyString } from './../../../utils/strings.utils';
 
 @Service()
 export class PinService implements IAuthenticationTypeService {

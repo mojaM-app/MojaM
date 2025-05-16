@@ -1,3 +1,4 @@
+import { IUpdateUser } from '@core';
 import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import {
@@ -13,13 +14,12 @@ import {
 } from '@modules/auth';
 import { BaseService } from '@modules/common';
 import { UpdateUserModel, UserActivatedEvent, UserRepository, UserUnlockedEvent } from '@modules/users';
-import { User } from '@modules/users/entities/user.entity';
-import { IUpdateUser } from '@modules/users/interfaces/update-user.interfaces';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { Container, Service } from 'typedi';
 import { AuthenticationTypes } from '../enums/authentication-type.enum';
 import { getAuthenticationType } from '../helpers/auth.helper';
 import { ResetPasscodeTokensRepository } from '../repositories/reset-passcode-tokens.repository';
+import { User } from './../../../dataBase/entities/users/user.entity';
 
 @Service()
 export class AccountService extends BaseService {

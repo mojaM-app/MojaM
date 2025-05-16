@@ -1,19 +1,7 @@
+import { IUserGridItemDto } from '@core';
 import { events } from '@events';
 import { IGridPageResponseDto, IPageData, IResponse, ISortData } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
-
-export interface IUserGridItemDto {
-  id: string;
-  email: string;
-  phone: string;
-  firstName: string | null;
-  lastName: string | null;
-  joiningDate: Date | null;
-  lastLoginAt: Date | null;
-  isActive: boolean;
-  isLockedOut: boolean;
-  permissionCount: number;
-}
 
 export type UsersGridPageDto = IGridPageResponseDto<IUserGridItemDto>;
 

@@ -1,11 +1,11 @@
 import { DataSource, DataSourceOptions, Repository } from 'typeorm';
-import { AnnouncementItem } from '../modules/announcements/entities/announcement-item.entity';
-import { Announcement } from '../modules/announcements/entities/announcement.entity';
-import { vAnnouncement } from '../modules/announcements/entities/vAnnouncement.entity';
-import { UserResetPasscodeToken } from '../modules/auth/entities/user-reset-passcode-tokens.entity';
-import { UserSystemPermission } from '../modules/users/entities/user-system-permission.entity';
-import { User } from '../modules/users/entities/user.entity';
-import { vUser } from '../modules/users/entities/vUser.entity';
+import { AnnouncementItem } from './entities/announcements/announcement-item.entity';
+import { Announcement } from './entities/announcements/announcement.entity';
+import { vAnnouncement } from './entities/announcements/vAnnouncement.entity';
+import { UserResetPasscodeToken } from './entities/users/user-reset-passcode-tokens.entity';
+import { UserSystemPermission } from './entities/users/user-system-permission.entity';
+import { User } from './entities/users/user.entity';
+import { vUser } from './entities/users/vUser.entity';
 
 export class DbContext extends DataSource {
   public get vUsers(): Repository<vUser> {

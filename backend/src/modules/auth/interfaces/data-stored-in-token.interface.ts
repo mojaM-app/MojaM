@@ -1,4 +1,4 @@
-import { SystemPermissions } from '@modules/permissions';
+import { SystemPermissions } from '@core';
 
 export interface IDataStoredInToken {
   permissions: SystemPermissions[] | undefined;

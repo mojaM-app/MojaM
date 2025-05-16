@@ -1,5 +1,5 @@
 import { EventDispatcherService } from '@events';
-import { registerTestEventHandlers } from '@helpers/event-handler-tests.helper';
+import { registerTestEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { EventDispatcher } from 'event-dispatch';
 import { UserRepository } from './user.repository';
 

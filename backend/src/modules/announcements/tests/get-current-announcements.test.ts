@@ -1,6 +1,5 @@
-import { EventDispatcherService, events } from '@events';
-import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-tests.helper';
-import { loginAs } from '@helpers/user-tests.helpers';
+import { events } from '@events';
+import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import {
   AnnouncementsRout,
   CreateAnnouncementsResponseDto,
@@ -10,49 +9,32 @@ import {
   PublishAnnouncementsResponseDto,
 } from '@modules/announcements';
 import { LoginDto } from '@modules/auth';
-import { getDateNow, isGuid } from '@utils';
-import { getAdminLoginData } from '@utils/tests.utils';
+import { getAdminLoginData, getDateNow, isGuid } from '@utils';
+import { testUtils } from '@helpers';
 import { isDateString } from 'class-validator';
-import { EventDispatcher } from 'event-dispatch';
-import nodemailer from 'nodemailer';
 import request from 'supertest';
-import { App } from './../../../app';
-import './../../../utils/date.extensions';
+import { TestApp } from './../../../helpers/tests.utils';
 import { generateValidAnnouncements } from './announcements-tests.helper';
 
 describe('GET /announcements/current', () => {
   const announcementRoute = new AnnouncementsRout();
-  const app = new App();
-  let mockSendMail: any;
+  let app: TestApp | undefined;
   let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
-    await app.initialize([announcementRoute]);
-
+    app = await testUtils.getTestApp([announcementRoute]);
+    app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-
-    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
-
-    const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
-    registerTestEventHandlers(eventDispatcher);
+    adminAccessToken = (await testUtils.loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
   });
 
   beforeEach(async () => {
-    jest.resetAllMocks();
-
-    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
-      callback(null, null);
-    });
-
-    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
-      sendMail: mockSendMail,
-      close: jest.fn().mockImplementation(() => {}),
-    } as any);
+    jest.clearAllMocks();
   });
 
   describe('result should be null', () => {
     it('when there is no announcements', async () => {
-      const response = await request(app.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
+      const response = await request(app!.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
       expect(response.statusCode).toBe(200);
       const body = response.body;
       expect(typeof body).toBe('object');
@@ -73,14 +55,14 @@ describe('GET /announcements/current', () => {
     it('when there are announcements but they have no validFromDate and they are not published', async () => {
       const requestData = generateValidAnnouncements();
       requestData.validFromDate = undefined;
-      const createAnnouncementsResponse = await request(app.getServer())
+      const createAnnouncementsResponse = await request(app!.getServer())
         .post(announcementRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       const { data: announcementsId }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
 
-      const response = await request(app.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
+      const response = await request(app!.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
       expect(response.statusCode).toBe(200);
       const body = response.body;
       expect(typeof body).toBe('object');
@@ -91,7 +73,7 @@ describe('GET /announcements/current', () => {
       expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
 
       // cleanup
-      const deleteAnnouncementsResponse = await request(app.getServer())
+      const deleteAnnouncementsResponse = await request(app!.getServer())
         .delete(announcementRoute.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -112,14 +94,14 @@ describe('GET /announcements/current', () => {
     it('when there are announcements and they have today`s validFromDate but they are not published', async () => {
       const requestData = generateValidAnnouncements();
       requestData.validFromDate = getDateNow();
-      const createAnnouncementsResponse = await request(app.getServer())
+      const createAnnouncementsResponse = await request(app!.getServer())
         .post(announcementRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       const { data: announcementsId }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
 
-      const response = await request(app.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
+      const response = await request(app!.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
       expect(response.statusCode).toBe(200);
       const body = response.body;
       expect(typeof body).toBe('object');
@@ -130,7 +112,7 @@ describe('GET /announcements/current', () => {
       expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
 
       // cleanup
-      const deleteAnnouncementsResponse = await request(app.getServer())
+      const deleteAnnouncementsResponse = await request(app!.getServer())
         .delete(announcementRoute.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -151,14 +133,14 @@ describe('GET /announcements/current', () => {
     it('when there are published announcements but they valid since tomorrow', async () => {
       const requestData = generateValidAnnouncements();
       requestData.validFromDate = getDateNow().addDays(1);
-      const createAnnouncementsResponse = await request(app.getServer())
+      const createAnnouncementsResponse = await request(app!.getServer())
         .post(announcementRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       const { data: announcementsId }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
 
-      const publishAnnouncementsResponse = await request(app.getServer())
+      const publishAnnouncementsResponse = await request(app!.getServer())
         .post(announcementRoute.path + '/' + announcementsId + '/' + announcementRoute.publishPath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -166,7 +148,7 @@ describe('GET /announcements/current', () => {
       const { data: publishResult }: PublishAnnouncementsResponseDto = publishAnnouncementsResponse.body;
       expect(publishResult).toBe(true);
 
-      const response = await request(app.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
+      const response = await request(app!.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
       expect(response.statusCode).toBe(200);
       const body = response.body;
       expect(typeof body).toBe('object');
@@ -177,7 +159,7 @@ describe('GET /announcements/current', () => {
       expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
 
       // cleanup
-      const deleteAnnouncementsResponse = await request(app.getServer())
+      const deleteAnnouncementsResponse = await request(app!.getServer())
         .delete(announcementRoute.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -209,14 +191,14 @@ describe('GET /announcements/current', () => {
       const requestData1 = generateValidAnnouncements();
       // 6 days ago
       requestData1.validFromDate = getDateNow().addDays(-6);
-      const createAnnouncements1Response = await request(app.getServer())
+      const createAnnouncements1Response = await request(app!.getServer())
         .post(announcementRoute.path)
         .send(requestData1)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncements1Response.statusCode).toBe(201);
       const { data: createdAnnouncements1Id }: CreateAnnouncementsResponseDto = createAnnouncements1Response.body;
 
-      const publishAnnouncements1Response = await request(app.getServer())
+      const publishAnnouncements1Response = await request(app!.getServer())
         .post(announcementRoute.path + '/' + createdAnnouncements1Id + '/' + announcementRoute.publishPath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -227,14 +209,14 @@ describe('GET /announcements/current', () => {
       const requestData2 = generateValidAnnouncements();
       // today
       requestData2.validFromDate = getDateNow();
-      const createAnnouncements2Response = await request(app.getServer())
+      const createAnnouncements2Response = await request(app!.getServer())
         .post(announcementRoute.path)
         .send(requestData2)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncements2Response.statusCode).toBe(201);
       const { data: createdAnnouncements2Id }: CreateAnnouncementsResponseDto = createAnnouncements2Response.body;
 
-      const response = await request(app.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
+      const response = await request(app!.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = response.body;
@@ -269,13 +251,13 @@ describe('GET /announcements/current', () => {
         expect(currentAnnouncements!.items[index].content).toBe(item.content);
       });
       // cleanup
-      const deleteAnnouncements1Response = await request(app.getServer())
+      const deleteAnnouncements1Response = await request(app!.getServer())
         .delete(announcementRoute.path + '/' + createdAnnouncements1Id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncements1Response.statusCode).toBe(200);
 
-      const deleteAnnouncements2Response = await request(app.getServer())
+      const deleteAnnouncements2Response = await request(app!.getServer())
         .delete(announcementRoute.path + '/' + createdAnnouncements2Id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -304,14 +286,14 @@ describe('GET /announcements/current', () => {
     it('when there are one published announcements with today date', async () => {
       const requestData = generateValidAnnouncements();
       requestData.validFromDate = getDateNow();
-      const createAnnouncementsResponse = await request(app.getServer())
+      const createAnnouncementsResponse = await request(app!.getServer())
         .post(announcementRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       const { data: createdAnnouncementsId }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
 
-      const publishAnnouncementsResponse = await request(app.getServer())
+      const publishAnnouncementsResponse = await request(app!.getServer())
         .post(announcementRoute.path + '/' + createdAnnouncementsId + '/' + announcementRoute.publishPath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -319,7 +301,7 @@ describe('GET /announcements/current', () => {
       const { data: publishResult }: PublishAnnouncementsResponseDto = publishAnnouncementsResponse.body;
       expect(publishResult).toBe(true);
 
-      const response = await request(app.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
+      const response = await request(app!.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = response.body;
@@ -357,7 +339,7 @@ describe('GET /announcements/current', () => {
       expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
 
       // cleanup
-      const deleteAnnouncementsResponse = await request(app.getServer())
+      const deleteAnnouncementsResponse = await request(app!.getServer())
         .delete(announcementRoute.path + '/' + createdAnnouncementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -390,7 +372,7 @@ describe('GET /announcements/current', () => {
         throw new Error('Test error');
       });
 
-      const getAnnouncementsListResponse = await request(app.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
+      const getAnnouncementsListResponse = await request(app!.getServer()).get(announcementRoute.currentAnnouncementsPath).send();
       expect(getAnnouncementsListResponse.statusCode).toBe(500);
       const body = getAnnouncementsListResponse.body;
       expect(typeof body).toBe('object');
@@ -404,7 +386,7 @@ describe('GET /announcements/current', () => {
   });
 
   afterAll(async () => {
-    await app.closeDbConnection();
+    await testUtils.closeTestApp();
     jest.resetAllMocks();
   });
 });

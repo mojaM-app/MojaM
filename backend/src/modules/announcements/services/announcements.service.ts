@@ -18,8 +18,8 @@ import {
 import { BaseService } from '@modules/common';
 import { isDate, isNullOrUndefined } from '@utils';
 import Container, { Service } from 'typedi';
+import { Announcement } from '../../../dataBase/entities/announcements/announcement.entity';
 import { IAnnouncementItemDto } from '../dtos/get-announcements.dto';
-import { Announcement } from '../entities/announcement.entity';
 
 @Service()
 export class AnnouncementsService extends BaseService {

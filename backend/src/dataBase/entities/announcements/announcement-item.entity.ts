@@ -1,9 +1,8 @@
+import { ICreateAnnouncementItem, IUpdateAnnouncementItem } from '@core';
 import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from 'typeorm';
-import { ICreateAnnouncementItem } from '../interfaces/create-announcement.interfaces';
-import { IUpdateAnnouncementItem } from '../interfaces/update-announcement.interfaces';
-import { EntityDefaultFunctions } from './../../../dataBase/EntityDefaultFunctions';
-import { User } from './../../../modules/users/entities/user.entity';
 import { Announcement } from './announcement.entity';
+import { EntityDefaultFunctions } from '../../EntityDefaultFunctions';
+import { User } from '../users/user.entity';
 
 @Entity({
   name: 'announcement_items',

@@ -1,7 +1,6 @@
-import { EventDispatcherService, events } from '@events';
+import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-tests.helper';
-import { generateValidUserWithPassword, generateValidUserWithPin, loginAs } from '@helpers/user-tests.helpers';
+import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import {
   AccountTryingToLogInDto,
   AuthRoute,
@@ -13,17 +12,17 @@ import {
 import { EmailService, IResetPasscodeEmailSettings } from '@modules/notifications';
 import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
-import { generateRandomEmail, getAdminLoginData } from '@utils/tests.utils';
-import { EventDispatcher } from 'event-dispatch';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
-import { App } from './../../../app';
+import { TestApp } from './../../../helpers/tests.utils';
+import { generateRandomEmail, getAdminLoginData } from '@utils';
+import { testUtils } from '@helpers';
 
 describe('POST /auth/request-reset-passcode', () => {
   const userRoute = new UserRoute();
   const authRoute = new AuthRoute();
   const permissionsRoute = new PermissionsRoute();
-  const app = new App();
+  let app: TestApp | undefined;
   let adminAccessToken: string | undefined;
   let mockSendMail: any;
   let sendWelcomeEmailSpy: any;
@@ -33,13 +32,9 @@ describe('POST /auth/request-reset-passcode', () => {
     const emailService = new EmailService();
     originalSendEmailResetPasscode = emailService.sendEmailResetPasscode.bind(emailService);
 
-    await app.initialize([userRoute, permissionsRoute]);
+    app = await testUtils.getTestApp([userRoute, permissionsRoute]);
     const { email, passcode } = getAdminLoginData();
-
-    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
-
-    const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
-    registerTestEventHandlers(eventDispatcher);
+    adminAccessToken = (await testUtils.loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
   });
 
   beforeEach(async () => {
@@ -60,34 +55,34 @@ describe('POST /auth/request-reset-passcode', () => {
 
   describe('when login data are invalid (given email is NOT unique, is empty or invalid)', () => {
     it('when exist more then one user with given email and both are activated', async () => {
-      const user1 = generateValidUserWithPassword();
-      const user2 = generateValidUserWithPassword();
+      const user1 = testUtils.generateValidUserWithPassword();
+      const user2 = testUtils.generateValidUserWithPassword();
       const email = user1.email;
       user2.email = email;
       expect(user1.email).toBe(user2.email);
       expect(user1.phone).not.toBe(user2.phone);
 
-      const createUser1Response = await request(app.getServer()).post(userRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUser1Response = await request(app!.getServer()).post(userRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser1Response.statusCode).toBe(201);
       const { data: newUser1Dto, message: createUser1Message }: CreateUserResponseDto = createUser1Response.body;
       expect(newUser1Dto?.id).toBeDefined();
       expect(createUser1Message).toBe(events.users.userCreated);
       expect(newUser1Dto.email).toBe(email);
 
-      let activateNewUserResponse = await request(app.getServer())
+      let activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUser1Dto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const createUser2Response = await request(app.getServer()).post(userRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUser2Response = await request(app!.getServer()).post(userRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser2Response.statusCode).toBe(201);
       const { data: newUser2Dto, message: createUser2Message }: CreateUserResponseDto = createUser2Response.body;
       expect(newUser2Dto?.id).toBeDefined();
       expect(createUser2Message).toBe(events.users.userCreated);
       expect(newUser2Dto.email).toBe(email);
 
-      activateNewUserResponse = await request(app.getServer())
+      activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUser2Dto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -95,7 +90,7 @@ describe('POST /auth/request-reset-passcode', () => {
 
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .post(authRoute.requestResetPasscodePath)
         .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
@@ -106,12 +101,12 @@ describe('POST /auth/request-reset-passcode', () => {
       expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(2);
       expect(mockSendMail).toHaveBeenCalledTimes(2);
 
-      let deleteResponse = await request(app.getServer())
+      let deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUser1Dto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
-      deleteResponse = await request(app.getServer())
+      deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUser2Dto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -119,27 +114,27 @@ describe('POST /auth/request-reset-passcode', () => {
     });
 
     it('when exist more then one user with given email and only one is activated', async () => {
-      const user1 = generateValidUserWithPassword();
-      const user2 = generateValidUserWithPassword();
+      const user1 = testUtils.generateValidUserWithPassword();
+      const user2 = testUtils.generateValidUserWithPassword();
       const email = user1.email;
       user2.email = email;
       expect(user1.email).toBe(user2.email);
       expect(user1.phone).not.toBe(user2.phone);
 
-      const createUser1Response = await request(app.getServer()).post(userRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUser1Response = await request(app!.getServer()).post(userRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser1Response.statusCode).toBe(201);
       const { data: newUser1Dto, message: createUser1Message }: CreateUserResponseDto = createUser1Response.body;
       expect(newUser1Dto?.id).toBeDefined();
       expect(createUser1Message).toBe(events.users.userCreated);
       expect(newUser1Dto.email).toBe(email);
 
-      const activateNewUserResponse = await request(app.getServer())
+      const activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUser1Dto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const createUser2Response = await request(app.getServer()).post(userRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUser2Response = await request(app!.getServer()).post(userRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser2Response.statusCode).toBe(201);
       const { data: newUser2Dto, message: createUser2Message }: CreateUserResponseDto = createUser2Response.body;
       expect(newUser2Dto?.id).toBeDefined();
@@ -148,7 +143,7 @@ describe('POST /auth/request-reset-passcode', () => {
 
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .post(authRoute.requestResetPasscodePath)
         .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
@@ -159,12 +154,12 @@ describe('POST /auth/request-reset-passcode', () => {
       expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(2);
       expect(mockSendMail).toHaveBeenCalledTimes(2);
 
-      let deleteResponse = await request(app.getServer())
+      let deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUser1Dto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
-      deleteResponse = await request(app.getServer())
+      deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUser2Dto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -172,21 +167,21 @@ describe('POST /auth/request-reset-passcode', () => {
     });
 
     it('when exist more then one user with given email and NO one is activated', async () => {
-      const user1 = generateValidUserWithPassword();
-      const user2 = generateValidUserWithPassword();
+      const user1 = testUtils.generateValidUserWithPassword();
+      const user2 = testUtils.generateValidUserWithPassword();
       const email = user1.email;
       user2.email = email;
       expect(user1.email).toBe(user2.email);
       expect(user1.phone).not.toBe(user2.phone);
 
-      const createUser1Response = await request(app.getServer()).post(userRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUser1Response = await request(app!.getServer()).post(userRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser1Response.statusCode).toBe(201);
       const { data: newUser1Dto, message: createUser1Message }: CreateUserResponseDto = createUser1Response.body;
       expect(newUser1Dto?.id).toBeDefined();
       expect(createUser1Message).toBe(events.users.userCreated);
       expect(newUser1Dto.email).toBe(email);
 
-      const createUser2Response = await request(app.getServer()).post(userRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUser2Response = await request(app!.getServer()).post(userRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser2Response.statusCode).toBe(201);
       const { data: newUser2Dto, message: createUser2Message }: CreateUserResponseDto = createUser2Response.body;
       expect(newUser2Dto?.id).toBeDefined();
@@ -195,7 +190,7 @@ describe('POST /auth/request-reset-passcode', () => {
 
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .post(authRoute.requestResetPasscodePath)
         .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
@@ -206,12 +201,12 @@ describe('POST /auth/request-reset-passcode', () => {
       expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(2);
       expect(mockSendMail).toHaveBeenCalledTimes(2);
 
-      let deleteResponse = await request(app.getServer())
+      let deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUser1Dto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
-      deleteResponse = await request(app.getServer())
+      deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUser2Dto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -219,35 +214,35 @@ describe('POST /auth/request-reset-passcode', () => {
     });
 
     it('when exist more then one user with given email and only one has a passcode set', async () => {
-      const user1 = generateValidUserWithPassword();
-      const user2 = generateValidUserWithPassword();
+      const user1 = testUtils.generateValidUserWithPassword();
+      const user2 = testUtils.generateValidUserWithPassword();
       const email = user1.email;
       user2.email = email;
       user2.passcode = undefined;
       expect(user1.email).toBe(user2.email);
       expect(user1.phone).not.toBe(user2.phone);
 
-      const createUser1Response = await request(app.getServer()).post(userRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUser1Response = await request(app!.getServer()).post(userRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser1Response.statusCode).toBe(201);
       const { data: newUser1Dto, message: createUser1Message }: CreateUserResponseDto = createUser1Response.body;
       expect(newUser1Dto?.id).toBeDefined();
       expect(createUser1Message).toBe(events.users.userCreated);
       expect(newUser1Dto.email).toBe(email);
 
-      let activateNewUserResponse = await request(app.getServer())
+      let activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUser1Dto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const createUser2Response = await request(app.getServer()).post(userRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUser2Response = await request(app!.getServer()).post(userRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser2Response.statusCode).toBe(201);
       const { data: newUser2Dto, message: createUser2Message }: CreateUserResponseDto = createUser2Response.body;
       expect(newUser2Dto?.id).toBeDefined();
       expect(createUser2Message).toBe(events.users.userCreated);
       expect(newUser2Dto.email).toBe(email);
 
-      activateNewUserResponse = await request(app.getServer())
+      activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUser2Dto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -255,7 +250,7 @@ describe('POST /auth/request-reset-passcode', () => {
 
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .post(authRoute.requestResetPasscodePath)
         .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
@@ -266,12 +261,12 @@ describe('POST /auth/request-reset-passcode', () => {
       expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(2);
       expect(mockSendMail).toHaveBeenCalledTimes(2);
 
-      let deleteResponse = await request(app.getServer())
+      let deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUser1Dto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
-      deleteResponse = await request(app.getServer())
+      deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUser2Dto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -279,36 +274,36 @@ describe('POST /auth/request-reset-passcode', () => {
     });
 
     it('when exist more then one user with given email and NO one has a passcode set', async () => {
-      const user1 = generateValidUserWithPassword();
+      const user1 = testUtils.generateValidUserWithPassword();
       user1.passcode = undefined;
-      const user2 = generateValidUserWithPassword();
+      const user2 = testUtils.generateValidUserWithPassword();
       user2.passcode = undefined;
       const email = user1.email;
       user2.email = email;
       expect(user1.email).toBe(user2.email);
       expect(user1.phone).not.toBe(user2.phone);
 
-      const createUser1Response = await request(app.getServer()).post(userRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUser1Response = await request(app!.getServer()).post(userRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser1Response.statusCode).toBe(201);
       const { data: newUser1Dto, message: createUser1Message }: CreateUserResponseDto = createUser1Response.body;
       expect(newUser1Dto?.id).toBeDefined();
       expect(createUser1Message).toBe(events.users.userCreated);
       expect(newUser1Dto.email).toBe(email);
 
-      let activateNewUserResponse = await request(app.getServer())
+      let activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUser1Dto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(400);
 
-      const createUser2Response = await request(app.getServer()).post(userRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUser2Response = await request(app!.getServer()).post(userRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser2Response.statusCode).toBe(201);
       const { data: newUser2Dto, message: createUser2Message }: CreateUserResponseDto = createUser2Response.body;
       expect(newUser2Dto?.id).toBeDefined();
       expect(createUser2Message).toBe(events.users.userCreated);
       expect(newUser2Dto.email).toBe(email);
 
-      activateNewUserResponse = await request(app.getServer())
+      activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUser2Dto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -316,7 +311,7 @@ describe('POST /auth/request-reset-passcode', () => {
 
       expect(newUser1Dto.email).toBe(newUser2Dto.email);
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .post(authRoute.requestResetPasscodePath)
         .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
@@ -327,12 +322,12 @@ describe('POST /auth/request-reset-passcode', () => {
       expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(2);
       expect(mockSendMail).toHaveBeenCalledTimes(2);
 
-      let deleteResponse = await request(app.getServer())
+      let deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUser1Dto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
-      deleteResponse = await request(app.getServer())
+      deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUser2Dto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -343,7 +338,7 @@ describe('POST /auth/request-reset-passcode', () => {
       const testData: any[] = [null, '', ' ', true, undefined, 0, {}, []];
 
       for (const email of testData) {
-        const response = await request(app.getServer())
+        const response = await request(app!.getServer())
           .post(authRoute.requestResetPasscodePath)
           .send({ email } satisfies AccountTryingToLogInDto);
         expect(response.statusCode).toBe(400);
@@ -358,23 +353,23 @@ describe('POST /auth/request-reset-passcode', () => {
 
   describe('when login data are valid (given email is unique, not exist, etc.)', () => {
     it('RequestResetPasscode email should not be sent when exist only one active user with given e-mail and user passcode is NOT set', async () => {
-      const user = generateValidUserWithPassword();
+      const user = testUtils.generateValidUserWithPassword();
       user.passcode = undefined;
 
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await request(app!.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createUserMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createUserMessage).toBe(events.users.userCreated);
       expect(newUserDto.email).toBe(user.email);
 
-      const activateNewUserResponse = await request(app.getServer())
+      const activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(400);
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .post(authRoute.requestResetPasscodePath)
         .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
@@ -382,7 +377,7 @@ describe('POST /auth/request-reset-passcode', () => {
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -393,23 +388,23 @@ describe('POST /auth/request-reset-passcode', () => {
     });
 
     it('RequestResetPasscode email should not be sent when exist only one inactive user with given e-mail and user passcode is NOT set', async () => {
-      const user = generateValidUserWithPassword();
+      const user = testUtils.generateValidUserWithPassword();
       user.passcode = undefined;
 
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await request(app!.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createUserMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createUserMessage).toBe(events.users.userCreated);
       expect(newUserDto.email).toBe(user.email);
 
-      const activateNewUserResponse = await request(app.getServer())
+      const activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(400);
 
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .post(authRoute.requestResetPasscodePath)
         .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
@@ -417,7 +412,7 @@ describe('POST /auth/request-reset-passcode', () => {
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -430,7 +425,7 @@ describe('POST /auth/request-reset-passcode', () => {
     it('when NO user with given e-mail (or email is invalid)', async () => {
       const testData: any[] = [generateRandomEmail(), 'not-email', 'not-email@', 'not-email@domain', 'not-email@domain.', 'not-email@.com'];
       for (const email of testData) {
-        const response = await request(app.getServer())
+        const response = await request(app!.getServer())
           .post(authRoute.requestResetPasscodePath)
           .send({ email } satisfies AccountTryingToLogInDto);
         expect(response.statusCode).toBe(200);
@@ -443,23 +438,23 @@ describe('POST /auth/request-reset-passcode', () => {
     });
 
     it('RequestResetPasscode email should not be sent when user passcode is not set', async () => {
-      const user = generateValidUserWithPassword();
+      const user = testUtils.generateValidUserWithPassword();
       user.passcode = undefined;
 
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await request(app!.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createUserMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createUserMessage).toBe(events.users.userCreated);
       expect(newUserDto.email).toBe(user.email);
 
-      const activateNewUserResponse = await request(app.getServer())
+      const activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(400);
 
-      let response = await request(app.getServer())
+      let response = await request(app!.getServer())
         .post(authRoute.requestResetPasscodePath)
         .send({ email: user.email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
@@ -467,7 +462,7 @@ describe('POST /auth/request-reset-passcode', () => {
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
-      response = await request(app.getServer())
+      response = await request(app!.getServer())
         .post(authRoute.requestResetPasscodePath)
         .send({ email: user.email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
@@ -478,7 +473,7 @@ describe('POST /auth/request-reset-passcode', () => {
       expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
       expect(mockSendMail).toHaveBeenCalledTimes(1);
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -486,22 +481,22 @@ describe('POST /auth/request-reset-passcode', () => {
     });
 
     it('email is sent only once when token is still valid (not expired)', async () => {
-      const user = generateValidUserWithPassword();
+      const user = testUtils.generateValidUserWithPassword();
 
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await request(app!.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createUserMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createUserMessage).toBe(events.users.userCreated);
       expect(newUserDto.email).toBe(user.email);
 
-      const activateNewUserResponse = await request(app.getServer())
+      const activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      let response = await request(app.getServer())
+      let response = await request(app!.getServer())
         .post(authRoute.requestResetPasscodePath)
         .send({ email: user.email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
@@ -509,7 +504,7 @@ describe('POST /auth/request-reset-passcode', () => {
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
-      response = await request(app.getServer())
+      response = await request(app!.getServer())
         .post(authRoute.requestResetPasscodePath)
         .send({ email: user.email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
@@ -520,7 +515,7 @@ describe('POST /auth/request-reset-passcode', () => {
       expect(sendWelcomeEmailSpy).toHaveBeenCalledTimes(1);
       expect(mockSendMail).toHaveBeenCalledTimes(2);
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -536,7 +531,7 @@ describe('POST /auth/request-reset-passcode', () => {
       jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
       const { email, uuid: userId, passcode } = getAdminLoginData();
-      let response = await request(app.getServer())
+      let response = await request(app!.getServer())
         .post(authRoute.requestResetPasscodePath)
         .send({ email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
@@ -558,7 +553,7 @@ describe('POST /auth/request-reset-passcode', () => {
 
       const token = splittedUrl[splittedUrl.length - 1];
 
-      response = await request(app.getServer())
+      response = await request(app!.getServer())
         .post(authRoute.resetPasscodePath + `/${userId}`)
         .send({ token, passcode } satisfies ResetPasscodeDto);
       expect(response.statusCode).toBe(200);
@@ -589,18 +584,18 @@ describe('POST /auth/request-reset-passcode', () => {
       });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
-      const user = generateValidUserWithPassword();
+      const user = testUtils.generateValidUserWithPassword();
       user.email = getAdminLoginData().email;
       expect(user.phone).not.toBe(getAdminLoginData().phone);
 
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await request(app!.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createUserMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createUserMessage).toBe(events.users.userCreated);
       expect(newUserDto.email).toBe(user.email);
 
-      let response = await request(app.getServer())
+      let response = await request(app!.getServer())
         .post(authRoute.requestResetPasscodePath)
         .send({ email: user.email, phone: user.phone } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
@@ -622,7 +617,7 @@ describe('POST /auth/request-reset-passcode', () => {
 
       const token = splittedUrl[splittedUrl.length - 1];
 
-      response = await request(app.getServer())
+      response = await request(app!.getServer())
         .post(authRoute.resetPasscodePath + `/${newUserDto.id}`)
         .send({ token, passcode: user.passcode! } satisfies ResetPasscodeDto);
       expect(response.statusCode).toBe(200);
@@ -633,7 +628,7 @@ describe('POST /auth/request-reset-passcode', () => {
       expect(data.isPasscodeSet).toBe(true);
       expect(message).toBe(events.users.userPasscodeChanged);
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -663,15 +658,15 @@ describe('POST /auth/request-reset-passcode', () => {
       });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
-      const user = generateValidUserWithPin();
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const user = testUtils.generateValidUserWithPin();
+      const createUserResponse = await request(app!.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createUserMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createUserMessage).toBe(events.users.userCreated);
       expect(newUserDto.email).toBe(user.email);
 
-      let response = await request(app.getServer())
+      let response = await request(app!.getServer())
         .post(authRoute.requestResetPasscodePath)
         .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
@@ -693,7 +688,7 @@ describe('POST /auth/request-reset-passcode', () => {
 
       const token = splittedUrl[splittedUrl.length - 1];
 
-      response = await request(app.getServer())
+      response = await request(app!.getServer())
         .post(authRoute.resetPasscodePath + `/${newUserDto.id}`)
         .send({ token, passcode: user.passcode! } satisfies ResetPasscodeDto);
       expect(response.statusCode).toBe(200);
@@ -707,7 +702,7 @@ describe('POST /auth/request-reset-passcode', () => {
       expect(mockSendEmailResetPasscode).toHaveBeenCalledTimes(1);
       expect(mockSendMail).toHaveBeenCalledTimes(2);
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -733,18 +728,18 @@ describe('POST /auth/request-reset-passcode', () => {
       });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
-      const user = generateValidUserWithPin();
+      const user = testUtils.generateValidUserWithPin();
       user.email = getAdminLoginData().email;
       expect(user.phone).not.toBe(getAdminLoginData().phone);
 
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await request(app!.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createUserMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createUserMessage).toBe(events.users.userCreated);
       expect(newUserDto.email).toBe(user.email);
 
-      let response = await request(app.getServer())
+      let response = await request(app!.getServer())
         .post(authRoute.requestResetPasscodePath)
         .send({ email: user.email, phone: user.phone } satisfies AccountTryingToLogInDto);
       expect(response.statusCode).toBe(200);
@@ -766,7 +761,7 @@ describe('POST /auth/request-reset-passcode', () => {
 
       const token = splittedUrl[splittedUrl.length - 1];
 
-      response = await request(app.getServer())
+      response = await request(app!.getServer())
         .post(authRoute.resetPasscodePath + `/${newUserDto.id}`)
         .send({ token, passcode: user.passcode! } satisfies ResetPasscodeDto);
       expect(response.statusCode).toBe(200);
@@ -777,7 +772,7 @@ describe('POST /auth/request-reset-passcode', () => {
       expect(data.isPasscodeSet).toBe(true);
       expect(message).toBe(events.users.userPasscodeChanged);
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -806,7 +801,7 @@ describe('POST /auth/request-reset-passcode', () => {
   });
 
   afterAll(async () => {
-    await app.closeDbConnection();
+    await testUtils.closeTestApp();
     jest.restoreAllMocks();
     jest.resetAllMocks();
   });

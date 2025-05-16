@@ -13,11 +13,11 @@ import {
 import { BaseService } from '@modules/common';
 import { EmailService, IResetPasscodeEmailSettings, LinkHelper } from '@modules/notifications';
 import { UserRepository } from '@modules/users';
-import { User } from '@modules/users/entities/user.entity';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { Container, Service } from 'typedi';
 import { getAuthenticationType } from '../helpers/auth.helper';
 import { ResetPasscodeTokensRepository } from '../repositories/reset-passcode-tokens.repository';
+import { User } from './../../../dataBase/entities/users/user.entity';
 
 @Service()
 export class ResetPasscodeService extends BaseService {

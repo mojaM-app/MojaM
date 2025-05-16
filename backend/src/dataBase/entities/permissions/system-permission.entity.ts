@@ -1,6 +1,6 @@
 /* eslint-disable no-use-before-define */
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, Relation } from 'typeorm';
-import { UserSystemPermission } from './../../../modules/users/entities/user-system-permission.entity';
+import { UserSystemPermission } from '../users/user-system-permission.entity';
 
 @Entity({
   name: 'system_permissions',

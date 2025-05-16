@@ -1,5 +1,5 @@
 import { VALIDATOR_SETTINGS } from '@config';
-import { generateRandomNumber } from '@utils/tests.utils';
+import { generateRandomNumber } from '@utils';
 import { CryptoService } from './crypto.service';
 import { PinService } from './pin.service';
 

@@ -1,6 +1,6 @@
+import { IUser } from '@core';
 import { Event } from '@events';
 import { IHasGuidId } from '@interfaces';
-import { IUser } from '../interfaces/IUser';
 
 export class UserUnlockedEvent extends Event {
   public readonly user: IUser & IHasGuidId;

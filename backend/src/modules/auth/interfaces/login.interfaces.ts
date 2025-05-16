@@ -1,4 +1,4 @@
-import { IUserDto } from '@modules/users';
+import { IUserDto } from '@core';
 
 export interface ILoginResult {
   user: IUserDto;

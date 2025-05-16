@@ -1,9 +1,10 @@
+import { IUserGridItemDto } from '@core';
 import { events } from '@events';
 import { IGridPageResponseDto } from '@interfaces';
 import { BaseService } from '@modules/common';
-import { GetUserListReqDto, IUserGridItemDto, UserListRepository, UserListRetrievedEvent, UsersGridPageDto } from '@modules/users';
+import { GetUserListReqDto, UserListRepository, UserListRetrievedEvent, UsersGridPageDto } from '@modules/users';
 import { Container, Service } from 'typedi';
-import { vUser } from '../entities/vUser.entity';
+import { vUser } from './../../../dataBase/entities/users/vUser.entity';
 
 @Service()
 export class UserListService extends BaseService {

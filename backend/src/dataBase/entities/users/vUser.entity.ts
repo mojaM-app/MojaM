@@ -1,6 +1,6 @@
+import { IUserGridItemDto } from '@core';
 import { DataSource, PrimaryColumn, ViewColumn, ViewEntity } from 'typeorm';
-import { IUserGridItemDto } from '../dtos/get-user-list.dto';
-import { EntityTransformFunctions } from './../../../dataBase/EntityTransformFunctions';
+import { EntityTransformFunctions } from './../../EntityTransformFunctions';
 import { User } from './user.entity';
 
 export const UserListViewColumns: { [K in keyof IUserGridItemDto]: string } = {

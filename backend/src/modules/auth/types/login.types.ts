@@ -1,4 +1,4 @@
-import { IUserDto } from '@modules/users';
+import { IUserDto } from '@core';
 
 export type TLoginResult = IUserDto & {
   accessToken: string;

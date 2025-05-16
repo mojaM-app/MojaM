@@ -3,7 +3,7 @@ import { getDateNow } from '@utils';
 import { Service } from 'typedi';
 import { FindOneOptions, FindOptionsOrder, FindOptionsRelations, FindOptionsWhere, LessThanOrEqual } from 'typeorm';
 import { BaseAnnouncementsRepository } from './base.announcements.repository';
-import { Announcement } from '../entities/announcement.entity';
+import { Announcement } from '../../../dataBase/entities/announcements/announcement.entity';
 
 @Service()
 export class CurrentAnnouncementsRepository extends BaseAnnouncementsRepository {

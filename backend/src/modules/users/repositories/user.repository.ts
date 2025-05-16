@@ -1,3 +1,4 @@
+import { ICreateUser, IUpdateUser, IUpdateUserPasscode } from '@core';
 import { relatedDataNames } from '@db';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { CryptoService, PasscodeService, ResetPasscodeTokensRepository } from '@modules/auth';
@@ -5,10 +6,8 @@ import { CreateUserDto, CreateUserReqDto, DeleteUserReqDto, UpdateUserModel } fr
 import { getDateTimeNow, isNullOrEmptyString } from '@utils';
 import Container, { Service } from 'typedi';
 import { Not } from 'typeorm';
+import { User } from './../../../dataBase/entities/users/user.entity';
 import { BaseUserRepository } from './base.user.repository';
-import { User } from '../entities/user.entity';
-import { ICreateUser } from '../interfaces/create-user.interfaces';
-import { IUpdateUser, IUpdateUserPasscode } from '../interfaces/update-user.interfaces';
 
 @Service()
 export class UserRepository extends BaseUserRepository {

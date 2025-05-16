@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
-import { SystemPermissions } from '../../modules/permissions/enums/system-permissions.enum';
+import { SystemPermissions } from '../../core/enums/system-permissions.enum';
 import { PasswordService } from './../../modules/auth/services/password.service';
-import { getAdminLoginData } from './../../utils/tests.utils';
+import { getAdminLoginData } from './../../utils/user.utils';
 
 export class Seed1729350380773 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {

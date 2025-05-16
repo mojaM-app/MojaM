@@ -1,58 +1,46 @@
-import { EventDispatcherService, events } from '@events';
+import { events } from '@events';
 import { errorKeys } from '@exceptions';
-import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-tests.helper';
-import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
+import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { LoginDto } from '@modules/auth';
-import { PermissionsRoute, SystemPermissions } from '@modules/permissions';
+import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, GetUserListResponseDto, UserListRetrievedEvent, UserListRoute, UserRoute } from '@modules/users';
-import { isNumber } from '@utils';
-import { getAdminLoginData } from '@utils/tests.utils';
-import { EventDispatcher } from 'event-dispatch';
-import nodemailer from 'nodemailer';
+import { getAdminLoginData, isNumber } from '@utils';
+import { testUtils } from '@helpers';
 import request from 'supertest';
-import { App } from './../../../app';
+import { SystemPermissions } from '@core';
+import { TestApp } from './../../../helpers/tests.utils';
 
 describe('GET/user-list', () => {
   const userRoute = new UserRoute();
   const userListRoute = new UserListRoute();
   const permissionsRoute = new PermissionsRoute();
-  const app = new App();
+  let app: TestApp | undefined;
   let adminAccessToken: string | undefined;
-  let mockSendMail: any;
 
   beforeAll(async () => {
-    await app.initialize([userRoute, userListRoute, permissionsRoute]);
+    app = await testUtils.getTestApp([userRoute, permissionsRoute, userListRoute]);
+    app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-
-    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
-
-    const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
-    registerTestEventHandlers(eventDispatcher);
+    adminAccessToken = (await testUtils.loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
   });
 
   beforeEach(async () => {
-    jest.resetAllMocks();
-
-    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
-      callback(null, null);
-    });
-
-    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
-      sendMail: mockSendMail,
-      close: jest.fn().mockImplementation(() => {}),
-    } as any);
+    jest.clearAllMocks();
   });
 
   describe('GET should respond with a status code of 200', () => {
     test('when data are valid and user has permission', async () => {
-      const newUser = generateValidUserWithPassword();
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
+      const newUser = testUtils.generateValidUserWithPassword();
+      const createUserResponse = await request(app!.getServer())
+        .post(userRoute.path)
+        .send(newUser)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const getListResponse = await request(app.getServer()).get(userListRoute.path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      const getListResponse = await request(app!.getServer()).get(userListRoute.path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(getListResponse.statusCode).toBe(200);
       expect(getListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = getListResponse.body;
@@ -68,7 +56,7 @@ describe('GET/user-list', () => {
       expect(Array.isArray(gridPage.items)).toBe(true);
       expect(gridPage.items.length).toBeGreaterThan(0);
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -92,7 +80,7 @@ describe('GET/user-list', () => {
 
   describe('GET should respond with a status code of 403', () => {
     test('when token is not set', async () => {
-      const getListResponse = await request(app.getServer()).get(userListRoute.path).send();
+      const getListResponse = await request(app!.getServer()).get(userListRoute.path).send();
       expect(getListResponse.statusCode).toBe(401);
       const body = getListResponse.body;
       expect(typeof body).toBe('object');
@@ -105,8 +93,8 @@ describe('GET/user-list', () => {
     });
 
     test('when user has no permission', async () => {
-      const requestData = generateValidUserWithPassword();
-      const createUserResponse = await request(app.getServer())
+      const requestData = testUtils.generateValidUserWithPassword();
+      const createUserResponse = await request(app!.getServer())
         .post(userRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -118,22 +106,23 @@ describe('GET/user-list', () => {
       expect(newUserDto?.email).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const activateNewUserResponse = await request(app.getServer())
+      const activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await testUtils.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))
+        ?.accessToken;
 
-      const getListResponse = await request(app.getServer()).get(userListRoute.path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
+      const getListResponse = await request(app!.getServer()).get(userListRoute.path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(getListResponse.statusCode).toBe(403);
       expect(getListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getListResponse.body;
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -161,8 +150,8 @@ describe('GET/user-list', () => {
     });
 
     test('when user have all permissions expect PreviewUserList', async () => {
-      const requestData = generateValidUserWithPassword();
-      const createUserResponse = await request(app.getServer())
+      const requestData = testUtils.generateValidUserWithPassword();
+      const createUserResponse = await request(app!.getServer())
         .post(userRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -174,7 +163,7 @@ describe('GET/user-list', () => {
       expect(newUserDto?.email).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const activateNewUserResponse = await request(app.getServer())
+      const activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -186,22 +175,23 @@ describe('GET/user-list', () => {
           const value = permission as number;
           if (value !== SystemPermissions.PreviewUserList) {
             const path = permissionsRoute.path + '/' + newUserDto.id + '/' + permission.toString();
-            const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+            const addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
           }
         }
       });
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await testUtils.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))
+        ?.accessToken;
 
-      const getListResponse = await request(app.getServer()).get(userListRoute.path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
+      const getListResponse = await request(app!.getServer()).get(userListRoute.path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(getListResponse.statusCode).toBe(403);
       expect(getListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getListResponse.body;
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -233,7 +223,7 @@ describe('GET/user-list', () => {
 
   describe('GET should respond with a status code of 401', () => {
     test('when token is invalid', async () => {
-      const getListResponse = await request(app.getServer())
+      const getListResponse = await request(app!.getServer())
         .get(userListRoute.path)
         .send()
         .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
@@ -250,7 +240,7 @@ describe('GET/user-list', () => {
   });
 
   afterAll(async () => {
-    await app.closeDbConnection();
+    await testUtils.closeTestApp();
     jest.resetAllMocks();
   });
 });

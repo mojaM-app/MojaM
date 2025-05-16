@@ -17,12 +17,7 @@ export {
   CreateAnnouncementsResponseDto,
 } from './dtos/create-announcements.dto';
 export { DeleteAnnouncementsReqDto, DeleteAnnouncementsResponseDto } from './dtos/delete-announcements.dto';
-export {
-  GetAnnouncementListReqDto,
-  GetAnnouncementListResponseDto,
-  type AnnouncementsGridPageDto,
-  type IAnnouncementGridItemDto,
-} from './dtos/get-announcement-list.dto';
+export { GetAnnouncementListReqDto, GetAnnouncementListResponseDto, type AnnouncementsGridPageDto } from './dtos/get-announcement-list.dto';
 export { GetAnnouncementsReqDto, GetAnnouncementsResponseDto, type IAnnouncementsDto } from './dtos/get-announcements.dto';
 export {
   GetCurrentAnnouncementsResponseDto,

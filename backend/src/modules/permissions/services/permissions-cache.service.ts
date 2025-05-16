@@ -1,7 +1,7 @@
+import { SystemPermissions } from '@core';
 import { CacheContainer } from 'node-ts-cache';
 import { MemoryStorage } from 'node-ts-cache-storage-memory';
 import { Service } from 'typedi';
-import { SystemPermissions } from '../enums/system-permissions.enum';
 
 @Service()
 export class PermissionsCacheService {

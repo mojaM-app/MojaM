@@ -1,58 +1,43 @@
-import { EventDispatcherService, events } from '@events';
+import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-tests.helper';
-import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
+import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { LoginDto } from '@modules/auth';
-import { PermissionsRoute, SystemPermissions } from '@modules/permissions';
+import { PermissionsRoute } from '@modules/permissions';
 import { ActivateUserResponseDto, CreateUserResponseDto, DeactivateUserResponseDto, UserRoute } from '@modules/users';
-import { isNumber } from '@utils';
-import { getAdminLoginData } from '@utils/tests.utils';
-import { EventDispatcher } from 'event-dispatch';
+import { getAdminLoginData, isNumber } from '@utils';
+import { testUtils } from '@helpers';
 import { Guid } from 'guid-typescript';
-import nodemailer from 'nodemailer';
 import request from 'supertest';
-import { App } from './../../../app';
+import { TestApp } from './../../../helpers/tests.utils';
+import { SystemPermissions } from '@core';
 
 describe('POST /user/:id/deactivate', () => {
   const userRoute = new UserRoute();
   const permissionsRoute = new PermissionsRoute();
-  const app = new App();
+  let app: TestApp | undefined;
   let adminAccessToken: string | undefined;
-  let mockSendMail: any;
 
   beforeAll(async () => {
-    await app.initialize([userRoute, permissionsRoute]);
+    app = await testUtils.getTestApp([userRoute, permissionsRoute]);
+    app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-
-    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
-
-    const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
-    registerTestEventHandlers(eventDispatcher);
+    adminAccessToken = (await testUtils.loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
   });
 
   beforeEach(async () => {
-    jest.resetAllMocks();
-
-    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
-      callback(null, null);
-    });
-
-    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
-      sendMail: mockSendMail,
-      close: jest.fn().mockImplementation(() => {}),
-    } as any);
+    jest.clearAllMocks();
   });
 
   describe('POST should respond with a status code of 200', () => {
     test('when data are valid and user has permission', async () => {
-      const user = generateValidUserWithPassword();
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const user = testUtils.generateValidUserWithPassword();
+      const createUserResponse = await request(app!.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const deactivateUserResponse = await request(app.getServer())
+      const deactivateUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.deactivatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -64,7 +49,7 @@ describe('POST /user/:id/deactivate', () => {
       expect(message).toBe(events.users.userDeactivated);
       expect(result).toBe(true);
 
-      const deleteUserResponse = await request(app.getServer())
+      const deleteUserResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -85,14 +70,14 @@ describe('POST /user/:id/deactivate', () => {
     });
 
     test('when data are valid, user has permission and deactivatedUser is not active', async () => {
-      const user = generateValidUserWithPassword();
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const user = testUtils.generateValidUserWithPassword();
+      const createUserResponse = await request(app!.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const deactivateUserResponse1 = await request(app.getServer())
+      const deactivateUserResponse1 = await request(app!.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.deactivatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -104,7 +89,7 @@ describe('POST /user/:id/deactivate', () => {
       expect(message1).toBe(events.users.userDeactivated);
       expect(result1).toBe(true);
 
-      const deactivateUserResponse2 = await request(app.getServer())
+      const deactivateUserResponse2 = await request(app!.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.deactivatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -116,7 +101,7 @@ describe('POST /user/:id/deactivate', () => {
       expect(message2).toBe(events.users.userDeactivated);
       expect(result2).toBe(true);
 
-      const deleteUserResponse = await request(app.getServer())
+      const deleteUserResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -137,14 +122,14 @@ describe('POST /user/:id/deactivate', () => {
     });
 
     test('when data are valid, user has permission and deactivatedUser is active', async () => {
-      const user = generateValidUserWithPassword();
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const user = testUtils.generateValidUserWithPassword();
+      const createUserResponse = await request(app!.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const activateUserResponse = await request(app.getServer())
+      const activateUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -156,7 +141,7 @@ describe('POST /user/:id/deactivate', () => {
       expect(message1).toBe(events.users.userActivated);
       expect(result1).toBe(true);
 
-      const deactivateUserResponse = await request(app.getServer())
+      const deactivateUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.deactivatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -168,7 +153,7 @@ describe('POST /user/:id/deactivate', () => {
       expect(message2).toBe(events.users.userDeactivated);
       expect(result2).toBe(true);
 
-      const deleteUserResponse = await request(app.getServer())
+      const deleteUserResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -198,7 +183,7 @@ describe('POST /user/:id/deactivate', () => {
   describe('POST should respond with a status code of 403', () => {
     test('when token is not set', async () => {
       const userId: string = Guid.EMPTY;
-      const deactivateUserResponse = await request(app.getServer())
+      const deactivateUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + userId + '/' + userRoute.deactivatePath)
         .send();
       expect(deactivateUserResponse.statusCode).toBe(401);
@@ -213,8 +198,8 @@ describe('POST /user/:id/deactivate', () => {
     });
 
     test('when user has no permission', async () => {
-      const requestData = generateValidUserWithPassword();
-      const createUserResponse = await request(app.getServer())
+      const requestData = testUtils.generateValidUserWithPassword();
+      const createUserResponse = await request(app!.getServer())
         .post(userRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -226,14 +211,15 @@ describe('POST /user/:id/deactivate', () => {
       expect(user?.email).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const activateNewUserResponse = await request(app.getServer())
+      const activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
-      const deactivateUserResponse = await request(app.getServer())
+      const newUserAccessToken = (await testUtils.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))
+        ?.accessToken;
+      const deactivateUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + user.id + '/' + userRoute.deactivatePath)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
@@ -243,7 +229,7 @@ describe('POST /user/:id/deactivate', () => {
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
-      const deleteUserResponse = await request(app.getServer())
+      const deleteUserResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -270,8 +256,8 @@ describe('POST /user/:id/deactivate', () => {
     });
 
     test('when user have all permissions expect DeactivateUser', async () => {
-      const requestData = generateValidUserWithPassword();
-      const createUserResponse = await request(app.getServer())
+      const requestData = testUtils.generateValidUserWithPassword();
+      const createUserResponse = await request(app!.getServer())
         .post(userRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -283,7 +269,7 @@ describe('POST /user/:id/deactivate', () => {
       expect(user?.email).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const activateNewUserResponse = await request(app.getServer())
+      const activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -295,15 +281,16 @@ describe('POST /user/:id/deactivate', () => {
           const value = permission as number;
           if (value !== SystemPermissions.DeactivateUser) {
             const path = permissionsRoute.path + '/' + user.id + '/' + permission.toString();
-            const addPermissionResponse = await request(app.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+            const addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
           }
         }
       });
 
-      const newUserAccessToken = (await loginAs(app, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await testUtils.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))
+        ?.accessToken;
 
-      const deactivateUserResponse = await request(app.getServer())
+      const deactivateUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + user.id + '/' + userRoute.deactivatePath)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
@@ -313,7 +300,7 @@ describe('POST /user/:id/deactivate', () => {
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
-      const deleteUserResponse = await request(app.getServer())
+      const deleteUserResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -345,7 +332,7 @@ describe('POST /user/:id/deactivate', () => {
   describe('POST should respond with a status code of 400', () => {
     test('when user not exist', async () => {
       const userId: string = Guid.EMPTY;
-      const deactivateResponse = await request(app.getServer())
+      const deactivateResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + userId + '/' + userRoute.deactivatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -367,7 +354,7 @@ describe('POST /user/:id/deactivate', () => {
 
   describe('POST should respond with a status code of 404', () => {
     test('when user Id is not GUID', async () => {
-      const deactivateResponse = await request(app.getServer())
+      const deactivateResponse = await request(app!.getServer())
         .post(userRoute.path + '/invalid-guid/' + userRoute.deactivatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -388,7 +375,7 @@ describe('POST /user/:id/deactivate', () => {
   describe('POST should respond with a status code of 401', () => {
     test('when token is invalid', async () => {
       const userId: string = Guid.EMPTY;
-      const deactivateResponse = await request(app.getServer())
+      const deactivateResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + userId + '/' + userRoute.deactivatePath)
         .send()
         .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
@@ -405,7 +392,7 @@ describe('POST /user/:id/deactivate', () => {
   });
 
   afterAll(async () => {
-    await app.closeDbConnection();
+    await testUtils.closeTestApp();
     jest.resetAllMocks();
   });
 });

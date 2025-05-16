@@ -1,4 +1,4 @@
-import { IUser } from '@modules/users';
+import { IUser } from '@core';
 
 export interface IUnlockAccountEmailSettings {
   user: IUser;

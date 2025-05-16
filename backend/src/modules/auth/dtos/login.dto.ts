@@ -1,7 +1,7 @@
 import { VALIDATOR_SETTINGS } from '@config';
 import { events } from '@events';
 import { errorKeys } from '@exceptions';
-import { DtoTransformFunctions } from '@helpers/DtoTransformFunctions';
+import { DtoTransformFunctions } from '@helpers';
 import { IResponse } from '@interfaces';
 import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MaxLength } from 'class-validator';

@@ -1,3 +1,4 @@
+import { IAnnouncementId, ICreateAnnouncement, IUpdateAnnouncement } from '@core';
 import {
   Column,
   CreateDateColumn,
@@ -11,14 +12,11 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { ICreateAnnouncement } from '../interfaces/create-announcement.interfaces';
-import { IAnnouncementId } from '../interfaces/IAnnouncementId';
-import { IUpdateAnnouncement } from '../interfaces/update-announcement.interfaces';
-import { EntityDefaultFunctions } from './../../../dataBase/EntityDefaultFunctions';
-import { EntityTransformFunctions } from './../../../dataBase/EntityTransformFunctions';
-import { IHasGuidId } from './../../../interfaces/IHasGuidId';
-import { User } from './../../../modules/users/entities/user.entity';
 import { AnnouncementItem } from './announcement-item.entity';
+import { IHasGuidId } from '../../../interfaces/IHasGuidId';
+import { EntityDefaultFunctions } from '../../EntityDefaultFunctions';
+import { EntityTransformFunctions } from '../../EntityTransformFunctions';
+import { User } from '../users/user.entity';
 
 @Entity({
   name: 'announcements',

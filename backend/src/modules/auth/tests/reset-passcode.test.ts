@@ -1,8 +1,7 @@
 import { RESET_PASSWORD_TOKEN_EXPIRE_IN, USER_ACCOUNT_LOCKOUT_SETTINGS, VALIDATOR_SETTINGS } from '@config';
-import { EventDispatcherService, events } from '@events';
+import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-tests.helper';
-import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
+import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import {
   AccountTryingToLogInDto,
   AuthenticationTypes,
@@ -19,53 +18,40 @@ import { EmailService, IResetPasscodeEmailSettings } from '@modules/notification
 import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute } from '@modules/users';
 import * as Utils from '@utils';
-import { generateRandomNumber, generateRandomPassword, getAdminLoginData } from '@utils/tests.utils';
-import { EventDispatcher } from 'event-dispatch';
+import { generateRandomPassword, generateRandomNumber, getAdminLoginData } from '@utils';
+import { testUtils } from '@helpers';
 import { Guid } from 'guid-typescript';
 import ms from 'ms';
-import nodemailer from 'nodemailer';
 import request from 'supertest';
-import { App } from './../../../app';
+import { TestApp } from './../../../helpers/tests.utils';
 
 describe('POST /auth/reset-passcode', () => {
   const userRoute = new UserRoute();
   const authRoute = new AuthRoute();
   const permissionsRoute = new PermissionsRoute();
-  const app = new App();
+  let app: TestApp | undefined;
   let adminAccessToken: string | undefined;
-  let mockSendMail: any;
   let originalSendEmailResetPasscode: (settings: IResetPasscodeEmailSettings) => Promise<boolean>;
 
   beforeAll(async () => {
     const emailService = new EmailService();
     originalSendEmailResetPasscode = emailService.sendEmailResetPasscode.bind(emailService);
 
-    await app.initialize([userRoute, permissionsRoute]);
+    app = await testUtils.getTestApp([userRoute, permissionsRoute]);
+    app.mock_nodemailer_createTransport();
+
     const { email, passcode } = getAdminLoginData();
-
-    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
-
-    const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
-    registerTestEventHandlers(eventDispatcher);
+    adminAccessToken = (await testUtils.loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
   });
 
   beforeEach(async () => {
-    jest.resetAllMocks();
-
-    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
-      callback(null, null);
-    });
-
-    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
-      sendMail: mockSendMail,
-      close: jest.fn().mockImplementation(() => {}),
-    } as any);
+    jest.clearAllMocks();
   });
 
   describe('when reset password data are valid', () => {
     it('when user is inactive, after reset password user should be active and should be able to log in', async () => {
-      const user = generateValidUserWithPassword();
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const user = testUtils.generateValidUserWithPassword();
+      const createUserResponse = await request(app!.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
@@ -78,7 +64,7 @@ describe('POST /auth/reset-passcode', () => {
       });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
-      const requestResetPasscodeResponse = await request(app.getServer())
+      const requestResetPasscodeResponse = await request(app!.getServer())
         .post(authRoute.requestResetPasscodePath)
         .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
       expect(requestResetPasscodeResponse.statusCode).toBe(200);
@@ -93,7 +79,7 @@ describe('POST /auth/reset-passcode', () => {
       const token = splittedUrl[splittedUrl.length - 1];
       expect(token?.length).toBe(64);
 
-      const checkResetPasscodeTokenResponse = await request(app.getServer())
+      const checkResetPasscodeTokenResponse = await request(app!.getServer())
         .post(authRoute.checkResetPasscodeTokenPath + '/' + newUserDto.id + '/' + token)
         .send();
       expect(checkResetPasscodeTokenResponse.statusCode).toBe(200);
@@ -116,7 +102,7 @@ describe('POST /auth/reset-passcode', () => {
         token,
         passcode: newPassword,
       } satisfies ResetPasscodeDto;
-      const resetPasscodeResponse = await request(app.getServer())
+      const resetPasscodeResponse = await request(app!.getServer())
         .post(authRoute.resetPasscodePath + '/' + newUserDto.id)
         .send(resetPasscodeDto);
       expect(resetPasscodeResponse.statusCode).toBe(200);
@@ -126,11 +112,11 @@ describe('POST /auth/reset-passcode', () => {
       expect(resetPasscodeMessage).toBe(events.users.userPasscodeChanged);
       expect(resetPasscodeResult.isPasscodeSet).toBe(true);
 
-      const newUserAccessToken = (await loginAs(app, { email: newUserDto.email, passcode: newPassword } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await testUtils.loginAs(app!, { email: newUserDto.email, passcode: newPassword } satisfies LoginDto))?.accessToken;
       expect(newUserAccessToken).toBeDefined();
       expect(newUserAccessToken!.length).toBeGreaterThan(1);
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -158,14 +144,14 @@ describe('POST /auth/reset-passcode', () => {
     });
 
     it('when user is active, after reset password user should be active and should be able to log in', async () => {
-      const user = generateValidUserWithPassword();
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const user = testUtils.generateValidUserWithPassword();
+      const createUserResponse = await request(app!.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(newUserDto.email).toBe(user.email);
 
-      const activateUserResponse = await request(app.getServer())
+      const activateUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -178,7 +164,7 @@ describe('POST /auth/reset-passcode', () => {
       });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
-      const requestResetPasscodeResponse = await request(app.getServer())
+      const requestResetPasscodeResponse = await request(app!.getServer())
         .post(authRoute.requestResetPasscodePath)
         .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
       expect(requestResetPasscodeResponse.statusCode).toBe(200);
@@ -193,7 +179,7 @@ describe('POST /auth/reset-passcode', () => {
       const token = splittedUrl[splittedUrl.length - 1];
       expect(token?.length).toBe(64);
 
-      const checkResetPasscodeTokenResponse = await request(app.getServer())
+      const checkResetPasscodeTokenResponse = await request(app!.getServer())
         .post(authRoute.checkResetPasscodeTokenPath + '/' + newUserDto.id + '/' + token)
         .send();
       expect(checkResetPasscodeTokenResponse.statusCode).toBe(200);
@@ -216,7 +202,7 @@ describe('POST /auth/reset-passcode', () => {
         token,
         passcode: newPassword,
       } satisfies ResetPasscodeDto;
-      const resetPasscodeResponse = await request(app.getServer())
+      const resetPasscodeResponse = await request(app!.getServer())
         .post(authRoute.resetPasscodePath + '/' + newUserDto.id)
         .send(resetPasscodeDto);
       expect(resetPasscodeResponse.statusCode).toBe(200);
@@ -226,11 +212,11 @@ describe('POST /auth/reset-passcode', () => {
       expect(resetPasscodeMessage).toBe(events.users.userPasscodeChanged);
       expect(resetPasscodeResult.isPasscodeSet).toBe(true);
 
-      const newUserAccessToken = (await loginAs(app, { email: newUserDto.email, passcode: newPassword } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await testUtils.loginAs(app!, { email: newUserDto.email, passcode: newPassword } satisfies LoginDto))?.accessToken;
       expect(newUserAccessToken).toBeDefined();
       expect(newUserAccessToken!.length).toBeGreaterThan(1);
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -260,14 +246,14 @@ describe('POST /auth/reset-passcode', () => {
     });
 
     it('when user is lockedOut, after reset password user should be active and should be unlocked (should be able to log in)', async () => {
-      const user = generateValidUserWithPassword();
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const user = testUtils.generateValidUserWithPassword();
+      const createUserResponse = await request(app!.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(newUserDto.email).toBe(user.email);
 
-      const activateUserResponse = await request(app.getServer())
+      const activateUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -275,7 +261,7 @@ describe('POST /auth/reset-passcode', () => {
 
       const loginData: LoginDto = { email: newUserDto.email, phone: newUserDto.phone, passcode: user.passcode + 'invalid_password' };
       for (let index = 1; index < USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
-        const loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
+        const loginResponse = await request(app!.getServer()).post(authRoute.loginPath).send(loginData);
         expect(loginResponse.statusCode).toBe(400);
         expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
         expect(typeof loginResponse.body).toBe('object');
@@ -285,7 +271,7 @@ describe('POST /auth/reset-passcode', () => {
         expect(loginArgs).toBeUndefined();
       }
 
-      let loginResponse = await request(app.getServer()).post(authRoute.loginPath).send(loginData);
+      let loginResponse = await request(app!.getServer()).post(authRoute.loginPath).send(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       expect(typeof loginResponse.body).toBe('object');
@@ -301,7 +287,7 @@ describe('POST /auth/reset-passcode', () => {
       });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
-      const requestResetPasscodeResponse = await request(app.getServer())
+      const requestResetPasscodeResponse = await request(app!.getServer())
         .post(authRoute.requestResetPasscodePath)
         .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
       expect(requestResetPasscodeResponse.statusCode).toBe(200);
@@ -315,7 +301,7 @@ describe('POST /auth/reset-passcode', () => {
       const token = splittedUrl[splittedUrl.length - 1];
       expect(token?.length).toBe(64);
 
-      const checkResetPasscodeTokenResponse = await request(app.getServer())
+      const checkResetPasscodeTokenResponse = await request(app!.getServer())
         .post(authRoute.checkResetPasscodeTokenPath + '/' + newUserDto.id + '/' + token)
         .send();
       expect(checkResetPasscodeTokenResponse.statusCode).toBe(200);
@@ -338,7 +324,7 @@ describe('POST /auth/reset-passcode', () => {
         token,
         passcode: newPassword,
       } satisfies ResetPasscodeDto;
-      const resetPasscodeResponse = await request(app.getServer())
+      const resetPasscodeResponse = await request(app!.getServer())
         .post(authRoute.resetPasscodePath + '/' + newUserDto.id)
         .send(resetPasscodeDto);
       expect(resetPasscodeResponse.statusCode).toBe(200);
@@ -348,7 +334,7 @@ describe('POST /auth/reset-passcode', () => {
       expect(resetPasscodeMessage).toBe(events.users.userPasscodeChanged);
       expect(resetPasscodeResult.isPasscodeSet).toBe(true);
 
-      loginResponse = await request(app.getServer())
+      loginResponse = await request(app!.getServer())
         .post(authRoute.loginPath)
         .send({ email: newUserDto.email, passcode: newPassword } satisfies LoginDto);
       expect(loginResponse.statusCode).toBe(200);
@@ -358,7 +344,7 @@ describe('POST /auth/reset-passcode', () => {
       expect(userLoggedIn.email).toBe(newUserDto.email);
       expect(userLoggedIn.phone).toBe(newUserDto.phone);
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -394,7 +380,7 @@ describe('POST /auth/reset-passcode', () => {
 
   describe('when reset password data are invalid', () => {
     it('when user id is not set', async () => {
-      const user = generateValidUserWithPassword();
+      const user = testUtils.generateValidUserWithPassword();
 
       const invalidUserIds = ['invalid uuid', '', null, undefined];
 
@@ -403,7 +389,7 @@ describe('POST /auth/reset-passcode', () => {
           token: 'valid token',
           passcode: user.passcode!,
         } satisfies ResetPasscodeDto;
-        const response = await request(app.getServer())
+        const response = await request(app!.getServer())
           .post(authRoute.resetPasscodePath + '/' + invalidUserId)
           .send(resetPasscodeDto);
         expect(response.statusCode).toBe(404);
@@ -416,7 +402,7 @@ describe('POST /auth/reset-passcode', () => {
     });
 
     it('when user id invalid', async () => {
-      const user = generateValidUserWithPassword();
+      const user = testUtils.generateValidUserWithPassword();
 
       const invalidUserIds = [Guid.EMPTY];
 
@@ -425,7 +411,7 @@ describe('POST /auth/reset-passcode', () => {
           token: 'valid token',
           passcode: user.passcode!,
         } satisfies ResetPasscodeDto;
-        const response = await request(app.getServer())
+        const response = await request(app!.getServer())
           .post(authRoute.resetPasscodePath + '/' + invalidUserId)
           .send(resetPasscodeDto);
         expect(response.statusCode).toBe(400);
@@ -438,17 +424,17 @@ describe('POST /auth/reset-passcode', () => {
     });
 
     it('when user not exists', async () => {
-      const user = generateValidUserWithPassword();
+      const user = testUtils.generateValidUserWithPassword();
       user.passcode = undefined;
 
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await request(app!.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createUserMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createUserMessage).toBe(events.users.userCreated);
       expect(newUserDto.email).toBe(user.email);
 
-      const deleteUserResponse = await request(app.getServer())
+      const deleteUserResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -466,7 +452,7 @@ describe('POST /auth/reset-passcode', () => {
       ];
 
       for (const resetPasscodeModel of resetPasscodeModels) {
-        const response = await request(app.getServer())
+        const response = await request(app!.getServer())
           .post(authRoute.resetPasscodePath + '/' + newUserDto.id)
           .send(resetPasscodeModel);
         expect(response.statusCode).toBe(400);
@@ -506,7 +492,7 @@ describe('POST /auth/reset-passcode', () => {
         } satisfies ResetPasscodeDto,
       ];
       for (const resetPasscodeModel of resetPasscodeModels) {
-        const response = await request(app.getServer())
+        const response = await request(app!.getServer())
           .post(authRoute.resetPasscodePath + '/' + Guid.EMPTY)
           .send(resetPasscodeModel);
         expect(response.statusCode).toBe(400);
@@ -561,7 +547,7 @@ describe('POST /auth/reset-passcode', () => {
       ];
 
       for (const resetPasscodeModel of resetPasscodeModels) {
-        const response = await request(app.getServer())
+        const response = await request(app!.getServer())
           .post(authRoute.resetPasscodePath + '/' + getAdminLoginData().uuid)
           .send(resetPasscodeModel);
         expect(response.statusCode).toBe(400);
@@ -577,8 +563,8 @@ describe('POST /auth/reset-passcode', () => {
     });
 
     it('when token is valid but userId is from different user', async () => {
-      const user = generateValidUserWithPassword();
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const user = testUtils.generateValidUserWithPassword();
+      const createUserResponse = await request(app!.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
@@ -591,7 +577,7 @@ describe('POST /auth/reset-passcode', () => {
       });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
-      const requestResetPasscodeResponse = await request(app.getServer())
+      const requestResetPasscodeResponse = await request(app!.getServer())
         .post(authRoute.requestResetPasscodePath)
         .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
       expect(requestResetPasscodeResponse.statusCode).toBe(200);
@@ -611,7 +597,7 @@ describe('POST /auth/reset-passcode', () => {
         token,
         passcode: generateRandomPassword(),
       } satisfies ResetPasscodeDto;
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .post(authRoute.resetPasscodePath + '/' + adminUuid)
         .send(resetPasscodeDto);
       expect(response.statusCode).toBe(400);
@@ -619,7 +605,7 @@ describe('POST /auth/reset-passcode', () => {
       const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.login.Invalid_Reset_Passcode_Token).length).toBe(0);
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -634,8 +620,8 @@ describe('POST /auth/reset-passcode', () => {
     });
 
     it('when token expired', async () => {
-      const user = generateValidUserWithPassword();
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const user = testUtils.generateValidUserWithPassword();
+      const createUserResponse = await request(app!.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
@@ -648,7 +634,7 @@ describe('POST /auth/reset-passcode', () => {
       });
       jest.spyOn(EmailService.prototype, 'sendEmailResetPasscode').mockImplementation(mockSendEmailResetPasscode);
 
-      const requestResetPasscodeResponse = await request(app.getServer())
+      const requestResetPasscodeResponse = await request(app!.getServer())
         .post(authRoute.requestResetPasscodePath)
         .send({ email: newUserDto.email } satisfies AccountTryingToLogInDto);
       expect(requestResetPasscodeResponse.statusCode).toBe(200);
@@ -667,7 +653,7 @@ describe('POST /auth/reset-passcode', () => {
       const expirationDate = new Date(Utils.getDateTimeNow().getTime() + expirationPeriod + 1);
       const getDateTimeNow = jest.spyOn(Utils, 'getDateTimeNow').mockImplementation(() => expirationDate);
 
-      const checkResetPasscodeTokenResponse = await request(app.getServer())
+      const checkResetPasscodeTokenResponse = await request(app!.getServer())
         .post(authRoute.checkResetPasscodeTokenPath + '/' + newUserDto.id + '/' + token)
         .send();
       expect(checkResetPasscodeTokenResponse.statusCode).toBe(200);
@@ -685,7 +671,7 @@ describe('POST /auth/reset-passcode', () => {
         token,
         passcode: generateRandomPassword(),
       } satisfies ResetPasscodeDto;
-      const response = await request(app.getServer())
+      const response = await request(app!.getServer())
         .post(authRoute.resetPasscodePath + '/' + newUserDto.id)
         .send(resetPasscodeDto);
       expect(response.statusCode).toBe(400);
@@ -695,7 +681,7 @@ describe('POST /auth/reset-passcode', () => {
 
       getDateTimeNow.mockRestore();
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -711,7 +697,7 @@ describe('POST /auth/reset-passcode', () => {
   });
 
   afterAll(async () => {
-    await app.closeDbConnection();
+    await testUtils.closeTestApp();
     jest.resetAllMocks();
   });
 });

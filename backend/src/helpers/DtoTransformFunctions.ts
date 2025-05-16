@@ -1,7 +1,7 @@
-import { isString } from '@utils';
 import { TransformFnParams } from 'class-transformer';
+import { isString } from './../utils/strings.utils';
 
-export abstract class DtoTransformFunctions {
+export class DtoTransformFunctions {
   /**
    * Trim string and return null if string is empty
    */

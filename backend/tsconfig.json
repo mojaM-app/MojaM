@@ -23,17 +23,14 @@
     "noImplicitAny": true,
     "baseUrl": "src",
     "paths": {
+      "@core": ["core"],
       "@config": ["config"],
       "@events": ["events"],
-      "@events/*": ["events/*"],
       "@exceptions": ["exceptions"],
-      "@exceptions/*": ["exceptions/*"],
       "@interfaces": ["interfaces"],
       "@middlewares": ["middlewares"],
       "@utils": ["utils"],
-      "@utils/*": ["utils/*"],
       "@helpers": ["helpers"],
-      "@helpers/*": ["helpers/*"],
       "@modules/*": ["modules/*"],
       "@db": ["dataBase"],
       "@validators": ["validators"]

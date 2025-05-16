@@ -1,4 +1,3 @@
-import { ADMIN_EMAIL, ADMIN_PASSWORD } from '../config';
 import './date.extensions';
 import { getDateNow } from './date.utils';
 
@@ -9,9 +8,9 @@ const allowed = {
   symbols: '!@#$%^&*',
 };
 
-const getRandomCharFromString = (str: string): string => str.charAt(Math.floor(Math.random() * str.length));
+export const getRandomCharFromString = (str: string): string => str.charAt(Math.floor(Math.random() * str.length));
 
-const generateRandomPassword = (length: number = 10): string => {
+export const generateRandomPassword = (length: number = 10): string => {
   let pwd = '';
   pwd += getRandomCharFromString(allowed.uppers);
   pwd += getRandomCharFromString(allowed.lowers);
@@ -23,7 +22,7 @@ const generateRandomPassword = (length: number = 10): string => {
   return pwd;
 };
 
-const generateRandomString = (length: number = 8): string => {
+export const generateRandomString = (length: number = 8): string => {
   let pwd = '';
   pwd += getRandomCharFromString(allowed.lowers);
   for (let i = pwd.length; i < length; i++) {
@@ -33,11 +32,11 @@ const generateRandomString = (length: number = 8): string => {
   return pwd;
 };
 
-const generateRandomEmail = (length: number = 8): string => {
+export const generateRandomEmail = (length: number = 8): string => {
   return `${generateRandomString(length)}@email.com`;
 };
 
-const generateRandomNumber = (length: number = 9): string => {
+export const generateRandomNumber = (length: number = 9): string => {
   let pwd = getRandomCharFromString(allowed.numbers);
   for (let i = pwd.length; i < length; i++) {
     pwd += getRandomCharFromString(allowed.numbers);
@@ -45,30 +44,11 @@ const generateRandomNumber = (length: number = 9): string => {
   return pwd;
 };
 
-const generateRandomInteger = (min: number, max: number): number => {
+export const generateRandomInteger = (min: number, max: number): number => {
   return Math.floor(min + Math.random() * (max - min + 1));
 };
 
-const generateRandomDate = (): Date => {
+export const generateRandomDate = (): Date => {
   const day = generateRandomInteger(-30, 30);
   return getDateNow().addDays(day);
-};
-
-const getAdminLoginData = (): { uuid: string; email: string; phone: string; passcode: string } => {
-  return {
-    uuid: '2eaa394a-649d-44c1-b797-4a9e4ed2f836',
-    email: ADMIN_EMAIL!,
-    phone: '123456789',
-    passcode: ADMIN_PASSWORD!,
-  };
-};
-
-export {
-  generateRandomDate,
-  generateRandomEmail,
-  generateRandomInteger,
-  generateRandomNumber,
-  generateRandomPassword,
-  generateRandomString,
-  getAdminLoginData,
 };

@@ -1,3 +1,4 @@
+import { SystemPermissions } from '@core';
 import { events } from '@events';
 import { BaseService } from '@modules/common';
 import {
@@ -9,7 +10,6 @@ import {
   PermissionDeletedEvent,
   PermissionsRepository,
   PermissionsRetrievedEvent,
-  SystemPermissions,
   UserPermissionsRepository,
 } from '@modules/permissions';
 import { isEnumValue, isGuid, isNullOrUndefined } from '@utils';

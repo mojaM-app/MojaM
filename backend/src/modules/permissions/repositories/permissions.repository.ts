@@ -1,8 +1,9 @@
+import { SystemPermissions } from '@core';
 import { BaseRepository } from '@modules/common';
-import { IUserPermissionsDto, SystemPermissions, UserPermissionsRepository } from '@modules/permissions';
-import { UserSystemPermission } from '@modules/users/entities/user-system-permission.entity';
-import { getAdminLoginData } from '@utils/tests.utils';
+import { IUserPermissionsDto, UserPermissionsRepository } from '@modules/permissions';
+import { getAdminLoginData } from '@utils';
 import Container, { Service } from 'typedi';
+import { UserSystemPermission } from './../../../dataBase/entities/users/user-system-permission.entity';
 
 @Service()
 export class PermissionsRepository extends BaseRepository {

@@ -1,4 +1,4 @@
-import { TUpdateUser } from '../interfaces/update-user.interfaces';
+import { TUpdateUser } from '../../../core/interfaces/users/update-user.interfaces';
 
 export class UpdateUserModel {
   public readonly userId: number;

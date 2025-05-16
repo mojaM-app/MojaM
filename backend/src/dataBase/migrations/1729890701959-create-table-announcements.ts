@@ -1,5 +1,5 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
-import { SystemPermissions } from '../../modules/permissions/enums/system-permissions.enum';
+import { SystemPermissions } from '../../core/enums/system-permissions.enum';
 
 export class CreateTableAnnouncements1729890701959 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {

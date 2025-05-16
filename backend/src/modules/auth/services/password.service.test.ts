@@ -1,5 +1,5 @@
 import { VALIDATOR_SETTINGS } from '@config';
-import { generateRandomPassword, getAdminLoginData } from '@utils/tests.utils';
+import { generateRandomPassword, getAdminLoginData } from '@utils';
 import { CryptoService } from './crypto.service';
 import { PasswordService } from './password.service';
 

@@ -1,7 +1,6 @@
-import { EventDispatcherService, events } from '@events';
+import { events } from '@events';
 import { errorKeys, UnauthorizedException } from '@exceptions';
-import { registerTestEventHandlers, testEventHandlers } from '@helpers/event-handler-tests.helper';
-import { generateValidUserWithPassword, loginAs } from '@helpers/user-tests.helpers';
+import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { LoginDto } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import {
@@ -12,70 +11,60 @@ import {
   UserProfileRoute,
   UserRoute,
 } from '@modules/users';
-import { generateRandomDate, getAdminLoginData } from '@utils/tests.utils';
-import { EventDispatcher } from 'event-dispatch';
-import nodemailer from 'nodemailer';
+import { generateRandomDate, getAdminLoginData } from '@utils';
+import { testUtils } from '@helpers';
 import request from 'supertest';
-import { App } from './../../../app';
+import { TestApp } from './../../../helpers/tests.utils';
 
 describe('PUT/user-profile', () => {
   const userProfileRoute = new UserProfileRoute();
   const userRoute = new UserRoute();
   const permissionsRoute = new PermissionsRoute();
-  const app = new App();
+  let app: TestApp | undefined;
   let adminAccessToken: string | undefined;
-  let mockSendMail: any;
 
   beforeAll(async () => {
-    await app.initialize([userProfileRoute, userRoute, permissionsRoute]);
+    app = await testUtils.getTestApp([userProfileRoute, userRoute, permissionsRoute]);
+    app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-
-    adminAccessToken = (await loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
-
-    const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
-    registerTestEventHandlers(eventDispatcher);
+    adminAccessToken = (await testUtils.loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
   });
 
   beforeEach(async () => {
-    jest.resetAllMocks();
-
-    mockSendMail = jest.fn().mockImplementation((mailOptions: any, callback: (error: any, info: any) => void) => {
-      callback(null, null);
-    });
-
-    jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
-      sendMail: mockSendMail,
-      close: jest.fn().mockImplementation(() => {}),
-    } as any);
+    jest.clearAllMocks();
   });
 
   describe('PUT should respond with a status code of 200', () => {
     test('when data (firstName and lastName) are valid', async () => {
       const newUser = {
-        ...generateValidUserWithPassword(),
+        ...testUtils.generateValidUserWithPassword(),
         firstName: 'John',
         lastName: 'Doe',
         joiningDate: generateRandomDate(),
       };
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await request(app!.getServer())
+        .post(userRoute.path)
+        .send(newUser)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const activateNewUserResponse = await request(app.getServer())
+      const activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await testUtils.loginAs(app!, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))
+        ?.accessToken;
 
       const updateModel = {
         firstName: 'Average',
         lastName: 'Joe',
       } satisfies UpdateUserProfileDto;
-      const updateUserProfileResponse = await request(app.getServer())
+      const updateUserProfileResponse = await request(app!.getServer())
         .put(userProfileRoute.path)
         .send(updateModel)
         .set('Authorization', `Bearer ${newUserAccessToken}`);
@@ -84,7 +73,7 @@ describe('PUT/user-profile', () => {
       expect(updateResult).toBe(true);
       expect(updateMessage).toBe(events.users.userProfileUpdated);
 
-      const getUserProfileResponse = await request(app.getServer())
+      const getUserProfileResponse = await request(app!.getServer())
         .get(userProfileRoute.path)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
@@ -97,7 +86,7 @@ describe('PUT/user-profile', () => {
       expect(userProfile!.firstName).toBe(updateModel.firstName);
       expect(userProfile!.lastName).toBe(updateModel.lastName);
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -129,12 +118,15 @@ describe('PUT/user-profile', () => {
 
     test('when user has no permissions (permissions are not needed)', async () => {
       const newUser = {
-        ...generateValidUserWithPassword(),
+        ...testUtils.generateValidUserWithPassword(),
         firstName: 'John',
         lastName: 'Doe',
         joiningDate: generateRandomDate(),
       };
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await request(app!.getServer())
+        .post(userRoute.path)
+        .send(newUser)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       let body = createUserResponse.body;
       expect(typeof body).toBe('object');
@@ -143,19 +135,20 @@ describe('PUT/user-profile', () => {
       expect(newUserDto?.email).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const activateNewUserResponse = await request(app.getServer())
+      const activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await testUtils.loginAs(app!, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))
+        ?.accessToken;
 
       const updateModel = {
         firstName: 'Average',
         lastName: 'Joe',
       } satisfies UpdateUserProfileDto;
-      const updateUserProfileResponse = await request(app.getServer())
+      const updateUserProfileResponse = await request(app!.getServer())
         .put(userProfileRoute.path)
         .send(updateModel)
         .set('Authorization', `Bearer ${newUserAccessToken}`);
@@ -165,7 +158,7 @@ describe('PUT/user-profile', () => {
       expect(updateResult).toBe(true);
       expect(updateMessage).toBe(events.users.userProfileUpdated);
 
-      const getUserProfileResponse = await request(app.getServer())
+      const getUserProfileResponse = await request(app!.getServer())
         .get(userProfileRoute.path)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
@@ -175,7 +168,7 @@ describe('PUT/user-profile', () => {
       expect(userProfile!.firstName).toBe(updateModel.firstName);
       expect(userProfile!.lastName).toBe(updateModel.lastName);
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -207,26 +200,30 @@ describe('PUT/user-profile', () => {
 
     test('when firstName and lastName are undefined firstName and lastName should stay unchanged', async () => {
       const newUser = {
-        ...generateValidUserWithPassword(),
+        ...testUtils.generateValidUserWithPassword(),
         firstName: 'John',
         lastName: 'Doe',
         joiningDate: generateRandomDate(),
       };
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await request(app!.getServer())
+        .post(userRoute.path)
+        .send(newUser)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const activateNewUserResponse = await request(app.getServer())
+      const activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await testUtils.loginAs(app!, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))
+        ?.accessToken;
 
-      const updateUserProfileResponse = await request(app.getServer())
+      const updateUserProfileResponse = await request(app!.getServer())
         .put(userProfileRoute.path)
         .send({
           firstName: undefined,
@@ -238,7 +235,7 @@ describe('PUT/user-profile', () => {
       expect(updateResult).toBe(true);
       expect(updateMessage).toBe(events.users.userProfileUpdated);
 
-      const getUserProfileResponse = await request(app.getServer())
+      const getUserProfileResponse = await request(app!.getServer())
         .get(userProfileRoute.path)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
@@ -251,7 +248,7 @@ describe('PUT/user-profile', () => {
       expect(userProfile!.firstName).toBe(newUser.firstName);
       expect(userProfile!.lastName).toBe(newUser.lastName);
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -283,26 +280,30 @@ describe('PUT/user-profile', () => {
 
     test('when firstName and lastName are null firstName and lastName should be null', async () => {
       const newUser = {
-        ...generateValidUserWithPassword(),
+        ...testUtils.generateValidUserWithPassword(),
         firstName: 'John',
         lastName: 'Doe',
         joiningDate: generateRandomDate(),
       };
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await request(app!.getServer())
+        .post(userRoute.path)
+        .send(newUser)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const activateNewUserResponse = await request(app.getServer())
+      const activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await testUtils.loginAs(app!, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))
+        ?.accessToken;
 
-      const updateUserProfileResponse = await request(app.getServer())
+      const updateUserProfileResponse = await request(app!.getServer())
         .put(userProfileRoute.path)
         .send({
           firstName: null,
@@ -314,7 +315,7 @@ describe('PUT/user-profile', () => {
       expect(updateResult).toBe(true);
       expect(updateMessage).toBe(events.users.userProfileUpdated);
 
-      const getUserProfileResponse = await request(app.getServer())
+      const getUserProfileResponse = await request(app!.getServer())
         .get(userProfileRoute.path)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
@@ -327,7 +328,7 @@ describe('PUT/user-profile', () => {
       expect(userProfile!.firstName).toBeNull();
       expect(userProfile!.lastName).toBeNull();
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -359,26 +360,30 @@ describe('PUT/user-profile', () => {
 
     test('when firstName and lastName are empty firstName and lastName should be null', async () => {
       const newUser = {
-        ...generateValidUserWithPassword(),
+        ...testUtils.generateValidUserWithPassword(),
         firstName: 'John',
         lastName: 'Doe',
         joiningDate: generateRandomDate(),
       };
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await request(app!.getServer())
+        .post(userRoute.path)
+        .send(newUser)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const activateNewUserResponse = await request(app.getServer())
+      const activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await testUtils.loginAs(app!, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))
+        ?.accessToken;
 
-      const updateUserProfileResponse = await request(app.getServer())
+      const updateUserProfileResponse = await request(app!.getServer())
         .put(userProfileRoute.path)
         .send({
           firstName: '',
@@ -390,7 +395,7 @@ describe('PUT/user-profile', () => {
       expect(updateResult).toBe(true);
       expect(updateMessage).toBe(events.users.userProfileUpdated);
 
-      const getUserProfileResponse = await request(app.getServer())
+      const getUserProfileResponse = await request(app!.getServer())
         .get(userProfileRoute.path)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
@@ -403,7 +408,7 @@ describe('PUT/user-profile', () => {
       expect(userProfile!.firstName).toBeNull();
       expect(userProfile!.lastName).toBeNull();
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -435,26 +440,30 @@ describe('PUT/user-profile', () => {
 
     test('when joiningDate are null joiningDate should be null', async () => {
       const newUser = {
-        ...generateValidUserWithPassword(),
+        ...testUtils.generateValidUserWithPassword(),
         firstName: 'John',
         lastName: 'Doe',
         joiningDate: generateRandomDate(),
       };
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await request(app!.getServer())
+        .post(userRoute.path)
+        .send(newUser)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const activateNewUserResponse = await request(app.getServer())
+      const activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await testUtils.loginAs(app!, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))
+        ?.accessToken;
 
-      const updateUserProfileResponse = await request(app.getServer())
+      const updateUserProfileResponse = await request(app!.getServer())
         .put(userProfileRoute.path)
         .send({
           joiningDate: null,
@@ -465,7 +474,7 @@ describe('PUT/user-profile', () => {
       expect(updateResult).toBe(true);
       expect(updateMessage).toBe(events.users.userProfileUpdated);
 
-      const getUserProfileResponse = await request(app.getServer())
+      const getUserProfileResponse = await request(app!.getServer())
         .get(userProfileRoute.path)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
@@ -473,7 +482,7 @@ describe('PUT/user-profile', () => {
       const { data: userProfile }: GetUserProfileResponseDto = getUserProfileResponse.body;
       expect(userProfile!.joiningDate).toBeNull();
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
@@ -507,32 +516,36 @@ describe('PUT/user-profile', () => {
   describe('PUT should respond with a status code of 401', () => {
     test('when try to update profile that not exist', async () => {
       const newUser = {
-        ...generateValidUserWithPassword(),
+        ...testUtils.generateValidUserWithPassword(),
         firstName: 'John',
         lastName: 'Doe',
         joiningDate: generateRandomDate(),
       };
-      const createUserResponse = await request(app.getServer()).post(userRoute.path).send(newUser).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await request(app!.getServer())
+        .post(userRoute.path)
+        .send(newUser)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const activateNewUserResponse = await request(app.getServer())
+      const activateNewUserResponse = await request(app!.getServer())
         .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await loginAs(app, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))?.accessToken;
+      const newUserAccessToken = (await testUtils.loginAs(app!, { email: newUser.email, passcode: newUser.passcode } satisfies LoginDto))
+        ?.accessToken;
 
-      const deleteResponse = await request(app.getServer())
+      const deleteResponse = await request(app!.getServer())
         .delete(userRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
 
-      const updateUserProfileResponse = await request(app.getServer())
+      const updateUserProfileResponse = await request(app!.getServer())
         .put(userProfileRoute.path)
         .send({
           firstName: 'Average',
@@ -569,7 +582,7 @@ describe('PUT/user-profile', () => {
 
   describe('PUT should respond with a status code of 403', () => {
     test('when token is not set', async () => {
-      const updateUserProfileResponse = await request(app.getServer())
+      const updateUserProfileResponse = await request(app!.getServer())
         .put(userProfileRoute.path)
         .send({
           firstName: 'John',
@@ -589,7 +602,7 @@ describe('PUT/user-profile', () => {
 
   describe('PUT should respond with a status code of 404', () => {
     test('PUT should respond with a status code of 404 when path is invalid', async () => {
-      const updateUserProfileResponse = await request(app.getServer())
+      const updateUserProfileResponse = await request(app!.getServer())
         .put(userProfileRoute.path + '/invalid-path')
         .send({
           firstName: 'John',
@@ -612,7 +625,7 @@ describe('PUT/user-profile', () => {
 
   describe('PUT should respond with a status code of 401', () => {
     test('when token is invalid', async () => {
-      const updateUserProfileResponse = await request(app.getServer())
+      const updateUserProfileResponse = await request(app!.getServer())
         .put(userProfileRoute.path)
         .send({
           firstName: 'John',
@@ -632,7 +645,7 @@ describe('PUT/user-profile', () => {
   });
 
   afterAll(async () => {
-    await app.closeDbConnection();
+    await testUtils.closeTestApp();
     jest.resetAllMocks();
   });
 });

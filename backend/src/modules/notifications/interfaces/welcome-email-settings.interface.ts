@@ -1,4 +1,4 @@
-import { IUser } from '@modules/users';
+import { IUser } from '@core';
 
 export interface IWelcomeEmailSettings {
   user: IUser;

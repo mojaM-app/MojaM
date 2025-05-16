@@ -9,8 +9,6 @@ export default [
   {
     ignores: [
       '**/migrations/*',
-      '**/test/*',
-      '**/dist/*',
       '**/node_modules/*',
       '**/coverage/*',
       '**/*.test.ts',

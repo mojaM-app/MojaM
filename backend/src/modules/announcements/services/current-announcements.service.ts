@@ -9,7 +9,7 @@ import {
 import { BaseService } from '@modules/common';
 import { isNullOrUndefined } from '@utils';
 import Container, { Service } from 'typedi';
-import { Announcement } from '../entities/announcement.entity';
+import { Announcement } from '../../../dataBase/entities/announcements/announcement.entity';
 
 @Service()
 export class CurrentAnnouncementsService extends BaseService {

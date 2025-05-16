@@ -1,5 +1,5 @@
 import { VALIDATOR_SETTINGS } from '@config';
-import { generateRandomNumber, generateRandomPassword } from '@utils/tests.utils';
+import { generateRandomNumber, generateRandomPassword } from '@utils';
 import 'reflect-metadata';
 import { AuthenticationTypes } from '../enums/authentication-type.enum';
 import * as authHelper from '../helpers/auth.helper';
