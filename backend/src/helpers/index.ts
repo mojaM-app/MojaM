@@ -3,13 +3,12 @@ import { IUser } from '@core';
 import { IRoutes } from '@interfaces';
 import { TLoginResult } from '@modules/auth';
 import { CreateUserDto } from '@modules/users';
-import { App } from './../app';
 import { generateValidUserWithPassword, generateValidUserWithPin, loginAs, getTestApp, closeTestApp, TestApp } from './tests.utils';
 
 export let testUtils: {
   generateValidUserWithPassword: () => CreateUserDto & IUser;
   generateValidUserWithPin: () => CreateUserDto & IUser;
-  loginAs: (app: App, user: { email?: string; phone?: string; passcode?: string | null }) => Promise<TLoginResult | null>;
+  loginAs: (app: TestApp, user: { email?: string; phone?: string; passcode?: string | null }) => Promise<TLoginResult | null>;
   getTestApp: (routes: IRoutes[]) => Promise<TestApp>;
   closeTestApp: () => Promise<void>;
 };
