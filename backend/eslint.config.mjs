@@ -11,9 +11,6 @@ export default [
       '**/migrations/*',
       '**/node_modules/*',
       '**/coverage/*',
-      '**/*.test.ts',
-      '**/*.spec.ts',
-      '**/*tests.helper.ts',
     ],
   },
   {
