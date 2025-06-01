@@ -19,7 +19,7 @@ import { CryptoService } from './crypto.service';
 export class ResetPasscodeService extends BaseService {
   constructor(
     @Inject('USER_MODULE') private readonly _userModule: IUserModuleBoundary,
-    @Inject('PERMISSION_MODULE') private readonly _notificationModule: INotificationModuleBoundary,
+    @Inject('NOTIFICATION_MODULE') private readonly _notificationModule: INotificationModuleBoundary,
     private readonly _resetPasscodeTokensRepository: ResetPasscodeTokensRepository,
     private readonly _passcodeService: PasscodeService,
     private readonly _cryptoService: CryptoService,

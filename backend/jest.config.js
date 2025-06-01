@@ -27,7 +27,7 @@ module.exports = {
     'index.ts',
     '<rootDir>/src/dataBase/pascal-naming.strategy.ts',
     '<rootDir>/src/dataBase/migrations/',
-    '<rootDir>/src/utils/tests.utils.ts',
+    '<rootDir>/src/helpers/tests.utils.ts',
     '<rootDir>/src/helpers/user-tests.helpers.ts',
     '<rootDir>/src/helpers/event-handler-tests.helper.ts',
     '<rootDir>/src/helpers/database-test-utils.ts',

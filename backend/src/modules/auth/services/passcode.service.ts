@@ -1,3 +1,4 @@
+import { IPasscodeService } from '@core';
 import { isNullOrEmptyString } from '@utils';
 import { Service } from 'typedi';
 import { PasswordService } from './password.service';
@@ -6,7 +7,7 @@ import { AuthenticationTypes } from '../enums/authentication-type.enum';
 import { getAuthenticationType } from '../helpers/auth.helper';
 
 @Service()
-export class PasscodeService {
+export class PasscodeService implements IPasscodeService {
   constructor(
     private readonly _passwordService: PasswordService,
     private readonly _pinService: PinService,

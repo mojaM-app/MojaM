@@ -4,7 +4,7 @@ import express from 'express';
 import { CalendarController } from '../controllers/calendar.controller';
 
 export class CalendarRoutes implements IRoutes {
-  public path = '/calendar';
+  public static path = '/calendar';
   public router = express.Router();
 
   private readonly _controller: CalendarController;
@@ -15,6 +15,6 @@ export class CalendarRoutes implements IRoutes {
   }
 
   public initializeRoutes(): void {
-    this.router.get(`${this.path}/events`, [setIdentity], this._controller.getEvents);
+    this.router.get(`${CalendarRoutes.path}/events`, [setIdentity], this._controller.getEvents);
   }
 }

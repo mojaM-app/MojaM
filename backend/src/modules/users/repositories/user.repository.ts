@@ -1,4 +1,4 @@
-import { ICryptoService, ICreateUser, IUpdateUser, IUpdateUserPasscode, IPasswordService, IResetPasscodeService } from '@core';
+import { ICryptoService, ICreateUser, IUpdateUser, IUpdateUserPasscode, IResetPasscodeService, IPasscodeService } from '@core';
 import { relatedDataNames } from '@db';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { getDateTimeNow, isNullOrEmptyString } from '@utils';
@@ -15,7 +15,7 @@ import { UserCacheService } from '../services/user-cache.service';
 export class UserRepository extends BaseUserRepository {
   constructor(
     cacheService: UserCacheService,
-    @Inject('IPasswordService') private readonly _passwordService: IPasswordService,
+    @Inject('IPasscodeService') private readonly _passcodeService: IPasscodeService,
     @Inject('IResetPasscodeService') private readonly _resetPasscodeService: IResetPasscodeService,
     @Inject('ICryptoService') private readonly _cryptoService: ICryptoService,
   ) {
@@ -57,7 +57,7 @@ export class UserRepository extends BaseUserRepository {
     const userData: CreateUserDto = reqDto.userData;
 
     const salt = this._cryptoService.generateSalt();
-    const hashedPasscode = isNullOrEmptyString(userData.passcode) ? null : this._passwordService.getHash(salt, userData.passcode!);
+    const hashedPasscode = isNullOrEmptyString(userData.passcode) ? null : this._passcodeService.getHash(salt, userData.passcode!);
     const model = {
       email: userData.email,
       phone: userData.phone,
@@ -197,7 +197,7 @@ export class UserRepository extends BaseUserRepository {
 
   public async setPasscode(userId: number, passcode: string): Promise<void> {
     const salt = this._cryptoService.generateSalt();
-    const hashedPasscode = this._passwordService.getHash(salt, passcode);
+    const hashedPasscode = this._passcodeService.getHash(salt, passcode);
 
     const model = {
       userId,

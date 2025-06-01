@@ -32,4 +32,4 @@ export { IAnnouncementGridItemDto } from './dtos/announcements/IAnnouncementGrid
 
 export { IResetPasscodeEmailSettings } from './interfaces/notifications/reset-passcode-email-settings.interface';
 
-export { IPasswordService, IResetPasscodeService, ICryptoService } from './interfaces/auth/auth.services';
+export { IPasscodeService, IResetPasscodeService, ICryptoService } from './interfaces/auth/auth.services';

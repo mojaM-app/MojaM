@@ -85,7 +85,7 @@ describe('POST /auth/activate-account/', () => {
     it('while activating when passcode is NULL, passcode should not be changed', async () => {
       const requestData = userTestHelpers.generateValidUserWithPassword();
       const createUserResponse = await request(app!.getServer())
-        .post(AuthRoute.path)
+        .post(UserRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -119,7 +119,7 @@ describe('POST /auth/activate-account/', () => {
       expect(body.data).toEqual({ isActive: true, authType: AuthenticationTypes.Password } satisfies IGetAccountBeforeLogInResultDto);
 
       const deleteResponse = await request(app!.getServer())
-        .delete(AuthRoute.path + '/' + user.id)
+        .delete(UserRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -147,7 +147,7 @@ describe('POST /auth/activate-account/', () => {
     it('while activating when passcode is UNDEFINED, passcode should not be changed', async () => {
       const requestData = userTestHelpers.generateValidUserWithPassword();
       const createUserResponse = await request(app!.getServer())
-        .post(AuthRoute.path)
+        .post(UserRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -181,7 +181,7 @@ describe('POST /auth/activate-account/', () => {
       expect(body.data).toEqual({ isActive: true, authType: AuthenticationTypes.Password } satisfies IGetAccountBeforeLogInResultDto);
 
       const deleteResponse = await request(app!.getServer())
-        .delete(AuthRoute.path + '/' + user.id)
+        .delete(UserRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -209,7 +209,7 @@ describe('POST /auth/activate-account/', () => {
     it('while activating when passcode is empty, passcode should not be changed', async () => {
       const requestData = userTestHelpers.generateValidUserWithPassword();
       const createUserResponse = await request(app!.getServer())
-        .post(AuthRoute.path)
+        .post(UserRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -243,7 +243,7 @@ describe('POST /auth/activate-account/', () => {
       expect(body.data).toEqual({ isActive: true, authType: AuthenticationTypes.Password } satisfies IGetAccountBeforeLogInResultDto);
 
       const deleteResponse = await request(app!.getServer())
-        .delete(AuthRoute.path + '/' + user.id)
+        .delete(UserRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -271,7 +271,7 @@ describe('POST /auth/activate-account/', () => {
     it('while activating when password is set, password should be changed', async () => {
       const requestData = userTestHelpers.generateValidUserWithPassword();
       const createUserResponse = await request(app!.getServer())
-        .post(AuthRoute.path)
+        .post(UserRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -340,7 +340,7 @@ describe('POST /auth/activate-account/', () => {
     it('while activating when pin is set, pin should be changed', async () => {
       const requestData = userTestHelpers.generateValidUserWithPin();
       const createUserResponse = await request(app!.getServer())
-        .post(AuthRoute.path)
+        .post(UserRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -379,7 +379,7 @@ describe('POST /auth/activate-account/', () => {
       expect(body.data).toEqual({ isActive: true, authType: AuthenticationTypes.Pin } satisfies IGetAccountBeforeLogInResultDto);
 
       const deleteResponse = await request(app!.getServer())
-        .delete(AuthRoute.path + '/' + user.id)
+        .delete(UserRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -765,7 +765,7 @@ describe('POST /auth/activate-account/', () => {
       expect(errors.filter(x => !x.includes(errorKeys.users.Activation_Failed_Passcode_Is_Not_Set)).length).toBe(0);
 
       const deleteResponse = await request(app!.getServer())
-        .delete(AuthRoute.path + '/' + user.id)
+        .delete(UserRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);

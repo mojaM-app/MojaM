@@ -4,7 +4,6 @@ import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { AuthRoute } from '@modules/auth';
 import { EmailService } from '@modules/notifications/services/email.service';
-import { PermissionsRoute } from '@modules/permissions';
 import { CreateUserResponseDto, UserRoute, userTestHelpers } from '@modules/users';
 import { generateRandomEmail, getAdminLoginData } from '@utils';
 import nodemailer from 'nodemailer';

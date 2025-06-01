@@ -557,7 +557,7 @@ describe('DELETE /user', () => {
       )?.accessToken;
 
       const createAnnouncementsResponse = await request(app!.getServer())
-        .post(announcementRoute.path)
+        .post(AnnouncementsRout.path)
         .send(generateValidAnnouncements())
         .set('Authorization', `Bearer ${userAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
@@ -581,7 +581,7 @@ describe('DELETE /user', () => {
         relatedData: [relatedDataNames.Announcements_CreatedBy, relatedDataNames.AnnouncementItems_CreatedBy],
       });
 
-      path = announcementRoute.path + '/' + announcementsId;
+      path = AnnouncementsRout.path + '/' + announcementsId;
       const deleteAnnouncementsResponse = await request(app!.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
@@ -634,7 +634,7 @@ describe('DELETE /user', () => {
       expect(activateUserResponse.statusCode).toBe(200);
 
       const createAnnouncementsResponse = await request(app!.getServer())
-        .post(announcementRoute.path)
+        .post(AnnouncementsRout.path)
         .send(generateValidAnnouncements())
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
@@ -656,7 +656,7 @@ describe('DELETE /user', () => {
       )?.accessToken;
 
       const publishAnnouncementsResponse = await request(app!.getServer())
-        .post(announcementRoute.path + '/' + announcementsId + '/' + announcementRoute.publishPath)
+        .post(AnnouncementsRout.path + '/' + announcementsId + '/' + AnnouncementsRout.publishPath)
         .send()
         .set('Authorization', `Bearer ${userAccessToken}`);
       expect(publishAnnouncementsResponse.statusCode).toBe(200);
@@ -674,7 +674,7 @@ describe('DELETE /user', () => {
       expect(deleteUserMessage).toBe(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted);
       expect(deleteUserArgs).toEqual({ id: user.id, relatedData: [relatedDataNames.Announcements_PublishedBy] });
 
-      path = announcementRoute.path + '/' + announcementsId;
+      path = AnnouncementsRout.path + '/' + announcementsId;
       const deleteAnnouncementsResponse = await request(app!.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
@@ -729,7 +729,7 @@ describe('DELETE /user', () => {
       expect(activateUserResponse.statusCode).toBe(200);
 
       const createAnnouncementsResponse = await request(app!.getServer())
-        .post(announcementRoute.path)
+        .post(AnnouncementsRout.path)
         .send(generateValidAnnouncements())
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
@@ -739,7 +739,7 @@ describe('DELETE /user', () => {
       expect(announcementsId).toBeDefined();
 
       let getAnnouncementsResponse = await request(app!.getServer())
-        .get(announcementRoute.path + '/' + announcementsId)
+        .get(AnnouncementsRout.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
@@ -766,13 +766,13 @@ describe('DELETE /user', () => {
       };
       updateAnnouncementsModel.items?.push({ id: '', content: 'new item' });
       const updateAnnouncementsResponse = await request(app!.getServer())
-        .put(announcementRoute.path + '/' + announcementsId)
+        .put(AnnouncementsRout.path + '/' + announcementsId)
         .send(updateAnnouncementsModel)
         .set('Authorization', `Bearer ${userAccessToken}`);
       expect(updateAnnouncementsResponse.statusCode).toBe(200);
 
       getAnnouncementsResponse = await request(app!.getServer())
-        .get(announcementRoute.path + '/' + announcementsId)
+        .get(AnnouncementsRout.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
@@ -790,7 +790,7 @@ describe('DELETE /user', () => {
       expect(deleteUserMessage).toBe(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted);
       expect(deleteUserArgs).toEqual({ id: user.id, relatedData: [relatedDataNames.AnnouncementItems_CreatedBy] });
 
-      path = announcementRoute.path + '/' + announcementsId;
+      path = AnnouncementsRout.path + '/' + announcementsId;
       const deleteAnnouncementsResponse = await request(app!.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
@@ -847,7 +847,7 @@ describe('DELETE /user', () => {
       expect(activateUserResponse.statusCode).toBe(200);
 
       const createAnnouncementsResponse = await request(app!.getServer())
-        .post(announcementRoute.path)
+        .post(AnnouncementsRout.path)
         .send(generateValidAnnouncements())
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
@@ -857,7 +857,7 @@ describe('DELETE /user', () => {
       expect(announcementsId).toBeDefined();
 
       let getAnnouncementsResponse = await request(app!.getServer())
-        .get(announcementRoute.path + '/' + announcementsId)
+        .get(AnnouncementsRout.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
@@ -883,13 +883,13 @@ describe('DELETE /user', () => {
         })),
       };
       const updateAnnouncementsResponse = await request(app!.getServer())
-        .put(announcementRoute.path + '/' + announcementsId)
+        .put(AnnouncementsRout.path + '/' + announcementsId)
         .send(updateAnnouncementsModel)
         .set('Authorization', `Bearer ${userAccessToken}`);
       expect(updateAnnouncementsResponse.statusCode).toBe(200);
 
       getAnnouncementsResponse = await request(app!.getServer())
-        .get(announcementRoute.path + '/' + announcementsId)
+        .get(AnnouncementsRout.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
@@ -907,7 +907,7 @@ describe('DELETE /user', () => {
       expect(deleteUserMessage).toBe(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted);
       expect(deleteUserArgs).toEqual({ id: user.id, relatedData: [relatedDataNames.AnnouncementItems_UpdatedBy] });
 
-      path = announcementRoute.path + '/' + announcementsId;
+      path = AnnouncementsRout.path + '/' + announcementsId;
       const deleteAnnouncementsResponse = await request(app!.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
