@@ -1,4 +1,4 @@
-import { logger } from '@modules/logger';
+import { logger } from '@core';
 import { AppDataSource } from './data-source';
 import { DbContext } from './dbContext';
 

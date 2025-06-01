@@ -9,9 +9,8 @@ import {
   TPL_VAR_RESET_PIN_TITLE,
   TPL_VAR_WELCOME_EMAIL_TITLE,
 } from '@config';
-import { IResetPasscodeEmailSettings } from '@core';
+import { IResetPasscodeEmailSettings, logger } from '@core';
 import { AuthenticationTypes } from '@modules/auth';
-import { logger } from '@modules/logger';
 import { toNumber } from '@utils';
 import { readFileSync } from 'fs';
 import { compile } from 'handlebars';

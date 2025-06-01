@@ -26,5 +26,3 @@ export interface IAuthModuleBoundary {}
 export interface INotificationModuleBoundary {
   sendEmailResetPasscode(settings: IResetPasscodeEmailSettings): Promise<boolean>;
 }
-
-export interface ILoggerModuleBoundary {}

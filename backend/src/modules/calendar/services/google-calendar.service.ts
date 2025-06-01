@@ -1,5 +1,5 @@
 import { GOOGLE_API_CLIENT_ID, GOOGLE_API_CLIENT_SECRET, GOOGLE_API_REFRESH_TOKEN, GOOGLE_CALENDAR_ID } from '@config';
-import { logger } from '@modules/logger';
+import { logger } from '@core';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { calendar_v3, google } from 'googleapis';
 import { Service } from 'typedi';

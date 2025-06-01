@@ -1,5 +1,5 @@
+import { logger } from '@core';
 import { events } from '@events';
-import { logger } from '@modules/logger';
 import { UserCreatedEvent } from '@modules/users';
 import { EventSubscriber, On } from 'event-dispatch';
 import Container from 'typedi';

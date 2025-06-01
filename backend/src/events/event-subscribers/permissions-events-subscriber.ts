@@ -1,12 +1,10 @@
+import { logger } from '@core';
 import { events } from '@events';
 import { PermissionsRetrievedEvent } from '@modules/permissions';
 import { EventSubscriber, On } from 'event-dispatch';
-import { Service } from 'typedi';
-import { PermissionAddedEvent } from '../../permissions/events/permission-added-event';
-import { PermissionDeletedEvent } from '../../permissions/events/permission-deleted-event';
-import { logger } from '../logger';
+import { PermissionAddedEvent } from '../../modules/permissions/events/permission-added-event';
+import { PermissionDeletedEvent } from '../../modules/permissions/events/permission-deleted-event';
 
-@Service()
 @EventSubscriber()
 export class PermissionsEventSubscriber {
   @On(events.permissions.permissionAdded)

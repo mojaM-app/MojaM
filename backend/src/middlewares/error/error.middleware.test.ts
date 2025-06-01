@@ -1,9 +1,9 @@
+import { logger } from '@core';
 import { HttpException, TranslatableHttpException } from '@exceptions';
-import { logger } from '@modules/logger';
 import { NextFunction, Request, Response } from 'express';
 import { ErrorMiddleware } from './error.middleware';
 
-jest.mock('@modules/logger', () => ({
+jest.mock('@core', () => ({
   logger: {
     error: jest.fn(),
   },

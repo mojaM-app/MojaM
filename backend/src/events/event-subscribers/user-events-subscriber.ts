@@ -1,3 +1,4 @@
+import { logger } from '@core';
 import { events } from '@events';
 import {
   UserActivatedEvent,
@@ -13,10 +14,7 @@ import {
   UserUpdatedEvent,
 } from '@modules/users';
 import { EventSubscriber, On } from 'event-dispatch';
-import { Service } from 'typedi';
-import { logger } from '../logger';
 
-@Service()
 @EventSubscriber()
 export class UserEventsSubscriber {
   @On(events.users.userRetrieved)

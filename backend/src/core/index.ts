@@ -1,3 +1,5 @@
+export { logger, stream } from './logger/logger';
+
 export { IUser } from './interfaces/users/IUser';
 export { IUserId } from './interfaces/users/IUser.Id';
 export { IUserDto } from './dtos/users/IUser.dto';
@@ -14,13 +16,7 @@ export { ICreateResetPasscodeToken } from './interfaces/auth/create-reset-passco
 export { ILoginModel, IAccountTryingToLogInModel } from './interfaces/auth/login.interfaces';
 export { type TLoginResult } from './dtos/auth/login.types';
 
-export {
-  IUserModuleBoundary,
-  IPermissionModuleBoundary,
-  IAuthModuleBoundary,
-  INotificationModuleBoundary,
-  ILoggerModuleBoundary,
-} from './interfaces/module-boundaries';
+export { IUserModuleBoundary, IPermissionModuleBoundary, IAuthModuleBoundary, INotificationModuleBoundary } from './interfaces/module-boundaries';
 export { registerModules } from './di/container';
 
 export { IAnnouncementId } from './interfaces/announcements/IAnnouncement.Id';

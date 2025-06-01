@@ -1,5 +1,6 @@
 import { BASE_PATH, CREDENTIALS, LOG_FORMAT, NODE_ENV, ORIGIN, PORT } from '@config';
 import './core/di/container'; // Import container to register module boundaries
+import { logger, stream } from '@core';
 import { DbConnection } from '@db';
 import { errorKeys } from '@exceptions';
 import { IRoutes } from '@interfaces';
@@ -13,7 +14,6 @@ import helmet from 'helmet';
 import hpp from 'hpp';
 import morgan from 'morgan';
 import 'reflect-metadata';
-import { logger, stream } from './modules/logger';
 
 export class App {
   public app: express.Application;

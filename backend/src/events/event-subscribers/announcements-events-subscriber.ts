@@ -1,3 +1,4 @@
+import { logger } from '@core';
 import { events } from '@events';
 import {
   AnnouncementsCreatedEvent,
@@ -9,10 +10,7 @@ import {
   CurrentAnnouncementsRetrievedEvent,
 } from '@modules/announcements';
 import { EventSubscriber, On } from 'event-dispatch';
-import { Service } from 'typedi';
-import { logger } from '../logger';
 
-@Service()
 @EventSubscriber()
 export class AnnouncementsEventsSubscriber {
   @On(events.announcements.currentAnnouncementsRetrieved)

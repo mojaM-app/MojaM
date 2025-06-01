@@ -1,8 +1,8 @@
 import { ACCESS_TOKEN_ALGORITHM, ACCESS_TOKEN_SECRET, REFRESH_TOKEN_EXPIRE_IN, REFRESH_TOKEN_SECRET, SECRET_AUDIENCE, SECRET_ISSUER } from '@config';
 import { IPermissionModuleBoundary, IUserModuleBoundary } from '@core';
+import { logger } from '@core';
 import { UnauthorizedException, errorKeys } from '@exceptions';
 import { IRequestWithIdentity } from '@interfaces';
-import { logger } from '@modules/logger';
 import { isNullOrEmptyString, isNullOrUndefined, isString } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { JwtPayload, verify } from 'jsonwebtoken';

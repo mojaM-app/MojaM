@@ -1,3 +1,4 @@
+import { logger } from '@core';
 import { events } from '@events';
 import {
   FailedLoginAttemptEvent,
@@ -9,10 +10,7 @@ import {
   UserRefreshedTokenEvent,
 } from '@modules/auth';
 import { EventSubscriber, On } from 'event-dispatch';
-import { Service } from 'typedi';
-import { logger } from '../logger';
 
-@Service()
 @EventSubscriber()
 export class AuthEventsSubscriber {
   @On(events.users.userLoggedIn)

@@ -1,6 +1,6 @@
+import { logger } from '@core';
 import { events } from '@events';
 import { UserLockedOutEvent } from '@modules/auth';
-import { logger } from '@modules/logger';
 import { EventSubscriber, On } from 'event-dispatch';
 import Container from 'typedi';
 import { LinkHelper } from '../helpers/link.helper';
