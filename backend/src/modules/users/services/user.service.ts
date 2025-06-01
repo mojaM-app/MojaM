@@ -3,38 +3,30 @@ import { userToIUser } from '@db';
 import { events } from '@events';
 import { BadRequestException, ConflictException, errorKeys } from '@exceptions';
 import { BaseService } from '@modules/common';
-import {
-  ActivateUserReqDto,
-  CreateUserDto,
-  CreateUserReqDto,
-  DeactivateUserReqDto,
-  DeleteUserReqDto,
-  GetUserReqDto,
-  IGetUserDto,
-  UnlockUserReqDto,
-  UpdateUserDto,
-  UpdateUserModel,
-  UpdateUserReqDto,
-  UserActivatedEvent,
-  UserCreatedEvent,
-  UserDeactivatedEvent,
-  UserDeletedEvent,
-  UserRepository,
-  UserRetrievedEvent,
-  UserUnlockedEvent,
-  UserUpdatedEvent,
-} from '@modules/users';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
-import { Container, Service } from 'typedi';
+import { Service } from 'typedi';
+import { ActivateUserReqDto } from '../dtos/activate-user.dto';
+import { CreateUserDto, CreateUserReqDto } from '../dtos/create-user.dto';
+import { DeactivateUserReqDto } from '../dtos/deactivate-user.dto';
+import { DeleteUserReqDto } from '../dtos/delete-user.dto';
+import { GetUserReqDto, IGetUserDto } from '../dtos/get-user.dto';
+import { UnlockUserReqDto } from '../dtos/unlock-user.dto';
+import { UpdateUserDto, UpdateUserReqDto } from '../dtos/update-user.dto';
+import { UserActivatedEvent } from '../events/user-activated-event';
+import { UserCreatedEvent } from '../events/user-created-event';
+import { UserDeactivatedEvent } from '../events/user-deactivated-event';
+import { UserDeletedEvent } from '../events/user-deleted-event';
+import { UserRetrievedEvent } from '../events/user-retrieved-event';
+import { UserUnlockedEvent } from '../events/user-unlocked-event';
+import { UserUpdatedEvent } from '../events/user-updated-event';
+import { UpdateUserModel } from '../models/update-user.model';
+import { UserRepository } from '../repositories/user.repository';
 import { User } from './../../../dataBase/entities/users/user.entity';
 
 @Service()
 export class UsersService extends BaseService {
-  private readonly _userRepository: UserRepository;
-
-  constructor() {
+  constructor(private readonly _userRepository: UserRepository) {
     super();
-    this._userRepository = Container.get(UserRepository);
   }
 
   public async get(reqDto: GetUserReqDto): Promise<IGetUserDto | null> {

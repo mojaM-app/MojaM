@@ -1,4 +1,4 @@
-import { IAnnouncementId } from './IAnnouncementId';
+import { IAnnouncementId } from './IAnnouncement.Id';
 import { IUserId } from '../users/IUser.Id';
 
 export interface ICreateAnnouncementItem {

@@ -63,7 +63,7 @@ export const {
   ADMIN_EMAIL,
   ADMIN_PASSWORD,
 } = process.env;
-export { REGEX_PATTERNS, USER_ACCOUNT_LOCKOUT_SETTINGS, VALIDATOR_SETTINGS } from './constants';
+export { REGEX_PATTERNS, USER_ACCOUNT_LOCKOUT_SETTINGS, VALIDATOR_SETTINGS, ACCESS_TOKEN_ALGORITHM } from './constants';
 export { ValidateEnv } from './validateEnv';
 export let exportsForTesting: any;
 if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {

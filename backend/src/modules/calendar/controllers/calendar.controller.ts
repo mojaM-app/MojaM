@@ -1,9 +1,10 @@
 import { BadRequestException, errorKeys } from '@exceptions';
 import { IRequestWithIdentity } from '@interfaces';
-import { CalendarService, GetCalendarEventsReqDto, GetCalendarEventsResponseDto } from '@modules/calendar';
 import { BaseController } from '@modules/common';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
+import { GetCalendarEventsReqDto, GetCalendarEventsResponseDto } from '../dtos/calendar.dto';
+import { CalendarService } from '../services/calendar.service';
 
 export class CalendarController extends BaseController {
   private readonly _calendarService: CalendarService;

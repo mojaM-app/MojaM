@@ -2,17 +2,16 @@ import { IUserGridItemDto } from '@core';
 import { events } from '@events';
 import { IGridPageResponseDto } from '@interfaces';
 import { BaseService } from '@modules/common';
-import { GetUserListReqDto, UserListRepository, UserListRetrievedEvent, UsersGridPageDto } from '@modules/users';
-import { Container, Service } from 'typedi';
+import { Service } from 'typedi';
+import { GetUserListReqDto, UsersGridPageDto } from '../dtos/get-user-list.dto';
+import { UserListRetrievedEvent } from '../events/user-list-retrieved-event';
+import { UserListRepository } from '../repositories/user-list.repository';
 import { vUser } from './../../../dataBase/entities/users/vUser.entity';
 
 @Service()
 export class UserListService extends BaseService {
-  private readonly _repository: UserListRepository;
-
-  constructor() {
+  constructor(private readonly _repository: UserListRepository) {
     super();
-    this._repository = Container.get(UserListRepository);
   }
 
   public async get(reqDto: GetUserListReqDto): Promise<UsersGridPageDto> {

@@ -1,8 +1,9 @@
 import { IRequestWithIdentity } from '@interfaces';
 import { BaseController } from '@modules/common';
-import { GetNewsDto, GetNewsResponseDto, NewsService } from '@modules/news';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
+import { GetNewsDto, GetNewsResponseDto } from '../dtos/news.dto';
+import { NewsService } from '../services/news.service';
 
 export class NewsController extends BaseController {
   private readonly _newsService: NewsService;

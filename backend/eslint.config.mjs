@@ -4,6 +4,7 @@ import typescriptEslintParser from '@typescript-eslint/parser';
 import eslintPluginImport from 'eslint-plugin-import';
 import eslintPluginNode from 'eslint-plugin-n';
 import globals from 'globals';
+import boundaries from "eslint-plugin-boundaries";
 
 export default [
   {
@@ -35,6 +36,7 @@ export default [
       '@typescript-eslint': typescriptEslintPlugin,
       import: eslintPluginImport,
       n: eslintPluginNode,
+      boundaries,
     },
     rules: {
       // TypeScript and code style rules
@@ -79,6 +81,7 @@ export default [
       'max-len': ['off', { code: 120 }],
       eqeqeq: ['error', 'always'],
       'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
+      ...boundaries.configs.recommended.rules,
     },
   },
 ];

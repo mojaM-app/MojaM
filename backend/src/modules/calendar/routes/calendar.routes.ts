@@ -1,7 +1,7 @@
 import { IRoutes } from '@interfaces';
-import { setIdentity } from '@modules/auth';
-import { CalendarController } from '@modules/calendar';
+import { setIdentity } from '@middlewares';
 import express from 'express';
+import { CalendarController } from '../controllers/calendar.controller';
 
 export class CalendarRoutes implements IRoutes {
   public path = '/calendar';

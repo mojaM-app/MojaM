@@ -1,17 +1,16 @@
 import { SystemPermissions } from '@core';
 import { BaseRepository } from '@modules/common';
-import { IUserPermissionsDto, UserPermissionsRepository } from '@modules/permissions';
 import { getAdminLoginData } from '@utils';
-import Container, { Service } from 'typedi';
+import { Service } from 'typedi';
 import { UserSystemPermission } from './../../../dataBase/entities/users/user-system-permission.entity';
+import { UserPermissionsRepository } from './user-permissions.repository';
+import { IUserPermissionsDto } from '../dtos/get-permissions.dto';
 
 @Service()
 export class PermissionsRepository extends BaseRepository {
-  private readonly _userPermissionsRepository: UserPermissionsRepository;
   private readonly _adminUserUuid: string;
-  constructor() {
+  constructor(private readonly _userPermissionsRepository: UserPermissionsRepository) {
     super();
-    this._userPermissionsRepository = Container.get(UserPermissionsRepository);
     this._adminUserUuid = getAdminLoginData().uuid;
   }
 

@@ -1,8 +1,9 @@
 import { IRequestWithIdentity } from '@interfaces';
-import { CurrentAnnouncementsService, GetCurrentAnnouncementsResponseDto } from '@modules/announcements';
 import { BaseController } from '@modules/common';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
+import { GetCurrentAnnouncementsResponseDto } from '../dtos/get-current-announcements.dto';
+import { CurrentAnnouncementsService } from '../services/current-announcements.service';
 
 export class CurrentAnnouncementsController extends BaseController {
   private readonly _service: CurrentAnnouncementsService;

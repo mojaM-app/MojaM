@@ -1,15 +1,16 @@
 import { REGEX_PATTERNS } from '@config';
 import { IRoutes } from '@interfaces';
-import { requirePermission, validateData } from '@middlewares';
-import { setIdentity } from '@modules/auth';
-import { CreateUserDto, UpdateUserDto, UserController } from '@modules/users';
+import { requirePermission, validateData, setIdentity } from '@middlewares';
 import express from 'express';
+import { UserController } from '../controllers/user.controller';
+import { CreateUserDto } from '../dtos/create-user.dto';
+import { UpdateUserDto } from '../dtos/update-user.dto';
 
 export class UserRoute implements IRoutes {
-  public path = '/user';
-  public deactivatePath = 'deactivate';
-  public activatePath = 'activate';
-  public unlockPath = 'unlock';
+  public static path = '/user';
+  public static deactivatePath = 'deactivate';
+  public static activatePath = 'activate';
+  public static unlockPath = 'unlock';
   public router = express.Router();
   private readonly _controller: UserController;
 
@@ -19,40 +20,44 @@ export class UserRoute implements IRoutes {
   }
 
   private initializeRoutes(): void {
-    this.router.get(`${this.path}/:id(${REGEX_PATTERNS.GUID})`, [setIdentity, requirePermission(user => user.canEditUser())], this._controller.get);
+    this.router.get(
+      `${UserRoute.path}/:id(${REGEX_PATTERNS.GUID})`,
+      [setIdentity, requirePermission(user => user.canEditUser())],
+      this._controller.get,
+    );
 
     this.router.post(
-      `${this.path}`,
+      `${UserRoute.path}`,
       [validateData(CreateUserDto), setIdentity, requirePermission(user => user.canAddUser())],
       this._controller.create,
     );
 
     this.router.post(
-      `${this.path}/:id(${REGEX_PATTERNS.GUID})/${this.deactivatePath}`,
+      `${UserRoute.path}/:id(${REGEX_PATTERNS.GUID})/${UserRoute.deactivatePath}`,
       [setIdentity, requirePermission(user => user.canDeactivateUser())],
       this._controller.deactivate,
     );
 
     this.router.post(
-      `${this.path}/:id(${REGEX_PATTERNS.GUID})/${this.activatePath}`,
+      `${UserRoute.path}/:id(${REGEX_PATTERNS.GUID})/${UserRoute.activatePath}`,
       [setIdentity, requirePermission(user => user.canActivateUser())],
       this._controller.activate,
     );
 
     this.router.post(
-      `${this.path}/:id(${REGEX_PATTERNS.GUID})/${this.unlockPath}`,
+      `${UserRoute.path}/:id(${REGEX_PATTERNS.GUID})/${UserRoute.unlockPath}`,
       [setIdentity, requirePermission(user => user.canUnlockUser())],
       this._controller.unlock,
     );
 
     this.router.put(
-      `${this.path}/:id(${REGEX_PATTERNS.GUID})`,
+      `${UserRoute.path}/:id(${REGEX_PATTERNS.GUID})`,
       [validateData(UpdateUserDto), setIdentity, requirePermission(user => user.canEditUser())],
       this._controller.update,
     );
 
     this.router.delete(
-      `${this.path}/:id(${REGEX_PATTERNS.GUID})`,
+      `${UserRoute.path}/:id(${REGEX_PATTERNS.GUID})`,
       [setIdentity, requirePermission(user => user.canDeleteUser())],
       this._controller.delete,
     );

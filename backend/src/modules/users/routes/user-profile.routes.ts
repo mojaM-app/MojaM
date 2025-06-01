@@ -1,11 +1,11 @@
 import { IRoutes } from '@interfaces';
-import { requirePermission, validateData } from '@middlewares';
-import { setIdentity } from '@modules/auth';
-import { UpdateUserProfileDto, UserProfileController } from '@modules/users';
+import { requirePermission, validateData, setIdentity } from '@middlewares';
 import express from 'express';
+import { UserProfileController } from '../controllers/user-profile.controller';
+import { UpdateUserProfileDto } from '../dtos/update-user-profile.dto';
 
 export class UserProfileRoute implements IRoutes {
-  public path = '/user-profile';
+  public static path = '/user-profile';
   public router = express.Router();
   private readonly _controller: UserProfileController;
 
@@ -16,7 +16,7 @@ export class UserProfileRoute implements IRoutes {
 
   private initializeRoutes(): void {
     this.router.get(
-      `${this.path}`,
+      `${UserProfileRoute.path}`,
       [
         setIdentity,
         requirePermission(() => true), // Just requires authentication
@@ -25,7 +25,7 @@ export class UserProfileRoute implements IRoutes {
     );
 
     this.router.put(
-      `${this.path}`,
+      `${UserProfileRoute.path}`,
       [
         validateData(UpdateUserProfileDto),
         setIdentity,

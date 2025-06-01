@@ -3,21 +3,17 @@ import { logger } from '@modules/logger';
 import { UserCreatedEvent } from '@modules/users';
 import { EventSubscriber, On } from 'event-dispatch';
 import Container from 'typedi';
+import { LinkHelper } from '../helpers/link.helper';
 import { IWelcomeEmailSettings } from '../interfaces/welcome-email-settings.interface';
 import { EmailService } from '../services/email.service';
-import { LinkHelper } from '../services/link.helper';
 
 @EventSubscriber()
 export class UserCreatedEventSubscriber {
-  private readonly _emailService: EmailService;
-
-  constructor() {
-    this._emailService = Container.get(EmailService);
-  }
-
   @On(events.users.userCreated)
   public eventHandler(data: UserCreatedEvent): void {
-    this._emailService
+    const emailService = Container.get(EmailService);
+
+    emailService
       .sendWelcomeEmail({
         user: data.user,
         link: LinkHelper.activateAccountLink(data.user.uuid),

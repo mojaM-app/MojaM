@@ -55,7 +55,6 @@ describe('getDateTimeNow', () => {
   it('should maintain timezone information', () => {
     const beforeCall = new Date();
     const dateTimeNow = getDateTimeNow();
-    const afterCall = new Date();
 
     expect(dateTimeNow.getTimezoneOffset()).toBe(beforeCall.getTimezoneOffset());
 
@@ -98,7 +97,7 @@ describe('getDateNow', () => {
     (global.Date as any).parse = realDate.parse;
     (global.Date as any).now = realDate.now;
 
-    (mockDstDate as any).toISOString = function () {
+    (mockDstDate as any).toISOString = function (): string {
       return '2022-07-15T12:00:00.000Z';
     };
 

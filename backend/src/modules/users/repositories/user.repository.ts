@@ -1,25 +1,25 @@
-import { ICreateUser, IUpdateUser, IUpdateUserPasscode } from '@core';
+import { ICryptoService, ICreateUser, IUpdateUser, IUpdateUserPasscode, IPasswordService, IResetPasscodeService } from '@core';
 import { relatedDataNames } from '@db';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { CryptoService, PasscodeService, ResetPasscodeTokensRepository } from '@modules/auth';
-import { CreateUserDto, CreateUserReqDto, DeleteUserReqDto, UpdateUserModel } from '@modules/users';
 import { getDateTimeNow, isNullOrEmptyString } from '@utils';
-import Container, { Service } from 'typedi';
+import { Inject, Service } from 'typedi';
 import { Not } from 'typeorm';
 import { User } from './../../../dataBase/entities/users/user.entity';
 import { BaseUserRepository } from './base.user.repository';
+import { CreateUserDto, CreateUserReqDto } from '../dtos/create-user.dto';
+import { DeleteUserReqDto } from '../dtos/delete-user.dto';
+import { UpdateUserModel } from '../models/update-user.model';
+import { UserCacheService } from '../services/user-cache.service';
 
 @Service()
 export class UserRepository extends BaseUserRepository {
-  private readonly _cryptoService: CryptoService;
-  private readonly _passcodeService: PasscodeService;
-  private readonly _resetPasscodeTokensRepository: ResetPasscodeTokensRepository;
-
-  constructor() {
-    super();
-    this._cryptoService = Container.get(CryptoService);
-    this._passcodeService = Container.get(PasscodeService);
-    this._resetPasscodeTokensRepository = Container.get(ResetPasscodeTokensRepository);
+  constructor(
+    cacheService: UserCacheService,
+    @Inject('IPasswordService') private readonly _passwordService: IPasswordService,
+    @Inject('IResetPasscodeService') private readonly _resetPasscodeService: IResetPasscodeService,
+    @Inject('ICryptoService') private readonly _cryptoService: ICryptoService,
+  ) {
+    super(cacheService);
   }
 
   public async findManyByLogin(email: string | null | undefined, phone?: string | null | undefined): Promise<User[]> {
@@ -57,7 +57,7 @@ export class UserRepository extends BaseUserRepository {
     const userData: CreateUserDto = reqDto.userData;
 
     const salt = this._cryptoService.generateSalt();
-    const hashedPasscode = this._passcodeService.getHash(salt, userData.passcode);
+    const hashedPasscode = isNullOrEmptyString(userData.passcode) ? null : this._passwordService.getHash(salt, userData.passcode!);
     const model = {
       email: userData.email,
       phone: userData.phone,
@@ -122,7 +122,7 @@ export class UserRepository extends BaseUserRepository {
 
   public async delete(userId: number, reqDto: DeleteUserReqDto): Promise<boolean> {
     await this._dbContext.userSystemPermissions.createQueryBuilder().delete().where('userId = :userId', { userId }).execute();
-    await this._resetPasscodeTokensRepository.deleteTokens(userId);
+    await this._resetPasscodeService.deleteResetPasscodeTokens(userId);
 
     await this._dbContext.users.delete({ id: userId });
 
@@ -197,7 +197,7 @@ export class UserRepository extends BaseUserRepository {
 
   public async setPasscode(userId: number, passcode: string): Promise<void> {
     const salt = this._cryptoService.generateSalt();
-    const hashedPasscode = this._passcodeService.getHash(salt, passcode);
+    const hashedPasscode = this._passwordService.getHash(salt, passcode);
 
     const model = {
       userId,

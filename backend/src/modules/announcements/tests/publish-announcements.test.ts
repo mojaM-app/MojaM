@@ -1,37 +1,31 @@
+import { ILoginModel, SystemPermissions } from '@core';
 import { events } from '@events';
 import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
-import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
-import {
-  AnnouncementsRout,
-  AnnouncementStateValue,
-  CreateAnnouncementsResponseDto,
-  GetAnnouncementsResponseDto,
-  PublishAnnouncementsResponseDto,
-} from '@modules/announcements';
-import { LoginDto } from '@modules/auth';
+import { testHelpers } from '@helpers';
+import { AnnouncementsRout } from '@modules/announcements';
 import { PermissionsRoute } from '@modules/permissions';
-import { CreateUserResponseDto, UserRoute } from '@modules/users';
+import { CreateUserResponseDto, UserRoute, userTestHelpers } from '@modules/users';
 import { getAdminLoginData, isGuid, isNumber } from '@utils';
-import { testUtils } from '@helpers';
 import { isDateString } from 'class-validator';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
+import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { TestApp } from './../../../helpers/tests.utils';
 import { generateValidAnnouncements } from './announcements-tests.helper';
-import { SystemPermissions } from '@core';
+import { CreateAnnouncementsResponseDto } from '../dtos/create-announcements.dto';
+import { GetAnnouncementsResponseDto } from '../dtos/get-announcements.dto';
+import { PublishAnnouncementsResponseDto } from '../dtos/publish-announcements.dto';
+import { AnnouncementStateValue } from '../enums/announcement-state.enum';
 
 describe('POST /announcements/publish', () => {
-  const announcementRoute = new AnnouncementsRout();
-  const userRoute = new UserRoute();
-  const permissionsRoute = new PermissionsRoute();
   let app: TestApp | undefined;
   let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
-    app = await testUtils.getTestApp([userRoute, permissionsRoute, announcementRoute]);
+    app = await testHelpers.getTestApp();
     app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-    adminAccessToken = (await testUtils.loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await testHelpers.loginAs(app, { email, passcode } satisfies ILoginModel))?.accessToken;
   });
 
   beforeEach(async () => {
@@ -42,7 +36,7 @@ describe('POST /announcements/publish', () => {
     test('create and publish announcement', async () => {
       const requestData = generateValidAnnouncements();
       const createAnnouncementsResponse = await request(app!.getServer())
-        .post(announcementRoute.path)
+        .post(AnnouncementsRout.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
@@ -54,7 +48,7 @@ describe('POST /announcements/publish', () => {
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
       const publishAnnouncementsResponse = await request(app!.getServer())
-        .post(announcementRoute.path + '/' + announcementsId + '/' + announcementRoute.publishPath)
+        .post(AnnouncementsRout.path + '/' + announcementsId + '/' + AnnouncementsRout.publishPath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(publishAnnouncementsResponse.statusCode).toBe(200);
@@ -65,7 +59,7 @@ describe('POST /announcements/publish', () => {
       expect(publishMessage).toBe(events.announcements.announcementsPublished);
 
       const getAnnouncementsResponse = await request(app!.getServer())
-        .get(announcementRoute.path + '/' + announcementsId)
+        .get(AnnouncementsRout.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
@@ -99,7 +93,7 @@ describe('POST /announcements/publish', () => {
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app!.getServer())
-        .delete(announcementRoute.path + '/' + announcementsId)
+        .delete(AnnouncementsRout.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
@@ -127,7 +121,7 @@ describe('POST /announcements/publish', () => {
     test('publish published announcement', async () => {
       const requestData = generateValidAnnouncements();
       const createAnnouncementsResponse = await request(app!.getServer())
-        .post(announcementRoute.path)
+        .post(AnnouncementsRout.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
@@ -139,7 +133,7 @@ describe('POST /announcements/publish', () => {
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
       let publishAnnouncementsResponse = await request(app!.getServer())
-        .post(announcementRoute.path + '/' + announcementsId + '/' + announcementRoute.publishPath)
+        .post(AnnouncementsRout.path + '/' + announcementsId + '/' + AnnouncementsRout.publishPath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(publishAnnouncementsResponse.statusCode).toBe(200);
@@ -150,7 +144,7 @@ describe('POST /announcements/publish', () => {
       expect(publish1Message).toBe(events.announcements.announcementsPublished);
 
       publishAnnouncementsResponse = await request(app!.getServer())
-        .post(announcementRoute.path + '/' + announcementsId + '/' + announcementRoute.publishPath)
+        .post(AnnouncementsRout.path + '/' + announcementsId + '/' + AnnouncementsRout.publishPath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(publishAnnouncementsResponse.statusCode).toBe(200);
@@ -162,7 +156,7 @@ describe('POST /announcements/publish', () => {
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app!.getServer())
-        .delete(announcementRoute.path + '/' + announcementsId)
+        .delete(AnnouncementsRout.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
@@ -192,7 +186,7 @@ describe('POST /announcements/publish', () => {
       const requestData = generateValidAnnouncements();
       requestData.validFromDate = undefined;
       const createAnnouncementsResponse = await request(app!.getServer())
-        .post(announcementRoute.path)
+        .post(AnnouncementsRout.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
@@ -204,7 +198,7 @@ describe('POST /announcements/publish', () => {
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
       const publishAnnouncementsResponse = await request(app!.getServer())
-        .post(announcementRoute.path + '/' + announcementsId + '/' + announcementRoute.publishPath)
+        .post(AnnouncementsRout.path + '/' + announcementsId + '/' + AnnouncementsRout.publishPath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(publishAnnouncementsResponse.statusCode).toBe(400);
@@ -214,7 +208,7 @@ describe('POST /announcements/publish', () => {
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app!.getServer())
-        .delete(announcementRoute.path + '/' + announcementsId)
+        .delete(AnnouncementsRout.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
@@ -233,7 +227,7 @@ describe('POST /announcements/publish', () => {
       const requestData = generateValidAnnouncements();
       requestData.validFromDate = null;
       const createAnnouncementsResponse = await request(app!.getServer())
-        .post(announcementRoute.path)
+        .post(AnnouncementsRout.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
@@ -245,7 +239,7 @@ describe('POST /announcements/publish', () => {
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
       const publishAnnouncementsResponse = await request(app!.getServer())
-        .post(announcementRoute.path + '/' + announcementsId + '/' + announcementRoute.publishPath)
+        .post(AnnouncementsRout.path + '/' + announcementsId + '/' + AnnouncementsRout.publishPath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(publishAnnouncementsResponse.statusCode).toBe(400);
@@ -255,7 +249,7 @@ describe('POST /announcements/publish', () => {
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app!.getServer())
-        .delete(announcementRoute.path + '/' + announcementsId)
+        .delete(AnnouncementsRout.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
@@ -273,7 +267,7 @@ describe('POST /announcements/publish', () => {
     test('when try to publish announcements that not exists', async () => {
       const requestData = generateValidAnnouncements();
       const createAnnouncementsResponse = await request(app!.getServer())
-        .post(announcementRoute.path)
+        .post(AnnouncementsRout.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
@@ -284,13 +278,13 @@ describe('POST /announcements/publish', () => {
       expect(announcementsId).toBeDefined();
 
       const deleteAnnouncementsResponse = await request(app!.getServer())
-        .delete(announcementRoute.path + '/' + announcementsId)
+        .delete(AnnouncementsRout.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       const publishAnnouncementsResponse = await request(app!.getServer())
-        .post(announcementRoute.path + '/' + announcementsId + '/' + announcementRoute.publishPath)
+        .post(AnnouncementsRout.path + '/' + announcementsId + '/' + AnnouncementsRout.publishPath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(publishAnnouncementsResponse.statusCode).toBe(400);
@@ -313,7 +307,7 @@ describe('POST /announcements/publish', () => {
     test('when token is not set', async () => {
       const id: string = Guid.EMPTY;
       const publishAnnouncementsResponse = await request(app!.getServer())
-        .post(announcementRoute.path + '/' + id + '/' + announcementRoute.publishPath)
+        .post(AnnouncementsRout.path + '/' + id + '/' + AnnouncementsRout.publishPath)
         .send();
       expect(publishAnnouncementsResponse.statusCode).toBe(401);
       const body = publishAnnouncementsResponse.body;
@@ -327,8 +321,8 @@ describe('POST /announcements/publish', () => {
     });
 
     test('when user has no permission', async () => {
-      const userData = testUtils.generateValidUserWithPassword();
-      const newUserResponse = await request(app!.getServer()).post(userRoute.path).send(userData).set('Authorization', `Bearer ${adminAccessToken}`);
+      const userData = userTestHelpers.generateValidUserWithPassword();
+      const newUserResponse = await request(app!.getServer()).post(UserRoute.path).send(userData).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(newUserResponse.statusCode).toBe(201);
       let body = newUserResponse.body;
       expect(typeof body).toBe('object');
@@ -338,16 +332,16 @@ describe('POST /announcements/publish', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const activateNewUserResponse = await request(app!.getServer())
-        .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
+        .post(UserRoute.path + '/' + user.id + '/' + UserRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await testUtils.loginAs(app!, { email: userData.email, passcode: userData.passcode } satisfies LoginDto))
+      const newUserAccessToken = (await testHelpers.loginAs(app!, { email: userData.email, passcode: userData.passcode } satisfies ILoginModel))
         ?.accessToken;
 
       const publishAnnouncementsResponse = await request(app!.getServer())
-        .post(announcementRoute.path + '/' + user.id + '/' + announcementRoute.publishPath)
+        .post(AnnouncementsRout.path + '/' + user.id + '/' + AnnouncementsRout.publishPath)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(publishAnnouncementsResponse.statusCode).toBe(403);
@@ -357,7 +351,7 @@ describe('POST /announcements/publish', () => {
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
       const deleteUserResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + user.id)
+        .delete(UserRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
@@ -383,8 +377,8 @@ describe('POST /announcements/publish', () => {
     });
 
     test('when user have all permissions expect PublishAnnouncements', async () => {
-      const userData = testUtils.generateValidUserWithPassword();
-      const newUserResponse = await request(app!.getServer()).post(userRoute.path).send(userData).set('Authorization', `Bearer ${adminAccessToken}`);
+      const userData = userTestHelpers.generateValidUserWithPassword();
+      const newUserResponse = await request(app!.getServer()).post(UserRoute.path).send(userData).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(newUserResponse.statusCode).toBe(201);
       let body = newUserResponse.body;
       expect(typeof body).toBe('object');
@@ -394,7 +388,7 @@ describe('POST /announcements/publish', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const activateNewUserResponse = await request(app!.getServer())
-        .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
+        .post(UserRoute.path + '/' + user.id + '/' + UserRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
@@ -404,18 +398,18 @@ describe('POST /announcements/publish', () => {
         if (isNumber(permission)) {
           const value = permission as number;
           if (value !== SystemPermissions.PublishAnnouncements) {
-            const path = permissionsRoute.path + '/' + user.id + '/' + permission.toString();
+            const path = PermissionsRoute.path + '/' + user.id + '/' + permission.toString();
             const addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
           }
         }
       });
 
-      const newUserAccessToken = (await testUtils.loginAs(app!, { email: userData.email, passcode: userData.passcode } satisfies LoginDto))
+      const newUserAccessToken = (await testHelpers.loginAs(app!, { email: userData.email, passcode: userData.passcode } satisfies ILoginModel))
         ?.accessToken;
 
       const publishAnnouncementsResponse = await request(app!.getServer())
-        .post(announcementRoute.path + '/' + user.id + '/' + announcementRoute.publishPath)
+        .post(AnnouncementsRout.path + '/' + user.id + '/' + AnnouncementsRout.publishPath)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(publishAnnouncementsResponse.statusCode).toBe(403);
@@ -425,7 +419,7 @@ describe('POST /announcements/publish', () => {
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
       const deleteUserResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + user.id)
+        .delete(UserRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
@@ -457,7 +451,7 @@ describe('POST /announcements/publish', () => {
     test('when token is invalid', async () => {
       const id: string = Guid.EMPTY;
       const response = await request(app!.getServer())
-        .post(announcementRoute.path + '/' + id + '/' + announcementRoute.publishPath)
+        .post(AnnouncementsRout.path + '/' + id + '/' + AnnouncementsRout.publishPath)
         .send()
         .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
       expect(response.statusCode).toBe(401);
@@ -472,30 +466,31 @@ describe('POST /announcements/publish', () => {
     });
 
     test('when try to use token from user that not exists', async () => {
-      const userBob = testUtils.generateValidUserWithPassword();
+      const userBob = userTestHelpers.generateValidUserWithPassword();
 
-      const createBobResponse = await request(app!.getServer()).post(userRoute.path).send(userBob).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createBobResponse = await request(app!.getServer()).post(UserRoute.path).send(userBob).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createBobResponse.statusCode).toBe(201);
       const { data: bobDto, message: bobCreateMessage }: CreateUserResponseDto = createBobResponse.body;
       expect(bobDto?.id).toBeDefined();
       expect(bobCreateMessage).toBe(events.users.userCreated);
 
       const activateBobResponse = await request(app!.getServer())
-        .post(userRoute.path + '/' + bobDto.id + '/' + userRoute.activatePath)
+        .post(UserRoute.path + '/' + bobDto.id + '/' + UserRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateBobResponse.statusCode).toBe(200);
 
-      const bobAccessToken = (await testUtils.loginAs(app!, { email: bobDto.email, passcode: userBob.passcode } satisfies LoginDto))?.accessToken;
+      const bobAccessToken = (await testHelpers.loginAs(app!, { email: bobDto.email, passcode: userBob.passcode } satisfies ILoginModel))
+        ?.accessToken;
 
       const deleteBobResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + bobDto.id)
+        .delete(UserRoute.path + '/' + bobDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteBobResponse.statusCode).toBe(200);
 
       const createAnnouncementsResponse = await request(app!.getServer())
-        .post(announcementRoute.path)
+        .post(AnnouncementsRout.path)
         .send(generateValidAnnouncements())
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
@@ -506,7 +501,7 @@ describe('POST /announcements/publish', () => {
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
       const publishAnnouncementsUsingBobAccessTokenResponse = await request(app!.getServer())
-        .post(announcementRoute.path + '/' + announcementsId + '/' + announcementRoute.publishPath)
+        .post(AnnouncementsRout.path + '/' + announcementsId + '/' + AnnouncementsRout.publishPath)
         .send()
         .set('Authorization', `Bearer ${bobAccessToken}`);
       expect(publishAnnouncementsUsingBobAccessTokenResponse.statusCode).toBe(401);
@@ -520,7 +515,7 @@ describe('POST /announcements/publish', () => {
 
       // cleanup
       const deleteAnnouncementsResponse = await request(app!.getServer())
-        .delete(announcementRoute.path + '/' + announcementsId)
+        .delete(AnnouncementsRout.path + '/' + announcementsId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
@@ -551,7 +546,7 @@ describe('POST /announcements/publish', () => {
   });
 
   afterAll(async () => {
-    await testUtils.closeTestApp();
+    await testHelpers.closeTestApp();
     jest.resetAllMocks();
   });
 });

@@ -1,29 +1,24 @@
 import { SystemPermissions } from '@core';
 import { events } from '@events';
 import { BaseService } from '@modules/common';
-import {
-  AddPermissionReqDto,
-  DeletePermissionsReqDto,
-  GetPermissionsReqDto,
-  IUserPermissionsDto,
-  PermissionAddedEvent,
-  PermissionDeletedEvent,
-  PermissionsRepository,
-  PermissionsRetrievedEvent,
-  UserPermissionsRepository,
-} from '@modules/permissions';
 import { isEnumValue, isGuid, isNullOrUndefined } from '@utils';
-import { Container, Service } from 'typedi';
+import { Service } from 'typedi';
+import { AddPermissionReqDto } from '../dtos/add-permission.dto';
+import { DeletePermissionsReqDto } from '../dtos/delete-permissions.dto';
+import { GetPermissionsReqDto, IUserPermissionsDto } from '../dtos/get-permissions.dto';
+import { PermissionAddedEvent } from '../events/permission-added-event';
+import { PermissionDeletedEvent } from '../events/permission-deleted-event';
+import { PermissionsRetrievedEvent } from '../events/permissions-retrieved-event';
+import { PermissionsRepository } from '../repositories/permissions.repository';
+import { UserPermissionsRepository } from '../repositories/user-permissions.repository';
 
 @Service()
 export class PermissionsService extends BaseService {
-  private readonly _userPermissionsRepository: UserPermissionsRepository;
-  private readonly _permissionsRepository: PermissionsRepository;
-
-  constructor() {
+  constructor(
+    private readonly _userPermissionsRepository: UserPermissionsRepository,
+    private readonly _permissionsRepository: PermissionsRepository,
+  ) {
     super();
-    this._userPermissionsRepository = Container.get(UserPermissionsRepository);
-    this._permissionsRepository = Container.get(PermissionsRepository);
   }
 
   public async get(reqDto: GetPermissionsReqDto): Promise<IUserPermissionsDto[]> {

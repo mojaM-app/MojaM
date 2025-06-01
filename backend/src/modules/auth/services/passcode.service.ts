@@ -1,5 +1,5 @@
 import { isNullOrEmptyString } from '@utils';
-import Container, { Service } from 'typedi';
+import { Service } from 'typedi';
 import { PasswordService } from './password.service';
 import { PinService } from './pin.service';
 import { AuthenticationTypes } from '../enums/authentication-type.enum';
@@ -7,13 +7,10 @@ import { getAuthenticationType } from '../helpers/auth.helper';
 
 @Service()
 export class PasscodeService {
-  private readonly _passwordService: PasswordService;
-  private readonly _pinService: PinService;
-
-  constructor() {
-    this._passwordService = Container.get(PasswordService);
-    this._pinService = Container.get(PinService);
-  }
+  constructor(
+    private readonly _passwordService: PasswordService,
+    private readonly _pinService: PinService,
+  ) {}
 
   public isValid(passcode: string | null | undefined): boolean {
     if (isNullOrEmptyString(passcode)) {

@@ -1,21 +1,19 @@
 import { BadRequestException, errorKeys } from '@exceptions';
-import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
-import { AuthRoute, CheckResetPasscodeTokenResponseDto } from '@modules/auth';
+import { testHelpers } from '@helpers';
+import { AuthRoute } from '@modules/auth';
 import { PermissionsRoute } from '@modules/permissions';
 import { UserRoute } from '@modules/users';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
+import { CheckResetPasscodeTokenResponseDto } from '../dtos/check-reset-passcode-token.dto';
+import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { TestApp } from './../../../helpers/tests.utils';
-import { testUtils } from '@helpers';
 
 describe('POST /auth/check-reset-passcode-token/:userId/:token', () => {
-  const userRoute = new UserRoute();
-  const authRoute = new AuthRoute();
-  const permissionsRoute = new PermissionsRoute();
   let app: TestApp | undefined;
 
   beforeAll(async () => {
-    app = await testUtils.getTestApp([userRoute, permissionsRoute]);
+    app = await testHelpers.getTestApp();
     app.mock_nodemailer_createTransport();
   });
 
@@ -26,7 +24,7 @@ describe('POST /auth/check-reset-passcode-token/:userId/:token', () => {
   describe('request should end with status code of 200', () => {
     it('when user with given id not exist', async () => {
       const response = await request(app!.getServer())
-        .post(authRoute.checkResetPasscodeTokenPath + '/' + Guid.EMPTY + '/validToken')
+        .post(AuthRoute.checkResetPasscodeTokenPath + '/' + Guid.EMPTY + '/validToken')
         .send();
       expect(response.statusCode).toBe(200);
       const body = response.body as CheckResetPasscodeTokenResponseDto;
@@ -46,7 +44,7 @@ describe('POST /auth/check-reset-passcode-token/:userId/:token', () => {
   describe('request should end with status code of 404', () => {
     it('when user id is invalid', async () => {
       const response = await request(app!.getServer())
-        .post(authRoute.checkResetPasscodeTokenPath + '/invalidUserId/validToken')
+        .post(AuthRoute.checkResetPasscodeTokenPath + '/invalidUserId/validToken')
         .send();
       expect(response.statusCode).toBe(404);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -63,7 +61,7 @@ describe('POST /auth/check-reset-passcode-token/:userId/:token', () => {
   });
 
   afterAll(async () => {
-    await testUtils.closeTestApp();
+    await testHelpers.closeTestApp();
     jest.resetAllMocks();
   });
 });

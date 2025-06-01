@@ -1,15 +1,11 @@
 import { BaseRepository } from '@modules/common';
 import { isGuid, isPositiveNumber } from '@utils';
-import Container from 'typedi';
 import { UserCacheService } from '../services/user-cache.service';
 import { User } from './../../../dataBase/entities/users/user.entity';
 
 export abstract class BaseUserRepository extends BaseRepository {
-  protected readonly _cacheService: UserCacheService;
-
-  constructor() {
+  constructor(protected readonly _cacheService: UserCacheService) {
     super();
-    this._cacheService = Container.get(UserCacheService);
   }
 
   public async getIdByUuid(uuid: string | null | undefined): Promise<number | undefined> {

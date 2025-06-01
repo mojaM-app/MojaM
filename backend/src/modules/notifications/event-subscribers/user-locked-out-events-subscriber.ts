@@ -3,21 +3,17 @@ import { UserLockedOutEvent } from '@modules/auth';
 import { logger } from '@modules/logger';
 import { EventSubscriber, On } from 'event-dispatch';
 import Container from 'typedi';
+import { LinkHelper } from '../helpers/link.helper';
 import { IUnlockAccountEmailSettings } from '../interfaces/unlock-account-email-settings.interface';
 import { EmailService } from '../services/email.service';
-import { LinkHelper } from '../services/link.helper';
 
 @EventSubscriber()
 export class UserLockedOutEventSubscriber {
-  private readonly _emailService: EmailService;
-
-  constructor() {
-    this._emailService = Container.get(EmailService);
-  }
-
   @On(events.users.userLockedOut)
   public eventHandler(data: UserLockedOutEvent): void {
-    this._emailService
+    const emailService = Container.get(EmailService);
+
+    emailService
       .sendUnlockAccountEmail({
         user: data.user,
         link: LinkHelper.unlockAccountLink(data.user.uuid),

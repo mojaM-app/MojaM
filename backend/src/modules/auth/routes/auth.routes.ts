@@ -1,21 +1,26 @@
 import { REGEX_PATTERNS } from '@config';
 import { IRoutes } from '@interfaces';
 import { validateData } from '@middlewares';
-import { AccountTryingToLogInDto, ActivateAccountDto, AuthController, LoginDto, RefreshTokenDto, ResetPasscodeDto } from '@modules/auth';
 import express from 'express';
+import { AuthController } from '../controllers/auth.controller';
+import { ActivateAccountDto } from '../dtos/activate-account.dto';
+import { AccountTryingToLogInDto } from '../dtos/get-account-before-log-in.dto';
+import { LoginDto } from '../dtos/login.dto';
+import { RefreshTokenDto } from '../dtos/refresh-token.dto';
+import { ResetPasscodeDto } from '../dtos/reset-passcode.dto';
 
 export class AuthRoute implements IRoutes {
   public static resetPasscode: string = 'reset-passcode';
-  public path = '/auth';
-  public loginPath = '/login';
-  public getAccountBeforeLogInPath = `${this.path}/get-account-before-log-in`;
-  public requestResetPasscodePath = `${this.path}/request-reset-passcode`;
-  public checkResetPasscodeTokenPath = `${this.path}/check-reset-passcode-token`;
-  public resetPasscodePath = `${this.path}/${AuthRoute.resetPasscode}`;
-  public refreshTokenPath = `${this.path}/refresh-token`;
-  public getAccountToActivatePath = `${this.path}/get-account-to-activate`;
-  public activateAccountPath = `${this.path}/activate-account`;
-  public unlockAccountPath = `${this.path}/unlock-account`;
+  public static path = '/auth';
+  public static loginPath = '/login';
+  public static getAccountBeforeLogInPath = `${AuthRoute.path}/get-account-before-log-in`;
+  public static requestResetPasscodePath = `${AuthRoute.path}/request-reset-passcode`;
+  public static checkResetPasscodeTokenPath = `${AuthRoute.path}/check-reset-passcode-token`;
+  public static resetPasscodePath = `${AuthRoute.path}/${AuthRoute.resetPasscode}`;
+  public static refreshTokenPath = `${AuthRoute.path}/refresh-token`;
+  public static getAccountToActivatePath = `${AuthRoute.path}/get-account-to-activate`;
+  public static activateAccountPath = `${AuthRoute.path}/activate-account`;
+  public static unlockAccountPath = `${AuthRoute.path}/unlock-account`;
   public router = express.Router();
 
   private readonly _authController: AuthController;
@@ -26,24 +31,24 @@ export class AuthRoute implements IRoutes {
   }
 
   private initializeRoutes(): void {
-    this.router.post(this.loginPath, [validateData(LoginDto)], this._authController.logIn);
-    this.router.post(this.getAccountBeforeLogInPath, [validateData(AccountTryingToLogInDto)], this._authController.getAccountBeforeLogIn);
-    this.router.post(this.requestResetPasscodePath, [validateData(AccountTryingToLogInDto)], this._authController.requestResetPasscode);
-    this.router.post(this.checkResetPasscodeTokenPath + `/:userId(${REGEX_PATTERNS.GUID})/:token`, this._authController.checkResetPasscodeToken);
+    this.router.post(AuthRoute.loginPath, [validateData(LoginDto)], this._authController.logIn);
+    this.router.post(AuthRoute.getAccountBeforeLogInPath, [validateData(AccountTryingToLogInDto)], this._authController.getAccountBeforeLogIn);
+    this.router.post(AuthRoute.requestResetPasscodePath, [validateData(AccountTryingToLogInDto)], this._authController.requestResetPasscode);
+    this.router.post(AuthRoute.checkResetPasscodeTokenPath + `/:userId(${REGEX_PATTERNS.GUID})/:token`, this._authController.checkResetPasscodeToken);
     this.router.post(
-      this.resetPasscodePath + `/:userId(${REGEX_PATTERNS.GUID})`,
+      AuthRoute.resetPasscodePath + `/:userId(${REGEX_PATTERNS.GUID})`,
       [validateData(ResetPasscodeDto)],
       this._authController.resetPasscode,
     );
-    this.router.post(this.refreshTokenPath, [validateData(RefreshTokenDto)], this._authController.refreshAccessToken);
-    this.router.post(this.getAccountToActivatePath + `/:userId(${REGEX_PATTERNS.GUID})`, this._authController.getAccountToActivate);
+    this.router.post(AuthRoute.refreshTokenPath, [validateData(RefreshTokenDto)], this._authController.refreshAccessToken);
+    this.router.post(AuthRoute.getAccountToActivatePath + `/:userId(${REGEX_PATTERNS.GUID})`, this._authController.getAccountToActivate);
     this.router.post(
-      this.activateAccountPath + `/:userId(${REGEX_PATTERNS.GUID})`,
+      AuthRoute.activateAccountPath + `/:userId(${REGEX_PATTERNS.GUID})`,
       [validateData(ActivateAccountDto)],
       this._authController.activateAccount,
     );
-    this.router.post(this.unlockAccountPath + `/:userId(${REGEX_PATTERNS.GUID})`, this._authController.unlockAccount);
+    this.router.post(AuthRoute.unlockAccountPath + `/:userId(${REGEX_PATTERNS.GUID})`, this._authController.unlockAccount);
 
-    // this.router.post(`${this.path}logout`, verifyToken, this._authController.logOut);
+    // this.router.post(`${AuthRoute.path}logout`, verifyToken, this._authController.logOut);
   }
 }

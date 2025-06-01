@@ -1,5 +1,5 @@
 import { IRoutes } from '@interfaces';
-import { setIdentity } from '@modules/auth';
+import { setIdentity } from '@middlewares';
 import express from 'express';
 import { CommunityController } from '../controllers/community.controller';
 

@@ -1,53 +1,46 @@
-import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
+import { ACCESS_TOKEN_ALGORITHM, USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
+import { IPermissionModuleBoundary, IUserModuleBoundary } from '@core';
 import { userToIUser } from '@db';
 import { events } from '@events';
 import { BadRequestException, errorKeys, TranslatableHttpException } from '@exceptions';
+import { BaseService } from '@modules/common';
+import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
+import { decode, JwtPayload, sign, verify, VerifyErrors } from 'jsonwebtoken';
+import StatusCode from 'status-code-enum';
+import { Inject, Service } from 'typedi';
 import {
-  FailedLoginAttemptEvent,
-  IDataStoredInToken,
-  ILoginResult,
-  InactiveUserTriesToLogInEvent,
-  LockedUserTriesToLogInEvent,
-  LoginDto,
-  PasscodeService,
-  RefreshTokenDto,
-  UserLockedOutEvent,
-  UserLoggedInEvent,
-  UserRefreshedTokenEvent,
-} from '@modules/auth';
-import {
-  ACCESS_TOKEN_ALGORITHM,
   getAccessTokenExpiration,
   getAccessTokenSecret,
   getRefreshTokenExpiration,
   getRefreshTokenSecret,
   getTokenAudience,
   getTokenIssuer,
-} from '@modules/auth/middlewares/set-identity.middleware';
-import { BaseService } from '@modules/common';
-import { UserPermissionsRepository } from '@modules/permissions';
-import { UserRepository } from '@modules/users';
-import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
-import { decode, JwtPayload, sign, verify, VerifyErrors } from 'jsonwebtoken';
-import StatusCode from 'status-code-enum';
-import { Container, Service } from 'typedi';
+} from '../../../middlewares/authorization/set-identity.middleware';
 import { User } from './../../../dataBase/entities/users/user.entity';
+import { PasscodeService } from './passcode.service';
+import { LoginDto } from '../dtos/login.dto';
+import { RefreshTokenDto } from '../dtos/refresh-token.dto';
+import { FailedLoginAttemptEvent } from '../events/failed-login-attempt-event';
+import { InactiveUserTriesToLogInEvent } from '../events/inactive-user-tries-to-log-in-event';
+import { LockedUserTriesToLogInEvent } from '../events/locked-user-tries-to-log-in-event';
+import { UserLockedOutEvent } from '../events/user-locked-out-event';
+import { UserLoggedInEvent } from '../events/user-logged-in-event';
+import { UserRefreshedTokenEvent } from '../events/user-refreshed-token-event';
+import { IDataStoredInToken } from '../interfaces/data-stored-in-token.interface';
+import { ILoginResult } from '../interfaces/login.interfaces';
 
 @Service()
 export class AuthService extends BaseService {
-  private readonly _userRepository: UserRepository;
-  private readonly _permissionRepository: UserPermissionsRepository;
-  private readonly _passcodeService: PasscodeService;
-
-  constructor() {
+  constructor(
+    @Inject('USER_MODULE') private readonly _userModule: IUserModuleBoundary,
+    @Inject('PERMISSION_MODULE') private readonly _permissionModule: IPermissionModuleBoundary,
+    private readonly _passcodeService: PasscodeService,
+  ) {
     super();
-    this._userRepository = Container.get(UserRepository);
-    this._permissionRepository = Container.get(UserPermissionsRepository);
-    this._passcodeService = Container.get(PasscodeService);
   }
 
   public async login(data: LoginDto): Promise<ILoginResult> {
-    const users: User[] = await this._userRepository.findManyByLogin(data?.email, data?.phone);
+    const users: User[] = await this._userModule.findManyByLogin(data?.email, data?.phone);
 
     if (users?.length !== 1) {
       throw new BadRequestException(errorKeys.login.Invalid_Login_Or_Passcode);
@@ -72,14 +65,14 @@ export class AuthService extends BaseService {
     const isPasscodeMatching: boolean = this._passcodeService.match(user, data.passcode);
 
     if (isPasscodeMatching) {
-      await this._userRepository.updateAfterLogin(user.id);
+      await this._userModule.updateAfterLogin(user.id);
     } else {
-      const failedLoginAttempts = await this._userRepository.increaseFailedLoginAttempts(user.id, user.failedLoginAttempts);
+      const failedLoginAttempts = await this._userModule.increaseFailedLoginAttempts(user.id, user.failedLoginAttempts);
 
       this._eventDispatcher.dispatch(events.users.failedLoginAttempt, new FailedLoginAttemptEvent(user));
 
       if (failedLoginAttempts >= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS) {
-        await this._userRepository.lockOut(user.id);
+        await this._userModule.lockOut(user.id);
 
         this._eventDispatcher.dispatch(events.users.userLockedOut, new UserLockedOutEvent(user));
 
@@ -108,7 +101,11 @@ export class AuthService extends BaseService {
 
     const userUuid = this.getUserIdFromRefreshToken(data.refreshToken!);
 
-    const user = await this._userRepository.getByUuid(userUuid);
+    if (isNullOrEmptyString(userUuid)) {
+      return null;
+    }
+
+    const user = await this._userModule.getByUuid(userUuid as string);
 
     if (isNullOrUndefined(user)) {
       return null;
@@ -159,7 +156,7 @@ export class AuthService extends BaseService {
   }
 
   private async createAccessTokenAsync(user: User): Promise<string> {
-    const userPermissions = await this._permissionRepository.get(user);
+    const userPermissions = await this._permissionModule.getUserPermissions(user);
 
     const dataStoredInToken = {
       permissions: userPermissions,

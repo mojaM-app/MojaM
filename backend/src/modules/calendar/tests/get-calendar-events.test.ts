@@ -1,27 +1,25 @@
 import * as config from '@config';
+import { ILoginModel } from '@core';
 import { events } from '@events';
-import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
-import { LoginDto } from '@modules/auth';
-import { GetCalendarEventsResponseDto, ICalendarEventDto } from '@modules/calendar';
-import { getAdminLoginData } from '@utils';
-import { testUtils } from '@helpers';
-import request from 'supertest';
-import { CalendarRoutes } from '../routes/calendar.routes';
-import { GoogleCalendarService } from '../services/google-calendar.service';
-import { TestApp } from './../../../helpers/tests.utils';
 import { BadRequestException, errorKeys } from '@exceptions';
+import { testHelpers } from '@helpers';
+import { getAdminLoginData } from '@utils';
 import { google } from 'googleapis';
+import request from 'supertest';
+import { GetCalendarEventsResponseDto, ICalendarEventDto } from '../dtos/calendar.dto';
+import { GoogleCalendarService } from '../services/google-calendar.service';
+import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
+import { TestApp } from './../../../helpers/tests.utils';
 
 describe('GET /calendar/events', () => {
-  const calendarRoutes = new CalendarRoutes();
   let app: TestApp | undefined;
   let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
-    app = await testUtils.getTestApp([calendarRoutes]);
+    app = await testHelpers.getTestApp();
     app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-    adminAccessToken = (await testUtils.loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await testHelpers.loginAs(app, { email, passcode } satisfies ILoginModel))?.accessToken;
   });
 
   beforeEach(async () => {
@@ -414,7 +412,7 @@ describe('GET /calendar/events', () => {
     });
 
     it('when Google Calendar API returns events with dateTime format', async () => {
-      jest.spyOn(GoogleCalendarService.prototype, 'getEvents').mockImplementation(async function (startDate, endDate) {
+      jest.spyOn(GoogleCalendarService.prototype, 'getEvents').mockImplementation(async function (_startDate, _endDate) {
         const parseDateTime = (this as any).parseDateTime.bind(this);
         const date1 = parseDateTime('2025-05-10T09:00:00+02:00');
         const date2 = parseDateTime('2025-05-10T11:00:00+02:00');
@@ -440,8 +438,7 @@ describe('GET /calendar/events', () => {
     });
 
     it('when Google Calendar API returns events with date format (all-day events)', async () => {
-      jest.spyOn(GoogleCalendarService.prototype, 'getEvents').mockImplementation(async function (startDate, endDate) {
-        const getDate = (this as any).getDate.bind(this);
+      jest.spyOn(GoogleCalendarService.prototype, 'getEvents').mockImplementation(async function (_startDate, _endDate) {
         const getStartDate = (this as any).getStartDate.bind(this);
         const getEndDate = (this as any).getEndDate.bind(this);
 
@@ -470,7 +467,7 @@ describe('GET /calendar/events', () => {
     });
 
     it('when handling special date cases including undefined and null values', async () => {
-      jest.spyOn(GoogleCalendarService.prototype, 'getEvents').mockImplementation(async function (startDate, endDate) {
+      jest.spyOn(GoogleCalendarService.prototype, 'getEvents').mockImplementation(async function (_startDate, _endDate) {
         const parseDateTime = (this as any).parseDateTime.bind(this);
         const getDate = (this as any).getDate.bind(this);
 
@@ -590,7 +587,6 @@ describe('GET /calendar/events', () => {
       expect(parseDateTime('2025-05-01T09:00:00Z')).toBeInstanceOf(Date);
       expect(parseDateTime('2025-05-01')).toBeInstanceOf(Date);
 
-      const now = new Date();
       const result = parseDateTime('');
       expect(result).toBeInstanceOf(Date);
 
@@ -904,7 +900,7 @@ describe('GET /calendar/events', () => {
   });
 
   afterAll(async () => {
-    await testUtils.closeTestApp();
+    await testHelpers.closeTestApp();
     jest.resetAllMocks();
     jest.restoreAllMocks();
   });

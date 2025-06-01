@@ -1,27 +1,26 @@
+import { ILoginModel, SystemPermissions } from '@core';
 import { events } from '@events';
 import { errorKeys } from '@exceptions';
-import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
-import { LoginDto } from '@modules/auth';
+import { testHelpers } from '@helpers';
 import { PermissionsRoute } from '@modules/permissions';
-import { CreateUserResponseDto, GetUserListResponseDto, UserListRetrievedEvent, UserListRoute, UserRoute } from '@modules/users';
+import { userTestHelpers, UserListRoute, UserRoute } from '@modules/users';
 import { getAdminLoginData, isNumber } from '@utils';
-import { testUtils } from '@helpers';
 import request from 'supertest';
-import { SystemPermissions } from '@core';
-import { TestApp } from './../../../helpers/tests.utils';
+import { testEventHandlers } from '../../../helpers/event-handler-tests.helper';
+import { TestApp } from '../../../helpers/tests.utils';
+import { CreateUserResponseDto } from '../dtos/create-user.dto';
+import { GetUserListResponseDto } from '../dtos/get-user-list.dto';
+import { UserListRetrievedEvent } from '../events/user-list-retrieved-event';
 
 describe('GET/user-list', () => {
-  const userRoute = new UserRoute();
-  const userListRoute = new UserListRoute();
-  const permissionsRoute = new PermissionsRoute();
   let app: TestApp | undefined;
   let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
-    app = await testUtils.getTestApp([userRoute, permissionsRoute, userListRoute]);
+    app = await testHelpers.getTestApp();
     app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-    adminAccessToken = (await testUtils.loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await testHelpers.loginAs(app, { email, passcode } satisfies ILoginModel))?.accessToken;
   });
 
   beforeEach(async () => {
@@ -30,9 +29,9 @@ describe('GET/user-list', () => {
 
   describe('GET should respond with a status code of 200', () => {
     test('when data are valid and user has permission', async () => {
-      const newUser = testUtils.generateValidUserWithPassword();
+      const newUser = userTestHelpers.generateValidUserWithPassword();
       const createUserResponse = await request(app!.getServer())
-        .post(userRoute.path)
+        .post(UserRoute.path)
         .send(newUser)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -40,7 +39,7 @@ describe('GET/user-list', () => {
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const getListResponse = await request(app!.getServer()).get(userListRoute.path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      const getListResponse = await request(app!.getServer()).get(UserListRoute.path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(getListResponse.statusCode).toBe(200);
       expect(getListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = getListResponse.body;
@@ -57,7 +56,7 @@ describe('GET/user-list', () => {
       expect(gridPage.items.length).toBeGreaterThan(0);
 
       const deleteResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + newUserDto.id)
+        .delete(UserRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -80,7 +79,7 @@ describe('GET/user-list', () => {
 
   describe('GET should respond with a status code of 403', () => {
     test('when token is not set', async () => {
-      const getListResponse = await request(app!.getServer()).get(userListRoute.path).send();
+      const getListResponse = await request(app!.getServer()).get(UserListRoute.path).send();
       expect(getListResponse.statusCode).toBe(401);
       const body = getListResponse.body;
       expect(typeof body).toBe('object');
@@ -93,9 +92,9 @@ describe('GET/user-list', () => {
     });
 
     test('when user has no permission', async () => {
-      const requestData = testUtils.generateValidUserWithPassword();
+      const requestData = userTestHelpers.generateValidUserWithPassword();
       const createUserResponse = await request(app!.getServer())
-        .post(userRoute.path)
+        .post(UserRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -107,15 +106,15 @@ describe('GET/user-list', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const activateNewUserResponse = await request(app!.getServer())
-        .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
+        .post(UserRoute.path + '/' + newUserDto.id + '/' + UserRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await testUtils.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))
+      const newUserAccessToken = (await testHelpers.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies ILoginModel))
         ?.accessToken;
 
-      const getListResponse = await request(app!.getServer()).get(userListRoute.path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
+      const getListResponse = await request(app!.getServer()).get(UserListRoute.path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(getListResponse.statusCode).toBe(403);
       expect(getListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getListResponse.body;
@@ -123,7 +122,7 @@ describe('GET/user-list', () => {
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
       const deleteResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + newUserDto.id)
+        .delete(UserRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -150,9 +149,9 @@ describe('GET/user-list', () => {
     });
 
     test('when user have all permissions expect PreviewUserList', async () => {
-      const requestData = testUtils.generateValidUserWithPassword();
+      const requestData = userTestHelpers.generateValidUserWithPassword();
       const createUserResponse = await request(app!.getServer())
-        .post(userRoute.path)
+        .post(UserRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -164,7 +163,7 @@ describe('GET/user-list', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const activateNewUserResponse = await request(app!.getServer())
-        .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
+        .post(UserRoute.path + '/' + newUserDto.id + '/' + UserRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
@@ -174,17 +173,17 @@ describe('GET/user-list', () => {
         if (isNumber(permission)) {
           const value = permission as number;
           if (value !== SystemPermissions.PreviewUserList) {
-            const path = permissionsRoute.path + '/' + newUserDto.id + '/' + permission.toString();
+            const path = PermissionsRoute.path + '/' + newUserDto.id + '/' + permission.toString();
             const addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
           }
         }
       });
 
-      const newUserAccessToken = (await testUtils.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))
+      const newUserAccessToken = (await testHelpers.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies ILoginModel))
         ?.accessToken;
 
-      const getListResponse = await request(app!.getServer()).get(userListRoute.path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
+      const getListResponse = await request(app!.getServer()).get(UserListRoute.path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(getListResponse.statusCode).toBe(403);
       expect(getListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getListResponse.body;
@@ -192,7 +191,7 @@ describe('GET/user-list', () => {
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
       const deleteResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + newUserDto.id)
+        .delete(UserRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -224,7 +223,7 @@ describe('GET/user-list', () => {
   describe('GET should respond with a status code of 401', () => {
     test('when token is invalid', async () => {
       const getListResponse = await request(app!.getServer())
-        .get(userListRoute.path)
+        .get(UserListRoute.path)
         .send()
         .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
       expect(getListResponse.statusCode).toBe(401);
@@ -240,7 +239,7 @@ describe('GET/user-list', () => {
   });
 
   afterAll(async () => {
-    await testUtils.closeTestApp();
+    await testHelpers.closeTestApp();
     jest.resetAllMocks();
   });
 });

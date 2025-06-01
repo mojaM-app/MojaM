@@ -1,9 +1,10 @@
 import { IRequestWithIdentity } from '@interfaces';
 import { BaseController } from '@modules/common';
-import { GetUserDetailsReqDto, GetUserDetailsResponseDto, IUserDetailsDto, UsersDetailsService } from '@modules/users';
 import { isGuid } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
+import { GetUserDetailsReqDto, GetUserDetailsResponseDto, IUserDetailsDto } from '../dtos/get-user-details.dto';
+import { UsersDetailsService } from '../services/user-details.service';
 
 export class UserDetailsController extends BaseController {
   private readonly _service: UsersDetailsService;

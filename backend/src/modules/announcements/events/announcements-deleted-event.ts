@@ -1,5 +1,5 @@
 import { Event } from '@events';
-import { IAnnouncementsDto } from '@modules/announcements';
+import { IAnnouncementsDto } from '../dtos/get-announcements.dto';
 
 export class AnnouncementsDeletedEvent extends Event {
   public readonly announcements: IAnnouncementsDto;

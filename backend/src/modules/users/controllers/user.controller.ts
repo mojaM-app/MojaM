@@ -1,27 +1,16 @@
 import { IRequestWithIdentity } from '@interfaces';
 import { BaseController } from '@modules/common';
-import {
-  ActivateUserReqDto,
-  ActivateUserResponseDto,
-  CreateUserDto,
-  CreateUserReqDto,
-  CreateUserResponseDto,
-  DeactivateUserReqDto,
-  DeactivateUserResponseDto,
-  DeleteUserReqDto,
-  DeleteUserResponseDto,
-  GetUserReqDto,
-  GetUserResponseDto,
-  UnlockUserReqDto,
-  UnlockUserResponseDto,
-  UpdateUserDto,
-  UpdateUserReqDto,
-  UpdateUserResponseDto,
-  UsersService,
-} from '@modules/users';
 import { isGuid } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
+import { ActivateUserReqDto, ActivateUserResponseDto } from '../dtos/activate-user.dto';
+import { CreateUserDto, CreateUserReqDto, CreateUserResponseDto } from '../dtos/create-user.dto';
+import { DeactivateUserReqDto, DeactivateUserResponseDto } from '../dtos/deactivate-user.dto';
+import { DeleteUserReqDto, DeleteUserResponseDto } from '../dtos/delete-user.dto';
+import { GetUserReqDto, GetUserResponseDto } from '../dtos/get-user.dto';
+import { UnlockUserReqDto, UnlockUserResponseDto } from '../dtos/unlock-user.dto';
+import { UpdateUserDto, UpdateUserReqDto, UpdateUserResponseDto } from '../dtos/update-user.dto';
+import { UsersService } from '../services/user.service';
 
 export class UserController extends BaseController {
   private readonly _service: UsersService;

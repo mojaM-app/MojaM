@@ -1,14 +1,13 @@
-import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_EXPIRE_IN, REFRESH_TOKEN_SECRET, SECRET_AUDIENCE, SECRET_ISSUER } from '@config';
+import { ACCESS_TOKEN_ALGORITHM, ACCESS_TOKEN_SECRET, REFRESH_TOKEN_EXPIRE_IN, REFRESH_TOKEN_SECRET, SECRET_AUDIENCE, SECRET_ISSUER } from '@config';
+import { IPermissionModuleBoundary, IUserModuleBoundary } from '@core';
 import { UnauthorizedException, errorKeys } from '@exceptions';
 import { IRequestWithIdentity } from '@interfaces';
-import { Identity } from '@modules/auth';
 import { logger } from '@modules/logger';
-import { UserPermissionsRepository } from '@modules/permissions';
-import { UserRepository } from '@modules/users';
 import { isNullOrEmptyString, isNullOrUndefined, isString } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { JwtPayload, verify } from 'jsonwebtoken';
 import Container from 'typedi';
+import { Identity } from './models/Identity';
 
 const getAuthorization = (req: Request): string | null => {
   let header: string | string[] | undefined = req?.headers?.Authorization;
@@ -81,8 +80,6 @@ export const getAccessTokenExpiration = (): string => {
   return defaultAccessTokenExpiration;
 };
 
-export const ACCESS_TOKEN_ALGORITHM = 'HS256';
-
 export const setIdentity = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
   try {
     const authorization: string | null = getAuthorization(req);
@@ -99,14 +96,14 @@ export const setIdentity = async (req: IRequestWithIdentity, res: Response, next
         audience: getTokenAudience(),
         issuer: getTokenIssuer(),
       }).payload as JwtPayload;
-      const userRepository = Container.get(UserRepository);
-      const user = await userRepository?.getByUuid(sub);
+      const userModule = Container.get<IUserModuleBoundary>('USER_MODULE');
+      const user = await userModule.getByUuid(sub);
 
       if (isNullOrUndefined(user)) {
         next(new UnauthorizedException(errorKeys.login.Wrong_Authentication_Token));
       } else {
-        const permissionRepository = Container.get(UserPermissionsRepository);
-        const permissions = await permissionRepository.get(user);
+        const permissionRepository = Container.get<IPermissionModuleBoundary>('PERMISSION_MODULE');
+        const permissions = await permissionRepository.getUserPermissions(user);
         req.identity = new Identity(user, permissions);
         next();
       }

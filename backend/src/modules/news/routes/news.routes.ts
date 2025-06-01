@@ -1,7 +1,7 @@
 import { IRoutes } from '@interfaces';
-import { setIdentity } from '@modules/auth';
-import { NewsController } from '@modules/news';
+import { setIdentity } from '@middlewares';
 import express from 'express';
+import { NewsController } from '../controllers/news.controller';
 
 export class NewsRoutes implements IRoutes {
   public path = '/news';
@@ -9,8 +9,7 @@ export class NewsRoutes implements IRoutes {
 
   private readonly _controller: NewsController;
 
-  constructor(
-  ) {
+  constructor() {
     this._controller = new NewsController();
     this.initializeRoutes();
   }

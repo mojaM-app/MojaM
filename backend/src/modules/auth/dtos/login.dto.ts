@@ -1,13 +1,14 @@
 import { VALIDATOR_SETTINGS } from '@config';
+import { ILoginModel, TLoginResult } from '@core';
 import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { DtoTransformFunctions } from '@helpers';
 import { IResponse } from '@interfaces';
 import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MaxLength } from 'class-validator';
-import { TLoginResult } from '../types/login.types';
+import { ILoginResult } from '../interfaces/login.interfaces';
 
-export class LoginDto {
+export class LoginDto implements ILoginModel {
   @IsNotEmpty({
     message: errorKeys.login.Invalid_Login_Or_Passcode,
   })
@@ -53,8 +54,14 @@ export class LoginResponseDto implements IResponse<TLoginResult> {
   public readonly data: TLoginResult;
   public readonly message: string;
 
-  constructor(loginResult: TLoginResult) {
-    this.data = loginResult;
+  constructor(loginResult: ILoginResult) {
+    this.data = {
+      id: loginResult.user.id,
+      email: loginResult.user.email,
+      phone: loginResult.user.phone,
+      accessToken: loginResult.accessToken,
+      refreshToken: loginResult.refreshToken,
+    } satisfies TLoginResult;
     this.message = events.users.userLoggedIn;
   }
 }

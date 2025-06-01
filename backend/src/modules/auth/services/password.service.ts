@@ -1,4 +1,5 @@
 import { VALIDATOR_SETTINGS } from '@config';
+import { IPasswordService } from '@core';
 import { isNullOrEmptyString } from '@utils';
 import { isStrongPassword, maxLength } from 'class-validator';
 import * as crypto from 'crypto';
@@ -6,7 +7,7 @@ import { Service } from 'typedi';
 import { IAuthenticationTypeService } from '../interfaces/IAuthenticationTypeService';
 
 @Service()
-export class PasswordService implements IAuthenticationTypeService {
+export class PasswordService implements IAuthenticationTypeService, IPasswordService {
   public static readonly HASH_LENGTH = 128;
   private static readonly KEY_LENGTH = 64;
 

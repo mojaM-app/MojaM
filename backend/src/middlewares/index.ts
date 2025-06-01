@@ -1,5 +1,7 @@
-export { ErrorMiddleware } from './error.middleware';
+export { ErrorMiddleware } from './error/error.middleware';
 
-export { validateData } from './validate-data.middleware';
+export { validateData } from './validate-data/validate-data.middleware';
 
-export { requirePermission } from './authorization.middleware';
+export { requirePermission } from './authorization/authorization.middleware';
+export { setIdentity } from './authorization/set-identity.middleware';
+export { Identity } from './authorization/models/Identity';

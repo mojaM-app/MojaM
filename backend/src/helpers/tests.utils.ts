@@ -1,21 +1,24 @@
-import { VALIDATOR_SETTINGS } from '@config';
-import { IUser } from '@core';
+import { ILoginModel, registerModules, TLoginResult } from '@core';
 import { EventDispatcherService } from '@events';
-import { IRoutes } from '@interfaces';
-import { AuthRoute, LoginDto, TLoginResult } from '@modules/auth';
-import { CreateUserDto } from '@modules/users';
+import { AnnouncementsListRoute, AnnouncementsRout } from '@modules/announcements';
+import { AuthRoute } from '@modules/auth';
+import { CalendarRoutes } from '@modules/calendar';
+import { CommunityRoute } from '@modules/community';
+import { NewsRoutes } from '@modules/news';
+import { PermissionsRoute } from '@modules/permissions';
+import { UserDetailsRoute, UserListRoute, UserProfileRoute, UserRoute } from '@modules/users';
 import { EventDispatcher } from 'event-dispatch';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
-import { registerTestEventHandlers } from './event-handler-tests.helper';
-import { generateRandomEmail, generateRandomNumber, generateRandomPassword } from '../utils/random.utils';
 import { App } from './../app';
+import { registerTestEventHandlers } from './event-handler-tests.helper';
 
 export class TestApp extends App {
   private mockSendMail: jest.SpyInstance | null = null;
 
   constructor() {
     super();
+    registerModules();
     this.registerTestEventHandlers();
   }
 
@@ -50,36 +53,10 @@ export class TestApp extends App {
   }
 }
 
-const generateValidUser = (): any => {
-  return {
-    email: generateRandomEmail(),
-    phone: '88' + generateRandomNumber(7),
-    getFirstLastName: () => 'John Doe',
-    getFirstLastNameOrEmail: () => 'John Doe',
-    getLastFirstName: () => 'Doe John',
-    getLastFirstNameOrEmail: () => 'Doe John',
-    isAdmin: () => true,
-  };
-};
-
-export const generateValidUserWithPassword = (): CreateUserDto & IUser => {
-  return {
-    ...generateValidUser(),
-    passcode: generateRandomPassword(),
-  } satisfies CreateUserDto & IUser;
-};
-
-export const generateValidUserWithPin = (): CreateUserDto & IUser => {
-  return {
-    ...generateValidUser(),
-    passcode: generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH),
-  } satisfies CreateUserDto & IUser;
-};
-
 export const loginAs = async (app: App, user: { email?: string; phone?: string; passcode?: string | null }): Promise<TLoginResult | null> => {
-  const loginDto = { email: user.email, phone: user.phone, passcode: user.passcode } satisfies LoginDto;
+  const loginDto = { email: user.email, phone: user.phone, passcode: user.passcode } satisfies ILoginModel;
   try {
-    const loginResponse = await request(app.getServer()).post(new AuthRoute().loginPath).send(loginDto);
+    const loginResponse = await request(app.getServer()).post(AuthRoute.loginPath).send(loginDto);
     const loginResult: TLoginResult = loginResponse.statusCode === 200 ? loginResponse.body.data : {};
     return loginResult;
   } catch (error) {
@@ -90,10 +67,23 @@ export const loginAs = async (app: App, user: { email?: string; phone?: string; 
 
 let app: TestApp | null = null;
 
-export async function getTestApp(routes: IRoutes[]): Promise<TestApp> {
+export async function getTestApp(): Promise<TestApp> {
   if (!app) {
     app = new TestApp();
-    await app.initialize(routes);
+
+    await app.initialize([
+      new AnnouncementsRout(),
+      new AnnouncementsListRoute(),
+      new AuthRoute(),
+      new CalendarRoutes(),
+      new CommunityRoute(),
+      new NewsRoutes(),
+      new PermissionsRoute(),
+      new UserRoute(),
+      new UserListRoute(),
+      new UserDetailsRoute(),
+      new UserProfileRoute(),
+    ]);
   }
 
   return app;

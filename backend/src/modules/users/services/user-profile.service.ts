@@ -1,26 +1,19 @@
 import { IUpdateUser } from '@core';
 import { events } from '@events';
 import { BaseService } from '@modules/common';
-import {
-  GetUserProfileReqDto,
-  IGetUserProfileDto,
-  UpdateUserModel,
-  UpdateUserProfileDto,
-  UpdateUserProfileReqDto,
-  UserProfileRetrievedEvent,
-  UserProfileUpdatedEvent,
-  UserRepository,
-} from '@modules/users';
-import { Container, Service } from 'typedi';
+import { Service } from 'typedi';
+import { GetUserProfileReqDto, IGetUserProfileDto } from '../dtos/get-user-profile.dto';
+import { UpdateUserProfileDto, UpdateUserProfileReqDto } from '../dtos/update-user-profile.dto';
+import { UserProfileRetrievedEvent } from '../events/user-profile-retrieved-event';
+import { UserProfileUpdatedEvent } from '../events/user-profile-updated-event';
+import { UpdateUserModel } from '../models/update-user.model';
+import { UserRepository } from '../repositories/user.repository';
 import { User } from './../../../dataBase/entities/users/user.entity';
 
 @Service()
 export class UserProfileService extends BaseService {
-  private readonly _userRepository: UserRepository;
-
-  constructor() {
+  constructor(private readonly _userRepository: UserRepository) {
     super();
-    this._userRepository = Container.get(UserRepository);
   }
 
   public async get(reqDto: GetUserProfileReqDto): Promise<IGetUserProfileDto | null> {

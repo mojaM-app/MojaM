@@ -1,20 +1,16 @@
 import { IRequestWithIdentity } from '@interfaces';
 import { BaseController } from '@modules/common';
-import {
-  AddPermissionReqDto,
-  AddPermissionsResponseDto,
-  DeletePermissionsReqDto,
-  DeletePermissionsResponseDto,
-  GetPermissionsReqDto,
-  GetPermissionsResponseDto,
-  PermissionsService,
-} from '@modules/permissions';
 import { isGuid, toNumber } from '@utils';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
+import { AddPermissionReqDto, AddPermissionsResponseDto } from '../dtos/add-permission.dto';
+import { DeletePermissionsReqDto, DeletePermissionsResponseDto } from '../dtos/delete-permissions.dto';
+import { GetPermissionsReqDto, GetPermissionsResponseDto } from '../dtos/get-permissions.dto';
+import { PermissionsService } from '../services/permissions.service';
 
 export class PermissionsController extends BaseController {
   private readonly _permissionService: PermissionsService;
+
   constructor() {
     super();
     this._permissionService = Container.get(PermissionsService);

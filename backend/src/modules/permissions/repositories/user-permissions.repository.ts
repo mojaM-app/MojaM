@@ -1,20 +1,19 @@
-import { IAddUserSystemPermission, SystemPermissions } from '@core';
+import { IAddUserSystemPermission, IUserModuleBoundary, SystemPermissions } from '@core';
 import { BaseRepository } from '@modules/common';
-import { AddPermissionReqDto, DeletePermissionsReqDto, PermissionsCacheService } from '@modules/permissions';
-import { UserRepository } from '@modules/users';
 import { getDateTimeNow, isArrayEmpty, isEnumValue, isNullOrUndefined, isPositiveNumber } from '@utils';
-import Container, { Service } from 'typedi';
+import { Inject, Service } from 'typedi';
+import { AddPermissionReqDto } from '../dtos/add-permission.dto';
+import { DeletePermissionsReqDto } from '../dtos/delete-permissions.dto';
+import { PermissionsCacheService } from '../services/permissions-cache.service';
 import { User } from './../../../dataBase/entities/users/user.entity';
 
 @Service()
 export class UserPermissionsRepository extends BaseRepository {
-  private readonly _userRepository: UserRepository;
-  private readonly _permissionsCacheService: PermissionsCacheService;
-
-  constructor() {
+  constructor(
+    @Inject('USER_MODULE') private readonly _userModule: IUserModuleBoundary,
+    private readonly _permissionsCacheService: PermissionsCacheService,
+  ) {
     super();
-    this._userRepository = Container.get(UserRepository);
-    this._permissionsCacheService = Container.get(PermissionsCacheService);
   }
 
   public async get(user: User | null | undefined): Promise<SystemPermissions[]> {
@@ -45,7 +44,7 @@ export class UserPermissionsRepository extends BaseRepository {
   }
 
   public async add(reqDto: AddPermissionReqDto): Promise<boolean> {
-    const userId = await this._userRepository.getIdByUuid(reqDto.userGuid);
+    const userId = await this._userModule.getIdByUuid(reqDto.userGuid);
 
     if (!isPositiveNumber(userId) || !isEnumValue(SystemPermissions, reqDto.permissionId)) {
       return false;
@@ -74,7 +73,7 @@ export class UserPermissionsRepository extends BaseRepository {
   }
 
   public async delete(reqDto: DeletePermissionsReqDto): Promise<boolean> {
-    const userId = await this._userRepository.getIdByUuid(reqDto.userGuid);
+    const userId = await this._userModule.getIdByUuid(reqDto.userGuid);
 
     if (!isPositiveNumber(userId) || (!isNullOrUndefined(reqDto.permissionId) && !isEnumValue(SystemPermissions, reqDto.permissionId))) {
       return false;

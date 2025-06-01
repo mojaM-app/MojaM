@@ -1,9 +1,10 @@
 import { IPageData, IRequestWithIdentity, ISortData } from '@interfaces';
 import { BaseController } from '@modules/common';
-import { GetUserListReqDto, GetUserListResponseDto, UserListService, UsersGridPageDto } from '@modules/users';
 import { toNumber } from '@utils';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
+import { GetUserListReqDto, GetUserListResponseDto, UsersGridPageDto } from '../dtos/get-user-list.dto';
+import { UserListService } from '../services/user-list.service';
 import { UserListViewColumns } from './../../../dataBase/entities/users/vUser.entity';
 
 export class UserListController extends BaseController {

@@ -1,8 +1,6 @@
 import { events } from '@events';
 import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
-import { IGetUserDto } from '../interfaces/get-user.interfaces';
-
 export class GetUserReqDto extends BaseReqDto {
   public readonly userGuid: string | undefined;
 
@@ -10,6 +8,15 @@ export class GetUserReqDto extends BaseReqDto {
     super(currentUserId);
     this.userGuid = userGuid;
   }
+}
+
+export interface IGetUserDto {
+  id: string;
+  email: string;
+  phone: string;
+  firstName: string | null;
+  lastName: string | null;
+  joiningDate: Date | null;
 }
 
 export class GetUserResponseDto implements IResponse<IGetUserDto | null> {

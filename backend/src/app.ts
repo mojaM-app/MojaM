@@ -1,9 +1,9 @@
 import { BASE_PATH, CREDENTIALS, LOG_FORMAT, NODE_ENV, ORIGIN, PORT } from '@config';
+import './core/di/container'; // Import container to register module boundaries
 import { DbConnection } from '@db';
 import { errorKeys } from '@exceptions';
 import { IRoutes } from '@interfaces';
 import { ErrorMiddleware } from '@middlewares';
-import { AuthRoute } from '@modules/auth';
 import { getFullUrl } from '@utils';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
@@ -65,9 +65,6 @@ export class App {
   }
 
   private initializeRoutes(routes: IRoutes[]): void {
-    // auth rout is added always
-    this.addAuthRoute();
-
     routes.forEach(route => {
       this.setRout(route);
     });
@@ -76,11 +73,6 @@ export class App {
       const url = getFullUrl(req);
       res.status(404).json({ message: errorKeys.general.Resource_Does_Not_Exist, url });
     });
-  }
-
-  private addAuthRoute(): void {
-    const authRoute = new AuthRoute();
-    this.setRout(authRoute);
   }
 
   private initializeErrorHandling(): void {

@@ -1,18 +1,17 @@
 import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { BaseService } from '@modules/common';
-import { GetUserDetailsReqDto, IUserDetailsDto, UserDetailsRetrievedEvent, vUserRepository } from '@modules/users';
 import { isNullOrUndefined } from '@utils';
-import { Container, Service } from 'typedi';
+import { Service } from 'typedi';
+import { GetUserDetailsReqDto, IUserDetailsDto } from '../dtos/get-user-details.dto';
+import { UserDetailsRetrievedEvent } from '../events/user-details-retrieved-event';
+import { vUserRepository } from '../repositories/user-details.repository';
 import { vUser } from './../../../dataBase/entities/users/vUser.entity';
 
 @Service()
 export class UsersDetailsService extends BaseService {
-  private readonly _repository: vUserRepository;
-
-  constructor() {
+  constructor(private readonly _repository: vUserRepository) {
     super();
-    this._repository = Container.get(vUserRepository);
   }
 
   public async get(reqDto: GetUserDetailsReqDto): Promise<IUserDetailsDto | null> {

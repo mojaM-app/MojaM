@@ -1,11 +1,13 @@
-import { PasswordService, PinService } from '@modules/auth';
 import { isNullOrUndefined } from '@utils';
 import { registerDecorator, ValidationOptions } from 'class-validator';
+import Container from 'typedi';
+import { PasswordService } from '../modules/auth/services/password.service';
+import { PinService } from '../modules/auth/services/pin.service';
 
 /**
  * Check if both password and pin are valid
  */
-export function IsPasswordOrPinValid(validationOptions?: ValidationOptions): PropertyDecorator {
+export const IsPasswordOrPinValid = (validationOptions?: ValidationOptions): PropertyDecorator => {
   return function (object: any, propertyName: string): void {
     registerDecorator({
       name: 'isPasswordOrPinValid',
@@ -19,11 +21,13 @@ export function IsPasswordOrPinValid(validationOptions?: ValidationOptions): Pro
             return false;
           }
 
-          const isPasswordValid = new PasswordService().isValid(value as string);
-          const isPinValid = new PinService().isValid(value as string);
+          const passwordService = Container.get(PasswordService);
+          const isPasswordValid = passwordService.isValid(value as string);
+          const pinService = Container.get(PinService);
+          const isPinValid = pinService.isValid(value as string);
           return isPasswordValid || isPinValid;
         },
       },
     });
   };
-}
+};

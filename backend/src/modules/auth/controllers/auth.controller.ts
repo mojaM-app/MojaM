@@ -1,38 +1,24 @@
-import {
-  AccountService,
-  AccountTryingToLogInDto,
-  ActivateAccountDto,
-  ActivateAccountReqDto,
-  ActivateAccountResponseDto,
-  AuthService,
-  CheckResetPasscodeTokenReqDto,
-  CheckResetPasscodeTokenResponseDto,
-  GetAccountBeforeLogInResponseDto,
-  GetAccountToActivateReqDto,
-  GetAccountToActivateResponseDto,
-  IAccountToActivateResultDto,
-  IActivateAccountResultDto,
-  ICheckResetPasscodeTokenResultDto,
-  IGetAccountBeforeLogInResultDto,
-  ILoginResult,
-  IResetPasscodeResultDto,
-  IUnlockAccountResultDto,
-  LoginDto,
-  LoginResponseDto,
-  RefreshTokenDto,
-  RefreshTokenResponseDto,
-  RequestResetPasscodeResponseDto,
-  ResetPasscodeDto,
-  ResetPasscodeReqDto,
-  ResetPasscodeResponseDto,
-  ResetPasscodeService,
-  UnlockAccountReqDto,
-  UnlockAccountResponseDto,
-} from '@modules/auth';
 import { BaseController } from '@modules/common';
 import { isGuid } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
+import { ActivateAccountDto, ActivateAccountReqDto, ActivateAccountResponseDto, IActivateAccountResultDto } from '../dtos/activate-account.dto';
+import {
+  CheckResetPasscodeTokenReqDto,
+  CheckResetPasscodeTokenResponseDto,
+  ICheckResetPasscodeTokenResultDto,
+} from '../dtos/check-reset-passcode-token.dto';
+import { AccountTryingToLogInDto, GetAccountBeforeLogInResponseDto, IGetAccountBeforeLogInResultDto } from '../dtos/get-account-before-log-in.dto';
+import { GetAccountToActivateReqDto, GetAccountToActivateResponseDto, IAccountToActivateResultDto } from '../dtos/get-account-to-activate.dto';
+import { LoginDto, LoginResponseDto } from '../dtos/login.dto';
+import { RefreshTokenDto, RefreshTokenResponseDto } from '../dtos/refresh-token.dto';
+import { RequestResetPasscodeResponseDto } from '../dtos/request-reset-passcode.dto';
+import { IResetPasscodeResultDto, ResetPasscodeDto, ResetPasscodeReqDto, ResetPasscodeResponseDto } from '../dtos/reset-passcode.dto';
+import { IUnlockAccountResultDto, UnlockAccountReqDto, UnlockAccountResponseDto } from '../dtos/unlock-account.dto';
+import { ILoginResult } from '../interfaces/login.interfaces';
+import { AccountService } from '../services/account.service';
+import { AuthService } from '../services/auth.service';
+import { ResetPasscodeService } from '../services/reset-passcode.service';
 
 export class AuthController extends BaseController {
   private readonly _authService: AuthService;
@@ -93,15 +79,7 @@ export class AuthController extends BaseController {
     try {
       const model: LoginDto = req.body;
       const result: ILoginResult = await this._authService.login(model);
-      res.status(200).json(
-        new LoginResponseDto({
-          id: result.user.id,
-          email: result.user.email,
-          phone: result.user.phone,
-          accessToken: result.accessToken,
-          refreshToken: result.refreshToken,
-        }),
-      );
+      res.status(200).json(new LoginResponseDto(result));
     } catch (error) {
       next(error);
     }

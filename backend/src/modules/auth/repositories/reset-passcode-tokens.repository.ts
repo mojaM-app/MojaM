@@ -1,19 +1,15 @@
 import { RESET_PASSWORD_TOKEN_EXPIRE_IN } from '@config';
-import { ICreateResetPasscodeToken } from '@core';
-import { CryptoService } from '@modules/auth';
+import { ICreateResetPasscodeToken, IUserId } from '@core';
 import { BaseRepository } from '@modules/common';
 import { getDateTimeNow, isNullOrUndefined } from '@utils';
 import ms from 'ms';
-import Container, { Service } from 'typedi';
+import { Service } from 'typedi';
 import { UserResetPasscodeToken } from './../../../dataBase/entities/users/user-reset-passcode-tokens.entity';
 
 @Service()
 export class ResetPasscodeTokensRepository extends BaseRepository {
-  private readonly _cryptoService: CryptoService;
-
   constructor() {
     super();
-    this._cryptoService = Container.get(CryptoService);
   }
 
   public async isLastTokenExpired(userId: number): Promise<boolean> {
@@ -34,7 +30,7 @@ export class ResetPasscodeTokensRepository extends BaseRepository {
 
   public async createToken(userId: number, token: string): Promise<UserResetPasscodeToken> {
     return await this._dbContext.userResetPasscodeTokens.save({
-      user: { id: userId },
+      user: { id: userId } satisfies IUserId,
       token,
     } satisfies ICreateResetPasscodeToken);
   }

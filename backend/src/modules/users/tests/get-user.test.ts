@@ -1,28 +1,27 @@
+import { ILoginModel, SystemPermissions } from '@core';
 import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
-import { LoginDto } from '@modules/auth';
+import { testHelpers } from '@helpers';
 import { PermissionsRoute } from '@modules/permissions';
-import { CreateUserResponseDto, UserRetrievedEvent, UserRoute } from '@modules/users';
+import { UserRoute, userTestHelpers } from '@modules/users';
 import { generateRandomDate, getAdminLoginData, isGuid, isNumber } from '@utils';
-import { testUtils } from '@helpers';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
+import { CreateUserResponseDto } from '../dtos/create-user.dto';
 import { GetUserResponseDto } from '../dtos/get-user.dto';
+import { UserRetrievedEvent } from '../events/user-retrieved-event';
+import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { TestApp } from './../../../helpers/tests.utils';
-import { SystemPermissions } from '@core';
 
 describe('GET/user/:id', () => {
-  const userRoute = new UserRoute();
-  const permissionsRoute = new PermissionsRoute();
   let app: TestApp | undefined;
   let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
-    app = await testUtils.getTestApp([userRoute, permissionsRoute]);
+    app = await testHelpers.getTestApp();
     app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-    adminAccessToken = (await testUtils.loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await testHelpers.loginAs(app, { email, passcode } satisfies ILoginModel))?.accessToken;
   });
 
   beforeEach(async () => {
@@ -32,13 +31,13 @@ describe('GET/user/:id', () => {
   describe('GET should respond with a status code of 200', () => {
     test('when data are valid and user has permission', async () => {
       const newUser = {
-        ...testUtils.generateValidUserWithPassword(),
+        ...userTestHelpers.generateValidUserWithPassword(),
         firstName: 'John',
         lastName: 'Doe',
         joiningDate: generateRandomDate(),
       };
       const createUserResponse = await request(app!.getServer())
-        .post(userRoute.path)
+        .post(UserRoute.path)
         .send(newUser)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -47,7 +46,7 @@ describe('GET/user/:id', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const getUserResponse = await request(app!.getServer())
-        .get(userRoute.path + '/' + newUserDto.id)
+        .get(UserRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(getUserResponse.statusCode).toBe(200);
@@ -73,7 +72,7 @@ describe('GET/user/:id', () => {
       expect(user!.lastName).toBe(newUser.lastName);
 
       const deleteResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + user!.id)
+        .delete(UserRoute.path + '/' + user!.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -98,7 +97,7 @@ describe('GET/user/:id', () => {
     test('when token is not set', async () => {
       const userId: string = Guid.EMPTY;
       const getUserResponse = await request(app!.getServer())
-        .get(userRoute.path + '/' + userId)
+        .get(UserRoute.path + '/' + userId)
         .send();
       expect(getUserResponse.statusCode).toBe(401);
       const body = getUserResponse.body;
@@ -112,9 +111,9 @@ describe('GET/user/:id', () => {
     });
 
     test('when user has no permission', async () => {
-      const requestData = testUtils.generateValidUserWithPassword();
+      const requestData = userTestHelpers.generateValidUserWithPassword();
       const createUserResponse = await request(app!.getServer())
-        .post(userRoute.path)
+        .post(UserRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -126,16 +125,16 @@ describe('GET/user/:id', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const activateNewUserResponse = await request(app!.getServer())
-        .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
+        .post(UserRoute.path + '/' + newUserDto.id + '/' + UserRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await testUtils.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))
+      const newUserAccessToken = (await testHelpers.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies ILoginModel))
         ?.accessToken;
 
       const getUserResponse = await request(app!.getServer())
-        .get(userRoute.path + '/' + newUserDto.id)
+        .get(UserRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(getUserResponse.statusCode).toBe(403);
@@ -145,7 +144,7 @@ describe('GET/user/:id', () => {
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
       const deleteResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + newUserDto.id)
+        .delete(UserRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -172,9 +171,9 @@ describe('GET/user/:id', () => {
     });
 
     test('when user have all permissions expect EditUser', async () => {
-      const requestData = testUtils.generateValidUserWithPassword();
+      const requestData = userTestHelpers.generateValidUserWithPassword();
       const createUserResponse = await request(app!.getServer())
-        .post(userRoute.path)
+        .post(UserRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -186,7 +185,7 @@ describe('GET/user/:id', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const activateNewUserResponse = await request(app!.getServer())
-        .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
+        .post(UserRoute.path + '/' + newUserDto.id + '/' + UserRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
@@ -196,18 +195,18 @@ describe('GET/user/:id', () => {
         if (isNumber(permission)) {
           const value = permission as number;
           if (value !== SystemPermissions.EditUser) {
-            const path = permissionsRoute.path + '/' + newUserDto.id + '/' + permission.toString();
+            const path = PermissionsRoute.path + '/' + newUserDto.id + '/' + permission.toString();
             const addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
           }
         }
       });
 
-      const newUserAccessToken = (await testUtils.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))
+      const newUserAccessToken = (await testHelpers.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies ILoginModel))
         ?.accessToken;
 
       const getUserResponse = await request(app!.getServer())
-        .get(userRoute.path + '/' + newUserDto.id)
+        .get(UserRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(getUserResponse.statusCode).toBe(403);
@@ -217,7 +216,7 @@ describe('GET/user/:id', () => {
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
       const deleteResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + newUserDto.id)
+        .delete(UserRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -250,7 +249,7 @@ describe('GET/user/:id', () => {
     test('GET should respond with a status code of 400 when user not exist', async () => {
       const userId: string = Guid.EMPTY;
       const getUserResponse = await request(app!.getServer())
-        .get(userRoute.path + '/' + userId)
+        .get(UserRoute.path + '/' + userId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(getUserResponse.statusCode).toBe(400);
@@ -272,7 +271,7 @@ describe('GET/user/:id', () => {
   describe('GET should respond with a status code of 404', () => {
     test('GET should respond with a status code of 404 when user Id is not GUID', async () => {
       const getUserResponse = await request(app!.getServer())
-        .get(userRoute.path + '/invalid-guid')
+        .get(UserRoute.path + '/invalid-guid')
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(getUserResponse.statusCode).toBe(404);
@@ -293,7 +292,7 @@ describe('GET/user/:id', () => {
     test('when token is invalid', async () => {
       const userId: string = Guid.EMPTY;
       const getUserResponse = await request(app!.getServer())
-        .get(userRoute.path + '/' + userId)
+        .get(UserRoute.path + '/' + userId)
         .send()
         .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
       expect(getUserResponse.statusCode).toBe(401);
@@ -309,7 +308,7 @@ describe('GET/user/:id', () => {
   });
 
   afterAll(async () => {
-    await testUtils.closeTestApp();
+    await testHelpers.closeTestApp();
     jest.resetAllMocks();
   });
 });

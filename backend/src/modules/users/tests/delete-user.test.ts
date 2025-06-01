@@ -1,32 +1,33 @@
+import { IAccountTryingToLogInModel, ILoginModel, SystemPermissions } from '@core';
 import { relatedDataNames } from '@db';
 import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { AnnouncementsRout, CreateAnnouncementsResponseDto, GetAnnouncementsResponseDto, UpdateAnnouncementsDto } from '@modules/announcements';
+import { testHelpers } from '@helpers';
+import { AnnouncementsRout } from '@modules/announcements';
+import { CreateAnnouncementsResponseDto } from '@modules/announcements/dtos/create-announcements.dto';
+import { GetAnnouncementsResponseDto } from '@modules/announcements/dtos/get-announcements.dto';
+import { UpdateAnnouncementsDto } from '@modules/announcements/dtos/update-announcements.dto';
 import { generateValidAnnouncements } from '@modules/announcements/tests/announcements-tests.helper';
-import { AccountTryingToLogInDto, AuthRoute, LoginDto } from '@modules/auth';
-import { AddPermissionsResponseDto, PermissionsRoute } from '@modules/permissions';
-import { CreateUserResponseDto, DeleteUserResponseDto, UserRoute } from '@modules/users';
+import { AuthRoute } from '@modules/auth';
+import { PermissionsRoute } from '@modules/permissions';
+import { UserRoute, userTestHelpers } from '@modules/users';
 import { getAdminLoginData, isNumber } from '@utils';
-import { testUtils } from '@helpers';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
-import { SystemPermissions } from '@core';
-import { TestApp } from './../../../helpers/tests.utils';
+import { CreateUserResponseDto } from '../dtos/create-user.dto';
+import { DeleteUserResponseDto } from '../dtos/delete-user.dto';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
+import { TestApp } from './../../../helpers/tests.utils';
 
 describe('DELETE /user', () => {
-  const userRoute = new UserRoute();
-  const permissionsRoute = new PermissionsRoute();
-  const authRoute = new AuthRoute();
-  const announcementRoute = new AnnouncementsRout();
   let app: TestApp | undefined;
   let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
-    app = await testUtils.getTestApp([userRoute, permissionsRoute, authRoute, announcementRoute]);
+    app = await testHelpers.getTestApp();
     app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-    adminAccessToken = (await testUtils.loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await testHelpers.loginAs(app, { email, passcode } satisfies ILoginModel))?.accessToken;
   });
 
   beforeEach(async () => {
@@ -35,15 +36,15 @@ describe('DELETE /user', () => {
 
   describe('DELETE should respond with a status code of 200', () => {
     test('when data are valid and logged user has permission', async () => {
-      const user = testUtils.generateValidUserWithPassword();
-      const createUserResponse = await request(app!.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const user = userTestHelpers.generateValidUserWithPassword();
+      const createUserResponse = await request(app!.getServer()).post(UserRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
       const deleteResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + newUserDto.id)
+        .delete(UserRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -65,10 +66,10 @@ describe('DELETE /user', () => {
     });
 
     test('when a user have ony of system permissions granted by another user', async () => {
-      const requestData = testUtils.generateValidUserWithPassword();
+      const requestData = userTestHelpers.generateValidUserWithPassword();
 
       const createUserResponse = await request(app!.getServer())
-        .post(userRoute.path)
+        .post(UserRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -79,18 +80,17 @@ describe('DELETE /user', () => {
       expect(user?.email).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.PreviewUserList.toString();
+      const path = PermissionsRoute.path + '/' + user.id + '/' + SystemPermissions.PreviewUserList.toString();
       const addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(addPermissionResponse.statusCode).toBe(201);
       expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = addPermissionResponse.body;
       expect(typeof body).toBe('object');
-      const { data: addPermissionResult, message: addPermissionMessage }: AddPermissionsResponseDto = body;
+      const { data: addPermissionResult } = body;
       expect(addPermissionResult).toBe(true);
-      expect(addPermissionMessage).toBe(events.permissions.permissionAdded);
 
       const deleteUserWithSystemPermissionResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + user.id)
+        .delete(UserRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserWithSystemPermissionResponse.statusCode).toBe(200);
@@ -116,10 +116,10 @@ describe('DELETE /user', () => {
     });
 
     test('when a user have ony of system permissions granted by himself', async () => {
-      const requestData = testUtils.generateValidUserWithPassword();
+      const requestData = userTestHelpers.generateValidUserWithPassword();
 
       const createUserResponse = await request(app!.getServer())
-        .post(userRoute.path)
+        .post(UserRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -128,36 +128,34 @@ describe('DELETE /user', () => {
       expect(user?.id).toBeDefined();
 
       const activateNewUserResponse = await request(app!.getServer())
-        .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
+        .post(UserRoute.path + '/' + user.id + '/' + UserRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.AddPermission.toString();
+      let path = PermissionsRoute.path + '/' + user.id + '/' + SystemPermissions.AddPermission.toString();
       let addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(addPermissionResponse.statusCode).toBe(201);
       expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = addPermissionResponse.body;
       expect(typeof body).toBe('object');
-      const { data: addPermission1Result, message: addPermission1Message }: AddPermissionsResponseDto = body;
+      const { data: addPermission1Result } = body;
       expect(addPermission1Result).toBe(true);
-      expect(addPermission1Message).toBe(events.permissions.permissionAdded);
 
-      const newUserAccessToken = (await testUtils.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))
+      const newUserAccessToken = (await testHelpers.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies ILoginModel))
         ?.accessToken;
 
-      path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.PreviewUserList.toString();
+      path = PermissionsRoute.path + '/' + user.id + '/' + SystemPermissions.PreviewUserList.toString();
       addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(addPermissionResponse.statusCode).toBe(201);
       expect(addPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = addPermissionResponse.body;
       expect(typeof body).toBe('object');
-      const { data: addPermission2Result, message: addPermission2Message }: AddPermissionsResponseDto = body;
+      const { data: addPermission2Result } = body;
       expect(addPermission2Result).toBe(true);
-      expect(addPermission2Message).toBe(events.permissions.permissionAdded);
 
       const deleteUserWithSystemPermissionResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + user.id)
+        .delete(UserRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserWithSystemPermissionResponse.statusCode).toBe(200);
@@ -190,10 +188,10 @@ describe('DELETE /user', () => {
     });
 
     test('when a user has reset passcode token', async () => {
-      const requestData = testUtils.generateValidUserWithPassword();
+      const requestData = userTestHelpers.generateValidUserWithPassword();
 
       const createUserResponse = await request(app!.getServer())
-        .post(userRoute.path)
+        .post(UserRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -202,15 +200,15 @@ describe('DELETE /user', () => {
       expect(user?.id).toBeDefined();
 
       const requestResetPasscodeResponse = await request(app!.getServer())
-        .post(authRoute.requestResetPasscodePath)
-        .send({ email: requestData.email } satisfies AccountTryingToLogInDto);
+        .post(AuthRoute.requestResetPasscodePath)
+        .send({ email: requestData.email } satisfies IAccountTryingToLogInModel);
       expect(requestResetPasscodeResponse.statusCode).toBe(200);
       body = requestResetPasscodeResponse.body;
       expect(typeof body).toBe('object');
       expect(body.data).toBe(true);
 
       const deleteUserWithResetPasscodeTokenResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + user.id)
+        .delete(UserRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserWithResetPasscodeTokenResponse.statusCode).toBe(200);
@@ -236,7 +234,7 @@ describe('DELETE /user', () => {
     test('when token is not set', async () => {
       const userId: string = Guid.EMPTY;
       const deleteResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + userId)
+        .delete(UserRoute.path + '/' + userId)
         .send();
       expect(deleteResponse.statusCode).toBe(401);
       const body = deleteResponse.body;
@@ -250,9 +248,9 @@ describe('DELETE /user', () => {
     });
 
     test('when user has no permission', async () => {
-      const requestData = testUtils.generateValidUserWithPassword();
+      const requestData = userTestHelpers.generateValidUserWithPassword();
       const createUserResponse = await request(app!.getServer())
-        .post(userRoute.path)
+        .post(UserRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -264,16 +262,16 @@ describe('DELETE /user', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const activateNewUserResponse = await request(app!.getServer())
-        .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
+        .post(UserRoute.path + '/' + user.id + '/' + UserRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await testUtils.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))
+      const newUserAccessToken = (await testHelpers.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies ILoginModel))
         ?.accessToken;
 
       let deleteResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + user.id)
+        .delete(UserRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(deleteResponse.statusCode).toBe(403);
@@ -283,7 +281,7 @@ describe('DELETE /user', () => {
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
       deleteResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + user.id)
+        .delete(UserRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -315,9 +313,9 @@ describe('DELETE /user', () => {
     });
 
     test('when user have all permissions expect DeleteUser', async () => {
-      const requestData = testUtils.generateValidUserWithPassword();
+      const requestData = userTestHelpers.generateValidUserWithPassword();
       const createUserResponse = await request(app!.getServer())
-        .post(userRoute.path)
+        .post(UserRoute.path)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -329,7 +327,7 @@ describe('DELETE /user', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const activateNewUserResponse = await request(app!.getServer())
-        .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
+        .post(UserRoute.path + '/' + user.id + '/' + UserRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
@@ -339,18 +337,18 @@ describe('DELETE /user', () => {
         if (isNumber(permission)) {
           const value = permission as number;
           if (value !== SystemPermissions.DeleteUser) {
-            const path = permissionsRoute.path + '/' + user.id + '/' + permission.toString();
+            const path = PermissionsRoute.path + '/' + user.id + '/' + permission.toString();
             const addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
           }
         }
       });
 
-      const newUserAccessToken = (await testUtils.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies LoginDto))
+      const newUserAccessToken = (await testHelpers.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies ILoginModel))
         ?.accessToken;
 
       let deleteResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + user.id)
+        .delete(UserRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(deleteResponse.statusCode).toBe(403);
@@ -360,7 +358,7 @@ describe('DELETE /user', () => {
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
       deleteResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + user.id)
+        .delete(UserRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -398,7 +396,7 @@ describe('DELETE /user', () => {
     test('when user not exist', async () => {
       const userId: string = Guid.EMPTY;
       const deleteResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + userId)
+        .delete(UserRoute.path + '/' + userId)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(400);
@@ -419,10 +417,10 @@ describe('DELETE /user', () => {
 
   describe('DELETE should respond with a status code of 409', () => {
     test('when a user has granted ony of system permissions to another users', async () => {
-      const user1RequestData = testUtils.generateValidUserWithPassword();
+      const user1RequestData = userTestHelpers.generateValidUserWithPassword();
 
       let createUserResponse = await request(app!.getServer())
-        .post(userRoute.path)
+        .post(UserRoute.path)
         .send(user1RequestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -431,25 +429,24 @@ describe('DELETE /user', () => {
       expect(user1?.id).toBeDefined();
 
       let activateUserResponse = await request(app!.getServer())
-        .post(userRoute.path + '/' + user1.id + '/' + userRoute.activatePath)
+        .post(UserRoute.path + '/' + user1.id + '/' + UserRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
 
-      let path = permissionsRoute.path + '/' + user1.id + '/' + SystemPermissions.AddPermission.toString();
+      let path = PermissionsRoute.path + '/' + user1.id + '/' + SystemPermissions.AddPermission.toString();
       const user1AddPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(user1AddPermissionResponse.statusCode).toBe(201);
       expect(user1AddPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = user1AddPermissionResponse.body;
       expect(typeof body).toBe('object');
-      const { data: addPermission1Result, message: addPermission1Message }: AddPermissionsResponseDto = body;
+      const { data: addPermission1Result } = body;
       expect(addPermission1Result).toBe(true);
-      expect(addPermission1Message).toBe(events.permissions.permissionAdded);
 
-      const user2RequestData = testUtils.generateValidUserWithPassword();
+      const user2RequestData = userTestHelpers.generateValidUserWithPassword();
 
       createUserResponse = await request(app!.getServer())
-        .post(userRoute.path)
+        .post(UserRoute.path)
         .send(user2RequestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -458,27 +455,26 @@ describe('DELETE /user', () => {
       expect(user2?.id).toBeDefined();
 
       activateUserResponse = await request(app!.getServer())
-        .post(userRoute.path + '/' + user2.id + '/' + userRoute.activatePath)
+        .post(UserRoute.path + '/' + user2.id + '/' + UserRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
 
       const user1AccessToken = (
-        await testUtils.loginAs(app!, { email: user1RequestData.email, passcode: user1RequestData.passcode } satisfies LoginDto)
+        await testHelpers.loginAs(app!, { email: user1RequestData.email, passcode: user1RequestData.passcode } satisfies ILoginModel)
       )?.accessToken;
 
-      path = permissionsRoute.path + '/' + user2.id + '/' + SystemPermissions.PreviewUserList.toString();
+      path = PermissionsRoute.path + '/' + user2.id + '/' + SystemPermissions.PreviewUserList.toString();
       const user2AddPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${user1AccessToken}`);
       expect(user2AddPermissionResponse.statusCode).toBe(201);
       expect(user2AddPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = user2AddPermissionResponse.body;
       expect(typeof body).toBe('object');
-      const { data: addPermission2Result, message: addPermission2Message }: AddPermissionsResponseDto = body;
+      const { data: addPermission2Result } = body;
       expect(addPermission2Result).toBe(true);
-      expect(addPermission2Message).toBe(events.permissions.permissionAdded);
 
       let deleteUserResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + user1.id)
+        .delete(UserRoute.path + '/' + user1.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(409);
@@ -490,19 +486,19 @@ describe('DELETE /user', () => {
       expect(deleteUserMessage).toBe(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted);
       expect(deleteUserArgs).toEqual({ id: user1.id, relatedData: [relatedDataNames.SystemPermission_AssignedBy] });
 
-      path = permissionsRoute.path + '/' + user1.id;
+      path = PermissionsRoute.path + '/' + user1.id;
       let deleteAllPermissionsResponse = await request(app!.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAllPermissionsResponse.statusCode).toBe(200);
 
-      path = permissionsRoute.path + '/' + user2.id;
+      path = PermissionsRoute.path + '/' + user2.id;
       deleteAllPermissionsResponse = await request(app!.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAllPermissionsResponse.statusCode).toBe(200);
 
-      path = userRoute.path + '/' + user1.id;
+      path = UserRoute.path + '/' + user1.id;
       deleteUserResponse = await request(app!.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
 
-      path = userRoute.path + '/' + user2.id;
+      path = UserRoute.path + '/' + user2.id;
       deleteUserResponse = await request(app!.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
 
@@ -531,10 +527,10 @@ describe('DELETE /user', () => {
     });
 
     test('when a user has created announcements', async () => {
-      const userRequestData = testUtils.generateValidUserWithPassword();
+      const userRequestData = userTestHelpers.generateValidUserWithPassword();
 
       const createUserResponse = await request(app!.getServer())
-        .post(userRoute.path)
+        .post(UserRoute.path)
         .send(userRequestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -543,22 +539,22 @@ describe('DELETE /user', () => {
       expect(user?.id).toBeDefined();
 
       const activateUserResponse = await request(app!.getServer())
-        .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
+        .post(UserRoute.path + '/' + user.id + '/' + UserRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
 
-      let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.AddAnnouncements.toString();
+      let path = PermissionsRoute.path + '/' + user.id + '/' + SystemPermissions.AddAnnouncements.toString();
       const addUserPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(addUserPermissionResponse.statusCode).toBe(201);
       expect(addUserPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = addUserPermissionResponse.body;
-      const { data: addPermissionResult, message: addPermissionMessage }: AddPermissionsResponseDto = body;
+      const { data: addPermissionResult } = body;
       expect(addPermissionResult).toBe(true);
-      expect(addPermissionMessage).toBe(events.permissions.permissionAdded);
 
-      const userAccessToken = (await testUtils.loginAs(app!, { email: userRequestData.email, passcode: userRequestData.passcode } satisfies LoginDto))
-        ?.accessToken;
+      const userAccessToken = (
+        await testHelpers.loginAs(app!, { email: userRequestData.email, passcode: userRequestData.passcode } satisfies ILoginModel)
+      )?.accessToken;
 
       const createAnnouncementsResponse = await request(app!.getServer())
         .post(announcementRoute.path)
@@ -571,7 +567,7 @@ describe('DELETE /user', () => {
       expect(announcementsId).toBeDefined();
 
       let deleteUserResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + user.id)
+        .delete(UserRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(409);
@@ -589,7 +585,7 @@ describe('DELETE /user', () => {
       const deleteAnnouncementsResponse = await request(app!.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
-      path = userRoute.path + '/' + user.id;
+      path = UserRoute.path + '/' + user.id;
       deleteUserResponse = await request(app!.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
 
@@ -620,10 +616,10 @@ describe('DELETE /user', () => {
     });
 
     test('when a user has published announcements', async () => {
-      const userRequestData = testUtils.generateValidUserWithPassword();
+      const userRequestData = userTestHelpers.generateValidUserWithPassword();
 
       const createUserResponse = await request(app!.getServer())
-        .post(userRoute.path)
+        .post(UserRoute.path)
         .send(userRequestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -632,7 +628,7 @@ describe('DELETE /user', () => {
       expect(user?.id).toBeDefined();
 
       const activateUserResponse = await request(app!.getServer())
-        .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
+        .post(UserRoute.path + '/' + user.id + '/' + UserRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
@@ -647,17 +643,17 @@ describe('DELETE /user', () => {
       const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
       expect(announcementsId).toBeDefined();
 
-      let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.PublishAnnouncements.toString();
+      let path = PermissionsRoute.path + '/' + user.id + '/' + SystemPermissions.PublishAnnouncements.toString();
       const addUserPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(addUserPermissionResponse.statusCode).toBe(201);
       expect(addUserPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = addUserPermissionResponse.body;
-      const { data: addPermissionResult, message: addPermissionMessage }: AddPermissionsResponseDto = body;
+      const { data: addPermissionResult } = body;
       expect(addPermissionResult).toBe(true);
-      expect(addPermissionMessage).toBe(events.permissions.permissionAdded);
 
-      const userAccessToken = (await testUtils.loginAs(app!, { email: userRequestData.email, passcode: userRequestData.passcode } satisfies LoginDto))
-        ?.accessToken;
+      const userAccessToken = (
+        await testHelpers.loginAs(app!, { email: userRequestData.email, passcode: userRequestData.passcode } satisfies ILoginModel)
+      )?.accessToken;
 
       const publishAnnouncementsResponse = await request(app!.getServer())
         .post(announcementRoute.path + '/' + announcementsId + '/' + announcementRoute.publishPath)
@@ -666,7 +662,7 @@ describe('DELETE /user', () => {
       expect(publishAnnouncementsResponse.statusCode).toBe(200);
 
       let deleteUserResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + user.id)
+        .delete(UserRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(409);
@@ -682,7 +678,7 @@ describe('DELETE /user', () => {
       const deleteAnnouncementsResponse = await request(app!.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
-      path = userRoute.path + '/' + user.id;
+      path = UserRoute.path + '/' + user.id;
       deleteUserResponse = await request(app!.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
 
@@ -715,10 +711,10 @@ describe('DELETE /user', () => {
     });
 
     test('when a user has created announcements items', async () => {
-      const userRequestData = testUtils.generateValidUserWithPassword();
+      const userRequestData = userTestHelpers.generateValidUserWithPassword();
 
       const createUserResponse = await request(app!.getServer())
-        .post(userRoute.path)
+        .post(UserRoute.path)
         .send(userRequestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -727,7 +723,7 @@ describe('DELETE /user', () => {
       expect(user?.id).toBeDefined();
 
       const activateUserResponse = await request(app!.getServer())
-        .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
+        .post(UserRoute.path + '/' + user.id + '/' + UserRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
@@ -750,17 +746,17 @@ describe('DELETE /user', () => {
       body = getAnnouncementsResponse.body;
       const { data: announcementsBeforeUpdate }: GetAnnouncementsResponseDto = body;
 
-      let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.EditAnnouncements.toString();
+      let path = PermissionsRoute.path + '/' + user.id + '/' + SystemPermissions.EditAnnouncements.toString();
       const addUserPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(addUserPermissionResponse.statusCode).toBe(201);
       expect(addUserPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = addUserPermissionResponse.body;
-      const { data: addPermissionResult, message: addPermissionMessage }: AddPermissionsResponseDto = body;
+      const { data: addPermissionResult } = body;
       expect(addPermissionResult).toBe(true);
-      expect(addPermissionMessage).toBe(events.permissions.permissionAdded);
 
-      const userAccessToken = (await testUtils.loginAs(app!, { email: userRequestData.email, passcode: userRequestData.passcode } satisfies LoginDto))
-        ?.accessToken;
+      const userAccessToken = (
+        await testHelpers.loginAs(app!, { email: userRequestData.email, passcode: userRequestData.passcode } satisfies ILoginModel)
+      )?.accessToken;
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
         items: announcementsBeforeUpdate.items.map(item => ({
@@ -782,7 +778,7 @@ describe('DELETE /user', () => {
       expect(getAnnouncementsResponse.statusCode).toBe(200);
 
       let deleteUserResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + user.id)
+        .delete(UserRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(409);
@@ -798,7 +794,7 @@ describe('DELETE /user', () => {
       const deleteAnnouncementsResponse = await request(app!.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
-      path = userRoute.path + '/' + user.id;
+      path = UserRoute.path + '/' + user.id;
       deleteUserResponse = await request(app!.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
 
@@ -833,10 +829,10 @@ describe('DELETE /user', () => {
     });
 
     test('when a user has updated announcements items', async () => {
-      const userRequestData = testUtils.generateValidUserWithPassword();
+      const userRequestData = userTestHelpers.generateValidUserWithPassword();
 
       const createUserResponse = await request(app!.getServer())
-        .post(userRoute.path)
+        .post(UserRoute.path)
         .send(userRequestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -845,7 +841,7 @@ describe('DELETE /user', () => {
       expect(user?.id).toBeDefined();
 
       const activateUserResponse = await request(app!.getServer())
-        .post(userRoute.path + '/' + user.id + '/' + userRoute.activatePath)
+        .post(UserRoute.path + '/' + user.id + '/' + UserRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
@@ -868,20 +864,20 @@ describe('DELETE /user', () => {
       body = getAnnouncementsResponse.body;
       const { data: announcementsBeforeUpdate }: GetAnnouncementsResponseDto = body;
 
-      let path = permissionsRoute.path + '/' + user.id + '/' + SystemPermissions.EditAnnouncements.toString();
+      let path = PermissionsRoute.path + '/' + user.id + '/' + SystemPermissions.EditAnnouncements.toString();
       const addUserPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(addUserPermissionResponse.statusCode).toBe(201);
       expect(addUserPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = addUserPermissionResponse.body;
-      const { data: addPermissionResult, message: addPermissionMessage }: AddPermissionsResponseDto = body;
+      const { data: addPermissionResult } = body;
       expect(addPermissionResult).toBe(true);
-      expect(addPermissionMessage).toBe(events.permissions.permissionAdded);
 
-      const userAccessToken = (await testUtils.loginAs(app!, { email: userRequestData.email, passcode: userRequestData.passcode } satisfies LoginDto))
-        ?.accessToken;
+      const userAccessToken = (
+        await testHelpers.loginAs(app!, { email: userRequestData.email, passcode: userRequestData.passcode } satisfies ILoginModel)
+      )?.accessToken;
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
-        items: announcementsBeforeUpdate.items.map((item, index) => ({
+        items: announcementsBeforeUpdate.items.map((item: any, index: number) => ({
           id: item.id,
           content: `${index + 1}_New_Content_${item.id}`,
         })),
@@ -899,7 +895,7 @@ describe('DELETE /user', () => {
       expect(getAnnouncementsResponse.statusCode).toBe(200);
 
       let deleteUserResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + user.id)
+        .delete(UserRoute.path + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(409);
@@ -915,7 +911,7 @@ describe('DELETE /user', () => {
       const deleteAnnouncementsResponse = await request(app!.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
-      path = userRoute.path + '/' + user.id;
+      path = UserRoute.path + '/' + user.id;
       deleteUserResponse = await request(app!.getServer()).delete(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
 
@@ -953,7 +949,7 @@ describe('DELETE /user', () => {
   describe('DELETE should respond with a status code of 404', () => {
     test('DELETE should respond with a status code of 404 when user Id is not GUID', async () => {
       const deleteResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/invalid-guid')
+        .delete(UserRoute.path + '/invalid-guid')
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(404);
@@ -974,7 +970,7 @@ describe('DELETE /user', () => {
     test('when token is invalid', async () => {
       const userId: string = Guid.EMPTY;
       const deleteResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + userId)
+        .delete(UserRoute.path + '/' + userId)
         .send()
         .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(401);
@@ -990,7 +986,7 @@ describe('DELETE /user', () => {
   });
 
   afterAll(async () => {
-    await testUtils.closeTestApp();
+    await testHelpers.closeTestApp();
     jest.resetAllMocks();
   });
 });

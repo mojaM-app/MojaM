@@ -1,9 +1,11 @@
 import { VALIDATOR_SETTINGS } from '@config';
 import { generateRandomNumber, generateRandomPassword } from '@utils';
 import 'reflect-metadata';
+import { PasscodeService } from './passcode.service';
+import { PasswordService } from './password.service';
+import { PinService } from './pin.service';
 import { AuthenticationTypes } from '../enums/authentication-type.enum';
 import * as authHelper from '../helpers/auth.helper';
-import { PasscodeService } from './passcode.service';
 
 jest.mock('../helpers/auth.helper');
 
@@ -11,7 +13,9 @@ describe('PasscodeService', () => {
   let passcodeService: PasscodeService;
 
   beforeEach(() => {
-    passcodeService = new PasscodeService();
+    const passwordService = new PasswordService();
+    const pinService = new PinService();
+    passcodeService = new PasscodeService(passwordService, pinService);
   });
 
   afterEach(() => {

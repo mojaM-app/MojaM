@@ -1,15 +1,10 @@
 import { IRequestWithIdentity } from '@interfaces';
 import { BaseController } from '@modules/common';
-import {
-  GetUserProfileReqDto,
-  GetUserProfileResponseDto,
-  UpdateUserProfileDto,
-  UpdateUserProfileReqDto,
-  UpdateUserProfileResponseDto,
-  UserProfileService,
-} from '@modules/users';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
+import { GetUserProfileReqDto, GetUserProfileResponseDto } from '../dtos/get-user-profile.dto';
+import { UpdateUserProfileDto, UpdateUserProfileReqDto, UpdateUserProfileResponseDto } from '../dtos/update-user-profile.dto';
+import { UserProfileService } from '../services/user-profile.service';
 
 export class UserProfileController extends BaseController {
   private readonly _service: UserProfileService;

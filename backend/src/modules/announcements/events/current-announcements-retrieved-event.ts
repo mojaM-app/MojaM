@@ -1,5 +1,5 @@
 import { Event } from '@events';
-import { ICurrentAnnouncementsDto } from '@modules/announcements';
+import { ICurrentAnnouncementsDto } from '../dtos/get-current-announcements.dto';
 
 export class CurrentAnnouncementsRetrievedEvent extends Event {
   public readonly announcements: ICurrentAnnouncementsDto | null;

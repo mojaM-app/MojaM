@@ -1,8 +1,9 @@
+import { ICryptoService } from '@core';
 import * as crypto from 'crypto';
 import { Service } from 'typedi';
 
 @Service()
-export class CryptoService {
+export class CryptoService implements ICryptoService {
   public generateSalt(): string {
     return crypto.randomBytes(16).toString('hex');
   }

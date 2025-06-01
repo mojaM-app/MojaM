@@ -1,7 +1,7 @@
 import { ForbiddenException, UnauthorizedException } from '@exceptions';
 import { IRequestWithIdentity } from '@interfaces';
-import { Identity } from '@modules/auth';
 import { NextFunction, Response } from 'express';
+import { Identity } from './models/Identity';
 
 /**
  * Creates middleware that checks if the user is authenticated and has the required permission.

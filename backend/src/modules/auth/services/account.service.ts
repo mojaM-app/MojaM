@@ -1,21 +1,14 @@
-import { IUpdateUser } from '@core';
+import { IUpdateUser, IUserModuleBoundary } from '@core';
 import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
-import {
-  AccountTryingToLogInDto,
-  ActivateAccountDto,
-  ActivateAccountReqDto,
-  GetAccountToActivateReqDto,
-  IAccountToActivateResultDto,
-  IActivateAccountResultDto,
-  IGetAccountBeforeLogInResultDto,
-  IUnlockAccountResultDto,
-  UnlockAccountReqDto,
-} from '@modules/auth';
 import { BaseService } from '@modules/common';
-import { UpdateUserModel, UserActivatedEvent, UserRepository, UserUnlockedEvent } from '@modules/users';
+import { UserActivatedEvent, UserUnlockedEvent } from '@modules/users';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
-import { Container, Service } from 'typedi';
+import { Inject, Service } from 'typedi';
+import { ActivateAccountDto, ActivateAccountReqDto, IActivateAccountResultDto } from '../dtos/activate-account.dto';
+import { AccountTryingToLogInDto, IGetAccountBeforeLogInResultDto } from '../dtos/get-account-before-log-in.dto';
+import { GetAccountToActivateReqDto, IAccountToActivateResultDto } from '../dtos/get-account-to-activate.dto';
+import { IUnlockAccountResultDto, UnlockAccountReqDto } from '../dtos/unlock-account.dto';
 import { AuthenticationTypes } from '../enums/authentication-type.enum';
 import { getAuthenticationType } from '../helpers/auth.helper';
 import { ResetPasscodeTokensRepository } from '../repositories/reset-passcode-tokens.repository';
@@ -23,17 +16,15 @@ import { User } from './../../../dataBase/entities/users/user.entity';
 
 @Service()
 export class AccountService extends BaseService {
-  private readonly _userRepository: UserRepository;
-  private readonly _resetPasscodeTokensRepository: ResetPasscodeTokensRepository;
-
-  constructor() {
+  constructor(
+    @Inject('USER_MODULE') private readonly _userModule: IUserModuleBoundary,
+    private readonly _resetPasscodeTokensRepository: ResetPasscodeTokensRepository,
+  ) {
     super();
-    this._userRepository = Container.get(UserRepository);
-    this._resetPasscodeTokensRepository = Container.get(ResetPasscodeTokensRepository);
   }
 
   public async getAccountBeforeLogIn(data: AccountTryingToLogInDto): Promise<IGetAccountBeforeLogInResultDto> {
-    const users: User[] = await this._userRepository.findManyByLogin(data?.email, data?.phone);
+    const users: User[] = await this._userModule.findManyByLogin(data?.email, data?.phone);
 
     if ((users?.length ?? 0) === 0) {
       return {
@@ -61,7 +52,7 @@ export class AccountService extends BaseService {
       isActive: true,
     } satisfies IAccountToActivateResultDto;
 
-    const user = await this._userRepository.getByUuid(data.userGuid);
+    const user = await this._userModule.getByUuid(data.userGuid);
 
     if (isNullOrUndefined(user)) {
       return result;
@@ -90,7 +81,7 @@ export class AccountService extends BaseService {
   }
 
   public async activateAccount(reqDto: ActivateAccountReqDto): Promise<IActivateAccountResultDto> {
-    const user: User | null = await this._userRepository.getByUuid(reqDto.userGuid);
+    const user: User | null = await this._userModule.getByUuid(reqDto.userGuid);
 
     if (isNullOrUndefined(user)) {
       return {
@@ -105,19 +96,18 @@ export class AccountService extends BaseService {
     }
 
     if (!isNullOrEmptyString(userData.passcode)) {
-      await this._userRepository.setPasscode(user!.id, userData.passcode!);
+      await this._userModule.setPasscode(user!.id, userData.passcode!);
     }
 
     if (!user!.isActive) {
-      await this._userRepository.activate(user!.id);
+      await this._userModule.activate(user!.id);
     }
 
-    const model = new UpdateUserModel(user!.id, {
+    const updatedUser = await this._userModule.update(user!.id, {
       firstName: userData.firstName,
       lastName: userData.lastName,
       joiningDate: userData.joiningDate,
-    } satisfies IUpdateUser) satisfies UpdateUserModel;
-    const updatedUser = await this._userRepository.update(model);
+    } satisfies IUpdateUser);
 
     await this._resetPasscodeTokensRepository.deleteTokens(user!.id);
 
@@ -129,7 +119,7 @@ export class AccountService extends BaseService {
   }
 
   public async unlockAccount(reqDto: UnlockAccountReqDto): Promise<IUnlockAccountResultDto> {
-    const user: User | null = await this._userRepository.getByUuid(reqDto.userGuid);
+    const user: User | null = await this._userModule.getByUuid(reqDto.userGuid);
 
     if (isNullOrUndefined(user) || (!user!.isLockedOut && user!.failedLoginAttempts === 0)) {
       return {
@@ -137,7 +127,7 @@ export class AccountService extends BaseService {
       } satisfies IUnlockAccountResultDto;
     }
 
-    const updatedUser = await this._userRepository.unlock(user!.id);
+    const updatedUser = await this._userModule.unlock(user!.id);
 
     this._eventDispatcher.dispatch(events.users.userUnlocked, new UserUnlockedEvent(updatedUser!, undefined));
 

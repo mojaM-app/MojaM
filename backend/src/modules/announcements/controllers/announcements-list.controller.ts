@@ -1,15 +1,11 @@
 import { IPageData, IRequestWithIdentity, ISortData } from '@interfaces';
-import {
-  AnnouncementsGridPageDto,
-  AnnouncementsListService,
-  GetAnnouncementListReqDto,
-  GetAnnouncementListResponseDto,
-} from '@modules/announcements';
 import { BaseController } from '@modules/common';
 import { toNumber } from '@utils';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
 import { AnnouncementListViewColumns } from '../../../dataBase/entities/announcements/vAnnouncement.entity';
+import { AnnouncementsGridPageDto, GetAnnouncementListReqDto, GetAnnouncementListResponseDto } from '../dtos/get-announcement-list.dto';
+import { AnnouncementsListService } from '../services/announcements-list.service';
 
 export class AnnouncementsListController extends BaseController {
   private readonly _service: AnnouncementsListService;

@@ -1,6 +1,6 @@
 import { BaseService } from '@modules/common';
-import { GetNewsDto } from '@modules/news';
 import { Service } from 'typedi';
+import { GetNewsDto } from '../dtos/news.dto';
 
 @Service()
 export class NewsService extends BaseService {

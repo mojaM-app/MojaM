@@ -1,9 +1,9 @@
 import { GOOGLE_API_CLIENT_ID, GOOGLE_API_CLIENT_SECRET, GOOGLE_API_REFRESH_TOKEN, GOOGLE_CALENDAR_ID } from '@config';
-import { ICalendarEventDto } from '@modules/calendar';
 import { logger } from '@modules/logger';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { calendar_v3, google } from 'googleapis';
 import { Service } from 'typedi';
+import { ICalendarEventDto } from '../dtos/calendar.dto';
 import Calendar = calendar_v3.Calendar;
 import Schema$Event = calendar_v3.Schema$Event;
 import Schema$EventDateTime = calendar_v3.Schema$EventDateTime;

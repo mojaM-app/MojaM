@@ -1,5 +1,5 @@
 import { IUserId } from './IUser.Id';
-import { IPermissionId } from '../permissions/IPermissionId';
+import { IPermissionId } from '../permissions/IPermission.Id';
 
 export interface IAddUserSystemPermission {
   user: IUserId;

@@ -1,9 +1,9 @@
-import { AnnouncementStateValue } from '@modules/announcements';
 import { getDateNow } from '@utils';
 import { Service } from 'typedi';
 import { FindOneOptions, FindOptionsOrder, FindOptionsRelations, FindOptionsWhere, LessThanOrEqual } from 'typeorm';
 import { BaseAnnouncementsRepository } from './base.announcements.repository';
 import { Announcement } from '../../../dataBase/entities/announcements/announcement.entity';
+import { AnnouncementStateValue } from '../enums/announcement-state.enum';
 
 @Service()
 export class CurrentAnnouncementsRepository extends BaseAnnouncementsRepository {

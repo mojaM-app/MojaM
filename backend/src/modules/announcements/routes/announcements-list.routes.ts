@@ -1,11 +1,10 @@
 import { IRoutes } from '@interfaces';
-import { requirePermission } from '@middlewares';
-import { AnnouncementsListController } from '@modules/announcements';
-import { setIdentity } from '@modules/auth';
+import { requirePermission, setIdentity } from '@middlewares';
 import express from 'express';
+import { AnnouncementsListController } from '../controllers/announcements-list.controller';
 
 export class AnnouncementsListRoute implements IRoutes {
-  public path = '/announcements-list';
+  public static path = '/announcements-list';
   public router = express.Router();
   private readonly _controller: AnnouncementsListController;
 
@@ -15,6 +14,10 @@ export class AnnouncementsListRoute implements IRoutes {
   }
 
   private initializeRoutes(): void {
-    this.router.get(`${this.path}`, [setIdentity, requirePermission(user => user.canPreviewAnnouncementsList())], this._controller.get);
+    this.router.get(
+      `${AnnouncementsListRoute.path}`,
+      [setIdentity, requirePermission(user => user.canPreviewAnnouncementsList())],
+      this._controller.get,
+    );
   }
 }

@@ -1,27 +1,25 @@
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
+import { ILoginModel } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
-import { AuthRoute, GetAccountToActivateResponseDto, IAccountToActivateResultDto, LoginDto } from '@modules/auth';
-import { PermissionsRoute } from '@modules/permissions';
-import { CreateUserDto, CreateUserResponseDto, UserRoute } from '@modules/users';
+import { testHelpers } from '@helpers';
+import { AuthRoute } from '@modules/auth';
+import { CreateUserResponseDto, UserRoute, userTestHelpers } from '@modules/users';
 import { generateRandomDate, getAdminLoginData } from '@utils';
-import { testUtils } from '@helpers';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
+import { GetAccountToActivateResponseDto, IAccountToActivateResultDto } from '../dtos/get-account-to-activate.dto';
+import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { TestApp } from './../../../helpers/tests.utils';
 
 describe('POST /auth/get-account-to-activate/:userId/', () => {
-  const userRoute = new UserRoute();
-  const authRoute = new AuthRoute();
-  const permissionsRoute = new PermissionsRoute();
   let app: TestApp | undefined;
   let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
-    app = await testUtils.getTestApp([userRoute, permissionsRoute]);
+    app = await testHelpers.getTestApp();
     app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-    adminAccessToken = (await testUtils.loginAs(app, { email, passcode } satisfies LoginDto))?.accessToken;
+    adminAccessToken = (await testHelpers.loginAs(app, { email, passcode } satisfies ILoginModel))?.accessToken;
   });
 
   beforeEach(async () => {
@@ -31,7 +29,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
   describe('request should end with status code of 200', () => {
     it('when user with given id not exist', async () => {
       const response = await request(app!.getServer())
-        .post(authRoute.getAccountToActivatePath + '/' + Guid.EMPTY)
+        .post(AuthRoute.getAccountToActivatePath + '/' + Guid.EMPTY)
         .send();
       expect(response.statusCode).toBe(200);
       const body = response.body as GetAccountToActivateResponseDto;
@@ -50,7 +48,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
     it('when user with given id is active', async () => {
       const { uuid } = getAdminLoginData();
       const response = await request(app!.getServer())
-        .post(authRoute.getAccountToActivatePath + '/' + uuid)
+        .post(AuthRoute.getAccountToActivatePath + '/' + uuid)
         .send();
       expect(response.statusCode).toBe(200);
       const body = response.body as GetAccountToActivateResponseDto;
@@ -67,23 +65,23 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
     });
 
     it('when user with given id is active and is lockedOut', async () => {
-      const user = testUtils.generateValidUserWithPassword();
+      const user = userTestHelpers.generateValidUserWithPassword();
 
-      const createResponse = await request(app!.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createResponse = await request(app!.getServer()).post(UserRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createResponse.body;
       expect(newUserDto?.id).toBeDefined();
 
       const activateUserResponse = await request(app!.getServer())
-        .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
+        .post(UserRoute.path + '/' + newUserDto.id + '/' + UserRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
 
-      const loginData: LoginDto = { email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' };
+      const loginData: ILoginModel = { email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' };
 
       for (let index = 1; index < USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
-        const loginResponse = await request(app!.getServer()).post(authRoute.loginPath).send(loginData);
+        const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
         expect(loginResponse.statusCode).toBe(400);
         expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
         const body = loginResponse.body;
@@ -94,8 +92,8 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
         expect(loginArgs).toBeUndefined();
       }
       const loginResponse = await request(app!.getServer())
-        .post(authRoute.loginPath)
-        .send({ email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' } satisfies LoginDto);
+        .post(AuthRoute.loginPath)
+        .send({ email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' } satisfies ILoginModel);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const data = loginResponse.body.data as BadRequestException;
@@ -104,7 +102,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
       expect(login1Message).toBe(errorKeys.login.Account_Is_Locked_Out);
 
       const toActivateResponse = await request(app!.getServer())
-        .post(authRoute.getAccountToActivatePath + '/' + newUserDto.id)
+        .post(AuthRoute.getAccountToActivatePath + '/' + newUserDto.id)
         .send();
       expect(toActivateResponse.statusCode).toBe(200);
       const body = toActivateResponse.body as GetAccountToActivateResponseDto;
@@ -115,7 +113,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
       } satisfies IAccountToActivateResultDto);
 
       const deleteResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + newUserDto.id)
+        .delete(UserRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -139,23 +137,23 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
     });
 
     it('when user with given id is inactive and is lockedOut', async () => {
-      const user = testUtils.generateValidUserWithPassword();
+      const user = userTestHelpers.generateValidUserWithPassword();
 
-      const createResponse = await request(app!.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createResponse = await request(app!.getServer()).post(UserRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createResponse.body;
       expect(newUserDto?.id).toBeDefined();
 
       const activateUserResponse = await request(app!.getServer())
-        .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.activatePath)
+        .post(UserRoute.path + '/' + newUserDto.id + '/' + UserRoute.activatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
 
-      const loginData: LoginDto = { email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' };
+      const loginData: ILoginModel = { email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' };
 
       for (let index = 1; index < USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
-        const loginResponse = await request(app!.getServer()).post(authRoute.loginPath).send(loginData);
+        const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
         expect(loginResponse.statusCode).toBe(400);
         expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
         const body = loginResponse.body;
@@ -166,8 +164,8 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
         expect(loginArgs).toBeUndefined();
       }
       const loginResponse = await request(app!.getServer())
-        .post(authRoute.loginPath)
-        .send({ email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' } satisfies LoginDto);
+        .post(AuthRoute.loginPath)
+        .send({ email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' } satisfies ILoginModel);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const data = loginResponse.body.data as BadRequestException;
@@ -176,13 +174,13 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
       expect(login1Message).toBe(errorKeys.login.Account_Is_Locked_Out);
 
       const deactivateUserResponse = await request(app!.getServer())
-        .post(userRoute.path + '/' + newUserDto.id + '/' + userRoute.deactivatePath)
+        .post(UserRoute.path + '/' + newUserDto.id + '/' + UserRoute.deactivatePath)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deactivateUserResponse.statusCode).toBe(200);
 
       const toActivateResponse = await request(app!.getServer())
-        .post(authRoute.getAccountToActivatePath + '/' + newUserDto.id)
+        .post(AuthRoute.getAccountToActivatePath + '/' + newUserDto.id)
         .send();
       expect(toActivateResponse.statusCode).toBe(200);
       const body = toActivateResponse.body as GetAccountToActivateResponseDto;
@@ -194,7 +192,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
       } satisfies IAccountToActivateResultDto);
 
       const deleteResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + newUserDto.id)
+        .delete(UserRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -220,19 +218,19 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
 
     it('when user with given id is inactive', async () => {
       const user = {
-        ...testUtils.generateValidUserWithPassword(),
+        ...userTestHelpers.generateValidUserWithPassword(),
         firstName: 'John',
         lastName: 'Doe',
         joiningDate: generateRandomDate(),
-      } satisfies CreateUserDto;
+      };
 
-      const createResponse = await request(app!.getServer()).post(userRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createResponse = await request(app!.getServer()).post(UserRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createResponse.body;
       expect(newUserDto?.id).toBeDefined();
 
       const toActivateResponse = await request(app!.getServer())
-        .post(authRoute.getAccountToActivatePath + '/' + newUserDto.id)
+        .post(AuthRoute.getAccountToActivatePath + '/' + newUserDto.id)
         .send();
       expect(toActivateResponse.statusCode).toBe(200);
       const body = toActivateResponse.body as GetAccountToActivateResponseDto;
@@ -250,7 +248,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
       } satisfies IAccountToActivateResultDto);
 
       const deleteResponse = await request(app!.getServer())
-        .delete(userRoute.path + '/' + newUserDto.id)
+        .delete(UserRoute.path + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -278,7 +276,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
   describe('request should end with status code of 404', () => {
     it('when user id is invalid', async () => {
       const response = await request(app!.getServer())
-        .post(authRoute.getAccountToActivatePath + '/invalidUserId')
+        .post(AuthRoute.getAccountToActivatePath + '/invalidUserId')
         .send();
       expect(response.statusCode).toBe(404);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -295,7 +293,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
   });
 
   afterAll(async () => {
-    await testUtils.closeTestApp();
+    await testHelpers.closeTestApp();
     jest.resetAllMocks();
   });
 });

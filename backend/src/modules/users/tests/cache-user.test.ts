@@ -1,15 +1,13 @@
+import { ILoginModel, IUser, SystemPermissions } from '@core';
 import { DbConnection } from '@db';
-import { LoginDto } from '@modules/auth';
+import { testHelpers } from '@helpers';
 import { UserRoute } from '@modules/users';
 import { getAdminLoginData } from '@utils';
-import { testUtils } from '@helpers';
 import request from 'supertest';
-import { TestApp } from './../../../helpers/tests.utils';
-import { IUser, SystemPermissions } from '@core';
-import { User } from './../../../dataBase/entities/users/user.entity';
+import { User } from '../../../dataBase/entities/users/user.entity';
+import { TestApp } from '../../../helpers/tests.utils';
 
 describe('Cache user data tests', () => {
-  let userRoute: UserRoute;
   let app: TestApp | undefined;
   let findOneByFn: any;
   let adminAccessToken: string | undefined;
@@ -26,11 +24,11 @@ describe('Cache user data tests', () => {
         email: 'admin@domain.com',
         phone: '123456789',
         isActive: true,
-        getFirstLastName: () => 'John Doe',
-        getFirstLastNameOrEmail: () => 'John Doe',
-        getLastFirstName: () => 'Doe John',
-        getLastFirstNameOrEmail: () => 'Doe John',
-        isAdmin: () => true,
+        getFirstLastName: (): string => 'John Doe',
+        getFirstLastNameOrEmail: (): string => 'John Doe',
+        getLastFirstName: (): string => 'Doe John',
+        getLastFirstNameOrEmail: (): string => 'Doe John',
+        isAdmin: (): boolean => true,
       } satisfies IUser & {
         _is_from_mock_: boolean;
         id: number;
@@ -39,7 +37,7 @@ describe('Cache user data tests', () => {
       } as unknown as Promise<User>);
     });
 
-    const findBy = () => {
+    const findBy = (): any => {
       return [
         {
           _is_from_mock_: true,
@@ -52,11 +50,11 @@ describe('Cache user data tests', () => {
           isActive: true,
           email: 'admin@domain.com',
           phone: '123456789',
-          getFirstLastName: () => 'John Doe',
-          getFirstLastNameOrEmail: () => 'John Doe',
-          getLastFirstName: () => 'Doe John',
-          getLastFirstNameOrEmail: () => 'Doe John',
-          isAdmin: () => true,
+          getFirstLastName: (): string => 'John Doe',
+          getFirstLastNameOrEmail: (): string => 'John Doe',
+          getLastFirstName: (): string => 'Doe John',
+          getLastFirstNameOrEmail: (): string => 'Doe John',
+          isAdmin: (): boolean => true,
         } satisfies IUser & {
           _is_from_mock_: boolean;
           id: number;
@@ -72,21 +70,21 @@ describe('Cache user data tests', () => {
     const dbMock = {
       users: {
         findOneBy: findOneByFn,
-        count: () => {
+        count: (): number => {
           return 1;
         },
-        findBy: () => {
+        findBy: (): any => {
           return findBy();
         },
-        update: () => {
+        update: (): any => {
           return { _is_from_mock_: true };
         },
-        findOne: () => {
+        findOne: (): any => {
           return { _is_from_mock_: true };
         },
-        createQueryBuilder: () => {
+        createQueryBuilder: (): any => {
           return {
-            where: () => {
+            where: (): any => {
               return {
                 getOne: findBy,
               };
@@ -95,11 +93,11 @@ describe('Cache user data tests', () => {
         },
       },
       userSystemPermissions: {
-        createQueryBuilder: () => {
+        createQueryBuilder: (): any => {
           return {
-            innerJoinAndSelect: () => {
+            innerJoinAndSelect: (): any => {
               return {
-                where: () => {
+                where: (): any => {
                   return {
                     getMany: () => [{ _is_from_mock_: true, userId: 1, systemPermission: { id: SystemPermissions.EditUser } }],
                   };
@@ -115,26 +113,25 @@ describe('Cache user data tests', () => {
       return dbMock;
     });
 
-    userRoute = new UserRoute();
-    app = await testUtils.getTestApp([userRoute]);
+    app = await testHelpers.getTestApp();
     const { email, passcode } = getAdminLoginData();
-    const adminLoginResult = await testUtils.loginAs(app, { email, passcode } satisfies LoginDto);
+    const adminLoginResult = await testHelpers.loginAs(app, { email, passcode } satisfies ILoginModel);
     adminAccessToken = adminLoginResult?.accessToken;
     adminUuid = adminLoginResult?.id;
   });
 
   it('Should store userId', async () => {
-    let response = await request(app!.getServer()).get(`${userRoute.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);
+    let response = await request(app!.getServer()).get(`${UserRoute.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);
     expect(response.statusCode).toBe(200);
 
-    response = await request(app!.getServer()).get(`${userRoute.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);
+    response = await request(app!.getServer()).get(`${UserRoute.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);
     expect(response.statusCode).toBe(200);
 
     expect(findOneByFn).toHaveBeenCalledTimes(5);
   });
 
   afterAll(async () => {
-    await testUtils.closeTestApp();
+    await testHelpers.closeTestApp();
     jest.restoreAllMocks();
   });
 });

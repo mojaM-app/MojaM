@@ -7,6 +7,9 @@ export const REGEX_PATTERNS = {
   PHONE: /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{3})$/,
   PIN: /^[a-zA-Z0-9]{4}$/,
 };
+
+export const ACCESS_TOKEN_ALGORITHM = 'HS256';
+
 /*
  * Constants used in the application
  * If you want to change the value of any constant, do it here

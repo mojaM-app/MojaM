@@ -1,8 +1,9 @@
 import { IRequestWithIdentity } from '@interfaces';
 import { BaseController } from '@modules/common';
-import { CommunityService, GetCommunityResponseDto, IGetCommunityDto } from '@modules/community';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
+import { GetCommunityResponseDto, IGetCommunityDto } from '../dtos/community.dto';
+import { CommunityService } from '../services/community.service';
 
 export class CommunityController extends BaseController {
   private readonly _communityService: CommunityService;

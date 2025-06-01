@@ -1,23 +1,14 @@
 import { IRequestWithIdentity } from '@interfaces';
-import {
-  AnnouncementsService,
-  CreateAnnouncementsDto,
-  CreateAnnouncementsReqDto,
-  CreateAnnouncementsResponseDto,
-  DeleteAnnouncementsReqDto,
-  DeleteAnnouncementsResponseDto,
-  GetAnnouncementsReqDto,
-  GetAnnouncementsResponseDto,
-  PublishAnnouncementsReqDto,
-  PublishAnnouncementsResponseDto,
-  UpdateAnnouncementsDto,
-  UpdateAnnouncementsReqDto,
-  UpdateAnnouncementsResponseDto,
-} from '@modules/announcements';
 import { BaseController } from '@modules/common';
 import { isGuid } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
+import { CreateAnnouncementsDto, CreateAnnouncementsReqDto, CreateAnnouncementsResponseDto } from '../dtos/create-announcements.dto';
+import { DeleteAnnouncementsReqDto, DeleteAnnouncementsResponseDto } from '../dtos/delete-announcements.dto';
+import { GetAnnouncementsReqDto, GetAnnouncementsResponseDto } from '../dtos/get-announcements.dto';
+import { PublishAnnouncementsReqDto, PublishAnnouncementsResponseDto } from '../dtos/publish-announcements.dto';
+import { UpdateAnnouncementsDto, UpdateAnnouncementsReqDto, UpdateAnnouncementsResponseDto } from '../dtos/update-announcements.dto';
+import { AnnouncementsService } from '../services/announcements.service';
 
 export class AnnouncementsController extends BaseController {
   private readonly _service: AnnouncementsService;

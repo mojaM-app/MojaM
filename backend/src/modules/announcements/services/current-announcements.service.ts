@@ -1,15 +1,12 @@
 import { events } from '@events';
-import {
-  AnnouncementsRepository,
-  CurrentAnnouncementsRepository,
-  CurrentAnnouncementsRetrievedEvent,
-  ICurrentAnnouncementsDto,
-  IGetCurrentAnnouncementsDto,
-} from '@modules/announcements';
+import { CurrentAnnouncementsRetrievedEvent } from '@modules/announcements';
 import { BaseService } from '@modules/common';
 import { isNullOrUndefined } from '@utils';
 import Container, { Service } from 'typedi';
 import { Announcement } from '../../../dataBase/entities/announcements/announcement.entity';
+import { ICurrentAnnouncementsDto, IGetCurrentAnnouncementsDto } from '../dtos/get-current-announcements.dto';
+import { AnnouncementsRepository } from '../repositories/announcements.repository';
+import { CurrentAnnouncementsRepository } from '../repositories/current-announcements.repository';
 
 @Service()
 export class CurrentAnnouncementsService extends BaseService {

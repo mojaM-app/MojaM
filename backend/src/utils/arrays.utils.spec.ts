@@ -25,16 +25,16 @@ describe('arrays.utils', () => {
       expect(arraysEquals([{}], [{}])).toBe(true);
       expect(arraysEquals([{ a: 1 }], [{ a: 1 }])).toBe(true);
       expect(arraysEquals([{ a: 1, b: {} }], [{ a: 1, b: {} }])).toBe(true);
-      expect(arraysEquals([function () {}], [function () {}])).toBe(true);
+      expect(arraysEquals([function (): void {}], [function (): void {}])).toBe(true);
       expect(
         arraysEquals(
           [
-            function () {
+            function (): number {
               return 1;
             },
           ],
           [
-            function () {
+            function (): number {
               return 1;
             },
           ],
@@ -43,12 +43,12 @@ describe('arrays.utils', () => {
       expect(
         arraysEquals(
           [
-            () => {
+            (): number => {
               return 1;
             },
           ],
           [
-            () => {
+            (): number => {
               return 1;
             },
           ],
@@ -56,7 +56,7 @@ describe('arrays.utils', () => {
       ).toBe(true);
       class Dog {
         public readonly name: string;
-        public constructor(name: string) {
+        constructor(name: string) {
           this.name = name;
         }
       }
@@ -109,29 +109,29 @@ describe('arrays.utils', () => {
       expect(arraysEquals([{ a: 1, b: {} }], [{ a: 1, b: undefined }])).toBe(false);
       expect(arraysEquals([{ a: 1, b: {} }], [{ a: 1, b: null }])).toBe(false);
       expect(arraysEquals([{ a: 1, b: {} }], [{ a: 1, b: { c: 2 } }])).toBe(false);
-      expect(arraysEquals([function (a: any) {}], [function (b: any) {}])).toBe(false);
+      expect(arraysEquals([function (_a: any): void {}], [function (_b: any): void {}])).toBe(false);
       expect(arraysEquals([NaN], [NaN])).toBe(false);
       expect(arraysEquals([NaN, 1], [1, NaN])).toBe(false);
       expect(arraysEquals([NaN], [undefined])).toBe(false);
       expect(
         arraysEquals(
           [
-            function () {
+            function (): number {
               return 1;
             },
           ],
-          [function () {}],
+          [function (): void {}],
         ),
       ).toBe(false);
       expect(
         arraysEquals(
           [
-            function () {
+            function (): number {
               return 1;
             },
           ],
           [
-            function () {
+            function (): number {
               return 2;
             },
           ],
@@ -140,12 +140,12 @@ describe('arrays.utils', () => {
       expect(
         arraysEquals(
           [
-            function () {
+            function (): number {
               return 1;
             },
           ],
           [
-            () => {
+            (): number => {
               return 1;
             },
           ],
@@ -154,13 +154,13 @@ describe('arrays.utils', () => {
       expect(
         arraysEquals(
           [
-            function () {
+            function (): number {
               const x = 1;
               return x;
             },
           ],
           [
-            function () {
+            function (): number {
               return 1;
             },
           ],
@@ -250,13 +250,11 @@ describe('arrays.utils', () => {
     });
 
     it('should handle sparse arrays', () => {
-      // eslint-disable-next-line no-sparse-arrays
       const sparse1 = [1, , 3];
-      // eslint-disable-next-line no-sparse-arrays
+
       const sparse2 = [1, , 3];
       expect(arraysEquals(sparse1, sparse2)).toBe(true);
 
-      // eslint-disable-next-line no-sparse-arrays
       const different = [1, undefined, 3];
       // Current implementation treats sparse array slots as equal to undefined
       expect(arraysEquals(sparse1, different)).toBe(false);
@@ -318,7 +316,7 @@ describe('arrays.utils', () => {
 
       expect(isArray(arrayLike)).toBe(false);
 
-      function getArguments(...args: any[]) {
+      function getArguments(..._args: any[]): IArguments {
         return arguments;
       }
       const args = getArguments(1, 2, 3);
@@ -335,7 +333,7 @@ describe('arrays.utils', () => {
   });
 
   describe('isArray additional tests', () => {
-    it('should handle subclassed arrays', () => {
+    it('should handle sub-classed arrays', () => {
       class SubArray extends Array {}
       const subArray = new SubArray();
       subArray.push(1, 2, 3);
@@ -382,7 +380,6 @@ describe('arrays.utils', () => {
 
   describe('isArrayEmpty additional tests', () => {
     it('should handle sparse empty arrays', () => {
-      // eslint-disable-next-line no-sparse-arrays
       const sparseEmpty = new Array(5);
       // Current implementation considers arrays with length greater than 0 as non-empty
       // even if they don't have any defined elements
@@ -391,7 +388,6 @@ describe('arrays.utils', () => {
       // An actual empty array should return true
       expect(isArrayEmpty([])).toBe(true);
 
-      // eslint-disable-next-line no-sparse-arrays
       const sparseFilled = [, , , 1];
       expect(isArrayEmpty(sparseFilled)).toBe(false);
     });
@@ -482,7 +478,7 @@ describe('arrays.utils', () => {
         // Instead of directly testing circular references which would cause infinite recursion,
         // we'll just document that this is a limitation of the current implementation
         expect(true).toBe(true); // Always passes
-      } catch (e) {
+      } catch {
         // We shouldn't reach here
         expect(false).toBe(true);
       }

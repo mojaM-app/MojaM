@@ -1,15 +1,12 @@
 import { IAnnouncementGridItemDto } from '@core';
 import { events } from '@events';
 import { IGridPageResponseDto } from '@interfaces';
-import {
-  AnnouncementsGridPageDto,
-  AnnouncementsListRepository,
-  AnnouncementsListRetrievedEvent,
-  GetAnnouncementListReqDto,
-} from '@modules/announcements';
 import { BaseService } from '@modules/common';
 import { Container, Service } from 'typedi';
 import { vAnnouncement } from '../../../dataBase/entities/announcements/vAnnouncement.entity';
+import { AnnouncementsGridPageDto, GetAnnouncementListReqDto } from '../dtos/get-announcement-list.dto';
+import { AnnouncementsListRetrievedEvent } from '../events/announcements-list-retrieved-event';
+import { AnnouncementsListRepository } from '../repositories/announcements-list.repository';
 
 @Service()
 export class AnnouncementsListService extends BaseService {

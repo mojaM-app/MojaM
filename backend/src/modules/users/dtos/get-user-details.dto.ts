@@ -1,7 +1,7 @@
+import { IUserDto } from '@core';
 import { events } from '@events';
 import { IResponse } from '@interfaces';
 import { BaseReqDto } from '@modules/common';
-import { IUserDetailsDto } from '../interfaces/user-details.interfaces';
 
 export class GetUserDetailsReqDto extends BaseReqDto {
   public readonly userGuid: string | undefined;
@@ -10,6 +10,16 @@ export class GetUserDetailsReqDto extends BaseReqDto {
     super(currentUserId);
     this.userGuid = userGuid;
   }
+}
+
+export interface IUserDetailsDto extends IUserDto {
+  firstName: string | null;
+  lastName: string | null;
+  joiningDate: Date | null;
+  lastLoginAt: Date | null;
+  isActive: boolean;
+  isLockedOut: boolean;
+  permissionCount: number;
 }
 
 export class GetUserDetailsResponseDto implements IResponse<IUserDetailsDto | null> {
