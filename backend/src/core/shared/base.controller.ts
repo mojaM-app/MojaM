@@ -1,4 +1,4 @@
-import { IRequestWithIdentity } from '@interfaces';
+import { IRequestWithIdentity } from '../interfaces/request.interfaces';
 
 export abstract class BaseController {
   protected getCurrentUserId(req: IRequestWithIdentity): number | undefined {

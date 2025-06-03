@@ -1,4 +1,4 @@
-import { BaseController } from '@modules/common';
+import { BaseController } from '@core';
 import { isGuid } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';

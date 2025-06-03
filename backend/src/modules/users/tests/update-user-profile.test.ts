@@ -2,12 +2,14 @@ import { ILoginModel } from '@core';
 import { events } from '@events';
 import { errorKeys, UnauthorizedException } from '@exceptions';
 import { testHelpers } from '@helpers';
-import { UserProfileRoute, UserRoute, userTestHelpers } from '@modules/users';
+import { userTestHelpers } from '@modules/users';
 import { generateRandomDate, getAdminLoginData } from '@utils';
 import request from 'supertest';
 import { CreateUserResponseDto } from '../dtos/create-user.dto';
 import { GetUserProfileResponseDto } from '../dtos/get-user-profile.dto';
 import { UpdateUserProfileDto, UpdateUserProfileResponseDto } from '../dtos/update-user-profile.dto';
+import { UserProfileRoute } from '../routes/user-profile.routes';
+import { UserRoute } from '../routes/user.routes';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { TestApp } from './../../../helpers/tests.utils';
 

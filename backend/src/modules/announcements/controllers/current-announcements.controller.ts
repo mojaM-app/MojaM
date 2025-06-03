@@ -1,5 +1,4 @@
-import { IRequestWithIdentity } from '@interfaces';
-import { BaseController } from '@modules/common';
+import { BaseController, IRequestWithIdentity } from '@core';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
 import { GetCurrentAnnouncementsResponseDto } from '../dtos/get-current-announcements.dto';

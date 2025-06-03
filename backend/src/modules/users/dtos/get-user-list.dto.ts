@@ -1,7 +1,7 @@
 import { IUserGridItemDto } from '@core';
+import { BaseReqDto } from '@core';
+import { IGridPageResponseDto, IPageData, IResponse, ISortData } from '@core';
 import { events } from '@events';
-import { IGridPageResponseDto, IPageData, IResponse, ISortData } from '@interfaces';
-import { BaseReqDto } from '@modules/common';
 
 export type UsersGridPageDto = IGridPageResponseDto<IUserGridItemDto>;
 

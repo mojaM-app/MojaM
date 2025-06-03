@@ -1,7 +1,7 @@
 import { IUserGridItemDto } from '@core';
+import { BaseService } from '@core';
+import { IGridPageResponseDto } from '@core';
 import { events } from '@events';
-import { IGridPageResponseDto } from '@interfaces';
-import { BaseService } from '@modules/common';
 import { Service } from 'typedi';
 import { GetUserListReqDto, UsersGridPageDto } from '../dtos/get-user-list.dto';
 import { UserListRetrievedEvent } from '../events/user-list-retrieved-event';
@@ -20,7 +20,7 @@ export class UserListService extends BaseService {
     this._eventDispatcher.dispatch(events.users.userListRetrieved, new UserListRetrievedEvent(reqDto.currentUserId));
 
     return {
-      items: recordsWithTotal.items.map(user => this.vUserToIUserGridItemDto(user)),
+      items: recordsWithTotal.items.map(entity => this.vUserToIUserGridItemDto(entity)),
       totalCount: recordsWithTotal.totalCount,
     } satisfies UsersGridPageDto;
   }

@@ -1,31 +1,28 @@
 export { logger, stream } from './logger/logger';
 
-export { IUser } from './interfaces/users/IUser';
-export { IUserId } from './interfaces/users/IUser.Id';
-export { IUserDto } from './dtos/users/IUser.dto';
-export { IAddUserSystemPermission } from './interfaces/users/add-user-system-permission.interfaces';
-export { ICreateUser } from './interfaces/users/create-user.interfaces';
-export { IUpdateUser } from './interfaces/users/update-user.interfaces';
-export { IUpdateUserPasscode } from './interfaces/users/update-user.interfaces';
-export { IUserGridItemDto } from './dtos/users/IUserGridItem.dto';
+// Constants
+export * from './constants';
 
-export { IPermissionId } from './interfaces/permissions/IPermission.Id';
-export { SystemPermissions } from './enums/system-permissions.enum';
+// Helpers
+export * from './helpers';
 
-export { ICreateResetPasscodeToken } from './interfaces/auth/create-reset-passcode-token.interfaces';
-export { ILoginModel, IAccountTryingToLogInModel } from './interfaces/auth/login.interfaces';
-export { type TLoginResult } from './dtos/auth/login.types';
+// DTOs
+export * from './dtos';
+
+// Enums
+export * from './enums';
+
+// Interfaces
+export * from './interfaces';
+
+// Common base classes and utilities
+export { BaseController, BaseService, CacheService, BaseReqDto, Identity } from './shared';
 
 export { IUserModuleBoundary, IPermissionModuleBoundary, IAuthModuleBoundary, INotificationModuleBoundary } from './interfaces/module-boundaries';
+export { IRequestWithIdentity } from './interfaces/request.interfaces';
+export { IResponse } from './interfaces/response.interfaces';
+export { IRoutes } from './interfaces/routes.interfaces';
+export { IResponseError } from './interfaces/response.interfaces';
 export { registerModules } from './di/container';
-
-export { IAnnouncementId } from './interfaces/announcements/IAnnouncement.Id';
-export { ICreateAnnouncementItem } from './interfaces/announcements/create-announcement.interfaces';
-export { ICreateAnnouncement } from './interfaces/announcements/create-announcement.interfaces';
-export { IUpdateAnnouncementItem } from './interfaces/announcements/update-announcement.interfaces';
-export { IUpdateAnnouncement } from './interfaces/announcements/update-announcement.interfaces';
-export { IAnnouncementGridItemDto } from './dtos/announcements/IAnnouncementGridItem.dto';
-
-export { IResetPasscodeEmailSettings } from './interfaces/notifications/reset-passcode-email-settings.interface';
 
 export { IPasscodeService, IResetPasscodeService, ICryptoService } from './interfaces/auth/auth.services';

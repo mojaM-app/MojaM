@@ -11,7 +11,13 @@ export { GetAccountBeforeLogInResponseDto, IGetAccountBeforeLogInResultDto } fro
 
 export { AuthRoute } from './routes/auth.routes';
 
-export { AuthenticationTypes } from './enums/authentication-type.enum';
-
 export { PasswordService } from './services/password.service';
 export { PinService } from './services/pin.service';
+
+// Module self-registration
+import { AuthModuleBoundary } from './auth-module.boundary';
+import { ModuleRegistry } from '../../core/di/module-registry';
+
+ModuleRegistry.addModuleRegistration(() => {
+  ModuleRegistry.registerAuthModule(AuthModuleBoundary);
+});

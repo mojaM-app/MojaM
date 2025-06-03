@@ -1,4 +1,4 @@
-import { BaseRepository } from '@modules/common';
+import { BaseRepository } from '@db';
 import { Service } from 'typedi';
 import { vUser } from './../../../dataBase/entities/users/vUser.entity';
 

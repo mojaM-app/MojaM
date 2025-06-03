@@ -1,6 +1,6 @@
+import { BaseService } from '@core';
 import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { BaseService } from '@modules/common';
 import { isNullOrUndefined } from '@utils';
 import { Service } from 'typedi';
 import { GetUserDetailsReqDto, IUserDetailsDto } from '../dtos/get-user-details.dto';

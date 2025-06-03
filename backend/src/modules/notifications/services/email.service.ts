@@ -9,8 +9,7 @@ import {
   TPL_VAR_RESET_PIN_TITLE,
   TPL_VAR_WELCOME_EMAIL_TITLE,
 } from '@config';
-import { IResetPasscodeEmailSettings, logger } from '@core';
-import { AuthenticationTypes } from '@modules/auth';
+import { logger, AuthenticationTypes, IResetPasscodeEmailSettings, IWelcomeEmailSettings, IUnlockAccountEmailSettings } from '@core';
 import { toNumber } from '@utils';
 import { readFileSync } from 'fs';
 import { compile } from 'handlebars';
@@ -21,8 +20,6 @@ import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { join } from 'path';
 import { Service } from 'typedi';
 import { TemplateVariablesHelper } from './template-variables.helper';
-import { IUnlockAccountEmailSettings } from '../interfaces/unlock-account-email-settings.interface';
-import { IWelcomeEmailSettings } from '../interfaces/welcome-email-settings.interface';
 
 @Service()
 export class EmailService {

@@ -1,11 +1,11 @@
 import { ILoginModel, IUser, SystemPermissions } from '@core';
 import { DbConnection } from '@db';
 import { testHelpers } from '@helpers';
-import { UserRoute } from '@modules/users';
 import { getAdminLoginData } from '@utils';
 import request from 'supertest';
 import { User } from '../../../dataBase/entities/users/user.entity';
 import { TestApp } from '../../../helpers/tests.utils';
+import { UserRoute } from '../routes/user.routes';
 
 describe('Cache user data tests', () => {
   let app: TestApp | undefined;

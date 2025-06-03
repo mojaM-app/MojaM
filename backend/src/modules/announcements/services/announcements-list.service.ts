@@ -1,7 +1,5 @@
-import { IAnnouncementGridItemDto } from '@core';
+import { BaseService, IAnnouncementGridItemDto, IGridPageResponseDto } from '@core';
 import { events } from '@events';
-import { IGridPageResponseDto } from '@interfaces';
-import { BaseService } from '@modules/common';
 import { Container, Service } from 'typedi';
 import { vAnnouncement } from '../../../dataBase/entities/announcements/vAnnouncement.entity';
 import { AnnouncementsGridPageDto, GetAnnouncementListReqDto } from '../dtos/get-announcement-list.dto';
@@ -23,7 +21,7 @@ export class AnnouncementsListService extends BaseService {
     this._eventDispatcher.dispatch(events.announcements.announcementsListRetrieved, new AnnouncementsListRetrievedEvent(reqDto.currentUserId!));
 
     return {
-      items: recordsWithTotal.items.map(user => this.vAnnouncementToIAnnouncementGridItemDto(user)),
+      items: recordsWithTotal.items.map(entity => this.vAnnouncementToIAnnouncementGridItemDto(entity)),
       totalCount: recordsWithTotal.totalCount,
     } satisfies AnnouncementsGridPageDto;
   }

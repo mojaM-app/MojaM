@@ -1,5 +1,4 @@
-import { IRequestWithIdentity } from '@interfaces';
-import { BaseController } from '@modules/common';
+import { BaseController, IRequestWithIdentity } from '@core';
 import { isGuid } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';

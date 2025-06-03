@@ -1,5 +1,4 @@
-import { IResponse } from '@interfaces';
-import { AuthenticationTypes } from '../enums/authentication-type.enum';
+import { AuthenticationTypes, IResponse } from '@core';
 
 export class CheckResetPasscodeTokenReqDto {
   public readonly userGuid: string | undefined;

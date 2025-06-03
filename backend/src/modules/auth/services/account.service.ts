@@ -1,7 +1,7 @@
-import { IUpdateUser, IUserModuleBoundary } from '@core';
+import { AuthenticationTypes, IUpdateUser, IUserEntity, IUserModuleBoundary } from '@core';
+import { BaseService } from '@core';
 import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { BaseService } from '@modules/common';
 import { UserActivatedEvent, UserUnlockedEvent } from '@modules/users';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { Inject, Service } from 'typedi';
@@ -9,10 +9,8 @@ import { ActivateAccountDto, ActivateAccountReqDto, IActivateAccountResultDto } 
 import { AccountTryingToLogInDto, IGetAccountBeforeLogInResultDto } from '../dtos/get-account-before-log-in.dto';
 import { GetAccountToActivateReqDto, IAccountToActivateResultDto } from '../dtos/get-account-to-activate.dto';
 import { IUnlockAccountResultDto, UnlockAccountReqDto } from '../dtos/unlock-account.dto';
-import { AuthenticationTypes } from '../enums/authentication-type.enum';
 import { getAuthenticationType } from '../helpers/auth.helper';
 import { ResetPasscodeTokensRepository } from '../repositories/reset-passcode-tokens.repository';
-import { User } from './../../../dataBase/entities/users/user.entity';
 
 @Service()
 export class AccountService extends BaseService {
@@ -24,7 +22,7 @@ export class AccountService extends BaseService {
   }
 
   public async getAccountBeforeLogIn(data: AccountTryingToLogInDto): Promise<IGetAccountBeforeLogInResultDto> {
-    const users: User[] = await this._userModule.findManyByLogin(data?.email, data?.phone);
+    const users: IUserEntity[] = await this._userModule.findManyByLogin(data?.email, data?.phone);
 
     if ((users?.length ?? 0) === 0) {
       return {
@@ -81,7 +79,7 @@ export class AccountService extends BaseService {
   }
 
   public async activateAccount(reqDto: ActivateAccountReqDto): Promise<IActivateAccountResultDto> {
-    const user: User | null = await this._userModule.getByUuid(reqDto.userGuid);
+    const user: IUserEntity | null = await this._userModule.getByUuid(reqDto.userGuid);
 
     if (isNullOrUndefined(user)) {
       return {
@@ -119,7 +117,7 @@ export class AccountService extends BaseService {
   }
 
   public async unlockAccount(reqDto: UnlockAccountReqDto): Promise<IUnlockAccountResultDto> {
-    const user: User | null = await this._userModule.getByUuid(reqDto.userGuid);
+    const user: IUserEntity | null = await this._userModule.getByUuid(reqDto.userGuid);
 
     if (isNullOrUndefined(user) || (!user!.isLockedOut && user!.failedLoginAttempts === 0)) {
       return {

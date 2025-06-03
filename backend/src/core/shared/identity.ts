@@ -1,4 +1,4 @@
-import { SystemPermissions } from '@core';
+import { SystemPermissions } from '../enums/system-permissions.enum';
 
 export class Identity {
   public get userId(): number | undefined {

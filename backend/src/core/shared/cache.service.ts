@@ -1,7 +1,7 @@
-import { IHasGuidId } from '@interfaces';
-import { isGuid } from '@utils';
 import { CacheContainer } from 'node-ts-cache';
 import { MemoryStorage } from 'node-ts-cache-storage-memory';
+import { isGuid } from '../../utils/guid.utils';
+import { IHasGuidId } from '../interfaces/IHasGuidId';
 
 export abstract class CacheService<TEntity extends IHasGuidId> {
   private readonly cache: CacheContainer;

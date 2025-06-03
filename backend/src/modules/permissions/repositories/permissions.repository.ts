@@ -1,5 +1,5 @@
 import { SystemPermissions } from '@core';
-import { BaseRepository } from '@modules/common';
+import { BaseRepository } from '@db';
 import { getAdminLoginData } from '@utils';
 import { Service } from 'typedi';
 import { UserSystemPermission } from './../../../dataBase/entities/users/user-system-permission.entity';

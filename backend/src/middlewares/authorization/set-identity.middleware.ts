@@ -1,13 +1,10 @@
 import { ACCESS_TOKEN_ALGORITHM, ACCESS_TOKEN_SECRET, REFRESH_TOKEN_EXPIRE_IN, REFRESH_TOKEN_SECRET, SECRET_AUDIENCE, SECRET_ISSUER } from '@config';
-import { IPermissionModuleBoundary, IUserModuleBoundary } from '@core';
-import { logger } from '@core';
+import { IPermissionModuleBoundary, IRequestWithIdentity, IUserModuleBoundary, Identity, logger } from '@core';
 import { UnauthorizedException, errorKeys } from '@exceptions';
-import { IRequestWithIdentity } from '@interfaces';
 import { isNullOrEmptyString, isNullOrUndefined, isString } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { JwtPayload, verify } from 'jsonwebtoken';
 import Container from 'typedi';
-import { Identity } from './models/Identity';
 
 const getAuthorization = (req: Request): string | null => {
   let header: string | string[] | undefined = req?.headers?.Authorization;

@@ -1,9 +1,8 @@
 import { BASE_PATH, CREDENTIALS, LOG_FORMAT, NODE_ENV, ORIGIN, PORT } from '@config';
 import './core/di/container'; // Import container to register module boundaries
-import { logger, stream } from '@core';
+import { IRoutes, logger, stream } from '@core';
 import { DbConnection } from '@db';
 import { errorKeys } from '@exceptions';
-import { IRoutes } from '@interfaces';
 import { ErrorMiddleware } from '@middlewares';
 import { getFullUrl } from '@utils';
 import compression from 'compression';

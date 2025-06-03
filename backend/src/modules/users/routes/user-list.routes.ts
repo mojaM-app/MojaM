@@ -1,4 +1,4 @@
-import { IRoutes } from '@interfaces';
+import { IRoutes } from '@core';
 import { requirePermission, setIdentity } from '@middlewares';
 import express from 'express';
 import { UserListController } from '../controllers/user-list.controller';

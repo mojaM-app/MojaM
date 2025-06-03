@@ -21,10 +21,10 @@
     "baseUrl": "src",
     "paths": {
       "@core": ["core"],
+      "@core/*": ["core/*"],
       "@config": ["config"],
       "@events": ["events"],
       "@exceptions": ["exceptions"],
-      "@interfaces": ["interfaces"],
       "@middlewares": ["middlewares"],
       "@utils": ["utils"],
       "@helpers": ["helpers"],

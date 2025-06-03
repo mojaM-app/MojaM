@@ -1,4 +1,3 @@
-import { IAnnouncementId, ICreateAnnouncement, IUpdateAnnouncement } from '@core';
 import {
   Column,
   CreateDateColumn,
@@ -13,7 +12,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { AnnouncementItem } from './announcement-item.entity';
-import { IHasGuidId } from '../../../interfaces/IHasGuidId';
+import { IAnnouncementEntity, ICreateAnnouncement, IUpdateAnnouncement } from '../../../core/interfaces';
 import { EntityDefaultFunctions } from '../../EntityDefaultFunctions';
 import { EntityTransformFunctions } from '../../EntityTransformFunctions';
 import { User } from '../users/user.entity';
@@ -21,7 +20,7 @@ import { User } from '../users/user.entity';
 @Entity({
   name: 'announcements',
 })
-export class Announcement implements IHasGuidId, IAnnouncementId, ICreateAnnouncement, IUpdateAnnouncement {
+export class Announcement implements IAnnouncementEntity, ICreateAnnouncement, IUpdateAnnouncement {
   @PrimaryGeneratedColumn({
     name: 'Id',
     type: 'int',

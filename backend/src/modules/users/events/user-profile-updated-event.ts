@@ -1,6 +1,6 @@
 import { IUser } from '@core';
+import { IHasGuidId } from '@core';
 import { Event } from '@events';
-import { IHasGuidId } from '@interfaces';
 
 export class UserProfileUpdatedEvent extends Event {
   public readonly user: IUser & IHasGuidId;

@@ -1,6 +1,6 @@
+import { AuthenticationTypes } from '@core';
 import { generateRandomNumber } from '@utils';
 import { getAuthenticationType } from './auth.helper';
-import { AuthenticationTypes } from '../enums/authentication-type.enum';
 import { PasswordService } from '../services/password.service';
 import { PinService } from '../services/pin.service';
 

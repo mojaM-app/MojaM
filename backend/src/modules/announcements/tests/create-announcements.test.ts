@@ -1,10 +1,9 @@
 import { VALIDATOR_SETTINGS } from '@config';
-import { ILoginModel, SystemPermissions } from '@core';
+import { ILoginModel, RouteConstants, SystemPermissions } from '@core';
 import { events } from '@events';
 import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
 import { testHelpers } from '@helpers';
-import { PermissionsRoute } from '@modules/permissions';
-import { CreateUserResponseDto, UserRoute } from '@modules/users';
+import { CreateUserResponseDto } from '@modules/users';
 import { userTestHelpers } from '@modules/users';
 import { generateRandomDate, getAdminLoginData, isGuid, isNumber } from '@utils';
 import { isDateString } from 'class-validator';
@@ -566,7 +565,10 @@ describe('POST /announcements', () => {
 
     test('when user has no permission', async () => {
       const userData = userTestHelpers.generateValidUserWithPassword();
-      const newUserResponse = await request(app!.getServer()).post(UserRoute.path).send(userData).set('Authorization', `Bearer ${adminAccessToken}`);
+      const newUserResponse = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(userData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(newUserResponse.statusCode).toBe(201);
       let body = newUserResponse.body;
       expect(typeof body).toBe('object');
@@ -576,7 +578,7 @@ describe('POST /announcements', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const activateNewUserResponse = await request(app!.getServer())
-        .post(UserRoute.path + '/' + user.id + '/' + UserRoute.activatePath)
+        .post(RouteConstants.USER_PATH + '/' + user.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
@@ -595,7 +597,7 @@ describe('POST /announcements', () => {
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
       const deleteUserResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + user.id)
+        .delete(RouteConstants.USER_PATH + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
@@ -622,7 +624,10 @@ describe('POST /announcements', () => {
 
     test('when user have all permissions expect AddAnnouncements', async () => {
       const userData = userTestHelpers.generateValidUserWithPassword();
-      const newUserResponse = await request(app!.getServer()).post(UserRoute.path).send(userData).set('Authorization', `Bearer ${adminAccessToken}`);
+      const newUserResponse = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(userData)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(newUserResponse.statusCode).toBe(201);
       let body = newUserResponse.body;
       expect(typeof body).toBe('object');
@@ -632,7 +637,7 @@ describe('POST /announcements', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const activateNewUserResponse = await request(app!.getServer())
-        .post(UserRoute.path + '/' + user.id + '/' + UserRoute.activatePath)
+        .post(RouteConstants.USER_PATH + '/' + user.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
@@ -642,7 +647,7 @@ describe('POST /announcements', () => {
         if (isNumber(permission)) {
           const value = permission as number;
           if (value !== SystemPermissions.AddAnnouncements) {
-            const path = PermissionsRoute.path + '/' + user.id + '/' + permission.toString();
+            const path = RouteConstants.PERMISSIONS_PATH + '/' + user.id + '/' + permission.toString();
             const addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
           }
@@ -663,7 +668,7 @@ describe('POST /announcements', () => {
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
       const deleteUserResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + user.id)
+        .delete(RouteConstants.USER_PATH + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteUserResponse.statusCode).toBe(200);
@@ -712,14 +717,17 @@ describe('POST /announcements', () => {
     test('when try to use token from user that not exists', async () => {
       const userBob = userTestHelpers.generateValidUserWithPassword();
 
-      const createBobResponse = await request(app!.getServer()).post(UserRoute.path).send(userBob).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createBobResponse = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(userBob)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createBobResponse.statusCode).toBe(201);
       const { data: bobDto, message: bobCreateMessage }: CreateUserResponseDto = createBobResponse.body;
       expect(bobDto?.id).toBeDefined();
       expect(bobCreateMessage).toBe(events.users.userCreated);
 
       const activateBobResponse = await request(app!.getServer())
-        .post(UserRoute.path + '/' + bobDto.id + '/' + UserRoute.activatePath)
+        .post(RouteConstants.USER_PATH + '/' + bobDto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateBobResponse.statusCode).toBe(200);
@@ -728,7 +736,7 @@ describe('POST /announcements', () => {
         ?.accessToken;
 
       const deleteBobResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + bobDto.id)
+        .delete(RouteConstants.USER_PATH + '/' + bobDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteBobResponse.statusCode).toBe(200);

@@ -1,4 +1,4 @@
-import { IResponse } from '@interfaces';
+import { IResponse } from '@core';
 
 export class GetAccountToActivateReqDto {
   public readonly userGuid: string | undefined;

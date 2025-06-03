@@ -1,5 +1,5 @@
-import { IUserGridItemDto } from '@core';
 import { DataSource, PrimaryColumn, ViewColumn, ViewEntity } from 'typeorm';
+import { IUserGridItemDto } from './../../../core/dtos';
 import { EntityTransformFunctions } from './../../EntityTransformFunctions';
 import { User } from './user.entity';
 

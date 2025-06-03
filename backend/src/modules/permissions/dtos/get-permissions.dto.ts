@@ -1,6 +1,6 @@
+import { BaseReqDto } from '@core';
+import { IResponse } from '@core';
 import { events } from '@events';
-import { IResponse } from '@interfaces';
-import { BaseReqDto } from '@modules/common';
 
 export interface IUserPermissionsDto {
   id: string;

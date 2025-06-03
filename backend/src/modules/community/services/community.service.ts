@@ -1,5 +1,5 @@
 import { COMMUNITY_INFO_URL } from '@config';
-import { BaseService } from '@modules/common';
+import { BaseService } from '@core';
 import { isNullOrEmptyString } from '@utils';
 import { Service } from 'typedi';
 import { ICommunityInfoDto, IGetCommunityDto } from '../dtos/community.dto';

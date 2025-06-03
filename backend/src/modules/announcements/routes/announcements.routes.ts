@@ -1,5 +1,5 @@
 import { REGEX_PATTERNS } from '@config';
-import { IRoutes } from '@interfaces';
+import { IRoutes } from '@core';
 import { requirePermission, setIdentity, validateData } from '@middlewares';
 import express from 'express';
 import { AnnouncementsController } from '../controllers/announcements.controller';

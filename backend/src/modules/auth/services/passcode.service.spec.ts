@@ -1,10 +1,10 @@
 import { VALIDATOR_SETTINGS } from '@config';
+import { AuthenticationTypes } from '@core';
 import { generateRandomNumber, generateRandomPassword } from '@utils';
 import 'reflect-metadata';
 import { PasscodeService } from './passcode.service';
 import { PasswordService } from './password.service';
 import { PinService } from './pin.service';
-import { AuthenticationTypes } from '../enums/authentication-type.enum';
 import * as authHelper from '../helpers/auth.helper';
 
 jest.mock('../helpers/auth.helper');

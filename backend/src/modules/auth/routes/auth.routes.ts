@@ -1,5 +1,5 @@
 import { REGEX_PATTERNS } from '@config';
-import { IRoutes } from '@interfaces';
+import { IRoutes, RouteConstants } from '@core';
 import { validateData } from '@middlewares';
 import express from 'express';
 import { AuthController } from '../controllers/auth.controller';
@@ -10,10 +10,10 @@ import { RefreshTokenDto } from '../dtos/refresh-token.dto';
 import { ResetPasscodeDto } from '../dtos/reset-passcode.dto';
 
 export class AuthRoute implements IRoutes {
-  public static resetPasscode: string = 'reset-passcode';
-  public static path = '/auth';
-  public static loginPath = '/login';
-  public static getAccountBeforeLogInPath = `${AuthRoute.path}/get-account-before-log-in`;
+  public static resetPasscode: string = RouteConstants.AUTH_RESET_PASSCODE;
+  public static path = RouteConstants.AUTH_PATH;
+  public static loginPath = RouteConstants.AUTH_LOGIN_PATH;
+  public static getAccountBeforeLogInPath = RouteConstants.AUTH_GET_ACCOUNT_BEFORE_LOG_IN_PATH;
   public static requestResetPasscodePath = `${AuthRoute.path}/request-reset-passcode`;
   public static checkResetPasscodeTokenPath = `${AuthRoute.path}/check-reset-passcode-token`;
   public static resetPasscodePath = `${AuthRoute.path}/${AuthRoute.resetPasscode}`;

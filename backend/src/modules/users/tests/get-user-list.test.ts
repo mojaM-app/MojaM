@@ -1,9 +1,8 @@
-import { ILoginModel, SystemPermissions } from '@core';
+import { ILoginModel, RouteConstants, SystemPermissions } from '@core';
 import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
-import { PermissionsRoute } from '@modules/permissions';
-import { userTestHelpers, UserListRoute, UserRoute } from '@modules/users';
+import { userTestHelpers } from '@modules/users';
 import { getAdminLoginData, isNumber } from '@utils';
 import request from 'supertest';
 import { testEventHandlers } from '../../../helpers/event-handler-tests.helper';
@@ -11,6 +10,8 @@ import { TestApp } from '../../../helpers/tests.utils';
 import { CreateUserResponseDto } from '../dtos/create-user.dto';
 import { GetUserListResponseDto } from '../dtos/get-user-list.dto';
 import { UserListRetrievedEvent } from '../events/user-list-retrieved-event';
+import { UserListRoute } from '../routes/user-list.routes';
+import { UserRoute } from '../routes/user.routes';
 
 describe('GET/user-list', () => {
   let app: TestApp | undefined;
@@ -173,7 +174,7 @@ describe('GET/user-list', () => {
         if (isNumber(permission)) {
           const value = permission as number;
           if (value !== SystemPermissions.PreviewUserList) {
-            const path = PermissionsRoute.path + '/' + newUserDto.id + '/' + permission.toString();
+            const path = RouteConstants.PERMISSIONS_PATH + '/' + newUserDto.id + '/' + permission.toString();
             const addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
           }

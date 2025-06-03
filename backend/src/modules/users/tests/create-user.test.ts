@@ -1,12 +1,11 @@
 import { VALIDATOR_SETTINGS } from '@config';
-import { IAccountTryingToLogInModel, ILoginModel, IUserDto, SystemPermissions } from '@core';
+import { IAccountTryingToLogInModel, ILoginModel, IUserDto, RouteConstants, SystemPermissions } from '@core';
 import { events } from '@events';
 import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
 import { testHelpers } from '@helpers';
-import { AuthRoute, GetAccountBeforeLogInResponseDto, IGetAccountBeforeLogInResultDto } from '@modules/auth';
+import { GetAccountBeforeLogInResponseDto, IGetAccountBeforeLogInResultDto } from '@modules/auth';
 import { EmailService } from '@modules/notifications/services/email.service';
-import { PermissionsRoute } from '@modules/permissions';
-import { UserDetailsRoute, UserRoute, userTestHelpers } from '@modules/users';
+import { userTestHelpers } from '@modules/users';
 import { generateRandomEmail, generateRandomNumber, generateRandomPassword, getAdminLoginData, isGuid, isNumber } from '@utils';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
@@ -15,6 +14,8 @@ import { TestApp } from '../../../helpers/tests.utils';
 import { CreateUserDto, CreateUserResponseDto } from '../dtos/create-user.dto';
 import { GetUserDetailsResponseDto } from '../dtos/get-user-details.dto';
 import { GetUserProfileResponseDto } from '../dtos/get-user-profile.dto';
+import { UserDetailsRoute } from '../routes/user-details.routes';
+import { UserRoute } from '../routes/user.routes';
 
 describe('POST /user', () => {
   let app: TestApp | undefined;
@@ -106,7 +107,7 @@ describe('POST /user', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const getAccountBeforeLogInResponse = await request(app!.getServer())
-        .post(AuthRoute.getAccountBeforeLogInPath)
+        .post(RouteConstants.AUTH_GET_ACCOUNT_BEFORE_LOG_IN_PATH)
         .send({ email: requestData.email } satisfies IAccountTryingToLogInModel);
       expect(getAccountBeforeLogInResponse.statusCode).toBe(200);
       body = getAccountBeforeLogInResponse.body as GetAccountBeforeLogInResponseDto;
@@ -152,7 +153,7 @@ describe('POST /user', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const getAccountBeforeLogInResponse = await request(app!.getServer())
-        .post(AuthRoute.getAccountBeforeLogInPath)
+        .post(RouteConstants.AUTH_GET_ACCOUNT_BEFORE_LOG_IN_PATH)
         .send({ email: requestData.email } satisfies IAccountTryingToLogInModel);
       expect(getAccountBeforeLogInResponse.statusCode).toBe(200);
       body = getAccountBeforeLogInResponse.body;
@@ -198,7 +199,7 @@ describe('POST /user', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const getAccountBeforeLogInResponse = await request(app!.getServer())
-        .post(AuthRoute.getAccountBeforeLogInPath)
+        .post(RouteConstants.AUTH_GET_ACCOUNT_BEFORE_LOG_IN_PATH)
         .send({ email: requestData.email } satisfies IAccountTryingToLogInModel);
       expect(getAccountBeforeLogInResponse.statusCode).toBe(200);
       body = getAccountBeforeLogInResponse.body;
@@ -476,7 +477,7 @@ describe('POST /user', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const getAccountBeforeLogInResponse = await request(app!.getServer())
-        .post(AuthRoute.getAccountBeforeLogInPath)
+        .post(RouteConstants.AUTH_GET_ACCOUNT_BEFORE_LOG_IN_PATH)
         .send({ email: requestData.email } satisfies IAccountTryingToLogInModel);
       expect(getAccountBeforeLogInResponse.statusCode).toBe(200);
       body = getAccountBeforeLogInResponse.body;
@@ -522,7 +523,7 @@ describe('POST /user', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const getAccountBeforeLogInResponse = await request(app!.getServer())
-        .post(AuthRoute.getAccountBeforeLogInPath)
+        .post(RouteConstants.AUTH_GET_ACCOUNT_BEFORE_LOG_IN_PATH)
         .send({ email: requestData.email } satisfies IAccountTryingToLogInModel);
       expect(getAccountBeforeLogInResponse.statusCode).toBe(200);
       body = getAccountBeforeLogInResponse.body;
@@ -568,7 +569,7 @@ describe('POST /user', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const getAccountBeforeLogInResponse = await request(app!.getServer())
-        .post(AuthRoute.getAccountBeforeLogInPath)
+        .post(RouteConstants.AUTH_GET_ACCOUNT_BEFORE_LOG_IN_PATH)
         .send({ email: requestData.email } satisfies IAccountTryingToLogInModel);
       expect(getAccountBeforeLogInResponse.statusCode).toBe(200);
       body = getAccountBeforeLogInResponse.body;
@@ -890,7 +891,7 @@ describe('POST /user', () => {
         if (isNumber(permission)) {
           const value = permission as number;
           if (value !== SystemPermissions.AddUser) {
-            const path = PermissionsRoute.path + '/' + user.id + '/' + permission.toString();
+            const path = RouteConstants.PERMISSIONS_PATH + '/' + user.id + '/' + permission.toString();
             const addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
           }

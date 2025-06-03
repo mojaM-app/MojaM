@@ -1,9 +1,8 @@
-import { IPasscodeService } from '@core';
+import { AuthenticationTypes, IPasscodeService } from '@core';
 import { isNullOrEmptyString } from '@utils';
 import { Service } from 'typedi';
 import { PasswordService } from './password.service';
 import { PinService } from './pin.service';
-import { AuthenticationTypes } from '../enums/authentication-type.enum';
 import { getAuthenticationType } from '../helpers/auth.helper';
 
 @Service()

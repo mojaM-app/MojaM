@@ -1,6 +1,5 @@
+import { BaseController, IRequestWithIdentity } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { IRequestWithIdentity } from '@interfaces';
-import { BaseController } from '@modules/common';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
 import { GetCalendarEventsReqDto, GetCalendarEventsResponseDto } from '../dtos/calendar.dto';

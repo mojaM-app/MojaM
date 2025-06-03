@@ -1,9 +1,8 @@
-import { ILoginModel, SystemPermissions } from '@core';
+import { ILoginModel, RouteConstants, SystemPermissions } from '@core';
 import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
-import { PermissionsRoute } from '@modules/permissions';
-import { UserRoute, userTestHelpers } from '@modules/users';
+import { userTestHelpers } from '@modules/users';
 import { getAdminLoginData, isNumber } from '@utils';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
@@ -11,6 +10,7 @@ import { testEventHandlers } from '../../../helpers/event-handler-tests.helper';
 import { TestApp } from '../../../helpers/tests.utils';
 import { ActivateUserResponseDto } from '../dtos/activate-user.dto';
 import { CreateUserResponseDto } from '../dtos/create-user.dto';
+import { UserRoute } from '../routes/user.routes';
 
 describe('POST /user/:id/activate', () => {
   let app: TestApp | undefined;
@@ -264,7 +264,7 @@ describe('POST /user/:id/activate', () => {
         if (isNumber(permission)) {
           const value = permission as number;
           if (value !== SystemPermissions.ActivateUser) {
-            const path = PermissionsRoute.path + '/' + user.id + '/' + permission.toString();
+            const path = RouteConstants.PERMISSIONS_PATH + '/' + user.id + '/' + permission.toString();
             const addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
           }

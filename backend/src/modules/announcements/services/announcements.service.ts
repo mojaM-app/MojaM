@@ -1,13 +1,6 @@
+import { BaseService } from '@core';
 import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
-import {
-  AnnouncementsCreatedEvent,
-  AnnouncementsDeletedEvent,
-  AnnouncementsPublishedEvent,
-  AnnouncementsRetrievedEvent,
-  AnnouncementsUpdatedEvent,
-} from '@modules/announcements';
-import { BaseService } from '@modules/common';
 import { isDate, isNullOrUndefined } from '@utils';
 import Container, { Service } from 'typedi';
 import { Announcement } from '../../../dataBase/entities/announcements/announcement.entity';
@@ -17,6 +10,11 @@ import { GetAnnouncementsReqDto, IAnnouncementItemDto, IAnnouncementsDto } from 
 import { PublishAnnouncementsReqDto } from '../dtos/publish-announcements.dto';
 import { UpdateAnnouncementsReqDto } from '../dtos/update-announcements.dto';
 import { AnnouncementStateValue } from '../enums/announcement-state.enum';
+import { AnnouncementsCreatedEvent } from '../events/announcements-created-event';
+import { AnnouncementsDeletedEvent } from '../events/announcements-deleted-event';
+import { AnnouncementsPublishedEvent } from '../events/announcements-published-event';
+import { AnnouncementsRetrievedEvent } from '../events/announcements-retrieved-event';
+import { AnnouncementsUpdatedEvent } from '../events/announcements-updated-event';
 import { AnnouncementsRepository } from '../repositories/announcements.repository';
 
 @Service()

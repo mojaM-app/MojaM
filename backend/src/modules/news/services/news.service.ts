@@ -1,4 +1,4 @@
-import { BaseService } from '@modules/common';
+import { BaseService } from '@core';
 import { Service } from 'typedi';
 import { GetNewsDto } from '../dtos/news.dto';
 

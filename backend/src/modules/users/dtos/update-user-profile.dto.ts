@@ -1,9 +1,9 @@
 import { VALIDATOR_SETTINGS } from '@config';
+import { BaseReqDto } from '@core';
+import { IResponse } from '@core';
 import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { DtoTransformFunctions } from '@helpers';
-import { IResponse } from '@interfaces';
-import { BaseReqDto } from '@modules/common';
 import { Transform, Type } from 'class-transformer';
 import { IsDate, IsOptional, IsString, MaxLength } from 'class-validator';
 

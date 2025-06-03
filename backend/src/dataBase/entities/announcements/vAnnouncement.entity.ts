@@ -1,5 +1,5 @@
-import { IAnnouncementGridItemDto } from '@core';
 import { DataSource, PrimaryColumn, ViewColumn, ViewEntity } from 'typeorm';
+import { IAnnouncementGridItemDto } from './../../../core/dtos';
 import { Announcement } from './announcement.entity';
 import { EntityTransformFunctions } from '../../EntityTransformFunctions';
 import { User } from '../users/user.entity';

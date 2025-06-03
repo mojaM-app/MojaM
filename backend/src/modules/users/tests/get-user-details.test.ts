@@ -1,9 +1,8 @@
-import { ILoginModel, SystemPermissions } from '@core';
+import { ILoginModel, RouteConstants, SystemPermissions } from '@core';
 import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
-import { PermissionsRoute } from '@modules/permissions';
-import { UserDetailsRoute, UserRoute, userTestHelpers } from '@modules/users';
+import { userTestHelpers } from '@modules/users';
 import { generateRandomDate, getAdminLoginData, isGuid, isNumber } from '@utils';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
@@ -12,6 +11,8 @@ import { TestApp } from '../../../helpers/tests.utils';
 import { CreateUserResponseDto } from '../dtos/create-user.dto';
 import { GetUserDetailsResponseDto, IUserDetailsDto } from '../dtos/get-user-details.dto';
 import { UserDetailsRetrievedEvent } from '../events/user-details-retrieved-event';
+import { UserDetailsRoute } from '../routes/user-details.routes';
+import { UserRoute } from '../routes/user.routes';
 
 describe('GET/user-details/:id', () => {
   let app: TestApp | undefined;
@@ -225,7 +226,7 @@ describe('GET/user-details/:id', () => {
         if (isNumber(permission)) {
           const value = permission as number;
           if (value !== SystemPermissions.PreviewUserDetails) {
-            const path = PermissionsRoute.path + '/' + newUserDto.id + '/' + permission.toString();
+            const path = RouteConstants.PERMISSIONS_PATH + '/' + newUserDto.id + '/' + permission.toString();
             const addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
           }

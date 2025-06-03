@@ -1,19 +1,19 @@
-import { User } from './../../dataBase/entities/users/user.entity';
-import { IResetPasscodeEmailSettings } from './notifications/reset-passcode-email-settings.interface';
+import { IResetPasscodeEmailSettings } from './notifications/email-settings.interface';
+import { IUserEntity } from './users/IUserEntity';
 import { IUpdateUser } from './users/update-user.interfaces';
 
 export interface IUserModuleBoundary {
   getIdByUuid(uuid: string | undefined): Promise<number | undefined>;
-  getByUuid(uuid: string | undefined): Promise<User | null>;
-  getById(userId: number | undefined): Promise<User | null>;
-  findManyByLogin(email: string | null | undefined, phone?: string | null | undefined): Promise<User[]>;
+  getByUuid(uuid: string | undefined): Promise<IUserEntity | null>;
+  getById(userId: number | undefined): Promise<IUserEntity | null>;
+  findManyByLogin(email: string | null | undefined, phone?: string | null | undefined): Promise<IUserEntity[]>;
   updateAfterLogin(userId: number): Promise<void>;
   increaseFailedLoginAttempts(userId: number, failedAttempts: number): Promise<number>;
-  lockOut(userId: number): Promise<User | null>;
-  unlock(userId: number): Promise<User | null>;
-  activate(userId: number): Promise<User | null>;
-  deactivate(userId: number): Promise<User | null>;
-  update(userId: number, model: IUpdateUser): Promise<User | null>;
+  lockOut(userId: number): Promise<IUserEntity | null>;
+  unlock(userId: number): Promise<IUserEntity | null>;
+  activate(userId: number): Promise<IUserEntity | null>;
+  deactivate(userId: number): Promise<IUserEntity | null>;
+  update(userId: number, model: IUpdateUser): Promise<IUserEntity | null>;
   setPasscode(userId: number, passcode: string): Promise<void>;
 }
 

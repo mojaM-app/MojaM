@@ -1,5 +1,5 @@
-import { IGridPageResponseDto, IPageData, ISortData } from '@interfaces';
-import { BaseRepository } from '@modules/common';
+import { IGridPageResponseDto, IPageData, ISortData } from '@core';
+import { BaseRepository } from '@db';
 import { Service } from 'typedi';
 import { vAnnouncement } from '../../../dataBase/entities/announcements/vAnnouncement.entity';
 

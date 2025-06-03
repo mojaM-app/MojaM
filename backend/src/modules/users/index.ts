@@ -20,6 +20,8 @@ export { UserUpdatedEvent } from './events/user-updated-event';
 import { IUser } from '@core';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { generateValidUserWithPassword, generateValidUserWithPin } from './helpers/tests.helpers';
+import { UserModuleBoundary } from './user-module.boundary';
+import { ModuleRegistry } from '../../core/di/module-registry';
 
 export let userTestHelpers: {
   generateValidUserWithPassword: () => CreateUserDto & IUser;
@@ -31,3 +33,8 @@ if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
     generateValidUserWithPin,
   };
 }
+
+// Module self-registration
+ModuleRegistry.addModuleRegistration(() => {
+  ModuleRegistry.registerUserModule(UserModuleBoundary);
+});

@@ -1,4 +1,4 @@
-import { ICreateUser, IUpdateUser, IUser, IUserDto, IUserId } from '@core';
+import { IUserDto } from '@core';
 import {
   Column,
   CreateDateColumn,
@@ -11,20 +11,20 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { AnnouncementItem } from '../announcements/announcement-item.entity';
-import { Announcement } from '../announcements/announcement.entity';
-import { IHasGuidId } from './../../../interfaces/IHasGuidId';
-import { getAdminLoginData } from './../../../utils/user.utils';
 import { EntityDefaultFunctions } from './../../EntityDefaultFunctions';
 import { EntityTransformFunctions } from './../../EntityTransformFunctions';
 import { UserResetPasscodeToken } from './user-reset-passcode-tokens.entity';
 import { UserSystemPermission } from './user-system-permission.entity';
+import { ICreateUser, IHasGuidId, IUpdateUser, IUserEntity } from '../../../core/interfaces';
+import { AnnouncementItem } from '../announcements/announcement-item.entity';
+import { Announcement } from '../announcements/announcement.entity';
+import { getAdminLoginData } from './../../../utils/user.utils';
 
 @Unique('UQ_User_Email_Phone', ['email', 'phone'])
 @Entity({
   name: 'users',
 })
-export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser, IUser {
+export class User implements IHasGuidId, ICreateUser, IUpdateUser, IUserEntity {
   @PrimaryGeneratedColumn('increment', {
     name: 'Id',
     type: 'int',
@@ -237,7 +237,7 @@ export class User implements IHasGuidId, IUserId, ICreateUser, IUpdateUser, IUse
   }
 }
 
-export function userToIUser(user: User): IUserDto {
+export function userToIUser(user: IUserEntity): IUserDto {
   return {
     id: user.uuid,
     email: user.email,

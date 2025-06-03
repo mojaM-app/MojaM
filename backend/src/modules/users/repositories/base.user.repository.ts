@@ -1,4 +1,4 @@
-import { BaseRepository } from '@modules/common';
+import { BaseRepository } from '@db';
 import { isGuid, isPositiveNumber } from '@utils';
 import { UserCacheService } from '../services/user-cache.service';
 import { User } from './../../../dataBase/entities/users/user.entity';

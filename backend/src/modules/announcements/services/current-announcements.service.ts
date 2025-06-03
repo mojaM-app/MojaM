@@ -1,10 +1,10 @@
+import { BaseService } from '@core';
 import { events } from '@events';
-import { CurrentAnnouncementsRetrievedEvent } from '@modules/announcements';
-import { BaseService } from '@modules/common';
 import { isNullOrUndefined } from '@utils';
 import Container, { Service } from 'typedi';
 import { Announcement } from '../../../dataBase/entities/announcements/announcement.entity';
 import { ICurrentAnnouncementsDto, IGetCurrentAnnouncementsDto } from '../dtos/get-current-announcements.dto';
+import { CurrentAnnouncementsRetrievedEvent } from '../events/current-announcements-retrieved-event';
 import { AnnouncementsRepository } from '../repositories/announcements.repository';
 import { CurrentAnnouncementsRepository } from '../repositories/current-announcements.repository';
 

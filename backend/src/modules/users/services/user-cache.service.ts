@@ -1,4 +1,4 @@
-import { CacheService } from '@modules/common';
+import { CacheService } from '@core';
 import { Service } from 'typedi';
 import { User } from './../../../dataBase/entities/users/user.entity';
 

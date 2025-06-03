@@ -1,5 +1,5 @@
 import { IAddUserSystemPermission, IUserModuleBoundary, SystemPermissions } from '@core';
-import { BaseRepository } from '@modules/common';
+import { BaseRepository } from '@db';
 import { getDateTimeNow, isArrayEmpty, isEnumValue, isNullOrUndefined, isPositiveNumber } from '@utils';
 import { Inject, Service } from 'typedi';
 import { AddPermissionReqDto } from '../dtos/add-permission.dto';

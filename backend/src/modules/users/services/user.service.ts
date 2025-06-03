@@ -1,8 +1,8 @@
 import { IUpdateUser, IUserDto } from '@core';
+import { BaseService } from '@core';
 import { userToIUser } from '@db';
 import { events } from '@events';
 import { BadRequestException, ConflictException, errorKeys } from '@exceptions';
-import { BaseService } from '@modules/common';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { Service } from 'typedi';
 import { ActivateUserReqDto } from '../dtos/activate-user.dto';

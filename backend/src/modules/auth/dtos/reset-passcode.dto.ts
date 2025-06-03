@@ -1,7 +1,7 @@
+import { IResponse } from '@core';
 import { events } from '@events';
 import { errorKeys } from '@exceptions';
 import { DtoTransformFunctions } from '@helpers';
-import { IResponse } from '@interfaces';
 import { IsPasswordOrPinValid } from '@validators';
 import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsString } from 'class-validator';

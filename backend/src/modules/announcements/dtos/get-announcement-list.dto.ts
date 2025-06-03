@@ -1,7 +1,5 @@
-import { IAnnouncementGridItemDto } from '@core';
+import { BaseReqDto, IAnnouncementGridItemDto, IGridPageResponseDto, IPageData, IResponse, ISortData } from '@core';
 import { events } from '@events';
-import { IGridPageResponseDto, IPageData, IResponse, ISortData } from '@interfaces';
-import { BaseReqDto } from '@modules/common';
 
 export type AnnouncementsGridPageDto = IGridPageResponseDto<IAnnouncementGridItemDto>;
 

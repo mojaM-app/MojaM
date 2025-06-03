@@ -1,17 +1,17 @@
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
-import { ILoginModel, SystemPermissions } from '@core';
+import { ILoginModel, RouteConstants, SystemPermissions } from '@core';
 import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
-import { AuthRoute, LoginResponseDto } from '@modules/auth';
-import { PermissionsRoute } from '@modules/permissions';
-import { UserRoute, userTestHelpers } from '@modules/users';
+import { LoginResponseDto } from '@modules/auth';
+import { userTestHelpers } from '@modules/users';
 import { getAdminLoginData, isNumber } from '@utils';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
 import { ActivateUserResponseDto } from '../dtos/activate-user.dto';
 import { CreateUserResponseDto } from '../dtos/create-user.dto';
 import { UnlockUserResponseDto } from '../dtos/unlock-user.dto';
+import { UserRoute } from '../routes/user.routes';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { TestApp } from './../../../helpers/tests.utils';
 
@@ -48,7 +48,7 @@ describe('POST /user/:id/unlock', () => {
       // lock user
       const loginData: ILoginModel = { email: newUserDto.email, phone: newUserDto.phone, passcode: user.passcode + 'invalid_passcode' };
       for (let index = 1; index < USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
-        const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+        const loginResponse = await request(app!.getServer()).post(RouteConstants.AUTH_LOGIN_PATH).send(loginData);
         expect(loginResponse.statusCode).toBe(400);
         expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
         expect(typeof loginResponse?.body).toBe('object');
@@ -59,7 +59,7 @@ describe('POST /user/:id/unlock', () => {
       }
 
       let loginResponse = await request(app!.getServer())
-        .post(AuthRoute.loginPath)
+        .post(RouteConstants.AUTH_LOGIN_PATH)
         .send({ email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' } satisfies ILoginModel);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -81,7 +81,7 @@ describe('POST /user/:id/unlock', () => {
       expect(result).toBe(true);
 
       loginResponse = await request(app!.getServer())
-        .post(AuthRoute.loginPath)
+        .post(RouteConstants.AUTH_LOGIN_PATH)
         .send({ email: newUserDto.email, passcode: user.passcode } satisfies ILoginModel);
       body = loginResponse.body as LoginResponseDto;
       expect(typeof body).toBe('object');
@@ -149,7 +149,7 @@ describe('POST /user/:id/unlock', () => {
       expect(result).toBe(true);
 
       const loginResponse = await request(app!.getServer())
-        .post(AuthRoute.loginPath)
+        .post(RouteConstants.AUTH_LOGIN_PATH)
         .send({ email: newUserDto.email, passcode: user.passcode } satisfies ILoginModel);
       body = loginResponse.body as LoginResponseDto;
       expect(typeof body).toBe('object');
@@ -290,7 +290,7 @@ describe('POST /user/:id/unlock', () => {
         if (isNumber(permission)) {
           const value = permission as number;
           if (value !== SystemPermissions.UnlockUser) {
-            const path = PermissionsRoute.path + '/' + user.id + '/' + permission.toString();
+            const path = RouteConstants.PERMISSIONS_PATH + '/' + user.id + '/' + permission.toString();
             const addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
           }

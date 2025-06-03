@@ -1,11 +1,9 @@
 import { VALIDATOR_SETTINGS } from '@config';
-import { IAccountTryingToLogInModel } from '@core';
+import { AuthenticationTypes, IAccountTryingToLogInModel, IResponse } from '@core';
 import { errorKeys } from '@exceptions';
 import { DtoTransformFunctions } from '@helpers';
-import { IResponse } from '@interfaces';
 import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MaxLength } from 'class-validator';
-import { AuthenticationTypes } from '../enums/authentication-type.enum';
 
 export class AccountTryingToLogInDto implements IAccountTryingToLogInModel {
   @IsNotEmpty({

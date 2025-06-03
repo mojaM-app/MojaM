@@ -1,19 +1,17 @@
-import { INotificationModuleBoundary, IResetPasscodeEmailSettings, IUserModuleBoundary } from '@core';
+import { BaseService, INotificationModuleBoundary, IResetPasscodeEmailSettings, IUserEntity, IUserModuleBoundary, LinkHelper } from '@core';
 import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { UserPasscodeChangedEvent } from '@modules/auth';
-import { BaseService } from '@modules/common';
-import { LinkHelper } from '@modules/notifications';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { Inject, Service } from 'typedi';
-import { PasscodeService } from './passcode.service';
 import { CheckResetPasscodeTokenReqDto, ICheckResetPasscodeTokenResultDto } from '../dtos/check-reset-passcode-token.dto';
 import { AccountTryingToLogInDto } from '../dtos/get-account-before-log-in.dto';
 import { IResetPasscodeResultDto, ResetPasscodeReqDto } from '../dtos/reset-passcode.dto';
+import { UserPasscodeChangedEvent } from '../events/user-passcode-changed-event';
 import { getAuthenticationType } from '../helpers/auth.helper';
 import { ResetPasscodeTokensRepository } from '../repositories/reset-passcode-tokens.repository';
 import { User } from './../../../dataBase/entities/users/user.entity';
 import { CryptoService } from './crypto.service';
+import { PasscodeService } from './passcode.service';
 
 @Service()
 export class ResetPasscodeService extends BaseService {
@@ -26,9 +24,8 @@ export class ResetPasscodeService extends BaseService {
   ) {
     super();
   }
-
   public async requestResetPasscode(data: AccountTryingToLogInDto): Promise<boolean> {
-    const users: User[] = await this._userModule.findManyByLogin(data?.email, data?.phone);
+    const users: User[] = (await this._userModule.findManyByLogin(data?.email, data?.phone)) as any;
 
     if ((users?.length ?? 0) !== 1) {
       return true;
@@ -43,12 +40,11 @@ export class ResetPasscodeService extends BaseService {
     await this._resetPasscodeTokensRepository.deleteTokens(user.id);
 
     const token = this._cryptoService.generateResetPasscodeToken();
-
     const resetPasscodeToken = await this._resetPasscodeTokensRepository.createToken(user.id, token);
 
     return await this._notificationModule.sendEmailResetPasscode({
-      user,
-      authType,
+      user: user as any,
+      authType: authType as any,
       link: LinkHelper.resetPasscodeLink(user.uuid, resetPasscodeToken.token),
     } satisfies IResetPasscodeEmailSettings);
   }
@@ -75,7 +71,7 @@ export class ResetPasscodeService extends BaseService {
     return {
       isValid: true,
       userEmail: user?.email,
-      authType: getAuthenticationType(user!),
+      authType: getAuthenticationType(user! as any),
     } satisfies ICheckResetPasscodeTokenResultDto;
   }
 
@@ -88,7 +84,7 @@ export class ResetPasscodeService extends BaseService {
       throw new BadRequestException(errorKeys.login.Invalid_Reset_Passcode_Token);
     }
 
-    const user: User | null = await this._userModule.getByUuid(data.userGuid);
+    const user: IUserEntity | null = await this._userModule.getByUuid(data.userGuid);
 
     if (isNullOrUndefined(user)) {
       throw new BadRequestException(errorKeys.users.Invalid_User_Id);

@@ -1,13 +1,14 @@
 import { ACCESS_TOKEN_ALGORITHM, USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
-import { IPermissionModuleBoundary, IUserModuleBoundary } from '@core';
+import { IPermissionModuleBoundary, IUserEntity, IUserModuleBoundary } from '@core';
+import { BaseService } from '@core';
 import { userToIUser } from '@db';
 import { events } from '@events';
 import { BadRequestException, errorKeys, TranslatableHttpException } from '@exceptions';
-import { BaseService } from '@modules/common';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { decode, JwtPayload, sign, verify, VerifyErrors } from 'jsonwebtoken';
 import StatusCode from 'status-code-enum';
 import { Inject, Service } from 'typedi';
+import { PasscodeService } from './passcode.service';
 import {
   getAccessTokenExpiration,
   getAccessTokenSecret,
@@ -16,8 +17,6 @@ import {
   getTokenAudience,
   getTokenIssuer,
 } from '../../../middlewares/authorization/set-identity.middleware';
-import { User } from './../../../dataBase/entities/users/user.entity';
-import { PasscodeService } from './passcode.service';
 import { LoginDto } from '../dtos/login.dto';
 import { RefreshTokenDto } from '../dtos/refresh-token.dto';
 import { FailedLoginAttemptEvent } from '../events/failed-login-attempt-event';
@@ -40,13 +39,13 @@ export class AuthService extends BaseService {
   }
 
   public async login(data: LoginDto): Promise<ILoginResult> {
-    const users: User[] = await this._userModule.findManyByLogin(data?.email, data?.phone);
+    const users: IUserEntity[] = await this._userModule.findManyByLogin(data?.email, data?.phone);
 
     if (users?.length !== 1) {
       throw new BadRequestException(errorKeys.login.Invalid_Login_Or_Passcode);
     }
 
-    const user: User = users[0];
+    const user: IUserEntity = users[0];
 
     if (isNullOrEmptyString(user.passcode)) {
       throw new BadRequestException(errorKeys.login.User_Passcode_Is_Not_Set);
@@ -144,7 +143,7 @@ export class AuthService extends BaseService {
   //   return findUser;
   // }
 
-  private createRefreshToken(user: User): string {
+  private createRefreshToken(user: IUserEntity): string {
     return sign({ userId: user.uuid }, getRefreshTokenSecret(user.id, user.refreshTokenKey), {
       expiresIn: getRefreshTokenExpiration(),
       notBefore: '0',
@@ -155,7 +154,7 @@ export class AuthService extends BaseService {
     });
   }
 
-  private async createAccessTokenAsync(user: User): Promise<string> {
+  private async createAccessTokenAsync(user: IUserEntity): Promise<string> {
     const userPermissions = await this._permissionModule.getUserPermissions(user);
 
     const dataStoredInToken = {

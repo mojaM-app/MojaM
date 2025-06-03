@@ -1,4 +1,4 @@
-import { IRoutes } from '@interfaces';
+import { IRoutes } from '@core';
 import { setIdentity } from '@middlewares';
 import express from 'express';
 import { CommunityController } from '../controllers/community.controller';

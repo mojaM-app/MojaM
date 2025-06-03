@@ -1,4 +1,4 @@
-import { IResponse } from '@interfaces';
+import { IResponse } from '@core';
 
 export class RequestResetPasscodeResponseDto implements IResponse<boolean> {
   public readonly data: boolean;

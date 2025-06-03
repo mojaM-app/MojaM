@@ -1,6 +1,6 @@
 import { RESET_PASSWORD_TOKEN_EXPIRE_IN } from '@config';
 import { ICreateResetPasscodeToken, IUserId } from '@core';
-import { BaseRepository } from '@modules/common';
+import { BaseRepository } from '@db';
 import { getDateTimeNow, isNullOrUndefined } from '@utils';
 import ms from 'ms';
 import { Service } from 'typedi';

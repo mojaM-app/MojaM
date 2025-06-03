@@ -1,6 +1,5 @@
+import { BaseReqDto, IResponse } from '@core';
 import { events } from '@events';
-import { IResponse } from '@interfaces';
-import { BaseReqDto } from '@modules/common';
 
 export class UnlockAccountReqDto extends BaseReqDto {
   public readonly userGuid: string | undefined;

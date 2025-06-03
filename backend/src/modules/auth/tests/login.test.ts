@@ -1,17 +1,16 @@
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
-import { ILoginModel } from '@core';
+import { ILoginModel, IRequestWithIdentity, RouteConstants } from '@core';
 import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
-import { IRequestWithIdentity } from '@interfaces';
 import { setIdentity } from '@middlewares';
-import { AuthRoute, LoginResponseDto } from '@modules/auth';
-import { PermissionsRoute } from '@modules/permissions';
-import { CreateUserResponseDto, UserRoute, userTestHelpers } from '@modules/users';
+import { LoginResponseDto } from '@modules/auth';
+import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
 import { generateRandomEmail, generateRandomPassword, getAdminLoginData } from '@utils';
 import { NextFunction } from 'express';
 import { decode } from 'jsonwebtoken';
 import request from 'supertest';
+import { AuthRoute } from '../routes/auth.routes';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { TestApp } from './../../../helpers/tests.utils';
 
@@ -132,7 +131,10 @@ describe('POST /login', () => {
       expect(user1.phone).toBe(user2.phone);
       expect(user1.email).not.toBe(user2.email);
 
-      const createUser1Response = await request(app!.getServer()).post(UserRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUser1Response = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(user1)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser1Response.statusCode).toBe(201);
       const { data: newUser1Dto, message: createUser1Message }: CreateUserResponseDto = createUser1Response.body;
       expect(newUser1Dto?.id).toBeDefined();
@@ -140,12 +142,15 @@ describe('POST /login', () => {
       expect(newUser1Dto.phone).toBe(phone);
 
       let activateNewUserResponse = await request(app!.getServer())
-        .post(UserRoute.path + '/' + newUser1Dto.id + '/' + UserRoute.activatePath)
+        .post(RouteConstants.USER_PATH + '/' + newUser1Dto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const createUser2Response = await request(app!.getServer()).post(UserRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUser2Response = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(user2)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser2Response.statusCode).toBe(201);
       const { data: newUser2Dto, message: createUser2Message }: CreateUserResponseDto = createUser2Response.body;
       expect(newUser2Dto?.id).toBeDefined();
@@ -153,7 +158,7 @@ describe('POST /login', () => {
       expect(newUser2Dto.phone).toBe(phone);
 
       activateNewUserResponse = await request(app!.getServer())
-        .post(UserRoute.path + '/' + newUser2Dto.id + '/' + UserRoute.activatePath)
+        .post(RouteConstants.USER_PATH + '/' + newUser2Dto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
@@ -175,12 +180,12 @@ describe('POST /login', () => {
       expect(userLoggedIn.accessToken).toBeDefined();
 
       let deleteResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + newUser1Dto.id)
+        .delete(RouteConstants.USER_PATH + '/' + newUser1Dto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
       deleteResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + newUser2Dto.id)
+        .delete(RouteConstants.USER_PATH + '/' + newUser2Dto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -213,7 +218,10 @@ describe('POST /login', () => {
       expect(user1.phone).toBe(user2.phone);
       expect(user1.email).not.toBe(user2.email);
 
-      const createUser1Response = await request(app!.getServer()).post(UserRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUser1Response = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(user1)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser1Response.statusCode).toBe(201);
       const { data: newUser1Dto, message: createUser1Message }: CreateUserResponseDto = createUser1Response.body;
       expect(newUser1Dto?.id).toBeDefined();
@@ -221,12 +229,15 @@ describe('POST /login', () => {
       expect(newUser1Dto.phone).toBe(phone);
 
       let activateNewUserResponse = await request(app!.getServer())
-        .post(UserRoute.path + '/' + newUser1Dto.id + '/' + UserRoute.activatePath)
+        .post(RouteConstants.USER_PATH + '/' + newUser1Dto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const createUser2Response = await request(app!.getServer()).post(UserRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUser2Response = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(user2)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser2Response.statusCode).toBe(201);
       const { data: newUser2Dto, message: createUser2Message }: CreateUserResponseDto = createUser2Response.body;
       expect(newUser2Dto?.id).toBeDefined();
@@ -234,7 +245,7 @@ describe('POST /login', () => {
       expect(newUser2Dto.phone).toBe(phone);
 
       activateNewUserResponse = await request(app!.getServer())
-        .post(UserRoute.path + '/' + newUser2Dto.id + '/' + UserRoute.activatePath)
+        .post(RouteConstants.USER_PATH + '/' + newUser2Dto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
@@ -256,12 +267,12 @@ describe('POST /login', () => {
       expect(userLoggedIn.accessToken).toBeDefined();
 
       let deleteResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + newUser1Dto.id)
+        .delete(RouteConstants.USER_PATH + '/' + newUser1Dto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
       deleteResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + newUser2Dto.id)
+        .delete(RouteConstants.USER_PATH + '/' + newUser2Dto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -294,7 +305,10 @@ describe('POST /login', () => {
       expect(user1.email).toBe(user2.email);
       expect(user1.phone).not.toBe(user2.phone);
 
-      const createUser1Response = await request(app!.getServer()).post(UserRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUser1Response = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(user1)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser1Response.statusCode).toBe(201);
       const { data: newUser1Dto, message: createUser1Message }: CreateUserResponseDto = createUser1Response.body;
       expect(newUser1Dto?.id).toBeDefined();
@@ -302,12 +316,15 @@ describe('POST /login', () => {
       expect(newUser1Dto.email).toBe(email);
 
       let activateNewUserResponse = await request(app!.getServer())
-        .post(UserRoute.path + '/' + newUser1Dto.id + '/' + UserRoute.activatePath)
+        .post(RouteConstants.USER_PATH + '/' + newUser1Dto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const createUser2Response = await request(app!.getServer()).post(UserRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUser2Response = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(user2)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser2Response.statusCode).toBe(201);
       const { data: newUser2Dto, message: createUser2Message }: CreateUserResponseDto = createUser2Response.body;
       expect(newUser2Dto?.id).toBeDefined();
@@ -315,7 +332,7 @@ describe('POST /login', () => {
       expect(newUser2Dto.email).toBe(email);
 
       activateNewUserResponse = await request(app!.getServer())
-        .post(UserRoute.path + '/' + newUser2Dto.id + '/' + UserRoute.activatePath)
+        .post(RouteConstants.USER_PATH + '/' + newUser2Dto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
@@ -337,12 +354,12 @@ describe('POST /login', () => {
       expect(userLoggedIn.accessToken).toBeDefined();
 
       let deleteResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + newUser1Dto.id)
+        .delete(RouteConstants.USER_PATH + '/' + newUser1Dto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
       deleteResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + newUser2Dto.id)
+        .delete(RouteConstants.USER_PATH + '/' + newUser2Dto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -377,7 +394,10 @@ describe('POST /login', () => {
       expect(user1.email).toBe(user2.email);
       expect(user1.phone).not.toBe(user2.phone);
 
-      const createUser1Response = await request(app!.getServer()).post(UserRoute.path).send(user1).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUser1Response = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(user1)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser1Response.statusCode).toBe(201);
       const { data: newUser1Dto, message: createUser1Message }: CreateUserResponseDto = createUser1Response.body;
       expect(newUser1Dto?.id).toBeDefined();
@@ -385,12 +405,15 @@ describe('POST /login', () => {
       expect(newUser1Dto.email).toBe(email);
 
       let activateNewUserResponse = await request(app!.getServer())
-        .post(UserRoute.path + '/' + newUser1Dto.id + '/' + UserRoute.activatePath)
+        .post(RouteConstants.USER_PATH + '/' + newUser1Dto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const createUser2Response = await request(app!.getServer()).post(UserRoute.path).send(user2).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUser2Response = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(user2)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUser2Response.statusCode).toBe(201);
       const { data: newUser2Dto, message: createUser2Message }: CreateUserResponseDto = createUser2Response.body;
       expect(newUser2Dto?.id).toBeDefined();
@@ -398,7 +421,7 @@ describe('POST /login', () => {
       expect(newUser2Dto.email).toBe(email);
 
       activateNewUserResponse = await request(app!.getServer())
-        .post(UserRoute.path + '/' + newUser2Dto.id + '/' + UserRoute.activatePath)
+        .post(RouteConstants.USER_PATH + '/' + newUser2Dto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
@@ -418,12 +441,12 @@ describe('POST /login', () => {
       expect(loginArgs).toBeUndefined();
 
       let deleteResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + newUser1Dto.id)
+        .delete(RouteConstants.USER_PATH + '/' + newUser1Dto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
       deleteResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + newUser2Dto.id)
+        .delete(RouteConstants.USER_PATH + '/' + newUser2Dto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -474,7 +497,10 @@ describe('POST /login', () => {
     it('should respond with a status code of 400 when passcode is invalid', async () => {
       const user = userTestHelpers.generateValidUserWithPassword();
 
-      const createResponse = await request(app!.getServer()).post(UserRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createResponse = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(user)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createResponse.body;
       expect(newUserDto?.id).toBeDefined();
@@ -502,7 +528,7 @@ describe('POST /login', () => {
       }
 
       const deleteResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + newUserDto.id)
+        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -558,14 +584,17 @@ describe('POST /login', () => {
     it('login (via email) should respond with a status code of 400 when password is incorrect', async () => {
       const user = userTestHelpers.generateValidUserWithPassword();
 
-      const createResponse = await request(app!.getServer()).post(UserRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createResponse = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(user)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
       const activateUserResponse = await request(app!.getServer())
-        .post(UserRoute.path + '/' + newUserDto.id + '/' + UserRoute.activatePath)
+        .post(RouteConstants.USER_PATH + '/' + newUserDto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
@@ -582,7 +611,7 @@ describe('POST /login', () => {
       expect(loginArgs).toBeUndefined();
 
       const deleteResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + newUserDto.id)
+        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -610,14 +639,17 @@ describe('POST /login', () => {
     it('login (via email and phone) should respond with a status code of 400 when password is incorrect', async () => {
       const user = userTestHelpers.generateValidUserWithPassword();
 
-      const createResponse = await request(app!.getServer()).post(UserRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createResponse = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(user)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
       const activateUserResponse = await request(app!.getServer())
-        .post(UserRoute.path + '/' + newUserDto.id + '/' + UserRoute.activatePath)
+        .post(RouteConstants.USER_PATH + '/' + newUserDto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
@@ -634,7 +666,7 @@ describe('POST /login', () => {
       expect(loginArgs).toBeUndefined();
 
       const deleteResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + newUserDto.id)
+        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -662,14 +694,17 @@ describe('POST /login', () => {
     it('login (via email) x-times should lock-out the user and should respond with a status code of 400 when password is incorrect', async () => {
       const user = userTestHelpers.generateValidUserWithPassword();
 
-      const createResponse = await request(app!.getServer()).post(UserRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createResponse = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(user)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
       const activateUserResponse = await request(app!.getServer())
-        .post(UserRoute.path + '/' + newUserDto.id + '/' + UserRoute.activatePath)
+        .post(RouteConstants.USER_PATH + '/' + newUserDto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
@@ -699,7 +734,7 @@ describe('POST /login', () => {
       expect(loginArgs).toBeUndefined();
 
       const deleteResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + newUserDto.id)
+        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -729,14 +764,17 @@ describe('POST /login', () => {
     it('login (via email and phone) x-times should lock-out the user and should respond with a status code of 400 when password is incorrect', async () => {
       const user = userTestHelpers.generateValidUserWithPassword();
 
-      const createResponse = await request(app!.getServer()).post(UserRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createResponse = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(user)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
       const activateUserResponse = await request(app!.getServer())
-        .post(UserRoute.path + '/' + newUserDto.id + '/' + UserRoute.activatePath)
+        .post(RouteConstants.USER_PATH + '/' + newUserDto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
@@ -766,7 +804,7 @@ describe('POST /login', () => {
       expect(loginArgs).toBeUndefined();
 
       const deleteResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + newUserDto.id)
+        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -798,7 +836,7 @@ describe('POST /login', () => {
       const requestData = userTestHelpers.generateValidUserWithPassword();
       requestData.passcode = undefined;
       const createUserResponse = await request(app!.getServer())
-        .post(UserRoute.path)
+        .post(RouteConstants.USER_PATH)
         .send(requestData)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
@@ -821,7 +859,7 @@ describe('POST /login', () => {
       expect(loginArgs).toBeUndefined();
 
       const deleteResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + user.id)
+        .delete(RouteConstants.USER_PATH + '/' + user.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -839,14 +877,17 @@ describe('POST /login', () => {
     it('login should respond with a status code of 400 when try to login to a locked out account', async () => {
       const user = userTestHelpers.generateValidUserWithPassword();
 
-      const createResponse = await request(app!.getServer()).post(UserRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createResponse = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(user)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
       const activateUserResponse = await request(app!.getServer())
-        .post(UserRoute.path + '/' + newUserDto.id + '/' + UserRoute.activatePath)
+        .post(RouteConstants.USER_PATH + '/' + newUserDto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
@@ -869,7 +910,7 @@ describe('POST /login', () => {
       expect(loginArgs).toBeUndefined();
 
       const deleteResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + newUserDto.id)
+        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -904,14 +945,17 @@ describe('POST /login', () => {
     it('should respond with a status code of 400 when user is not active and passcode is correct', async () => {
       const user = userTestHelpers.generateValidUserWithPassword();
 
-      const createResponse = await request(app!.getServer()).post(UserRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createResponse = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(user)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
       const deactivateResponse = await request(app!.getServer())
-        .post(UserRoute.path + '/' + newUserDto.id + '/' + UserRoute.deactivatePath)
+        .post(RouteConstants.USER_PATH + '/' + newUserDto.id + '/' + RouteConstants.USER_DEACTIVATE_PATH)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deactivateResponse.statusCode).toBe(200);
@@ -928,7 +972,7 @@ describe('POST /login', () => {
       expect(loginArgs).toBeUndefined();
 
       const deleteResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + newUserDto.id)
+        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -956,14 +1000,17 @@ describe('POST /login', () => {
     it('should respond with a status code of 400 when user is not active and passcode is incorrect', async () => {
       const user = userTestHelpers.generateValidUserWithPassword();
 
-      const createResponse = await request(app!.getServer()).post(UserRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createResponse = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(user)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
       const deactivateResponse = await request(app!.getServer())
-        .post(UserRoute.path + '/' + newUserDto.id + '/' + UserRoute.deactivatePath)
+        .post(RouteConstants.USER_PATH + '/' + newUserDto.id + '/' + RouteConstants.USER_DEACTIVATE_PATH)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deactivateResponse.statusCode).toBe(200);
@@ -980,7 +1027,7 @@ describe('POST /login', () => {
       expect(loginArgs).toBeUndefined();
 
       const deleteResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + newUserDto.id)
+        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);
@@ -1010,14 +1057,17 @@ describe('POST /login', () => {
     it('should respond with a status code of 400 when user is deleted', async () => {
       const user = userTestHelpers.generateValidUserWithPassword();
 
-      const createResponse = await request(app!.getServer()).post(UserRoute.path).send(user).set('Authorization', `Bearer ${adminAccessToken}`);
+      const createResponse = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(user)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(createResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createMessage }: CreateUserResponseDto = createResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
       const deleteResponse = await request(app!.getServer())
-        .delete(UserRoute.path + '/' + newUserDto.id)
+        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
         .send()
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(200);

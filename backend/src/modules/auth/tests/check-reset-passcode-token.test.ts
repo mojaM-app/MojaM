@@ -1,11 +1,9 @@
 import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
-import { AuthRoute } from '@modules/auth';
-import { PermissionsRoute } from '@modules/permissions';
-import { UserRoute } from '@modules/users';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
 import { CheckResetPasscodeTokenResponseDto } from '../dtos/check-reset-passcode-token.dto';
+import { AuthRoute } from '../routes/auth.routes';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { TestApp } from './../../../helpers/tests.utils';
 
