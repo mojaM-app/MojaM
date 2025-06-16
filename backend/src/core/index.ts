@@ -17,12 +17,9 @@ export * from './interfaces';
 
 // Common base classes and utilities
 export { BaseController, BaseService, CacheService, BaseReqDto, Identity } from './shared';
+export { IModule } from './interfaces/module.interfaces';
 
-export { IUserModuleBoundary, IPermissionModuleBoundary, IAuthModuleBoundary, INotificationModuleBoundary } from './interfaces/module-boundaries';
 export { IRequestWithIdentity } from './interfaces/request.interfaces';
 export { IResponse } from './interfaces/response.interfaces';
 export { IRoutes } from './interfaces/routes.interfaces';
 export { IResponseError } from './interfaces/response.interfaces';
-export { registerModules } from './di/container';
-
-export { IPasscodeService, IResetPasscodeService, ICryptoService } from './interfaces/auth/auth.services';

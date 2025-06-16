@@ -1,5 +1,6 @@
 import { ACCESS_TOKEN_ALGORITHM, ACCESS_TOKEN_SECRET, REFRESH_TOKEN_EXPIRE_IN, REFRESH_TOKEN_SECRET, SECRET_AUDIENCE, SECRET_ISSUER } from '@config';
-import { IPermissionModuleBoundary, IRequestWithIdentity, IUserModuleBoundary, Identity, logger } from '@core';
+import { IRequestWithIdentity, IUserService, Identity, logger } from '@core';
+import { IPermissionsService } from '@core/interfaces/permissions/permissions.services';
 import { UnauthorizedException, errorKeys } from '@exceptions';
 import { isNullOrEmptyString, isNullOrUndefined, isString } from '@utils';
 import { NextFunction, Request, Response } from 'express';
@@ -93,14 +94,14 @@ export const setIdentity = async (req: IRequestWithIdentity, res: Response, next
         audience: getTokenAudience(),
         issuer: getTokenIssuer(),
       }).payload as JwtPayload;
-      const userModule = Container.get<IUserModuleBoundary>('USER_MODULE');
-      const user = await userModule.getByUuid(sub);
+      const userService = Container.get<IUserService>('IUserService');
+      const user = await userService.getByUuid(sub);
 
       if (isNullOrUndefined(user)) {
         next(new UnauthorizedException(errorKeys.login.Wrong_Authentication_Token));
       } else {
-        const permissionRepository = Container.get<IPermissionModuleBoundary>('PERMISSION_MODULE');
-        const permissions = await permissionRepository.getUserPermissions(user);
+        const permissionsService = Container.get<IPermissionsService>('IPermissionsService');
+        const permissions = await permissionsService.getUserPermissions(user);
         req.identity = new Identity(user, permissions);
         next();
       }

@@ -1,9 +1,6 @@
-export { UserDetailsRoute } from './routes/user-details.routes';
-export { UserListRoute } from './routes/user-list.routes';
-export { UserRoute } from './routes/user.routes';
-export { UserProfileRoute } from './routes/user-profile.routes';
-export { CreateUserResponseDto } from './dtos/create-user.dto';
-export { GetUserResponseDto, IGetUserDto } from './dtos/get-user.dto';
+import { IUser } from '@core';
+import { CreateUserDto } from './dtos/create-user.dto';
+import { generateValidUserWithPassword, generateValidUserWithPin } from './helpers/tests.helpers';
 
 export { UserActivatedEvent } from './events/user-activated-event';
 export { UserCreatedEvent } from './events/user-created-event';
@@ -17,11 +14,8 @@ export { UserRetrievedEvent } from './events/user-retrieved-event';
 export { UserUnlockedEvent } from './events/user-unlocked-event';
 export { UserUpdatedEvent } from './events/user-updated-event';
 
-import { IUser } from '@core';
-import { CreateUserDto } from './dtos/create-user.dto';
-import { generateValidUserWithPassword, generateValidUserWithPin } from './helpers/tests.helpers';
-import { UserModuleBoundary } from './user-module.boundary';
-import { ModuleRegistry } from '../../core/di/module-registry';
+export { CreateUserResponseDto } from './dtos/create-user.dto';
+export { GetUserResponseDto, IGetUserDto } from './dtos/get-user.dto';
 
 export let userTestHelpers: {
   generateValidUserWithPassword: () => CreateUserDto & IUser;
@@ -33,8 +27,3 @@ if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
     generateValidUserWithPin,
   };
 }
-
-// Module self-registration
-ModuleRegistry.addModuleRegistration(() => {
-  ModuleRegistry.registerUserModule(UserModuleBoundary);
-});

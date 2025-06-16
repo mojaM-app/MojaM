@@ -1,8 +1,8 @@
-import { BaseService, INotificationModuleBoundary, IResetPasscodeEmailSettings, IUserEntity, IUserModuleBoundary, LinkHelper } from '@core';
+import { BaseService, INotificationsService, IResetPasscodeEmailSettings, IUserEntity, IUserService, LinkHelper } from '@core';
 import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
-import { Inject, Service } from 'typedi';
+import Container, { Service } from 'typedi';
 import { CheckResetPasscodeTokenReqDto, ICheckResetPasscodeTokenResultDto } from '../dtos/check-reset-passcode-token.dto';
 import { AccountTryingToLogInDto } from '../dtos/get-account-before-log-in.dto';
 import { IResetPasscodeResultDto, ResetPasscodeReqDto } from '../dtos/reset-passcode.dto';
@@ -15,17 +15,21 @@ import { PasscodeService } from './passcode.service';
 
 @Service()
 export class ResetPasscodeService extends BaseService {
+  private readonly _userService: IUserService;
+  private readonly _notificationsService: INotificationsService;
+
   constructor(
-    @Inject('USER_MODULE') private readonly _userModule: IUserModuleBoundary,
-    @Inject('NOTIFICATION_MODULE') private readonly _notificationModule: INotificationModuleBoundary,
     private readonly _resetPasscodeTokensRepository: ResetPasscodeTokensRepository,
     private readonly _passcodeService: PasscodeService,
     private readonly _cryptoService: CryptoService,
   ) {
     super();
+    this._userService = Container.get<IUserService>('IUserService');
+    this._notificationsService = Container.get<INotificationsService>('INotificationsService');
   }
+
   public async requestResetPasscode(data: AccountTryingToLogInDto): Promise<boolean> {
-    const users: User[] = (await this._userModule.findManyByLogin(data?.email, data?.phone)) as any;
+    const users: User[] = (await this._userService.findManyByLogin(data?.email, data?.phone)) as any;
 
     if ((users?.length ?? 0) !== 1) {
       return true;
@@ -42,7 +46,7 @@ export class ResetPasscodeService extends BaseService {
     const token = this._cryptoService.generateResetPasscodeToken();
     const resetPasscodeToken = await this._resetPasscodeTokensRepository.createToken(user.id, token);
 
-    return await this._notificationModule.sendEmailResetPasscode({
+    return await this._notificationsService.sendEmailResetPasscode({
       user: user as any,
       authType: authType as any,
       link: LinkHelper.resetPasscodeLink(user.uuid, resetPasscodeToken.token),
@@ -50,7 +54,7 @@ export class ResetPasscodeService extends BaseService {
   }
 
   public async checkResetPasscodeToken(data: CheckResetPasscodeTokenReqDto): Promise<ICheckResetPasscodeTokenResultDto> {
-    const userId = await this._userModule.getIdByUuid(data.userGuid);
+    const userId = await this._userService.getIdByUuid(data.userGuid);
 
     if (isNullOrUndefined(userId)) {
       return {
@@ -66,7 +70,7 @@ export class ResetPasscodeService extends BaseService {
       } satisfies ICheckResetPasscodeTokenResultDto;
     }
 
-    const user = await this._userModule.getById(userId);
+    const user = await this._userService.getById(userId);
 
     return {
       isValid: true,
@@ -84,7 +88,7 @@ export class ResetPasscodeService extends BaseService {
       throw new BadRequestException(errorKeys.login.Invalid_Reset_Passcode_Token);
     }
 
-    const user: IUserEntity | null = await this._userModule.getByUuid(data.userGuid);
+    const user: IUserEntity | null = await this._userService.getByUuid(data.userGuid);
 
     if (isNullOrUndefined(user)) {
       throw new BadRequestException(errorKeys.users.Invalid_User_Id);
@@ -97,17 +101,17 @@ export class ResetPasscodeService extends BaseService {
     }
 
     if (this._passcodeService.isValid(data.model?.passcode)) {
-      await this._userModule.setPasscode(user!.id, data.model!.passcode);
+      await this._userService.setPasscode(user!.id, data.model!.passcode);
     } else {
       throw new BadRequestException(errorKeys.users.Invalid_Passcode);
     }
 
     if (!user!.isActive) {
-      await this._userModule.activate(user!.id);
+      await this._userService.activate(user!.id);
     }
 
     if (user!.isLockedOut) {
-      await this._userModule.unlock(user!.id);
+      await this._userService.unlock(user!.id);
     }
 
     await this._resetPasscodeTokensRepository.deleteTokens(user!.id);

@@ -1,5 +1,5 @@
 import { ACCESS_TOKEN_ALGORITHM, USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
-import { IPermissionModuleBoundary, IUserEntity, IUserModuleBoundary } from '@core';
+import { IPermissionsService, IUserEntity, IUserService } from '@core';
 import { BaseService } from '@core';
 import { userToIUser } from '@db';
 import { events } from '@events';
@@ -7,7 +7,7 @@ import { BadRequestException, errorKeys, TranslatableHttpException } from '@exce
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { decode, JwtPayload, sign, verify, VerifyErrors } from 'jsonwebtoken';
 import StatusCode from 'status-code-enum';
-import { Inject, Service } from 'typedi';
+import Container, { Service } from 'typedi';
 import { PasscodeService } from './passcode.service';
 import {
   getAccessTokenExpiration,
@@ -30,16 +30,17 @@ import { ILoginResult } from '../interfaces/login.interfaces';
 
 @Service()
 export class AuthService extends BaseService {
-  constructor(
-    @Inject('USER_MODULE') private readonly _userModule: IUserModuleBoundary,
-    @Inject('PERMISSION_MODULE') private readonly _permissionModule: IPermissionModuleBoundary,
-    private readonly _passcodeService: PasscodeService,
-  ) {
+  private readonly _userService: IUserService;
+  private readonly _permissionsService: IPermissionsService;
+
+  constructor(private readonly _passcodeService: PasscodeService) {
     super();
+    this._userService = Container.get<IUserService>('IUserService');
+    this._permissionsService = Container.get<IPermissionsService>('IPermissionsService');
   }
 
   public async login(data: LoginDto): Promise<ILoginResult> {
-    const users: IUserEntity[] = await this._userModule.findManyByLogin(data?.email, data?.phone);
+    const users: IUserEntity[] = await this._userService.findManyByLogin(data?.email, data?.phone);
 
     if (users?.length !== 1) {
       throw new BadRequestException(errorKeys.login.Invalid_Login_Or_Passcode);
@@ -64,14 +65,14 @@ export class AuthService extends BaseService {
     const isPasscodeMatching: boolean = this._passcodeService.match(user, data.passcode);
 
     if (isPasscodeMatching) {
-      await this._userModule.updateAfterLogin(user.id);
+      await this._userService.updateAfterLogin(user.id);
     } else {
-      const failedLoginAttempts = await this._userModule.increaseFailedLoginAttempts(user.id, user.failedLoginAttempts);
+      const failedLoginAttempts = await this._userService.increaseFailedLoginAttempts(user.id, user.failedLoginAttempts);
 
       this._eventDispatcher.dispatch(events.users.failedLoginAttempt, new FailedLoginAttemptEvent(user));
 
       if (failedLoginAttempts >= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS) {
-        await this._userModule.lockOut(user.id);
+        await this._userService.lockOut(user.id);
 
         this._eventDispatcher.dispatch(events.users.userLockedOut, new UserLockedOutEvent(user));
 
@@ -104,7 +105,7 @@ export class AuthService extends BaseService {
       return null;
     }
 
-    const user = await this._userModule.getByUuid(userUuid as string);
+    const user = await this._userService.getByUuid(userUuid as string);
 
     if (isNullOrUndefined(user)) {
       return null;
@@ -155,7 +156,7 @@ export class AuthService extends BaseService {
   }
 
   private async createAccessTokenAsync(user: IUserEntity): Promise<string> {
-    const userPermissions = await this._permissionModule.getUserPermissions(user);
+    const userPermissions = await this._permissionsService.getUserPermissions(user);
 
     const dataStoredInToken = {
       permissions: userPermissions,

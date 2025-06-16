@@ -1,7 +1,6 @@
 import { ILoginModel } from '@core';
 import { events } from '@events';
 import { testHelpers } from '@helpers';
-import { AnnouncementsRout } from '@modules/announcements';
 import { getAdminLoginData, getDateNow, isGuid } from '@utils';
 import { isDateString } from 'class-validator';
 import request from 'supertest';
@@ -11,6 +10,7 @@ import { generateValidAnnouncements } from './announcements-tests.helper';
 import { CreateAnnouncementsResponseDto } from '../dtos/create-announcements.dto';
 import { GetCurrentAnnouncementsResponseDto, IGetCurrentAnnouncementsDto } from '../dtos/get-current-announcements.dto';
 import { PublishAnnouncementsResponseDto } from '../dtos/publish-announcements.dto';
+import { AnnouncementsRout } from '../routes/announcements.routes';
 import { CurrentAnnouncementsService } from '../services/current-announcements.service';
 
 describe('GET /announcements/current', () => {

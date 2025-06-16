@@ -5,6 +5,3 @@ export { AnnouncementsPublishedEvent } from './events/announcements-published-ev
 export { AnnouncementsRetrievedEvent } from './events/announcements-retrieved-event';
 export { AnnouncementsUpdatedEvent } from './events/announcements-updated-event';
 export { CurrentAnnouncementsRetrievedEvent } from './events/current-announcements-retrieved-event';
-
-export { AnnouncementsListRoute } from './routes/announcements-list.routes';
-export { AnnouncementsRout } from './routes/announcements.routes';

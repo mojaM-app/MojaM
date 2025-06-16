@@ -1,10 +1,10 @@
-import { AuthenticationTypes, IUpdateUser, IUserEntity, IUserModuleBoundary } from '@core';
+import { AuthenticationTypes, IUpdateUser, IUserEntity, IUserService } from '@core';
 import { BaseService } from '@core';
 import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { UserActivatedEvent, UserUnlockedEvent } from '@modules/users';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
-import { Inject, Service } from 'typedi';
+import Container, { Service } from 'typedi';
 import { ActivateAccountDto, ActivateAccountReqDto, IActivateAccountResultDto } from '../dtos/activate-account.dto';
 import { AccountTryingToLogInDto, IGetAccountBeforeLogInResultDto } from '../dtos/get-account-before-log-in.dto';
 import { GetAccountToActivateReqDto, IAccountToActivateResultDto } from '../dtos/get-account-to-activate.dto';
@@ -14,15 +14,15 @@ import { ResetPasscodeTokensRepository } from '../repositories/reset-passcode-to
 
 @Service()
 export class AccountService extends BaseService {
-  constructor(
-    @Inject('USER_MODULE') private readonly _userModule: IUserModuleBoundary,
-    private readonly _resetPasscodeTokensRepository: ResetPasscodeTokensRepository,
-  ) {
+  private readonly _userService: IUserService;
+
+  constructor(private readonly _resetPasscodeTokensRepository: ResetPasscodeTokensRepository) {
     super();
+    this._userService = Container.get<IUserService>('IUserService');
   }
 
   public async getAccountBeforeLogIn(data: AccountTryingToLogInDto): Promise<IGetAccountBeforeLogInResultDto> {
-    const users: IUserEntity[] = await this._userModule.findManyByLogin(data?.email, data?.phone);
+    const users: IUserEntity[] = await this._userService.findManyByLogin(data?.email, data?.phone);
 
     if ((users?.length ?? 0) === 0) {
       return {
@@ -50,7 +50,7 @@ export class AccountService extends BaseService {
       isActive: true,
     } satisfies IAccountToActivateResultDto;
 
-    const user = await this._userModule.getByUuid(data.userGuid);
+    const user = await this._userService.getByUuid(data.userGuid);
 
     if (isNullOrUndefined(user)) {
       return result;
@@ -79,7 +79,7 @@ export class AccountService extends BaseService {
   }
 
   public async activateAccount(reqDto: ActivateAccountReqDto): Promise<IActivateAccountResultDto> {
-    const user: IUserEntity | null = await this._userModule.getByUuid(reqDto.userGuid);
+    const user: IUserEntity | null = await this._userService.getByUuid(reqDto.userGuid);
 
     if (isNullOrUndefined(user)) {
       return {
@@ -94,14 +94,14 @@ export class AccountService extends BaseService {
     }
 
     if (!isNullOrEmptyString(userData.passcode)) {
-      await this._userModule.setPasscode(user!.id, userData.passcode!);
+      await this._userService.setPasscode(user!.id, userData.passcode!);
     }
 
     if (!user!.isActive) {
-      await this._userModule.activate(user!.id);
+      await this._userService.activate(user!.id);
     }
 
-    const updatedUser = await this._userModule.update(user!.id, {
+    const updatedUser = await this._userService.update(user!.id, {
       firstName: userData.firstName,
       lastName: userData.lastName,
       joiningDate: userData.joiningDate,
@@ -117,7 +117,7 @@ export class AccountService extends BaseService {
   }
 
   public async unlockAccount(reqDto: UnlockAccountReqDto): Promise<IUnlockAccountResultDto> {
-    const user: IUserEntity | null = await this._userModule.getByUuid(reqDto.userGuid);
+    const user: IUserEntity | null = await this._userService.getByUuid(reqDto.userGuid);
 
     if (isNullOrUndefined(user) || (!user!.isLockedOut && user!.failedLoginAttempts === 0)) {
       return {
@@ -125,7 +125,7 @@ export class AccountService extends BaseService {
       } satisfies IUnlockAccountResultDto;
     }
 
-    const updatedUser = await this._userModule.unlock(user!.id);
+    const updatedUser = await this._userService.unlock(user!.id);
 
     this._eventDispatcher.dispatch(events.users.userUnlocked, new UserUnlockedEvent(updatedUser!, undefined));
 

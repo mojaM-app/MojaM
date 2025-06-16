@@ -1,5 +1,4 @@
 import { BASE_PATH, CREDENTIALS, LOG_FORMAT, NODE_ENV, ORIGIN, PORT } from '@config';
-import './core/di/container'; // Import container to register module boundaries
 import { IRoutes, logger, stream } from '@core';
 import { DbConnection } from '@db';
 import { errorKeys } from '@exceptions';

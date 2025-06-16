@@ -1,22 +1,21 @@
-import { IAddUserSystemPermission, IUserModuleBoundary, SystemPermissions } from '@core';
+import { IAddUserSystemPermission, SystemPermissions, IUserEntity, IUserService } from '@core';
 import { BaseRepository } from '@db';
 import { getDateTimeNow, isArrayEmpty, isEnumValue, isNullOrUndefined, isPositiveNumber } from '@utils';
-import { Inject, Service } from 'typedi';
+import Container, { Service } from 'typedi';
 import { AddPermissionReqDto } from '../dtos/add-permission.dto';
 import { DeletePermissionsReqDto } from '../dtos/delete-permissions.dto';
 import { PermissionsCacheService } from '../services/permissions-cache.service';
-import { User } from './../../../dataBase/entities/users/user.entity';
 
 @Service()
 export class UserPermissionsRepository extends BaseRepository {
-  constructor(
-    @Inject('USER_MODULE') private readonly _userModule: IUserModuleBoundary,
-    private readonly _permissionsCacheService: PermissionsCacheService,
-  ) {
+  private readonly _userService: IUserService;
+
+  constructor(private readonly _permissionsCacheService: PermissionsCacheService) {
     super();
+    this._userService = Container.get<IUserService>('IUserService');
   }
 
-  public async get(user: User | null | undefined): Promise<SystemPermissions[]> {
+  public async get(user: IUserEntity | null | undefined): Promise<SystemPermissions[]> {
     if (isNullOrUndefined(user)) {
       return [];
     }
@@ -44,7 +43,7 @@ export class UserPermissionsRepository extends BaseRepository {
   }
 
   public async add(reqDto: AddPermissionReqDto): Promise<boolean> {
-    const userId = await this._userModule.getIdByUuid(reqDto.userGuid);
+    const userId = await this._userService.getIdByUuid(reqDto.userGuid);
 
     if (!isPositiveNumber(userId) || !isEnumValue(SystemPermissions, reqDto.permissionId)) {
       return false;
@@ -73,7 +72,7 @@ export class UserPermissionsRepository extends BaseRepository {
   }
 
   public async delete(reqDto: DeletePermissionsReqDto): Promise<boolean> {
-    const userId = await this._userModule.getIdByUuid(reqDto.userGuid);
+    const userId = await this._userService.getIdByUuid(reqDto.userGuid);
 
     if (!isPositiveNumber(userId) || (!isNullOrUndefined(reqDto.permissionId) && !isEnumValue(SystemPermissions, reqDto.permissionId))) {
       return false;
@@ -98,7 +97,7 @@ export class UserPermissionsRepository extends BaseRepository {
     return !isNullOrUndefined(deleteResult);
   }
 
-  public async getByAttributes(user: User | null | undefined): Promise<SystemPermissions[]> {
+  public async getByAttributes(user: IUserEntity | null | undefined): Promise<SystemPermissions[]> {
     if (user?.isAdmin() === true) {
       return this.getAllPermissions();
     }

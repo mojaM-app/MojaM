@@ -28,3 +28,8 @@ export { IAddUserSystemPermission } from './users/add-user-system-permission.int
 export { IResetPasscodeEmailSettings } from './notifications/email-settings.interface';
 export { IWelcomeEmailSettings } from './notifications/email-settings.interface';
 export { IUnlockAccountEmailSettings } from './notifications/email-settings.interface';
+
+export { IPasscodeService, IResetPasscodeService, ICryptoService } from './auth/auth.services';
+export { IUserService } from './users/user.services';
+export { IPermissionsService } from './permissions/permissions.services';
+export { INotificationsService } from './notifications/notifications.services';

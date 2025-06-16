@@ -2,7 +2,7 @@ import { ICryptoService, ICreateUser, IUpdateUser, IUpdateUserPasscode, IResetPa
 import { relatedDataNames } from '@db';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { getDateTimeNow, isNullOrEmptyString } from '@utils';
-import { Inject, Service } from 'typedi';
+import Container, { Service } from 'typedi';
 import { Not } from 'typeorm';
 import { User } from './../../../dataBase/entities/users/user.entity';
 import { BaseUserRepository } from './base.user.repository';
@@ -13,13 +13,16 @@ import { UserCacheService } from '../services/user-cache.service';
 
 @Service()
 export class UserRepository extends BaseUserRepository {
-  constructor(
-    cacheService: UserCacheService,
-    @Inject('IPasscodeService') private readonly _passcodeService: IPasscodeService,
-    @Inject('IResetPasscodeService') private readonly _resetPasscodeService: IResetPasscodeService,
-    @Inject('ICryptoService') private readonly _cryptoService: ICryptoService,
-  ) {
+  private readonly _passcodeService: IPasscodeService;
+  private readonly _resetPasscodeService: IResetPasscodeService;
+  private readonly _cryptoService: ICryptoService;
+
+  constructor(cacheService: UserCacheService) {
     super(cacheService);
+
+    this._passcodeService = Container.get<IPasscodeService>('IPasscodeService');
+    this._resetPasscodeService = Container.get<IResetPasscodeService>('IResetPasscodeService');
+    this._cryptoService = Container.get<ICryptoService>('ICryptoService');
   }
 
   public async findManyByLogin(email: string | null | undefined, phone?: string | null | undefined): Promise<User[]> {

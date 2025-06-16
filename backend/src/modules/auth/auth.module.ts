@@ -1,12 +1,17 @@
-import { IAuthModuleBoundary, ICryptoService, IPasscodeService, IResetPasscodeService } from '@core';
-import Container, { Service } from 'typedi';
+import { IModule, IRoutes } from '@core';
+import { ICryptoService, IPasscodeService, IResetPasscodeService } from '@core';
+import Container from 'typedi';
 import { ResetPasscodeTokensRepository } from './repositories/reset-passcode-tokens.repository';
+import { AuthRoute } from './routes/auth.routes';
 import { CryptoService } from './services/crypto.service';
 import { PasscodeService } from './services/passcode.service';
 
-@Service()
-export class AuthModuleBoundary implements IAuthModuleBoundary {
-  constructor() {
+export class AuthModule implements IModule {
+  public getRoutes(): IRoutes[] {
+    return [new AuthRoute()];
+  }
+
+  public register(): void {
     Container.set<ICryptoService>('ICryptoService', Container.get(CryptoService));
     Container.set<IPasscodeService>('IPasscodeService', Container.get(PasscodeService));
     Container.set<IResetPasscodeService>('IResetPasscodeService', {

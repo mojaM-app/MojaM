@@ -3,7 +3,6 @@ import { ILoginModel, RouteConstants, SystemPermissions } from '@core';
 import { events } from '@events';
 import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
 import { testHelpers } from '@helpers';
-import { AnnouncementsRout } from '@modules/announcements';
 import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
 import { generateRandomDate, getAdminLoginData, isGuid, isNumber } from '@utils';
 import { isDateString } from 'class-validator';
@@ -16,6 +15,7 @@ import { CreateAnnouncementsResponseDto } from '../dtos/create-announcements.dto
 import { GetAnnouncementsResponseDto } from '../dtos/get-announcements.dto';
 import { UpdateAnnouncementsDto, UpdateAnnouncementsResponseDto } from '../dtos/update-announcements.dto';
 import { AnnouncementStateValue } from '../enums/announcement-state.enum';
+import { AnnouncementsRout } from '../routes/announcements.routes';
 
 describe('PUT /announcements', () => {
   let app: TestApp | undefined;
