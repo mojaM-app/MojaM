@@ -1,3 +1,4 @@
+import { events } from '@events';
 import {
   AnnouncementsCreatedEvent,
   AnnouncementsDeletedEvent,
@@ -96,7 +97,43 @@ export const testEventHandlers: {
 };
 
 export const registerTestEventHandlers = (eventDispatcher: EventDispatcher): void => {
-  Object.entries(testEventHandlers).forEach(([event, eventHandler]) => {
-    eventDispatcher.on(event, eventHandler);
+  // Map test handler names to actual event names
+  const eventMapping: Record<string, string> = {
+    onUserLoggedIn: events.users.userLoggedIn,
+    onUserRefreshedToken: events.users.userRefreshedToken,
+    inactiveUserTriesToLogIn: events.users.inactiveUserTriesToLogIn,
+    lockedUserTriesToLogIn: events.users.lockedUserTriesToLogIn,
+    onUserPasscodeChanged: events.users.userPasscodeChanged,
+    onFailedLoginAttempt: events.users.failedLoginAttempt,
+    onUserLockedOut: events.users.userLockedOut,
+    onUserUnlocked: events.users.userUnlocked,
+    onUserCreated: events.users.userCreated,
+    onUserUpdated: events.users.userUpdated,
+    onUserListRetrieved: events.users.userListRetrieved,
+    onUserDetailsRetrieved: events.users.userDetailsRetrieved,
+    onUserRetrieved: events.users.userRetrieved,
+    onUserProfileRetrieved: events.users.userProfileRetrieved,
+    onUserProfileUpdated: events.users.userProfileUpdated,
+    onUserDeleted: events.users.userDeleted,
+    onUserActivated: events.users.userActivated,
+    onUserDeactivated: events.users.userDeactivated,
+    onPermissionAdded: events.permissions.permissionAdded,
+    onPermissionDeleted: events.permissions.permissionDeleted,
+    onPermissionsRetrieved: events.permissions.permissionsRetrieved,
+    onAnnouncementsCreated: events.announcements.announcementsCreated,
+    onAnnouncementsRetrieved: events.announcements.announcementsRetrieved,
+    onCurrentAnnouncementsRetrieved: events.announcements.currentAnnouncementsRetrieved,
+    onAnnouncementsListRetrieved: events.announcements.announcementsListRetrieved,
+    onAnnouncementsPublished: events.announcements.announcementsPublished,
+    onAnnouncementsDeleted: events.announcements.announcementsDeleted,
+    onAnnouncementsUpdated: events.announcements.announcementsUpdated,
+    onCalendarEventsRetrieved: events.calendar.eventsRetrieved,
+  };
+
+  Object.entries(testEventHandlers).forEach(([handlerName, eventHandler]) => {
+    const eventName = eventMapping[handlerName];
+    if (eventName) {
+      eventDispatcher.on(eventName, eventHandler);
+    }
   });
 };

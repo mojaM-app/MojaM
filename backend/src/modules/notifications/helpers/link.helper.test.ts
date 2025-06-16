@@ -1,5 +1,5 @@
 import * as config from '@config';
-import { AuthRoute } from '@modules/auth';
+import { RouteConstants } from '@core';
 import { LinkHelper } from './link.helper';
 
 describe('LinkHelper', () => {
@@ -35,7 +35,7 @@ describe('LinkHelper', () => {
     it('should generate the correct reset password link', () => {
       jest.replaceProperty(config, 'CLIENT_APP_URL', mockClientAppUrl);
       const link = LinkHelper.resetPasscodeLink(userUuid, resetPasswordToken);
-      expect(link).toBe(`${mockClientAppUrl}/account/${userUuid}/${AuthRoute.resetPasscode}/${resetPasswordToken}`);
+      expect(link).toBe(`${mockClientAppUrl}/account/${userUuid}/${RouteConstants.AUTH_RESET_PASSCODE}/${resetPasswordToken}`);
     });
 
     afterEach(() => {

@@ -14,7 +14,7 @@ export class AuthRoute implements IRoutes {
   public static path = RouteConstants.AUTH_PATH;
   public static loginPath = RouteConstants.AUTH_LOGIN_PATH;
   public static getAccountBeforeLogInPath = RouteConstants.AUTH_GET_ACCOUNT_BEFORE_LOG_IN_PATH;
-  public static requestResetPasscodePath = `${AuthRoute.path}/request-reset-passcode`;
+  public static requestResetPasscodePath = RouteConstants.AUTH_REQUEST_RESET_PASSCODE_PATH;
   public static checkResetPasscodeTokenPath = `${AuthRoute.path}/check-reset-passcode-token`;
   public static resetPasscodePath = `${AuthRoute.path}/${AuthRoute.resetPasscode}`;
   public static refreshTokenPath = `${AuthRoute.path}/refresh-token`;

@@ -7,6 +7,7 @@ export class RouteConstants {
   public static readonly AUTH_PATH = '/auth';
   public static readonly AUTH_LOGIN_PATH = '/login';
   public static readonly AUTH_GET_ACCOUNT_BEFORE_LOG_IN_PATH = `${RouteConstants.AUTH_PATH}/get-account-before-log-in`;
+  public static readonly AUTH_REQUEST_RESET_PASSCODE_PATH = `${RouteConstants.AUTH_PATH}/request-reset-passcode`;
 
   // User routes
   public static readonly USER_PATH = '/user';
@@ -18,6 +19,7 @@ export class RouteConstants {
 
   // Announcement routes
   public static readonly ANNOUNCEMENTS_PATH = '/announcements';
+  public static readonly ANNOUNCEMENTS_PUBLISH_PATH = 'publish';
 
   // Notification routes
   public static readonly NOTIFICATIONS_PATH = '/notifications';
