@@ -1,7 +1,5 @@
 import { VALIDATOR_SETTINGS } from '@config';
-import { BaseReqDto } from '@core';
-import { IResponse } from '@core';
-import { events } from '@events';
+import { BaseReqDto, events, IResponse } from '@core';
 import { errorKeys } from '@exceptions';
 import { DtoTransformFunctions } from '@helpers';
 import { Transform, Type } from 'class-transformer';

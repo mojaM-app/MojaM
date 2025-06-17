@@ -1,5 +1,4 @@
-import { AuthenticationTypes, ILoginModel, RouteConstants } from '@core';
-import { events } from '@events';
+import { AuthenticationTypes, ILoginModel, RouteConstants, events } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { CreateUserResponseDto, userTestHelpers } from '@modules/users';

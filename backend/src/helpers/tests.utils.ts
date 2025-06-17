@@ -1,14 +1,10 @@
-import { ILoginModel, RouteConstants, TLoginResult } from '@core';
-import { EventDispatcherService } from '@events';
+import { EventDispatcherService, ILoginModel, RouteConstants, TLoginResult } from '@core';
 import { ModulesRegistry } from '@modules/modules-registry';
 import { EventDispatcher } from 'event-dispatch';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
 import { App } from './../app';
 import { registerTestEventHandlers } from './event-handler-tests.helper';
-
-// Register all event subscribers for tests
-import '../events/register-subscribers';
 
 export class TestApp extends App {
   private mockSendMail: jest.SpyInstance | null = null;

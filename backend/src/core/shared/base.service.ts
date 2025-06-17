@@ -1,4 +1,4 @@
-import { EventDispatcherService } from '@events';
+import { EventDispatcherService } from '@core';
 import { EventDispatcher } from 'event-dispatch';
 
 export abstract class BaseService {

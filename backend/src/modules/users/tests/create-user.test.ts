@@ -1,6 +1,5 @@
 import { VALIDATOR_SETTINGS } from '@config';
-import { IAccountTryingToLogInModel, ILoginModel, IUserDto, RouteConstants, SystemPermissions } from '@core';
-import { events } from '@events';
+import { IAccountTryingToLogInModel, ILoginModel, IUserDto, RouteConstants, SystemPermissions, events } from '@core';
 import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { GetAccountBeforeLogInResponseDto, IGetAccountBeforeLogInResultDto } from '@modules/auth';

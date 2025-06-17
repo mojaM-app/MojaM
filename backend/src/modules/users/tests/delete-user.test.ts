@@ -1,6 +1,5 @@
-import { IAccountTryingToLogInModel, ILoginModel, RouteConstants, SystemPermissions } from '@core';
+import { IAccountTryingToLogInModel, ILoginModel, RouteConstants, SystemPermissions, events } from '@core';
 import { relatedDataNames } from '@db';
-import { events } from '@events';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { CreateAnnouncementsResponseDto } from '@modules/announcements/dtos/create-announcements.dto';

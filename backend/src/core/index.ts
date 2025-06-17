@@ -15,6 +15,9 @@ export * from './enums';
 // Interfaces
 export * from './interfaces';
 
+// Events
+export * from './events';
+
 // Common base classes and utilities
 export { BaseController, BaseService, CacheService, BaseReqDto, Identity } from './shared';
 export { IModule } from './interfaces/module.interfaces';

@@ -1,5 +1,4 @@
-import { ILoginModel, IResetPasscodeEmailSettings, RouteConstants } from '@core';
-import { events } from '@events';
+import { ILoginModel, IResetPasscodeEmailSettings, RouteConstants, events } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { EmailService } from '@modules/notifications/services/email.service';

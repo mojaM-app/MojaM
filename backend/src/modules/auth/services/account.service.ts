@@ -1,6 +1,5 @@
 import { AuthenticationTypes, IUpdateUser, IUserEntity, IUserService } from '@core';
-import { BaseService } from '@core';
-import { events } from '@events';
+import { BaseService, events } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { UserActivatedEvent, UserUnlockedEvent } from '@modules/users';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';

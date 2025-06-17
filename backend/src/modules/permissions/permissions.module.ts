@@ -2,6 +2,7 @@ import { IModule, IPermissionsService, IRoutes, IUserEntity } from '@core';
 import Container from 'typedi';
 import { UserPermissionsRepository } from './repositories/user-permissions.repository';
 import { PermissionsRoute } from './routes/permissions.routes';
+import './event-subscribers/logger-events-subscriber';
 
 export class PermissionsModule implements IModule {
   public getRoutes(): IRoutes[] {

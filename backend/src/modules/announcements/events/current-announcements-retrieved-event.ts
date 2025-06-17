@@ -1,4 +1,4 @@
-import { Event } from '@events';
+import { Event } from '@core';
 import { ICurrentAnnouncementsDto } from '../dtos/get-current-announcements.dto';
 
 export class CurrentAnnouncementsRetrievedEvent extends Event {

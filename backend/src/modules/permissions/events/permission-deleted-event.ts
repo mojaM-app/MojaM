@@ -1,4 +1,4 @@
-import { Event } from '@events';
+import { Event } from '@core';
 
 export class PermissionDeletedEvent extends Event {
   public readonly userGuid: string | undefined;

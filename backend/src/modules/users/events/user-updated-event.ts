@@ -1,6 +1,4 @@
-import { IUser } from '@core';
-import { IHasGuidId } from '@core';
-import { Event } from '@events';
+import { IUser, Event, IHasGuidId } from '@core';
 
 export class UserUpdatedEvent extends Event {
   public readonly user: IUser & IHasGuidId;

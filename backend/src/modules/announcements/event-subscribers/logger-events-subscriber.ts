@@ -1,15 +1,12 @@
-import { logger } from '@core';
-import { events } from '@events';
-import {
-  AnnouncementsCreatedEvent,
-  AnnouncementsDeletedEvent,
-  AnnouncementsListRetrievedEvent,
-  AnnouncementsPublishedEvent,
-  AnnouncementsRetrievedEvent,
-  AnnouncementsUpdatedEvent,
-  CurrentAnnouncementsRetrievedEvent,
-} from '@modules/announcements';
+import { logger, events } from '@core';
 import { EventSubscriber, On } from 'event-dispatch';
+import { AnnouncementsCreatedEvent } from '../events/announcements-created-event';
+import { AnnouncementsDeletedEvent } from '../events/announcements-deleted-event';
+import { AnnouncementsListRetrievedEvent } from '../events/announcements-list-retrieved-event';
+import { AnnouncementsPublishedEvent } from '../events/announcements-published-event';
+import { AnnouncementsRetrievedEvent } from '../events/announcements-retrieved-event';
+import { AnnouncementsUpdatedEvent } from '../events/announcements-updated-event';
+import { CurrentAnnouncementsRetrievedEvent } from '../events/current-announcements-retrieved-event';
 
 @EventSubscriber()
 export class AnnouncementsEventsSubscriber {

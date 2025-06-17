@@ -1,6 +1,5 @@
 import { RESET_PASSWORD_TOKEN_EXPIRE_IN, USER_ACCOUNT_LOCKOUT_SETTINGS, VALIDATOR_SETTINGS } from '@config';
-import { AuthenticationTypes, ILoginModel, IResetPasscodeEmailSettings, RouteConstants } from '@core';
-import { events } from '@events';
+import { AuthenticationTypes, ILoginModel, IResetPasscodeEmailSettings, RouteConstants, events } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { EmailService } from '@modules/notifications/services/email.service';

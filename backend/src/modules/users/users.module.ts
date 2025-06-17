@@ -6,6 +6,7 @@ import { UserDetailsRoute } from './routes/user-details.routes';
 import { UserListRoute } from './routes/user-list.routes';
 import { UserProfileRoute } from './routes/user-profile.routes';
 import { UserRoute } from './routes/user.routes';
+import './event-subscribers/logger-events-subscriber';
 
 export class UsersModule implements IModule {
   public getRoutes(): IRoutes[] {

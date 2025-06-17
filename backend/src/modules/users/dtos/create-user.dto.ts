@@ -1,8 +1,5 @@
 import { VALIDATOR_SETTINGS } from '@config';
-import { IUserDto } from '@core';
-import { BaseReqDto } from '@core';
-import { IResponse } from '@core';
-import { events } from '@events';
+import { IUserDto, events, BaseReqDto, IResponse } from '@core';
 import { errorKeys } from '@exceptions';
 import { DtoTransformFunctions } from '@helpers';
 import { IsPasswordOrPinValid } from '@validators';

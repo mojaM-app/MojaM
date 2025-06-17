@@ -1,4 +1,4 @@
-import { Event } from '@events';
+import { Event } from '@core';
 import { IGetUserProfileDto } from '../dtos/get-user-profile.dto';
 
 export class UserProfileRetrievedEvent extends Event {

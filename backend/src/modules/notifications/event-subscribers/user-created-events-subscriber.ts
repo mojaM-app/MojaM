@@ -1,5 +1,4 @@
-import { IWelcomeEmailSettings, logger } from '@core';
-import { events } from '@events';
+import { IWelcomeEmailSettings, logger, events } from '@core';
 import { UserCreatedEvent } from '@modules/users';
 import { EventSubscriber, On } from 'event-dispatch';
 import Container from 'typedi';

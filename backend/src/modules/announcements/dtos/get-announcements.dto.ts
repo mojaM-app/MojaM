@@ -1,5 +1,4 @@
-import { BaseReqDto, IResponse } from '@core';
-import { events } from '@events';
+import { BaseReqDto, IResponse, events } from '@core';
 
 export interface IAnnouncementItemDto {
   id: string;

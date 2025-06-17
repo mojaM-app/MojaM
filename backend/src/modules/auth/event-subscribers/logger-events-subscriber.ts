@@ -1,15 +1,12 @@
-import { logger } from '@core';
-import { events } from '@events';
-import {
-  FailedLoginAttemptEvent,
-  InactiveUserTriesToLogInEvent,
-  LockedUserTriesToLogInEvent,
-  UserLockedOutEvent,
-  UserLoggedInEvent,
-  UserPasscodeChangedEvent,
-  UserRefreshedTokenEvent,
-} from '@modules/auth';
+import { logger, events } from '@core';
 import { EventSubscriber, On } from 'event-dispatch';
+import { FailedLoginAttemptEvent } from '../events/failed-login-attempt-event';
+import { InactiveUserTriesToLogInEvent } from '../events/inactive-user-tries-to-log-in-event';
+import { LockedUserTriesToLogInEvent } from '../events/locked-user-tries-to-log-in-event';
+import { UserLockedOutEvent } from '../events/user-locked-out-event';
+import { UserLoggedInEvent } from '../events/user-logged-in-event';
+import { UserPasscodeChangedEvent } from '../events/user-passcode-changed-event';
+import { UserRefreshedTokenEvent } from '../events/user-refreshed-token-event';
 
 @EventSubscriber()
 export class AuthEventsSubscriber {

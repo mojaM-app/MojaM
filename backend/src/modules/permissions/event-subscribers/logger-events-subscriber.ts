@@ -1,7 +1,9 @@
-import { logger } from '@core';
-import { events } from '@events';
-import { PermissionAddedEvent, PermissionDeletedEvent, PermissionsRetrievedEvent } from '@modules/permissions';
+import { logger, events } from '@core';
 import { EventSubscriber, On } from 'event-dispatch';
+import { PermissionAddedEvent } from '../events/permission-added-event';
+import { PermissionDeletedEvent } from '../events/permission-deleted-event';
+import { PermissionsRetrievedEvent } from '../events/permissions-retrieved-event';
+
 @EventSubscriber()
 export class PermissionsEventSubscriber {
   @On(events.permissions.permissionAdded)

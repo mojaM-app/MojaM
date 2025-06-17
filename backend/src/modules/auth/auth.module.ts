@@ -5,6 +5,7 @@ import { ResetPasscodeTokensRepository } from './repositories/reset-passcode-tok
 import { AuthRoute } from './routes/auth.routes';
 import { CryptoService } from './services/crypto.service';
 import { PasscodeService } from './services/passcode.service';
+import './event-subscribers/logger-events-subscriber';
 
 export class AuthModule implements IModule {
   public getRoutes(): IRoutes[] {

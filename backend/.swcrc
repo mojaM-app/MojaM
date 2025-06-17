@@ -23,7 +23,6 @@
       "@core": ["core"],
       "@core/*": ["core/*"],
       "@config": ["config"],
-      "@events": ["events"],
       "@exceptions": ["exceptions"],
       "@middlewares": ["middlewares"],
       "@utils": ["utils"],

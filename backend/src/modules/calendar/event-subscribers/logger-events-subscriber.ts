@@ -1,7 +1,6 @@
-import { logger } from '@core';
-import { events } from '@events';
-import { CalendarEventsRetrievedEvent } from '@modules/calendar';
+import { logger, events } from '@core';
 import { EventSubscriber, On } from 'event-dispatch';
+import { CalendarEventsRetrievedEvent } from '../events/calendar-events-retrieved-event';
 
 @EventSubscriber()
 export class CalendarEventsSubscriber {

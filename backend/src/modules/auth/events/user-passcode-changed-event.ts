@@ -1,5 +1,4 @@
-import { IUser } from '@core';
-import { Event } from '@events';
+import { IUser, Event } from '@core';
 
 export class UserPasscodeChangedEvent extends Event {
   public readonly user: IUser;

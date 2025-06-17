@@ -1,4 +1,4 @@
-import { Event } from '@events';
+import { Event } from '@core';
 
 export class CalendarEventsRetrievedEvent extends Event {
   public readonly startDate: Date;

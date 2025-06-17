@@ -1,6 +1,5 @@
 import { VALIDATOR_SETTINGS } from '@config';
-import { ILoginModel, RouteConstants, SystemPermissions } from '@core';
-import { events } from '@events';
+import { ILoginModel, RouteConstants, SystemPermissions, events } from '@core';
 import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { CreateUserResponseDto } from '@modules/users';

@@ -1,8 +1,6 @@
 import { ACCESS_TOKEN_ALGORITHM, USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
-import { IPermissionsService, IUserEntity, IUserService } from '@core';
-import { BaseService } from '@core';
+import { IPermissionsService, IUserEntity, IUserService, events, BaseService } from '@core';
 import { userToIUser } from '@db';
-import { events } from '@events';
 import { BadRequestException, errorKeys, TranslatableHttpException } from '@exceptions';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { decode, JwtPayload, sign, verify, VerifyErrors } from 'jsonwebtoken';

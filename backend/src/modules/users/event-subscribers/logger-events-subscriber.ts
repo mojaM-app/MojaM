@@ -1,19 +1,16 @@
-import { logger } from '@core';
-import { events } from '@events';
-import {
-  UserActivatedEvent,
-  UserCreatedEvent,
-  UserDeactivatedEvent,
-  UserDeletedEvent,
-  UserDetailsRetrievedEvent,
-  UserListRetrievedEvent,
-  UserProfileRetrievedEvent,
-  UserProfileUpdatedEvent,
-  UserRetrievedEvent,
-  UserUnlockedEvent,
-  UserUpdatedEvent,
-} from '@modules/users';
+import { logger, events } from '@core';
 import { EventSubscriber, On } from 'event-dispatch';
+import { UserActivatedEvent } from '../events/user-activated-event';
+import { UserCreatedEvent } from '../events/user-created-event';
+import { UserDeactivatedEvent } from '../events/user-deactivated-event';
+import { UserDeletedEvent } from '../events/user-deleted-event';
+import { UserDetailsRetrievedEvent } from '../events/user-details-retrieved-event';
+import { UserListRetrievedEvent } from '../events/user-list-retrieved-event';
+import { UserProfileRetrievedEvent } from '../events/user-profile-retrieved-event';
+import { UserProfileUpdatedEvent } from '../events/user-profile-updated-event';
+import { UserRetrievedEvent } from '../events/user-retrieved-event';
+import { UserUnlockedEvent } from '../events/user-unlocked-event';
+import { UserUpdatedEvent } from '../events/user-updated-event';
 
 @EventSubscriber()
 export class UserEventsSubscriber {

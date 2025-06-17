@@ -1,6 +1,4 @@
-import { SystemPermissions } from '@core';
-import { BaseService } from '@core';
-import { events } from '@events';
+import { SystemPermissions, BaseService, events } from '@core';
 import { isEnumValue, isGuid, isNullOrUndefined } from '@utils';
 import { Service } from 'typedi';
 import { AddPermissionReqDto } from '../dtos/add-permission.dto';

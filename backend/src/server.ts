@@ -2,9 +2,6 @@ import { ValidateEnv } from '@config';
 import { ModulesRegistry } from '@modules/modules-registry';
 import { App } from 'app';
 
-// Register all event subscribers
-import '@events/register-subscribers';
-
 ValidateEnv();
 ModulesRegistry.registerAll();
 

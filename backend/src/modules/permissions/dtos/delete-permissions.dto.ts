@@ -1,6 +1,4 @@
-import { BaseReqDto } from '@core';
-import { IResponse } from '@core';
-import { events } from '@events';
+import { BaseReqDto, IResponse, events } from '@core';
 
 export class DeletePermissionsReqDto extends BaseReqDto {
   public readonly userGuid: string | undefined;

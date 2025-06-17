@@ -1,5 +1,4 @@
-import { ILoginModel, RouteConstants, SystemPermissions } from '@core';
-import { events } from '@events';
+import { ILoginModel, RouteConstants, SystemPermissions, events } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { userTestHelpers } from '@modules/users';

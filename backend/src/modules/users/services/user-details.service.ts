@@ -1,5 +1,4 @@
-import { BaseService } from '@core';
-import { events } from '@events';
+import { BaseService, events } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { isNullOrUndefined } from '@utils';
 import { Service } from 'typedi';

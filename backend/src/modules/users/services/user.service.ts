@@ -1,7 +1,5 @@
-import { IUpdateUser, IUserDto } from '@core';
-import { BaseService } from '@core';
+import { IUpdateUser, IUserDto, events, BaseService } from '@core';
 import { userToIUser } from '@db';
-import { events } from '@events';
 import { BadRequestException, ConflictException, errorKeys } from '@exceptions';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { Service } from 'typedi';

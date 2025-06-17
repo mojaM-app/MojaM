@@ -1,5 +1,4 @@
-import { IResponse } from '@core';
-import { events } from '@events';
+import { IResponse, events } from '@core';
 import { DtoTransformFunctions } from '@helpers';
 import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';

@@ -1,4 +1,4 @@
-import { Event } from '@events';
+import { Event } from '@core';
 
 export class PermissionsRetrievedEvent extends Event {
   constructor(currentUserId: number | undefined) {

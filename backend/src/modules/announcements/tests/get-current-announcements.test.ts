@@ -1,5 +1,4 @@
-import { ILoginModel } from '@core';
-import { events } from '@events';
+import { ILoginModel, events } from '@core';
 import { testHelpers } from '@helpers';
 import { getAdminLoginData, getDateNow, isGuid } from '@utils';
 import { isDateString } from 'class-validator';

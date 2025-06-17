@@ -1,4 +1,4 @@
-import { Event } from '@events';
+import { Event } from '@core';
 import { IAnnouncementsDto } from '../dtos/get-announcements.dto';
 
 export class AnnouncementsDeletedEvent extends Event {

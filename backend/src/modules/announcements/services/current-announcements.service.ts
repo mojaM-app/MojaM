@@ -1,5 +1,4 @@
-import { BaseService } from '@core';
-import { events } from '@events';
+import { BaseService, events } from '@core';
 import { isNullOrUndefined } from '@utils';
 import Container, { Service } from 'typedi';
 import { Announcement } from '../../../dataBase/entities/announcements/announcement.entity';
