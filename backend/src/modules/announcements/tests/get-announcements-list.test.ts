@@ -11,7 +11,7 @@ import { AnnouncementsListRoute } from '../routes/announcements-list.routes';
 import { AnnouncementsListService } from '../services/announcements-list.service';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { TestApp } from './../../../helpers/tests.utils';
-import { generateValidAnnouncements } from './announcements-tests.helper';
+import { generateValidAnnouncements } from './test.helpers';
 import { AnnouncementsRout } from '../routes/announcements.routes';
 
 describe('GET/announcements-list', () => {

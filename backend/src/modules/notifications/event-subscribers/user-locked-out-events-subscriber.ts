@@ -1,8 +1,7 @@
-import { IUnlockAccountEmailSettings, logger, events } from '@core';
+import { IUnlockAccountEmailSettings, logger, events, LinkHelper } from '@core';
 import { UserLockedOutEvent } from '@modules/auth';
 import { EventSubscriber, On } from 'event-dispatch';
 import Container from 'typedi';
-import { LinkHelper } from '../helpers/link.helper';
 import { EmailService } from '../services/email.service';
 
 @EventSubscriber()

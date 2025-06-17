@@ -1,6 +1,5 @@
 import * as config from '@config';
-import { RouteConstants } from '@core';
-import { LinkHelper } from './link.helper';
+import { LinkHelper, RouteConstants } from '@core';
 
 describe('LinkHelper', () => {
   const mockClientAppUrl = 'http://localhost:3000';

@@ -1,6 +1,6 @@
 import { IUser } from '@core';
 import { CreateUserDto } from './dtos/create-user.dto';
-import { generateValidUserWithPassword, generateValidUserWithPin } from './helpers/tests.helpers';
+import { generateValidUserWithPassword, generateValidUserWithPin } from './tests/test.helpers';
 
 export { UserActivatedEvent } from './events/user-activated-event';
 export { UserCreatedEvent } from './events/user-created-event';

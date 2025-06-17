@@ -7,7 +7,7 @@ import { Guid } from 'guid-typescript';
 import request from 'supertest';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { TestApp } from './../../../helpers/tests.utils';
-import { generateValidAnnouncements } from './announcements-tests.helper';
+import { generateValidAnnouncements } from './test.helpers';
 import { CreateAnnouncementsResponseDto } from '../dtos/create-announcements.dto';
 import { AnnouncementsRout } from '../routes/announcements.routes';
 

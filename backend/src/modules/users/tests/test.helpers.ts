@@ -1,7 +1,7 @@
 import { VALIDATOR_SETTINGS } from '@config';
 import { IUser } from '@core';
+import { generateRandomEmail, generateRandomNumber, generateRandomPassword } from '../../../utils/random.utils';
 import { CreateUserDto } from '../dtos/create-user.dto';
-import { generateRandomEmail, generateRandomNumber, generateRandomPassword } from './../../../utils/random.utils';
 
 const generateValidUser = (): any => {
   return {

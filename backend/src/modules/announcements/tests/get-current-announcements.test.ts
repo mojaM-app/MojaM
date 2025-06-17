@@ -5,7 +5,7 @@ import { isDateString } from 'class-validator';
 import request from 'supertest';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { TestApp } from './../../../helpers/tests.utils';
-import { generateValidAnnouncements } from './announcements-tests.helper';
+import { generateValidAnnouncements } from './test.helpers';
 import { CreateAnnouncementsResponseDto } from '../dtos/create-announcements.dto';
 import { GetCurrentAnnouncementsResponseDto, IGetCurrentAnnouncementsDto } from '../dtos/get-current-announcements.dto';
 import { PublishAnnouncementsResponseDto } from '../dtos/publish-announcements.dto';

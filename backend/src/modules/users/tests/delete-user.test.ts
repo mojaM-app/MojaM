@@ -5,7 +5,7 @@ import { testHelpers } from '@helpers';
 import { CreateAnnouncementsResponseDto } from '@modules/announcements/dtos/create-announcements.dto';
 import { GetAnnouncementsResponseDto } from '@modules/announcements/dtos/get-announcements.dto';
 import { UpdateAnnouncementsDto } from '@modules/announcements/dtos/update-announcements.dto';
-import { generateValidAnnouncements } from '@modules/announcements/tests/announcements-tests.helper';
+import { generateValidAnnouncements } from '@modules/announcements/tests/test.helpers';
 import { userTestHelpers } from '@modules/users';
 import { getAdminLoginData, isNumber } from '@utils';
 import { Guid } from 'guid-typescript';
