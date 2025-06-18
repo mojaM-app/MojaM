@@ -80,8 +80,56 @@ export default [
       '@typescript-eslint/no-extraneous-class': 'off',
       'max-len': ['off', { code: 120 }],
       eqeqeq: ['error', 'always'],
-      'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
-      ...boundaries.configs.recommended.rules,
+      'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],      ...boundaries.configs.recommended.rules,
+    },
+    settings: {
+      'boundaries/elements': [
+        {
+          type: 'app',
+          pattern: 'src/{app,server}.ts',
+        },
+        {
+          type: 'config',
+          pattern: 'src/config/**/*',
+        },
+        {
+          type: 'core',
+          pattern: 'src/core/**/*',
+        },
+        {
+          type: 'database',
+          pattern: 'src/dataBase/**/*',
+        },
+        {
+          type: 'exceptions',
+          pattern: 'src/exceptions/**/*',
+        },
+        {
+          type: 'helpers',
+          pattern: 'src/helpers/**/*',
+        },
+        {
+          type: 'middlewares',
+          pattern: 'src/middlewares/**/*',
+        },
+        {
+          type: 'modules',
+          pattern: 'src/modules/**/*',
+        },
+        {
+          type: 'utils',
+          pattern: 'src/utils/**/*',
+        },
+        {
+          type: 'validators',
+          pattern: 'src/validators/**/*',
+        },
+      ],
+      'boundaries/ignore': [
+        'src/**/*.spec.ts',
+        'src/**/*.test.ts',
+        'src/jest.setup.ts',
+      ],
     },
   },
 ];
