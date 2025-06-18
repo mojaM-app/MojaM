@@ -1,11 +1,11 @@
 import { RESET_PASSWORD_TOKEN_EXPIRE_IN, USER_ACCOUNT_LOCKOUT_SETTINGS, VALIDATOR_SETTINGS } from '@config';
-import { AuthenticationTypes, ILoginModel, IResetPasscodeEmailSettings, RouteConstants, events } from '@core';
+import { AuthenticationTypes, events, ILoginModel, IResetPasscodeEmailSettings, RouteConstants } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { EmailService } from '@modules/notifications/services/email.service';
 import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
 import * as Utils from '@utils';
-import { generateRandomPassword, generateRandomNumber, getAdminLoginData } from '@utils';
+import { generateRandomNumber, generateRandomPassword, getAdminLoginData } from '@utils';
 import { Guid } from 'guid-typescript';
 import ms from 'ms';
 import request from 'supertest';

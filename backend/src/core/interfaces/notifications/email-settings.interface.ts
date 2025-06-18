@@ -1,5 +1,4 @@
-// Export core notification interfaces without circular dependencies
-import { AuthenticationTypes } from '@core/enums';
+import { AuthenticationTypes } from '@core';
 import { IHasGuidId } from '../IHasGuidId';
 import { IUser } from '../users/IUser';
 

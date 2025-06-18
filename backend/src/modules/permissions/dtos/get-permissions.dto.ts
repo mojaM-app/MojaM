@@ -1,4 +1,4 @@
-import { BaseReqDto, IResponse, events } from '@core';
+import { BaseReqDto, events, IResponse } from '@core';
 
 export interface IUserPermissionsDto {
   id: string;

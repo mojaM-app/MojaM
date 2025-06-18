@@ -1,4 +1,4 @@
-import { IUser, Event, IHasGuidId } from '@core';
+import { Event, IHasGuidId, IUser } from '@core';
 
 export class UserLockedOutEvent extends Event {
   public readonly user: IUser & IHasGuidId;

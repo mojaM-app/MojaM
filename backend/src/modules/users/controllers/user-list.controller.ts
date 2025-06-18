@@ -1,5 +1,4 @@
-import { BaseController } from '@core';
-import { IPageData, IRequestWithIdentity, ISortData } from '@core';
+import { BaseController, IPageData, IRequestWithIdentity, ISortData } from '@core';
 import { toNumber } from '@utils';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';

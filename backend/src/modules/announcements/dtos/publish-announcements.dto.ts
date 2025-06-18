@@ -1,4 +1,4 @@
-import { BaseReqDto, IResponse, events } from '@core';
+import { BaseReqDto, events, IResponse } from '@core';
 
 export class PublishAnnouncementsReqDto extends BaseReqDto {
   public readonly announcementsId: string | undefined;

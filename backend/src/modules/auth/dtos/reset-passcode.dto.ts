@@ -1,4 +1,4 @@
-import { IResponse, events } from '@core';
+import { events, IResponse } from '@core';
 import { errorKeys } from '@exceptions';
 import { DtoTransformFunctions } from '@helpers';
 import { IsPasswordOrPinValid } from '@validators';

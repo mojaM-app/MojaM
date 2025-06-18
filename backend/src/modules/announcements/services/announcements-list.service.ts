@@ -1,4 +1,4 @@
-import { BaseService, IAnnouncementGridItemDto, IGridPageResponseDto, events } from '@core';
+import { BaseService, events, IAnnouncementGridItemDto, IGridPageResponseDto } from '@core';
 import { Container, Service } from 'typedi';
 import { vAnnouncement } from '../../../dataBase/entities/announcements/vAnnouncement.entity';
 import { AnnouncementsGridPageDto, GetAnnouncementListReqDto } from '../dtos/get-announcement-list.dto';

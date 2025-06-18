@@ -1,6 +1,6 @@
 import { REGEX_PATTERNS } from '@config';
 import { IRoutes, RouteConstants } from '@core';
-import { requirePermission, validateData, setIdentity } from '@middlewares';
+import { requirePermission, setIdentity, validateData } from '@middlewares';
 import express from 'express';
 import { UserController } from '../controllers/user.controller';
 import { CreateUserDto } from '../dtos/create-user.dto';

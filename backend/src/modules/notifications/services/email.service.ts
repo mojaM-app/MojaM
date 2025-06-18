@@ -9,7 +9,7 @@ import {
   TPL_VAR_RESET_PIN_TITLE,
   TPL_VAR_WELCOME_EMAIL_TITLE,
 } from '@config';
-import { logger, AuthenticationTypes, IResetPasscodeEmailSettings, IWelcomeEmailSettings, IUnlockAccountEmailSettings } from '@core';
+import { AuthenticationTypes, IResetPasscodeEmailSettings, IUnlockAccountEmailSettings, IWelcomeEmailSettings, logger } from '@core';
 import { toNumber } from '@utils';
 import { readFileSync } from 'fs';
 import { compile } from 'handlebars';

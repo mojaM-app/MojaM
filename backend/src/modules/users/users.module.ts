@@ -1,4 +1,4 @@
-import { IModule, IRoutes, IUserService, IUserEntity, IUpdateUser } from '@core';
+import { IModule, IRoutes, IUpdateUser, IUserEntity, IUserService } from '@core';
 import Container from 'typedi';
 import { UpdateUserModel } from './models/update-user.model';
 import { UserRepository } from './repositories/user.repository';

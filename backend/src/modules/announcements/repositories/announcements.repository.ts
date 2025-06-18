@@ -1,4 +1,4 @@
-import { IUserId, IAnnouncementId, ICreateAnnouncement, ICreateAnnouncementItem, IUpdateAnnouncementItem } from '@core';
+import { IAnnouncementId, ICreateAnnouncement, ICreateAnnouncementItem, IUpdateAnnouncementItem, IUserId } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { isDate, isNullOrUndefined } from '@utils';
 import { Service } from 'typedi';

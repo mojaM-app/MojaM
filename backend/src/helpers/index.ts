@@ -1,6 +1,7 @@
-export { DtoTransformFunctions } from './DtoTransformFunctions';
 import { TLoginResult } from '@core';
-import { loginAs, getTestApp, closeTestApp, TestApp } from './tests.utils';
+import { closeTestApp, getTestApp, loginAs, TestApp } from './tests.utils';
+
+export { DtoTransformFunctions } from './DtoTransformFunctions';
 
 export let testHelpers: {
   loginAs: (app: TestApp, user: { email?: string; phone?: string; passcode?: string | null }) => Promise<TLoginResult | null>;

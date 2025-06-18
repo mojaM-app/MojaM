@@ -1,4 +1,4 @@
-import { ILoginModel, events } from '@core';
+import { events, ILoginModel } from '@core';
 import { errorKeys, UnauthorizedException } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { userTestHelpers } from '@modules/users';

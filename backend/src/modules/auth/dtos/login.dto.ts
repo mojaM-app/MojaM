@@ -1,5 +1,5 @@
 import { VALIDATOR_SETTINGS } from '@config';
-import { ILoginModel, IResponse, TLoginResult, events } from '@core';
+import { events, ILoginModel, IResponse, TLoginResult } from '@core';
 import { errorKeys } from '@exceptions';
 import { DtoTransformFunctions } from '@helpers';
 import { Transform } from 'class-transformer';

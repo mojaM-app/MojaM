@@ -80,7 +80,24 @@ export default [
       '@typescript-eslint/no-extraneous-class': 'off',
       'max-len': ['off', { code: 120 }],
       eqeqeq: ['error', 'always'],
-      'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],      ...boundaries.configs.recommended.rules,
+      'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
+
+      // Import sorting and merging
+      'sort-imports': [
+        'error',
+        {
+          ignoreCase: true,
+          ignoreDeclarationSort: true,
+          ignoreMemberSort: false,
+          memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
+          allowSeparatedGroups: false,
+        },
+      ],
+      'import/no-duplicates': 'error',
+      'import/first': 'error',
+      'import/newline-after-import': 'error',
+
+      ...boundaries.configs.recommended.rules,
     },
     settings: {
       'boundaries/elements': [

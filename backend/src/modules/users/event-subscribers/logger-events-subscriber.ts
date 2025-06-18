@@ -1,4 +1,4 @@
-import { logger, events } from '@core';
+import { events, logger } from '@core';
 import { EventSubscriber, On } from 'event-dispatch';
 import { UserActivatedEvent } from '../events/user-activated-event';
 import { UserCreatedEvent } from '../events/user-created-event';

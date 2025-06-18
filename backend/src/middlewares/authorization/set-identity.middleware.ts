@@ -1,7 +1,6 @@
 import { ACCESS_TOKEN_ALGORITHM, ACCESS_TOKEN_SECRET, REFRESH_TOKEN_EXPIRE_IN, REFRESH_TOKEN_SECRET, SECRET_AUDIENCE, SECRET_ISSUER } from '@config';
-import { IRequestWithIdentity, IUserService, Identity, logger } from '@core';
-import { IPermissionsService } from '@core/interfaces/permissions/permissions.services';
-import { UnauthorizedException, errorKeys } from '@exceptions';
+import { Identity, IPermissionsService, IRequestWithIdentity, IUserService, logger } from '@core';
+import { errorKeys, UnauthorizedException } from '@exceptions';
 import { isNullOrEmptyString, isNullOrUndefined, isString } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { JwtPayload, verify } from 'jsonwebtoken';

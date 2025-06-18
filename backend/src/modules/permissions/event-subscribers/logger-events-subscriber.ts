@@ -1,4 +1,4 @@
-import { logger, events } from '@core';
+import { events, logger } from '@core';
 import { EventSubscriber, On } from 'event-dispatch';
 import { PermissionAddedEvent } from '../events/permission-added-event';
 import { PermissionDeletedEvent } from '../events/permission-deleted-event';

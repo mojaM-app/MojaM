@@ -1,4 +1,4 @@
-import { BaseReqDto, IResponse, events } from '@core';
+import { BaseReqDto, events, IResponse } from '@core';
 
 export class DeactivateUserReqDto extends BaseReqDto {
   public readonly userGuid: string | undefined;

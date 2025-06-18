@@ -1,4 +1,4 @@
-import { IAccountTryingToLogInModel, ILoginModel, RouteConstants, SystemPermissions, events } from '@core';
+import { events, IAccountTryingToLogInModel, ILoginModel, RouteConstants, SystemPermissions } from '@core';
 import { relatedDataNames } from '@db';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';

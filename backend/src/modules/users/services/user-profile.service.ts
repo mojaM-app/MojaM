@@ -1,4 +1,4 @@
-import { IUpdateUser, BaseService, events } from '@core';
+import { BaseService, events, IUpdateUser } from '@core';
 import { Service } from 'typedi';
 import { GetUserProfileReqDto, IGetUserProfileDto } from '../dtos/get-user-profile.dto';
 import { UpdateUserProfileDto, UpdateUserProfileReqDto } from '../dtos/update-user-profile.dto';

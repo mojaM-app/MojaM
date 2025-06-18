@@ -1,5 +1,5 @@
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
-import { ILoginModel, IRequestWithIdentity, RouteConstants, events } from '@core';
+import { events, ILoginModel, IRequestWithIdentity, RouteConstants } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { setIdentity } from '@middlewares';

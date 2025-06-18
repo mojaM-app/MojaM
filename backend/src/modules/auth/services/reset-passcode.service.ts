@@ -1,4 +1,4 @@
-import { BaseService, INotificationsService, IResetPasscodeEmailSettings, IUserEntity, IUserService, LinkHelper, events } from '@core';
+import { BaseService, events, INotificationsService, IResetPasscodeEmailSettings, IUserEntity, IUserService, LinkHelper } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import Container, { Service } from 'typedi';

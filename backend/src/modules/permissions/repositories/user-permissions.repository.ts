@@ -1,4 +1,4 @@
-import { IAddUserSystemPermission, SystemPermissions, IUserEntity, IUserService } from '@core';
+import { IAddUserSystemPermission, IUserEntity, IUserService, SystemPermissions } from '@core';
 import { BaseRepository } from '@db';
 import { getDateTimeNow, isArrayEmpty, isEnumValue, isNullOrUndefined, isPositiveNumber } from '@utils';
 import Container, { Service } from 'typedi';

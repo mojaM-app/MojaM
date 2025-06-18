@@ -1,5 +1,4 @@
-import { BaseController } from '@core';
-import { IRequestWithIdentity } from '@core';
+import { BaseController, IRequestWithIdentity } from '@core';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
 import { GetUserProfileReqDto, GetUserProfileResponseDto } from '../dtos/get-user-profile.dto';

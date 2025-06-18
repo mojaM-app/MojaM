@@ -1,5 +1,5 @@
 import * as config from '@config';
-import { ILoginModel, events } from '@core';
+import { events, ILoginModel } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { getAdminLoginData } from '@utils';

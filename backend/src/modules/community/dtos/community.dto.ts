@@ -1,4 +1,4 @@
-import { IResponse, events } from '@core';
+import { events, IResponse } from '@core';
 
 export interface ICommunityInfoDto {
   logoUrl?: string;

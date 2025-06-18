@@ -1,4 +1,4 @@
-import { ILoginModel, IRequestWithIdentity, RouteConstants, events } from '@core';
+import { events, ILoginModel, IRequestWithIdentity, RouteConstants } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { setIdentity } from '@middlewares';

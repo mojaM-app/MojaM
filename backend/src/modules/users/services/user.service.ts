@@ -1,4 +1,4 @@
-import { IUpdateUser, IUserDto, events, BaseService } from '@core';
+import { BaseService, events, IUpdateUser, IUserDto } from '@core';
 import { userToIUser } from '@db';
 import { BadRequestException, ConflictException, errorKeys } from '@exceptions';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';

@@ -1,5 +1,4 @@
-import { IModule, IRoutes } from '@core';
-import { ICryptoService, IPasscodeService, IResetPasscodeService } from '@core';
+import { ICryptoService, IModule, IPasscodeService, IResetPasscodeService, IRoutes } from '@core';
 import Container from 'typedi';
 import { ResetPasscodeTokensRepository } from './repositories/reset-passcode-tokens.repository';
 import { AuthRoute } from './routes/auth.routes';

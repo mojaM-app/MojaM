@@ -1,4 +1,4 @@
-import { logger, events } from '@core';
+import { events, logger } from '@core';
 import { EventSubscriber, On } from 'event-dispatch';
 import { FailedLoginAttemptEvent } from '../events/failed-login-attempt-event';
 import { InactiveUserTriesToLogInEvent } from '../events/inactive-user-tries-to-log-in-event';

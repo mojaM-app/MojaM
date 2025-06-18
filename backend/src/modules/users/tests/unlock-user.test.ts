@@ -1,5 +1,5 @@
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
-import { ILoginModel, RouteConstants, SystemPermissions, events } from '@core';
+import { events, ILoginModel, RouteConstants, SystemPermissions } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { LoginResponseDto } from '@modules/auth';

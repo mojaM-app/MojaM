@@ -1,5 +1,5 @@
 import { VALIDATOR_SETTINGS } from '@config';
-import { BaseReqDto, IResponse, events } from '@core';
+import { BaseReqDto, events, IResponse } from '@core';
 import { errorKeys } from '@exceptions';
 import { DtoTransformFunctions } from '@helpers';
 import { IsPasswordOrPinValid } from '@validators';

@@ -1,9 +1,8 @@
 import { VALIDATOR_SETTINGS } from '@config';
-import { ILoginModel, RouteConstants, SystemPermissions, events } from '@core';
+import { events, ILoginModel, RouteConstants, SystemPermissions } from '@core';
 import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
 import { testHelpers } from '@helpers';
-import { CreateUserResponseDto } from '@modules/users';
-import { userTestHelpers } from '@modules/users';
+import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
 import { generateRandomDate, getAdminLoginData, isGuid, isNumber } from '@utils';
 import { isDateString } from 'class-validator';
 import request from 'supertest';

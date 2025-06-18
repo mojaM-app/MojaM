@@ -1,4 +1,4 @@
-import { IUserGridItemDto, IGridPageResponseDto, BaseService, events } from '@core';
+import { BaseService, events, IGridPageResponseDto, IUserGridItemDto } from '@core';
 import { Service } from 'typedi';
 import { GetUserListReqDto, UsersGridPageDto } from '../dtos/get-user-list.dto';
 import { UserListRetrievedEvent } from '../events/user-list-retrieved-event';

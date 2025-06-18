@@ -1,5 +1,5 @@
 import { ACCESS_TOKEN_ALGORITHM, USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
-import { IPermissionsService, IUserEntity, IUserService, events, BaseService } from '@core';
+import { BaseService, events, IPermissionsService, IUserEntity, IUserService } from '@core';
 import { userToIUser } from '@db';
 import { BadRequestException, errorKeys, TranslatableHttpException } from '@exceptions';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
