@@ -1,13 +1,13 @@
 import { events, IResponse } from '@core';
 
-export class GetNewsDto {}
+export interface IGetNewsDto {}
 
-export class GetNewsResponseDto implements IResponse<GetNewsDto> {
-  public readonly data: GetNewsDto;
+export class GetNewsResponseDto implements IResponse<IGetNewsDto> {
+  public readonly data: IGetNewsDto;
   public readonly message?: string | undefined;
 
-  constructor(data: GetNewsDto) {
+  constructor(data: IGetNewsDto) {
     this.data = data;
-    this.message = events.news.retrieved;
+    this.message = events.news.newsRetrieved;
   }
 }

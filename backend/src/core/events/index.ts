@@ -1,6 +1,6 @@
 export const events = {
   news: {
-    retrieved: 'onInformationRetrieved',
+    newsRetrieved: 'onNewsRetrieved',
   },
   calendar: {
     eventsRetrieved: 'onCalendarEventsRetrieved',

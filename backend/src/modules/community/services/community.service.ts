@@ -7,7 +7,7 @@ import { CommunityRetrievedEvent } from '../events/community-retrieved-event';
 
 @Service()
 export class CommunityService extends BaseService {
-  public async get(currentUserId?: number): Promise<IGetCommunityDto> {
+  public async get(currentUserId?: number | undefined): Promise<IGetCommunityDto> {
     let result: IGetCommunityDto;
 
     if (!isNullOrEmptyString(COMMUNITY_INFO_URL)) {

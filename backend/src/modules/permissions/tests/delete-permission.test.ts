@@ -5,10 +5,12 @@ import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
 import { getAdminLoginData, isNumber } from '@utils';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
+import Container from 'typedi';
 import { AddPermissionsResponseDto } from '../dtos/add-permission.dto';
 import { DeletePermissionsResponseDto } from '../dtos/delete-permissions.dto';
 import { PermissionDeletedEvent } from '../events/permission-deleted-event';
 import { PermissionsRoute } from '../routes/permissions.routes';
+import { PermissionsService } from '../services/permissions.service';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { TestApp } from './../../../helpers/tests.utils';
 
@@ -514,6 +516,17 @@ describe('DELETE /permissions', () => {
       expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
       expect(testEventHandlers.onPermissionDeleted).toHaveBeenCalled();
+    });
+  });
+
+  describe('DELETE should handle errors', () => {
+    it('when service throws an error', async () => {
+      const permissionsService = Container.get(PermissionsService);
+      const mockGet = jest.spyOn(permissionsService, 'delete').mockRejectedValue(new Error('Service error'));
+      const path = PermissionsRoute.path + '/' + Guid.EMPTY + '/' + SystemPermissions.DeletePermission.toString();
+      const response = await request(app!.getServer()).delete(path).set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(response.statusCode).toBe(500);
+      expect(mockGet).toHaveBeenCalled();
     });
   });
 

@@ -4,8 +4,10 @@ import { testHelpers } from '@helpers';
 import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
 import { getAdminLoginData, isNumber } from '@utils';
 import request from 'supertest';
+import Container from 'typedi';
 import { GetPermissionsResponseDto } from '../dtos/get-permissions.dto';
 import { PermissionsRoute } from '../routes/permissions.routes';
+import { PermissionsService } from '../services/permissions.service';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { TestApp } from './../../../helpers/tests.utils';
 
@@ -25,7 +27,7 @@ describe('GET /permissions', () => {
     jest.clearAllMocks();
   });
 
-  describe('POST should respond with a status code of 401', () => {
+  describe('GET should respond with a status code of 401', () => {
     it('when token is invalid', async () => {
       const getPermissionsResponse = await request(app!.getServer())
         .get(PermissionsRoute.path)
@@ -43,7 +45,7 @@ describe('GET /permissions', () => {
     });
   });
 
-  describe('POST should respond with a status code of 403', () => {
+  describe('GET should respond with a status code of 403', () => {
     it('when token is not set', async () => {
       const getPermissionsResponse = await request(app!.getServer()).get(PermissionsRoute.path).send();
       expect(getPermissionsResponse.statusCode).toBe(401);
@@ -185,7 +187,7 @@ describe('GET /permissions', () => {
     });
   });
 
-  describe('POST should respond with a status code of 200', () => {
+  describe('GET should respond with a status code of 200', () => {
     it('when user have AddPermission permission', async () => {
       const requestData = userTestHelpers.generateValidUserWithPassword();
 
@@ -318,6 +320,16 @@ describe('GET /permissions', () => {
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
       expect(testEventHandlers.onPermissionAdded).toHaveBeenCalled();
       expect(testEventHandlers.onPermissionsRetrieved).toHaveBeenCalled();
+    });
+  });
+
+  describe('GET should handle errors', () => {
+    it('when service throws an error', async () => {
+      const permissionsService = Container.get(PermissionsService);
+      const mockGet = jest.spyOn(permissionsService, 'get').mockRejectedValue(new Error('Service error'));
+      const response = await request(app!.getServer()).get(PermissionsRoute.path).set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(response.statusCode).toBe(500);
+      expect(mockGet).toHaveBeenCalled();
     });
   });
 

@@ -5,9 +5,9 @@ import request from 'supertest';
 import { Container } from 'typedi';
 import { testEventHandlers } from '../../../helpers/event-handler-tests.helper';
 import { TestApp } from '../../../helpers/tests.utils';
-import { GetNewsResponseDto } from '../dtos/news.dto';
-import { NewsRoutes } from '../routes/news.routes';
-import { NewsService } from '../services/news.service';
+import { GetCommunityResponseDto } from '../dtos/community.dto';
+import { CommunityRoute } from '../routes/community.routes';
+import { CommunityService } from '../services/community.service';
 
 describe('GET /news', () => {
   let app: TestApp | undefined;
@@ -26,64 +26,70 @@ describe('GET /news', () => {
 
   describe('GET should respond with a status code of 200', () => {
     it('when valid request is made', async () => {
-      const response = await request(app!.getServer()).get(NewsRoutes.path).set('Authorization', `Bearer ${adminAccessToken}`);
+      const response = await request(app!.getServer()).get(CommunityRoute.path).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
-      const body = response.body as GetNewsResponseDto;
+      const body = response.body as GetCommunityResponseDto;
       expect(typeof body).toBe('object');
-      expect(body.message).toBe(events.news.newsRetrieved);
+      expect(body.message).toBe(events.community.communityRetrieved);
       expect(typeof body.data).toBe('object');
+      expect(body.data.info).toBeDefined();
+      expect(body.data.tabs).toBeDefined();
 
       Object.entries(testEventHandlers)
-        .filter(([, eventHandler]) => ![testEventHandlers.onNewsRetrieved].includes(eventHandler))
+        .filter(([, eventHandler]) => ![testEventHandlers.onCommunityRetrieved].includes(eventHandler))
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
-      expect(testEventHandlers.onNewsRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onCommunityRetrieved).toHaveBeenCalledTimes(1);
     });
 
     it('when token is invalid', async () => {
-      const response = await request(app!.getServer()).get(NewsRoutes.path).set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
+      const response = await request(app!.getServer()).get(CommunityRoute.path).set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
 
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
-      const body = response.body as GetNewsResponseDto;
+      const body = response.body as GetCommunityResponseDto;
       expect(typeof body).toBe('object');
-      expect(body.message).toBe(events.news.newsRetrieved);
+      expect(body.message).toBe(events.community.communityRetrieved);
       expect(typeof body.data).toBe('object');
+      expect(body.data.info).toBeDefined();
+      expect(body.data.tabs).toBeDefined();
 
       Object.entries(testEventHandlers)
-        .filter(([, eventHandler]) => ![testEventHandlers.onNewsRetrieved].includes(eventHandler))
+        .filter(([, eventHandler]) => ![testEventHandlers.onCommunityRetrieved].includes(eventHandler))
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
-      expect(testEventHandlers.onNewsRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onCommunityRetrieved).toHaveBeenCalledTimes(1);
     });
 
     it('when token is not set', async () => {
-      const response = await request(app!.getServer()).get(NewsRoutes.path);
+      const response = await request(app!.getServer()).get(CommunityRoute.path);
 
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
-      const body = response.body as GetNewsResponseDto;
+      const body = response.body as GetCommunityResponseDto;
       expect(typeof body).toBe('object');
-      expect(body.message).toBe(events.news.newsRetrieved);
+      expect(body.message).toBe(events.community.communityRetrieved);
       expect(typeof body.data).toBe('object');
+      expect(body.data.info).toBeDefined();
+      expect(body.data.tabs).toBeDefined();
 
       Object.entries(testEventHandlers)
-        .filter(([, eventHandler]) => ![testEventHandlers.onNewsRetrieved].includes(eventHandler))
+        .filter(([, eventHandler]) => ![testEventHandlers.onCommunityRetrieved].includes(eventHandler))
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
-      expect(testEventHandlers.onNewsRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onCommunityRetrieved).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('GET should handle errors', () => {
     it('when service throws an error', async () => {
-      const newsService = Container.get(NewsService);
-      const mockGet = jest.spyOn(newsService, 'get').mockRejectedValue(new Error('Service error'));
-      const response = await request(app!.getServer()).get(NewsRoutes.path).set('Authorization', `Bearer ${adminAccessToken}`);
+      const communityService = Container.get(CommunityService);
+      const mockGet = jest.spyOn(communityService, 'get').mockRejectedValue(new Error('Service error'));
+      const response = await request(app!.getServer()).get(CommunityRoute.path).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(response.statusCode).toBe(500);
       expect(mockGet).toHaveBeenCalled();
     });
