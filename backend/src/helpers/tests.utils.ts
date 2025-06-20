@@ -6,12 +6,22 @@ import request from 'supertest';
 import { App } from './../app';
 import { registerTestEventHandlers } from './event-handler-tests.helper';
 
+// Import all the actual event subscribers
+import './../modules/users/event-subscribers/logger-events-subscriber';
+import './../modules/auth/event-subscribers/logger-events-subscriber';
+import './../modules/announcements/event-subscribers/logger-events-subscriber';
+import './../modules/calendar/event-subscribers/logger-events-subscriber';
+import './../modules/permissions/event-subscribers/logger-events-subscriber';
+import './../modules/notifications/event-subscribers/user-created-events-subscriber';
+import './../modules/notifications/event-subscribers/user-locked-out-events-subscriber';
+
 export class TestApp extends App {
   private mockSendMail: jest.SpyInstance | null = null;
 
   constructor() {
     super();
     ModulesRegistry.registerAll();
+    this.registerActualEventSubscribers();
     this.registerTestEventHandlers();
   }
 
@@ -43,6 +53,13 @@ export class TestApp extends App {
   private registerTestEventHandlers(): void {
     const eventDispatcher: EventDispatcher = EventDispatcherService.getEventDispatcher();
     registerTestEventHandlers(eventDispatcher);
+  }
+
+  // Register actual event subscribers to ensure they work in tests
+  private registerActualEventSubscribers(): void {
+    // The imports at the top of this file should trigger the @EventSubscriber() decorators
+    // This method is a placeholder to ensure the event subscribers are properly registered
+    // during tests. The imports ensure the event subscriber classes are loaded.
   }
 }
 
