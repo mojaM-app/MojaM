@@ -1,10 +1,19 @@
-import { ADMIN_EMAIL, ADMIN_PASSWORD } from '@config';
+import { ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_UUID } from '../config/index';
 
-export const getAdminLoginData = (): { uuid: string; email: string; phone: string; passcode: string } => {
+export const getAdminLoginData = (): {
+  uuid: string;
+  email: string;
+  phone: string;
+  passcode: string;
+  salt: string;
+  refreshTokenKey: string;
+} => {
   return {
-    uuid: '2eaa394a-649d-44c1-b797-4a9e4ed2f836',
+    uuid: ADMIN_UUID!,
     email: ADMIN_EMAIL!,
     phone: '123456789',
     passcode: ADMIN_PASSWORD!,
+    salt: '22fae28a2abbb54a638cb5b7f1acb2e9',
+    refreshTokenKey: 'aedc7970d693ea6e4d71e39bffa7dc4034bae8e858b1ad2bb65a5ffd8356db41',
   };
 };

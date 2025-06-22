@@ -39,5 +39,6 @@ export const ValidateEnv = (): void => {
 
     ADMIN_EMAIL: email(),
     ADMIN_PASSWORD: str(),
+    ADMIN_UUID: str(),
   });
 };

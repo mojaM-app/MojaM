@@ -77,9 +77,10 @@ LOG_DIR = ../../logs
 ORIGIN = *
 CREDENTIALS = true
 
-# ADMIN USER CREDENTIALS
+# ADMIN USER DETAILS
 ADMIN_EMAIL =
 ADMIN_PASSWORD =
+ADMIN_UUID =
 ```
 ### Domyślna konfiguracja bazy danych
 ```ts
