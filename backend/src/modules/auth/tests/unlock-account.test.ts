@@ -6,8 +6,10 @@ import { userTestHelpers } from '@modules/users';
 import { getAdminLoginData } from '@utils';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
+import Container from 'typedi';
 import { IUnlockAccountResultDto, UnlockAccountResponseDto } from '../dtos/unlock-account.dto';
 import { AuthRoute } from '../routes/auth.routes';
+import { AccountService } from '../services/account.service';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { TestApp } from './../../../helpers/tests.utils';
 
@@ -289,6 +291,18 @@ describe('POST /auth/unlock-account/', () => {
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
         expect(eventHandler).not.toHaveBeenCalled();
       });
+    });
+  });
+
+  describe('GET should handle errors', () => {
+    it('when service throws an error', async () => {
+      const accountService = Container.get(AccountService);
+      const mockGet = jest.spyOn(accountService, 'unlockAccount').mockRejectedValue(new Error('Service error'));
+      const response = await request(app!.getServer())
+        .post(AuthRoute.unlockAccountPath + '/' + Guid.EMPTY)
+        .send();
+      expect(response.statusCode).toBe(500);
+      expect(mockGet).toHaveBeenCalled();
     });
   });
 

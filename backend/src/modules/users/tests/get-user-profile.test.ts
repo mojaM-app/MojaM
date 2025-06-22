@@ -297,8 +297,8 @@ describe('GET/user-profile', () => {
 
   describe('GET should respond with a status code of 500', () => {
     it('when service throws an error', async () => {
-      const newsService = Container.get(UserProfileService);
-      const mockGet = jest.spyOn(newsService, 'get').mockRejectedValue(new Error('Service error'));
+      const userProfileService = Container.get(UserProfileService);
+      const mockGet = jest.spyOn(userProfileService, 'get').mockRejectedValue(new Error('Service error'));
       const response = await request(app!.getServer()).get(UserProfileRoute.path).set('Authorization', `Bearer ${adminAccessToken}`);
       expect(response.statusCode).toBe(500);
       expect(mockGet).toHaveBeenCalled();

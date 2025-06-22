@@ -639,8 +639,8 @@ describe('PUT/user-profile', () => {
 
   describe('PUT should respond with a status code of 500', () => {
     it('when service throws an error', async () => {
-      const newsService = Container.get(UserProfileService);
-      const mockGet = jest.spyOn(newsService, 'update').mockRejectedValue(new Error('Service error'));
+      const userProfileService = Container.get(UserProfileService);
+      const mockGet = jest.spyOn(userProfileService, 'update').mockRejectedValue(new Error('Service error'));
       const updateModel = {
         firstName: 'Average',
         lastName: 'Joe',
