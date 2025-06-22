@@ -1,6 +1,6 @@
 import { BASE_PATH, CREDENTIALS, LOG_FORMAT, NODE_ENV, ORIGIN, PORT } from '@config';
 import { IRoutes, logger, stream } from '@core';
-import { DbConnection } from '@db';
+import { DbConnectionManager } from '@db';
 import { errorKeys } from '@exceptions';
 import { ErrorMiddleware } from '@middlewares';
 import { getFullUrl } from '@utils';
@@ -17,8 +17,6 @@ export class App {
   public app: express.Application;
   public env: string;
   public port: string | number;
-
-  private _connection: DbConnection | undefined = undefined;
 
   constructor() {
     this.app = express();
@@ -47,7 +45,7 @@ export class App {
   }
 
   public async closeDbConnection(): Promise<void> {
-    await this._connection?.close();
+    await DbConnectionManager.gracefulShutdown();
   }
 
   private initializeMiddlewares(): void {
@@ -86,9 +84,27 @@ export class App {
     // establish database connection
     logger.info('=== establishing database connection ===');
 
-    this._connection = DbConnection.getConnection();
+    const connection = DbConnectionManager.getConnection();
+
+    // Set up connection event handlers
+    connection.on('connected', () => {
+      logger.info('Database connection established successfully!');
+    });
+
+    connection.on('connection-failed', (error: any) => {
+      logger.error('Database connection failed:', error);
+    });
+
+    connection.on('max-reconnection-attempts-reached', (attempts: any) => {
+      logger.error(`Max reconnection attempts (${attempts}) reached. Database unavailable.`);
+      if (this.env === 'production') {
+        logger.error('Could not connect to database in production environment. Exiting process...');
+        process.exit(1);
+      }
+    });
+
     try {
-      await this._connection.connect();
+      await connection.connect();
       logger.info('Data Source has been initialized successfully!');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : String(err);

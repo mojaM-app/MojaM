@@ -8,6 +8,9 @@ WORKING_DIR=./dist/src
 echo ">>>>>>>>>> Checking code style"
 npm run lint || { echo "Linting failed. Exiting..."; exit 1; }
 
+echo ">>>>>>>>>> Checking file dependencies"
+npm run check-dependencies || { echo "Checking failed. Exiting..."; exit 1; }
+
 echo ">>>>>>>>>> Testing the project"
 npm run test || { echo "Tests failed. Exiting..."; exit 1; }
 

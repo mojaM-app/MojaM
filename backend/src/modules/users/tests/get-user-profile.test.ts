@@ -4,10 +4,12 @@ import { testHelpers } from '@helpers';
 import { userTestHelpers } from '@modules/users';
 import { generateRandomDate, getAdminLoginData } from '@utils';
 import request from 'supertest';
+import Container from 'typedi';
 import { CreateUserResponseDto } from '../dtos/create-user.dto';
 import { GetUserProfileResponseDto, IGetUserProfileDto } from '../dtos/get-user-profile.dto';
 import { UserProfileRoute } from '../routes/user-profile.routes';
 import { UserRoute } from '../routes/user.routes';
+import { UserProfileService } from '../services/user-profile.service';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { TestApp } from './../../../helpers/tests.utils';
 
@@ -240,6 +242,22 @@ describe('GET/user-profile', () => {
       expect(testEventHandlers.onUserProfileRetrieved).not.toHaveBeenCalled();
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
+
+    test('when token is invalid', async () => {
+      const getUserProfileResponse = await request(app!.getServer())
+        .get(UserProfileRoute.path)
+        .send()
+        .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
+      expect(getUserProfileResponse.statusCode).toBe(401);
+      const body = getUserProfileResponse.body;
+      expect(typeof body).toBe('object');
+      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
   });
 
   describe('GET should respond with a status code of 403', () => {
@@ -277,21 +295,13 @@ describe('GET/user-profile', () => {
     });
   });
 
-  describe('GET should respond with a status code of 401', () => {
-    test('when token is invalid', async () => {
-      const getUserProfileResponse = await request(app!.getServer())
-        .get(UserProfileRoute.path)
-        .send()
-        .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
-      expect(getUserProfileResponse.statusCode).toBe(401);
-      const body = getUserProfileResponse.body;
-      expect(typeof body).toBe('object');
-      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
+  describe('GET should respond with a status code of 500', () => {
+    it('when service throws an error', async () => {
+      const newsService = Container.get(UserProfileService);
+      const mockGet = jest.spyOn(newsService, 'get').mockRejectedValue(new Error('Service error'));
+      const response = await request(app!.getServer()).get(UserProfileRoute.path).set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(response.statusCode).toBe(500);
+      expect(mockGet).toHaveBeenCalled();
     });
   });
 

@@ -34,6 +34,7 @@ module.exports = {
     '<rootDir>/src/config/validateEnv.ts',
     '<rootDir>/src/app.ts',
     '<rootDir>/src/server.ts',
+    '<rootDir>/src/dataBase/test-helpers/mockDbConnection.ts',
   ],
 
   verbose: true,

@@ -1,5 +1,5 @@
 import { ILoginModel, IUser, SystemPermissions } from '@core';
-import { DbConnection } from '@db';
+import { DbConnectionManager } from '@db';
 import { testHelpers } from '@helpers';
 import { getAdminLoginData } from '@utils';
 import request from 'supertest';
@@ -109,8 +109,8 @@ describe('Cache user data tests', () => {
       },
     };
 
-    DbConnection.getDbContext = jest.fn().mockImplementation(() => {
-      return dbMock;
+    jest.spyOn(DbConnectionManager, 'getDbContext').mockImplementation(() => {
+      return dbMock as any;
     });
 
     app = await testHelpers.getTestApp();
