@@ -1,14 +1,12 @@
-import { BASE_PATH, CREDENTIALS, LOG_FORMAT, NODE_ENV, ORIGIN, PORT } from '@config';
+import { BASE_PATH, LOG_FORMAT, NODE_ENV, PORT } from '@config';
 import { IRoutes, logger, stream } from '@core';
 import { DbConnectionManager } from '@db';
 import { errorKeys } from '@exceptions';
-import { ErrorMiddleware } from '@middlewares';
+import { corsOptions, ErrorMiddleware, generalRateLimit, requestIdMiddleware, securityHeaders, securityLoggingMiddleware } from '@middlewares';
 import { getFullUrl } from '@utils';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
-import cors from 'cors';
 import express from 'express';
-import helmet from 'helmet';
 import hpp from 'hpp';
 import morgan from 'morgan';
 import 'reflect-metadata';
@@ -49,14 +47,21 @@ export class App {
   }
 
   private initializeMiddlewares(): void {
+    // Security middleware - order matters!
+    this.app.use(requestIdMiddleware); // First - add request ID to all requests
+    this.app.use(securityLoggingMiddleware); // Second - log security events with request ID
+    this.app.use(generalRateLimit); // Third - rate limiting
+    this.app.use(securityHeaders); // Fourth - security headers (now array)
+    this.app.use(corsOptions); // Fifth - CORS
+
     this.app.use(morgan(LOG_FORMAT ?? 'combined', { stream }));
-    this.app.use(cors({ origin: ORIGIN, credentials: CREDENTIALS }));
+
     this.app.disable('x-powered-by');
     this.app.use(hpp());
-    this.app.use(helmet());
+
     this.app.use(compression());
-    this.app.use(express.json());
-    this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(express.json({ limit: '10mb' }));
+    this.app.use(express.urlencoded({ extended: true, limit: '10mb' }));
     this.app.use(cookieParser());
   }
 

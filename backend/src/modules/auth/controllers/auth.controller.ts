@@ -1,4 +1,5 @@
 import { BaseController } from '@core';
+import { SecurityLogger } from '@middlewares';
 import { isGuid } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
@@ -41,10 +42,12 @@ export class AuthController extends BaseController {
       next(error);
     }
   };
-
   public requestResetPasscode = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const model: AccountTryingToLogInDto = req.body;
+
+      SecurityLogger.logPasswordReset(req, model.email || 'unknown');
+
       const result = await this._resetPasscodeService.requestResetPasscode(model);
       res.status(200).json(new RequestResetPasscodeResponseDto(result));
     } catch (error) {
@@ -74,13 +77,18 @@ export class AuthController extends BaseController {
       next(error);
     }
   };
-
   public logIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const model: LoginDto = req.body;
       const result: ILoginResult = await this._authService.login(model);
+
+      SecurityLogger.logSuccessfulLogin(req, result.user.id, result.user.email);
+
       res.status(200).json(new LoginResponseDto(result));
     } catch (error) {
+      const model: LoginDto = req.body;
+      SecurityLogger.logFailedLogin(req, model.email || undefined, error instanceof Error ? error.message : 'Unknown error');
+
       next(error);
     }
   };

@@ -1,6 +1,6 @@
 import { REGEX_PATTERNS } from '@config';
 import { IRoutes, RouteConstants } from '@core';
-import { requirePermission, setIdentity, validateData } from '@middlewares';
+import { requirePermission, setIdentity, userManagementRateLimit, validateData } from '@middlewares';
 import express from 'express';
 import { UserController } from '../controllers/user.controller';
 import { CreateUserDto } from '../dtos/create-user.dto';
@@ -25,40 +25,39 @@ export class UserRoute implements IRoutes {
       [setIdentity, requirePermission(user => user.canEditUser())],
       this._controller.get,
     );
-
     this.router.post(
       `${UserRoute.path}`,
-      [validateData(CreateUserDto), setIdentity, requirePermission(user => user.canAddUser())],
+      [userManagementRateLimit, validateData(CreateUserDto), setIdentity, requirePermission(user => user.canAddUser())],
       this._controller.create,
     );
 
     this.router.post(
       `${UserRoute.path}/:id(${REGEX_PATTERNS.GUID})/${UserRoute.deactivatePath}`,
-      [setIdentity, requirePermission(user => user.canDeactivateUser())],
+      [userManagementRateLimit, setIdentity, requirePermission(user => user.canDeactivateUser())],
       this._controller.deactivate,
     );
 
     this.router.post(
       `${UserRoute.path}/:id(${REGEX_PATTERNS.GUID})/${UserRoute.activatePath}`,
-      [setIdentity, requirePermission(user => user.canActivateUser())],
+      [userManagementRateLimit, setIdentity, requirePermission(user => user.canActivateUser())],
       this._controller.activate,
     );
 
     this.router.post(
       `${UserRoute.path}/:id(${REGEX_PATTERNS.GUID})/${UserRoute.unlockPath}`,
-      [setIdentity, requirePermission(user => user.canUnlockUser())],
+      [userManagementRateLimit, setIdentity, requirePermission(user => user.canUnlockUser())],
       this._controller.unlock,
     );
 
     this.router.put(
       `${UserRoute.path}/:id(${REGEX_PATTERNS.GUID})`,
-      [validateData(UpdateUserDto), setIdentity, requirePermission(user => user.canEditUser())],
+      [userManagementRateLimit, validateData(UpdateUserDto), setIdentity, requirePermission(user => user.canEditUser())],
       this._controller.update,
     );
 
     this.router.delete(
       `${UserRoute.path}/:id(${REGEX_PATTERNS.GUID})`,
-      [setIdentity, requirePermission(user => user.canDeleteUser())],
+      [userManagementRateLimit, setIdentity, requirePermission(user => user.canDeleteUser())],
       this._controller.delete,
     );
   }
