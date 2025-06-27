@@ -1,9 +1,9 @@
-import { DbConnection, DbContext } from '@db';
+import { DbConnectionManager, DbContext } from '@db';
 
 export abstract class BaseRepository {
   protected readonly _dbContext: DbContext;
 
   constructor() {
-    this._dbContext = DbConnection.getDbContext();
+    this._dbContext = DbConnectionManager.getDbContext();
   }
 }

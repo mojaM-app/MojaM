@@ -4,7 +4,7 @@ import express from 'express';
 import { NewsController } from '../controllers/news.controller';
 
 export class NewsRoutes implements IRoutes {
-  public path = '/news';
+  public static path = '/news';
   public router = express.Router();
 
   private readonly _controller: NewsController;
@@ -15,6 +15,6 @@ export class NewsRoutes implements IRoutes {
   }
 
   public initializeRoutes(): void {
-    this.router.get(`${this.path}`, [setIdentity], this._controller.get);
+    this.router.get(`${NewsRoutes.path}`, [setIdentity], this._controller.get);
   }
 }

@@ -1,5 +1,5 @@
 import { REGEX_PATTERNS } from '@config';
-import { IRoutes } from '@core';
+import { IRoutes, RouteConstants } from '@core';
 import { requirePermission, setIdentity, validateData } from '@middlewares';
 import express from 'express';
 import { AnnouncementsController } from '../controllers/announcements.controller';
@@ -8,9 +8,9 @@ import { CreateAnnouncementsDto } from '../dtos/create-announcements.dto';
 import { UpdateAnnouncementsDto } from '../dtos/update-announcements.dto';
 
 export class AnnouncementsRout implements IRoutes {
-  public static path = '/announcements';
-  public static currentAnnouncementsPath = `${AnnouncementsRout.path}/current`;
-  public static publishPath = 'publish';
+  public static path = RouteConstants.ANNOUNCEMENTS_PATH;
+  public static currentAnnouncementsPath = RouteConstants.CURRENT_ANNOUNCEMENTS_PATH;
+  public static publishPath = RouteConstants.ANNOUNCEMENTS_PUBLISH_PATH;
 
   public router = express.Router();
 

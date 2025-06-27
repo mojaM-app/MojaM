@@ -1,7 +1,7 @@
 import { BaseController, IRequestWithIdentity } from '@core';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
-import { GetNewsDto, GetNewsResponseDto } from '../dtos/news.dto';
+import { GetNewsResponseDto, type IGetNewsDto } from '../dtos/news.dto';
 import { NewsService } from '../services/news.service';
 
 export class NewsController extends BaseController {
@@ -14,7 +14,7 @@ export class NewsController extends BaseController {
 
   public get = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const result: GetNewsDto = await this._newsService.get();
+      const result: IGetNewsDto = await this._newsService.get(this.getCurrentUserId(req));
       res.status(200).json(new GetNewsResponseDto(result));
     } catch (error) {
       next(error);

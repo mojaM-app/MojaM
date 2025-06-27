@@ -9,12 +9,14 @@ import { generateRandomNumber, generateRandomPassword, getAdminLoginData } from 
 import { Guid } from 'guid-typescript';
 import ms from 'ms';
 import request from 'supertest';
+import Container from 'typedi';
 import { CheckResetPasscodeTokenResponseDto, ICheckResetPasscodeTokenResultDto } from '../dtos/check-reset-passcode-token.dto';
 import { AccountTryingToLogInDto } from '../dtos/get-account-before-log-in.dto';
 import { LoginResponseDto } from '../dtos/login.dto';
 import { RequestResetPasscodeResponseDto } from '../dtos/request-reset-passcode.dto';
 import { ResetPasscodeDto, ResetPasscodeResponseDto } from '../dtos/reset-passcode.dto';
 import { AuthRoute } from '../routes/auth.routes';
+import { ResetPasscodeService } from '../services/reset-passcode.service';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { TestApp } from './../../../helpers/tests.utils';
 
@@ -703,6 +705,21 @@ describe('POST /auth/reset-passcode', () => {
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
+    });
+  });
+
+  describe('GET should handle errors', () => {
+    it('when service throws an error', async () => {
+      const resetPasscodeService = Container.get(ResetPasscodeService);
+      const mockGet = jest.spyOn(resetPasscodeService, 'resetPasscode').mockRejectedValue(new Error('Service error'));
+      const response = await request(app!.getServer())
+        .post(AuthRoute.resetPasscodePath + '/' + Guid.EMPTY)
+        .send({
+          token: 'valid token',
+          passcode: generateRandomPassword(),
+        } satisfies ResetPasscodeDto);
+      expect(response.statusCode).toBe(500);
+      expect(mockGet).toHaveBeenCalled();
     });
   });
 

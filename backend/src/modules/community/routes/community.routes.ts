@@ -4,7 +4,7 @@ import express from 'express';
 import { CommunityController } from '../controllers/community.controller';
 
 export class CommunityRoute implements IRoutes {
-  public path = '/community';
+  public static path = '/community';
   public router = express.Router();
   private readonly _controller: CommunityController;
 
@@ -14,6 +14,6 @@ export class CommunityRoute implements IRoutes {
   }
 
   private initializeRoutes(): void {
-    this.router.get(`${this.path}`, [setIdentity], this._controller.get);
+    this.router.get(`${CommunityRoute.path}`, [setIdentity], this._controller.get);
   }
 }

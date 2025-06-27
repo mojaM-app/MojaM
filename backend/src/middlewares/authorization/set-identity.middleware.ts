@@ -5,6 +5,7 @@ import { isNullOrEmptyString, isNullOrUndefined, isString } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { JwtPayload, verify } from 'jsonwebtoken';
 import Container from 'typedi';
+import { SecurityLogger } from '../security/security-logging.middleware';
 
 const getAuthorization = (req: Request): string | null => {
   let header: string | string[] | undefined = req?.headers?.Authorization;
@@ -97,6 +98,7 @@ export const setIdentity = async (req: IRequestWithIdentity, res: Response, next
       const user = await userService.getByUuid(sub);
 
       if (isNullOrUndefined(user)) {
+        SecurityLogger.logTokenValidationFailure(req, 'User not found for token subject');
         next(new UnauthorizedException(errorKeys.login.Wrong_Authentication_Token));
       } else {
         const permissionsService = Container.get<IPermissionsService>('IPermissionsService');
@@ -107,6 +109,20 @@ export const setIdentity = async (req: IRequestWithIdentity, res: Response, next
     }
   } catch (error) {
     logger.error('Error in setIdentity middleware:', error);
+
+    // Log specific JWT errors for security monitoring
+    if (error instanceof Error) {
+      if (error.message.includes('expired')) {
+        SecurityLogger.logTokenValidationFailure(req, 'Token expired');
+      } else if (error.message.includes('invalid')) {
+        SecurityLogger.logTokenValidationFailure(req, 'Invalid token format');
+      } else if (error.message.includes('malformed')) {
+        SecurityLogger.logTokenValidationFailure(req, 'Malformed token');
+      } else {
+        SecurityLogger.logTokenValidationFailure(req, `JWT validation error: ${error.message}`);
+      }
+    }
+
     req.identity = new Identity(undefined, []);
     next();
   }

@@ -6,10 +6,12 @@ import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
 import { generateRandomEmail, getAdminLoginData } from '@utils';
 import nodemailer from 'nodemailer';
 import request from 'supertest';
+import Container from 'typedi';
 import { AccountTryingToLogInDto } from '../dtos/get-account-before-log-in.dto';
 import { RequestResetPasscodeResponseDto } from '../dtos/request-reset-passcode.dto';
 import { ResetPasscodeDto, ResetPasscodeResponseDto } from '../dtos/reset-passcode.dto';
 import { AuthRoute } from '../routes/auth.routes';
+import { ResetPasscodeService } from '../services/reset-passcode.service';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { TestApp } from './../../../helpers/tests.utils';
 
@@ -835,6 +837,18 @@ describe('POST /auth/request-reset-passcode', () => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
       expect(testEventHandlers.onUserPasscodeChanged).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('GET should handle errors', () => {
+    it('when service throws an error', async () => {
+      const resetPasscodeService = Container.get(ResetPasscodeService);
+      const mockGet = jest.spyOn(resetPasscodeService, 'requestResetPasscode').mockRejectedValue(new Error('Service error'));
+      const response = await request(app!.getServer())
+        .post(AuthRoute.requestResetPasscodePath)
+        .send({ email: 'some@email.com' } satisfies AccountTryingToLogInDto);
+      expect(response.statusCode).toBe(500);
+      expect(mockGet).toHaveBeenCalled();
     });
   });
 

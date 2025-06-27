@@ -1,14 +1,12 @@
-import { BASE_PATH, CREDENTIALS, LOG_FORMAT, NODE_ENV, ORIGIN, PORT } from '@config';
+import { BASE_PATH, LOG_FORMAT, NODE_ENV, PORT } from '@config';
 import { IRoutes, logger, stream } from '@core';
-import { DbConnection } from '@db';
+import { DbConnectionManager } from '@db';
 import { errorKeys } from '@exceptions';
-import { ErrorMiddleware } from '@middlewares';
+import { corsOptions, ErrorMiddleware, generalRateLimit, requestIdMiddleware, securityHeaders, securityLoggingMiddleware } from '@middlewares';
 import { getFullUrl } from '@utils';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
-import cors from 'cors';
 import express from 'express';
-import helmet from 'helmet';
 import hpp from 'hpp';
 import morgan from 'morgan';
 import 'reflect-metadata';
@@ -17,8 +15,6 @@ export class App {
   public app: express.Application;
   public env: string;
   public port: string | number;
-
-  private _connection: DbConnection | undefined = undefined;
 
   constructor() {
     this.app = express();
@@ -47,18 +43,25 @@ export class App {
   }
 
   public async closeDbConnection(): Promise<void> {
-    await this._connection?.close();
+    await DbConnectionManager.gracefulShutdown();
   }
 
   private initializeMiddlewares(): void {
+    // Security middleware - order matters!
+    this.app.use(requestIdMiddleware); // First - add request ID to all requests
+    this.app.use(securityLoggingMiddleware); // Second - log security events with request ID
+    this.app.use(generalRateLimit); // Third - rate limiting
+    this.app.use(securityHeaders); // Fourth - security headers (now array)
+    this.app.use(corsOptions); // Fifth - CORS
+
     this.app.use(morgan(LOG_FORMAT ?? 'combined', { stream }));
-    this.app.use(cors({ origin: ORIGIN, credentials: CREDENTIALS }));
+
     this.app.disable('x-powered-by');
     this.app.use(hpp());
-    this.app.use(helmet());
+
     this.app.use(compression());
-    this.app.use(express.json());
-    this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(express.json({ limit: '10mb' }));
+    this.app.use(express.urlencoded({ extended: true, limit: '10mb' }));
     this.app.use(cookieParser());
   }
 
@@ -86,9 +89,27 @@ export class App {
     // establish database connection
     logger.info('=== establishing database connection ===');
 
-    this._connection = DbConnection.getConnection();
+    const connection = DbConnectionManager.getConnection();
+
+    // Set up connection event handlers
+    connection.on('connected', () => {
+      logger.info('Database connection established successfully!');
+    });
+
+    connection.on('connection-failed', (error: any) => {
+      logger.error('Database connection failed:', error);
+    });
+
+    connection.on('max-reconnection-attempts-reached', (attempts: any) => {
+      logger.error(`Max reconnection attempts (${attempts}) reached. Database unavailable.`);
+      if (this.env === 'production') {
+        logger.error('Could not connect to database in production environment. Exiting process...');
+        process.exit(1);
+      }
+    });
+
     try {
-      await this._connection.connect();
+      await connection.connect();
       logger.info('Data Source has been initialized successfully!');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : String(err);

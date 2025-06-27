@@ -1,9 +1,9 @@
-import { VALIDATOR_SETTINGS } from '@config';
-import { isNullOrEmptyString } from '@utils';
 import { isStrongPassword, maxLength } from 'class-validator';
 import * as crypto from 'crypto';
 import { Service } from 'typedi';
 import { IAuthenticationTypeService } from '../interfaces/IAuthenticationTypeService';
+import { VALIDATOR_SETTINGS } from './../../../config/index';
+import { isNullOrEmptyString } from './../../../utils/index';
 
 @Service()
 export class PasswordService implements IAuthenticationTypeService {

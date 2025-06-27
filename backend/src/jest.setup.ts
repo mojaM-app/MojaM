@@ -1,6 +1,7 @@
 /**
  * Global Jest test setup
  */
+import 'reflect-metadata';
 
 // Set a higher timeout for all tests (30 seconds)
 jest.setTimeout(30000);

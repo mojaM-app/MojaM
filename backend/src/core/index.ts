@@ -26,3 +26,5 @@ export { IRequestWithIdentity } from './interfaces/request.interfaces';
 export { IResponse } from './interfaces/response.interfaces';
 export { IRoutes } from './interfaces/routes.interfaces';
 export { IResponseError } from './interfaces/response.interfaces';
+
+export { DtoTransformFunctions } from './dtos/DtoTransformFunctions';

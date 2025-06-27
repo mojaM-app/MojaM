@@ -25,34 +25,41 @@ export class CreateTableAnnouncements1729890701959 implements MigrationInterface
       'ALTER TABLE `announcement_items` ADD CONSTRAINT `FK_Announcement_To_AnnouncementItem` FOREIGN KEY (`AnnouncementId`) REFERENCES `announcements`(`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT',
     );
 
-    await queryRunner.query(
-      "INSERT INTO `system_permissions` (`Id`, `Name`, `Description`) VALUES (30, 'AnnouncementsAdministration', 'Announcements administration permission group')",
-    );
-    await queryRunner.query(
-      'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
-        SystemPermissions.PreviewAnnouncementsList +
-        ", 'PreviewAnnouncementsList', 'Permission that allows preview announcements list', 30)",
-    );
-    await queryRunner.query(
-      'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
-        SystemPermissions.AddAnnouncements +
-        ", 'AddAnnouncements', 'Permission that allows add announcements', 30)",
-    );
-    await queryRunner.query(
-      'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
-        SystemPermissions.EditAnnouncements +
-        ", 'EditAnnouncements', 'Permission that allows edit announcements', 30)",
-    );
-    await queryRunner.query(
-      'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
-        SystemPermissions.DeleteAnnouncements +
-        ", 'DeleteAnnouncements', 'Permission that allows delete announcements', 30)",
-    );
-    await queryRunner.query(
-      'INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (' +
-        SystemPermissions.PublishAnnouncements +
-        ", 'PublishAnnouncements', 'Permission that allows publish announcements', 30)",
-    );
+    await queryRunner.query('INSERT INTO `system_permissions` (`Id`, `Name`, `Description`) VALUES (?, ?, ?)', [
+      30,
+      'AnnouncementsAdministration',
+      'Announcements administration permission group',
+    ]);
+    await queryRunner.query('INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (?, ?, ?, ?)', [
+      SystemPermissions.PreviewAnnouncementsList,
+      'PreviewAnnouncementsList',
+      'Permission that allows preview announcements list',
+      30,
+    ]);
+    await queryRunner.query('INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (?, ?, ?, ?)', [
+      SystemPermissions.AddAnnouncements,
+      'AddAnnouncements',
+      'Permission that allows add announcements',
+      30,
+    ]);
+    await queryRunner.query('INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (?, ?, ?, ?)', [
+      SystemPermissions.EditAnnouncements,
+      'EditAnnouncements',
+      'Permission that allows edit announcements',
+      30,
+    ]);
+    await queryRunner.query('INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (?, ?, ?, ?)', [
+      SystemPermissions.DeleteAnnouncements,
+      'DeleteAnnouncements',
+      'Permission that allows delete announcements',
+      30,
+    ]);
+    await queryRunner.query('INSERT INTO `system_permissions` (`Id`, `Name`, `Description`, `ParentId`) VALUES (?, ?, ?, ?)', [
+      SystemPermissions.PublishAnnouncements,
+      'PublishAnnouncements',
+      'Permission that allows publish announcements',
+      30,
+    ]);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

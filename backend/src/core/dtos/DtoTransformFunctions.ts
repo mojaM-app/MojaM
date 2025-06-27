@@ -1,5 +1,5 @@
+import { isString } from '@utils';
 import { TransformFnParams } from 'class-transformer';
-import { isString } from './../utils/strings.utils';
 
 export class DtoTransformFunctions {
   /**

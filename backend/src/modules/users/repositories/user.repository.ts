@@ -86,30 +86,41 @@ export class UserRepository extends BaseUserRepository {
   public async update(model: UpdateUserModel): Promise<User | null> {
     return await this._update(model);
   }
-
   public async checkIfCanBeDeleted(userId: number): Promise<string[]> {
     const relatedDataConnectedWithUser = await this._dbContext.query(
-      `SELECT COUNT(*) AS count, '${relatedDataNames.SystemPermission_AssignedBy}' as entities
+      `SELECT COUNT(*) AS count, ? as entities
         FROM user_to_systempermissions uts
-        WHERE uts.AssignedById = ${userId} AND uts.UserId != ${userId}
+        WHERE uts.AssignedById = ? AND uts.UserId != ?
       UNION
-      SELECT COUNT(*) AS count, '${relatedDataNames.Announcements_CreatedBy}' as entities
+      SELECT COUNT(*) AS count, ? as entities
         FROM announcements an_cr
-        WHERE an_cr.CreatedById = ${userId}
+        WHERE an_cr.CreatedById = ?
       UNION
-      SELECT COUNT(*) AS count, '${relatedDataNames.Announcements_PublishedBy}' as entities
+      SELECT COUNT(*) AS count, ? as entities
       FROM announcements an_pub
-        WHERE an_pub.PublishedById = ${userId}
+        WHERE an_pub.PublishedById = ?
       UNION
-        SELECT COUNT(*) AS count, '${relatedDataNames.AnnouncementItems_CreatedBy}' as entities
+        SELECT COUNT(*) AS count, ? as entities
         FROM announcement_items ani_cr
-        WHERE ani_cr.CreatedById = ${userId}
+        WHERE ani_cr.CreatedById = ?
       UNION
-        SELECT COUNT(*) AS count, '${relatedDataNames.AnnouncementItems_UpdatedBy}' as entities
+        SELECT COUNT(*) AS count, ? as entities
         FROM announcement_items ani_up
-        WHERE ani_up.UpdatedById = ${userId}
+        WHERE ani_up.UpdatedById = ?
       `,
-      [userId],
+      [
+        relatedDataNames.SystemPermission_AssignedBy,
+        userId,
+        userId,
+        relatedDataNames.Announcements_CreatedBy,
+        userId,
+        relatedDataNames.Announcements_PublishedBy,
+        userId,
+        relatedDataNames.AnnouncementItems_CreatedBy,
+        userId,
+        relatedDataNames.AnnouncementItems_UpdatedBy,
+        userId,
+      ],
     );
 
     return relatedDataConnectedWithUser

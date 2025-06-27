@@ -4,8 +4,10 @@ import { testHelpers } from '@helpers';
 import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
 import { generateRandomEmail, getAdminLoginData } from '@utils';
 import request from 'supertest';
+import Container from 'typedi';
 import { AccountTryingToLogInDto, GetAccountBeforeLogInResponseDto, IGetAccountBeforeLogInResultDto } from '../dtos/get-account-before-log-in.dto';
 import { AuthRoute } from '../routes/auth.routes';
+import { AccountService } from '../services/account.service';
 import { TestApp } from './../../../helpers/tests.utils';
 
 describe('POST /auth/get-account-before-log-in', () => {
@@ -553,6 +555,18 @@ describe('POST /auth/get-account-before-log-in', () => {
         const errors = data.message.split(',');
         expect(errors.filter(x => x !== errorKeys.users.Invalid_Email).length).toBe(0);
       }
+    });
+  });
+
+  describe('GET should handle errors', () => {
+    it('when service throws an error', async () => {
+      const accountService = Container.get(AccountService);
+      const mockGet = jest.spyOn(accountService, 'getAccountBeforeLogIn').mockRejectedValue(new Error('Service error'));
+      const response = await request(app!.getServer())
+        .post(AuthRoute.getAccountBeforeLogInPath)
+        .send({ email: 'some@email.com' } satisfies AccountTryingToLogInDto);
+      expect(response.statusCode).toBe(500);
+      expect(mockGet).toHaveBeenCalled();
     });
   });
 

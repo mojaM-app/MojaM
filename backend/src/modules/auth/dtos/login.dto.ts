@@ -1,7 +1,6 @@
 import { VALIDATOR_SETTINGS } from '@config';
-import { events, ILoginModel, IResponse, TLoginResult } from '@core';
+import { DtoTransformFunctions, events, ILoginModel, IResponse, TLoginResult } from '@core';
 import { errorKeys } from '@exceptions';
-import { DtoTransformFunctions } from '@helpers';
 import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MaxLength } from 'class-validator';
 import { ILoginResult } from '../interfaces/login.interfaces';

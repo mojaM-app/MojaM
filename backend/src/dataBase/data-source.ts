@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { toNumber } from './../utils/numbers.utils';
 import { DbContext } from './dbContext';
-import { TitleCaseNamingStrategy } from './pascal-naming.strategy';
+import { TitleCaseNamingStrategy } from './title-case-naming.strategy';
 import { DATABASE_HOST, DATABASE_MIGRATIONS_PATH, DATABASE_NAME, DATABASE_PASSWORD, DATABASE_PORT, DATABASE_USERNAME } from '../config/index';
 import { AnnouncementItem } from './entities/announcements/announcement-item.entity';
 import { Announcement } from './entities/announcements/announcement.entity';

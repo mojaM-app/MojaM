@@ -1,7 +1,6 @@
 import { VALIDATOR_SETTINGS } from '@config';
-import { AuthenticationTypes, IAccountTryingToLogInModel, IResponse } from '@core';
+import { AuthenticationTypes, DtoTransformFunctions, IAccountTryingToLogInModel, IResponse } from '@core';
 import { errorKeys } from '@exceptions';
-import { DtoTransformFunctions } from '@helpers';
 import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MaxLength } from 'class-validator';
 

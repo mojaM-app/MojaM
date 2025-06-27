@@ -2,8 +2,10 @@ import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
+import Container from 'typedi';
 import { CheckResetPasscodeTokenResponseDto } from '../dtos/check-reset-passcode-token.dto';
 import { AuthRoute } from '../routes/auth.routes';
+import { ResetPasscodeService } from '../services/reset-passcode.service';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { TestApp } from './../../../helpers/tests.utils';
 
@@ -55,6 +57,18 @@ describe('POST /auth/check-reset-passcode-token/:userId/:token', () => {
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
         expect(eventHandler).not.toHaveBeenCalled();
       });
+    });
+  });
+
+  describe('GET should handle errors', () => {
+    it('when service throws an error', async () => {
+      const resetPasscodeService = Container.get(ResetPasscodeService);
+      const mockGet = jest.spyOn(resetPasscodeService, 'checkResetPasscodeToken').mockRejectedValue(new Error('Service error'));
+      const response = await request(app!.getServer())
+        .post(AuthRoute.checkResetPasscodeTokenPath + '/' + Guid.EMPTY + '/validToken')
+        .send();
+      expect(response.statusCode).toBe(500);
+      expect(mockGet).toHaveBeenCalled();
     });
   });
 

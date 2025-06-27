@@ -6,6 +6,7 @@ import { CommunityModule } from './community/community.module';
 import { NewsModule } from './news/news.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PermissionsModule } from './permissions/permissions.module';
+import { SecurityModule } from './security/security.module';
 import { UsersModule } from './users/users.module';
 
 export class ModulesRegistry {
@@ -18,6 +19,7 @@ export class ModulesRegistry {
     new CommunityModule(),
     new NewsModule(),
     new CalendarModule(),
+    new SecurityModule(),
   ];
 
   public static registerAll(): void {
