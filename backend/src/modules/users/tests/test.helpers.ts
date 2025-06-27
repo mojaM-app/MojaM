@@ -4,7 +4,7 @@ import { generateRandomEmail, generateRandomNumber, generateRandomPassword } fro
 import { type CreateUserDto } from '../dtos/create-user.dto';
 
 const generateValidUser = (): IUser => {
-  const phoneNumberCount = VALIDATOR_SETTINGS.PHONE_MAX_LENGTH - 2; // 2 for the country code '88'
+  const phoneNumberCount = 7;
   return {
     email: generateRandomEmail(),
     phone: `88${generateRandomNumber(phoneNumberCount)}`,

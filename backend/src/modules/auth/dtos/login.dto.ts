@@ -1,8 +1,8 @@
-import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MaxLength } from 'class-validator';
 import { VALIDATOR_SETTINGS } from '@config';
 import { DtoTransformFunctions, events, ILoginModel, type IResponse, TLoginResult } from '@core';
 import { errorKeys } from '@exceptions';
+import { Transform } from 'class-transformer';
+import { IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MaxLength } from 'class-validator';
 import { ILoginResult } from '../interfaces/login.interfaces';
 
 export class LoginDto implements ILoginModel {

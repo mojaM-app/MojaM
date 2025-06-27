@@ -12,7 +12,10 @@ import ms from 'ms';
 import StatusCode from 'status-code-enum';
 import request from 'supertest';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
-import { getAccessTokenExpiration, getRefreshTokenExpiration } from '../../../middlewares/authorization/set-identity.middleware';
+import {
+  getAccessTokenExpiration,
+  getRefreshTokenExpiration,
+} from '../../../middlewares/authorization/set-identity.middleware';
 import { ActivateAccountDto, ActivateAccountResponseDto } from '../dtos/activate-account.dto';
 import { RefreshTokenDto, RefreshTokenResponseDto } from '../dtos/refresh-token.dto';
 import { AuthRoute } from '../routes/auth.routes';
@@ -56,8 +59,8 @@ describe('POST /auth/refresh-token', () => {
       };
       const next: NextFunction = jest.fn();
       await setIdentity(req as any, {} as any, next);
-      expect((req as unknown as IRequestWithIdentity).identity.userUuid).toEqual(userLoggedIn.id);
-      expect((req as unknown as IRequestWithIdentity).identity.canEditUser()).toBeTruthy();
+      expect((req as unknown as IRequestWithIdentity).identity!.userUuid).toEqual(userLoggedIn.id);
+      expect((req as unknown as IRequestWithIdentity).identity!.canEditUser()).toBeTruthy();
       expect(next).toHaveBeenCalled();
 
       const accessToken = decode(userLoggedIn.accessToken, { json: true });
@@ -104,11 +107,15 @@ describe('POST /auth/refresh-token', () => {
           accessToken: userLoggedIn.accessToken,
         } satisfies RefreshTokenDto);
       expect(refreshTokenResponse.statusCode).toBe(200);
-      const { data: newAccessToken, message: userRefreshedTokenMessage }: RefreshTokenResponseDto = refreshTokenResponse.body;
+      const { data: newAccessToken, message: userRefreshedTokenMessage }: RefreshTokenResponseDto =
+        refreshTokenResponse.body;
       expect(userRefreshedTokenMessage).toBe(events.users.userRefreshedToken);
       expect(newAccessToken).toBeDefined();
 
-      createUserResponse = await request(app!.getServer()).post(RouteConstants.USER_PATH).send(user).set('Authorization', `Bearer ${newAccessToken}`);
+      createUserResponse = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .send(user)
+        .set('Authorization', `Bearer ${newAccessToken}`);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createUserMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
@@ -167,8 +174,8 @@ describe('POST /auth/refresh-token', () => {
       };
       const next: NextFunction = jest.fn();
       await setIdentity(req as any, {} as any, next);
-      expect((req as unknown as IRequestWithIdentity).identity.userUuid).toEqual(userLoggedIn.id);
-      expect((req as unknown as IRequestWithIdentity).identity.canEditUser()).toBeTruthy();
+      expect((req as unknown as IRequestWithIdentity).identity!.userUuid).toEqual(userLoggedIn.id);
+      expect((req as unknown as IRequestWithIdentity).identity!.canEditUser()).toBeTruthy();
       expect(next).toHaveBeenCalled();
 
       const accessToken = decode(userLoggedIn.accessToken, { json: true });
@@ -252,8 +259,8 @@ describe('POST /auth/refresh-token', () => {
       };
       const next: NextFunction = jest.fn();
       await setIdentity(req as any, {} as any, next);
-      expect((req as unknown as IRequestWithIdentity).identity.userUuid).toEqual(userLoggedIn.id);
-      expect((req as unknown as IRequestWithIdentity).identity.canEditUser()).toBeTruthy();
+      expect((req as unknown as IRequestWithIdentity).identity!.userUuid).toEqual(userLoggedIn.id);
+      expect((req as unknown as IRequestWithIdentity).identity!.canEditUser()).toBeTruthy();
       expect(next).toHaveBeenCalled();
 
       const expirationPeriod = Math.max(ms(getAccessTokenExpiration()), ms(getRefreshTokenExpiration()));
@@ -274,7 +281,8 @@ describe('POST /auth/refresh-token', () => {
           accessToken: userLoggedIn.accessToken,
         } satisfies RefreshTokenDto);
       expect(refreshTokenResponse.statusCode).toBe(200);
-      const { data: newAccessToken, message: userRefreshedTokenMessage }: RefreshTokenResponseDto = refreshTokenResponse.body;
+      const { data: newAccessToken, message: userRefreshedTokenMessage }: RefreshTokenResponseDto =
+        refreshTokenResponse.body;
       expect(userRefreshedTokenMessage).toBe(events.users.userRefreshedToken);
       expect(newAccessToken).toBeNull();
 
@@ -312,7 +320,10 @@ describe('POST /auth/refresh-token', () => {
       });
 
       const newUserRefreshToken = (
-        await testHelpers.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies ILoginModel)
+        await testHelpers.loginAs(app!, {
+          email: requestData.email,
+          passcode: requestData.passcode,
+        } satisfies ILoginModel)
       )?.refreshToken;
       expect(newUserRefreshToken).toBeDefined();
 

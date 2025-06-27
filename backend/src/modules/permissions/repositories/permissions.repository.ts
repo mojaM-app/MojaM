@@ -1,7 +1,7 @@
-import { Service } from 'typedi';
 import { SystemPermissions } from '@core';
 import { BaseRepository } from '@db';
 import { getAdminLoginData } from '@utils';
+import { Service } from 'typedi';
 import { UserPermissionsRepository } from './user-permissions.repository';
 import { UserSystemPermission } from '../../../dataBase/entities/users/user-system-permission.entity';
 import { IUserPermissionsDto } from '../dtos/get-permissions.dto';

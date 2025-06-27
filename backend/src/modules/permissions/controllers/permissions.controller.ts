@@ -1,6 +1,7 @@
 import { BaseController, IRequestWithIdentity } from '@core';
 import { isGuid, toNumber } from '@utils';
 import { NextFunction, Response } from 'express';
+import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
 import { AddPermissionReqDto, AddPermissionsResponseDto } from '../dtos/add-permission.dto';
 import { DeletePermissionsReqDto, DeletePermissionsResponseDto } from '../dtos/delete-permissions.dto';
@@ -31,9 +32,9 @@ export class PermissionsController extends BaseController {
       const reqDto = new AddPermissionReqDto(userGuid, permissionId, currentUserId);
       const result = await this._permissionService.add(reqDto);
       if (result) {
-        res.status(201).json(new AddPermissionsResponseDto(result));
+        res.status(StatusCode.SuccessCreated).json(new AddPermissionsResponseDto(result));
       } else {
-        res.status(400).json(new AddPermissionsResponseDto(result));
+        res.status(StatusCode.ClientErrorBadRequest).json(new AddPermissionsResponseDto(result));
       }
     } catch (error) {
       next(error);
@@ -48,7 +49,7 @@ export class PermissionsController extends BaseController {
       if (result) {
         res.status(StatusCode.SuccessOK).json(new DeletePermissionsResponseDto(result));
       } else {
-        res.status(400).json(new DeletePermissionsResponseDto(result));
+        res.status(StatusCode.ClientErrorBadRequest).json(new DeletePermissionsResponseDto(result));
       }
     } catch (error) {
       next(error);

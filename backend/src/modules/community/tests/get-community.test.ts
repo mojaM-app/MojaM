@@ -1,3 +1,4 @@
+import * as config from '@config';
 import { events, ILoginModel } from '@core';
 import { testHelpers } from '@helpers';
 import { getAdminLoginData } from '@utils';
@@ -25,8 +26,54 @@ describe('GET /news', () => {
   });
 
   describe('GET should respond with a status code of 200', () => {
-    it('when valid request is made', async () => {
-      const response = await request(app!.getServer()).get(CommunityRoute.path).set('Authorization', `Bearer ${adminAccessToken}`);
+    it('when valid request is made and COMMUNITY_INFO_URL is undefined', async () => {
+      const response = await request(app!.getServer())
+        .get(CommunityRoute.path)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(response.statusCode).toBe(200);
+      expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = response.body as GetCommunityResponseDto;
+      expect(typeof body).toBe('object');
+      expect(body.message).toBe(events.community.communityRetrieved);
+      expect(typeof body.data).toBe('object');
+      expect(body.data.info).toBeDefined();
+      expect(body.data.tabs).toBeDefined();
+
+      Object.entries(testEventHandlers)
+        .filter(([, eventHandler]) => ![testEventHandlers.onCommunityRetrieved].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onCommunityRetrieved).toHaveBeenCalledTimes(1);
+    });
+
+    it('when valid request is made and COMMUNITY_INFO_URL is set', async () => {
+      jest.replaceProperty(config, 'COMMUNITY_INFO_URL', 'https://jsonplaceholder.typicode.com/todos/1');
+      const response = await request(app!.getServer())
+        .get(CommunityRoute.path)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(response.statusCode).toBe(200);
+      expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = response.body as GetCommunityResponseDto;
+      expect(typeof body).toBe('object');
+      expect(body.message).toBe(events.community.communityRetrieved);
+      expect(typeof body.data).toBe('object');
+      expect(body.data.info).toBeDefined();
+      expect(body.data.tabs).toBeDefined();
+
+      Object.entries(testEventHandlers)
+        .filter(([, eventHandler]) => ![testEventHandlers.onCommunityRetrieved].includes(eventHandler))
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onCommunityRetrieved).toHaveBeenCalledTimes(1);
+    });
+
+    it('when valid request is made and COMMUNITY_INFO_URL is set but url is invalid', async () => {
+      jest.replaceProperty(config, 'COMMUNITY_INFO_URL', 'https://invalid-url.domain.com');
+      const response = await request(app!.getServer())
+        .get(CommunityRoute.path)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = response.body as GetCommunityResponseDto;
@@ -45,7 +92,9 @@ describe('GET /news', () => {
     });
 
     it('when token is invalid', async () => {
-      const response = await request(app!.getServer()).get(CommunityRoute.path).set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
+      const response = await request(app!.getServer())
+        .get(CommunityRoute.path)
+        .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
 
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -89,7 +138,9 @@ describe('GET /news', () => {
     it('when service throws an error', async () => {
       const communityService = Container.get(CommunityService);
       const mockGet = jest.spyOn(communityService, 'get').mockRejectedValue(new Error('Service error'));
-      const response = await request(app!.getServer()).get(CommunityRoute.path).set('Authorization', `Bearer ${adminAccessToken}`);
+      const response = await request(app!.getServer())
+        .get(CommunityRoute.path)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(response.statusCode).toBe(500);
       expect(mockGet).toHaveBeenCalled();
     });

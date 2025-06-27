@@ -1,4 +1,3 @@
-import rateLimit from 'express-rate-limit';
 import {
   NODE_ENV,
   RATE_LIMIT_AUTH_MAX_ATTEMPTS,
@@ -10,6 +9,8 @@ import {
   RATE_LIMIT_USER_MANAGEMENT_MAX_REQUESTS,
   RATE_LIMIT_USER_MANAGEMENT_WINDOW_MS,
 } from '@config';
+import rateLimit from 'express-rate-limit';
+import { SecurityLogger } from './security-logging.middleware';
 
 // Strict rate limiting for authentication endpoints
 export const authRateLimit = rateLimit({
@@ -23,6 +24,9 @@ export const authRateLimit = rateLimit({
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   handler: (req, res) => {
+    // Log the rate limit exceeded event
+    SecurityLogger.logRateLimitExceeded({ req });
+
     res.status(429).json({
       error: 'Too many authentication attempts from this IP, please try again after 15 minutes.',
       code: 'RATE_LIMIT_EXCEEDED',
@@ -30,8 +34,8 @@ export const authRateLimit = rateLimit({
     });
   },
   skip: req => {
-    if (NODE_ENV === 'test') {
-      return false; // Always apply rate limiting in production and other environments
+    if (NODE_ENV === 'rate-limit-test') {
+      return false;
     }
 
     if (NODE_ENV !== 'production') {
@@ -58,6 +62,9 @@ export const generalRateLimit = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
+    // Log the rate limit exceeded event
+    SecurityLogger.logRateLimitExceeded({ req });
+
     res.status(429).json({
       error: 'Too many requests from this IP, please try again later.',
       code: 'RATE_LIMIT_EXCEEDED',
@@ -65,8 +72,8 @@ export const generalRateLimit = rateLimit({
     });
   },
   skip: req => {
-    if (NODE_ENV === 'test') {
-      return false; // Always apply rate limiting in production and other environments
+    if (NODE_ENV === 'rate-limit-test') {
+      return false;
     }
 
     if (NODE_ENV !== 'production') {
@@ -93,6 +100,9 @@ export const passwordResetRateLimit = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
+    // Log the rate limit exceeded event
+    SecurityLogger.logRateLimitExceeded({ req });
+
     res.status(429).json({
       error: 'Too many password reset attempts from this IP, please try again after 1 hour.',
       code: 'PASSWORD_RESET_RATE_LIMIT_EXCEEDED',
@@ -100,8 +110,8 @@ export const passwordResetRateLimit = rateLimit({
     });
   },
   skip: req => {
-    if (NODE_ENV === 'test') {
-      return false; // Always apply rate limiting in production and other environments
+    if (NODE_ENV === 'rate-limit-test') {
+      return false;
     }
 
     if (NODE_ENV !== 'production') {
@@ -128,6 +138,9 @@ export const userManagementRateLimit = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
+    // Log the rate limit exceeded event
+    SecurityLogger.logRateLimitExceeded({ req });
+
     res.status(429).json({
       error: 'Too many user management operations from this IP, please try again later.',
       code: 'USER_MANAGEMENT_RATE_LIMIT_EXCEEDED',
@@ -135,8 +148,8 @@ export const userManagementRateLimit = rateLimit({
     });
   },
   skip: req => {
-    if (NODE_ENV === 'test') {
-      return false; // Always apply rate limiting in production and other environments
+    if (NODE_ENV === 'rate-limit-test') {
+      return false;
     }
 
     if (NODE_ENV !== 'production') {

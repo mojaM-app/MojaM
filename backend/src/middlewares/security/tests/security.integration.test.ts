@@ -21,7 +21,9 @@ describe('Security Integration Tests', () => {
 
   describe('Request ID Middleware', () => {
     it('should add request ID to all responses', async () => {
-      const response = await request(app!.getServer()).get(RouteConstants.ANNOUNCEMENTS_PATH).set('Authorization', `Bearer ${adminAccessToken}`);
+      const response = await request(app!.getServer())
+        .get(RouteConstants.ANNOUNCEMENTS_PATH)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
 
       expect(response.headers['x-request-id']).toBeDefined();
       expect(response.headers['x-request-id']).toMatch(/^[a-f0-9-]{36}$/); // UUID format
@@ -41,7 +43,9 @@ describe('Security Integration Tests', () => {
 
   describe('Security Headers Middleware', () => {
     it('should include all required security headers', async () => {
-      const response = await request(app!.getServer()).get(RouteConstants.ANNOUNCEMENTS_PATH).set('Authorization', `Bearer ${adminAccessToken}`);
+      const response = await request(app!.getServer())
+        .get(RouteConstants.ANNOUNCEMENTS_PATH)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
 
       expect(response.headers['x-frame-options']).toBeDefined();
       expect(response.headers['x-content-type-options']).toBeDefined();
@@ -51,7 +55,9 @@ describe('Security Integration Tests', () => {
     });
 
     it('should not expose server information', async () => {
-      const response = await request(app!.getServer()).get(RouteConstants.ANNOUNCEMENTS_PATH).set('Authorization', `Bearer ${adminAccessToken}`);
+      const response = await request(app!.getServer())
+        .get(RouteConstants.ANNOUNCEMENTS_PATH)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
 
       expect(response.headers['x-powered-by']).toBeUndefined();
       expect(response.headers['server']).toBeUndefined();
@@ -61,7 +67,7 @@ describe('Security Integration Tests', () => {
   describe('Rate Limiting', () => {
     describe('Authentication Rate Limiting', () => {
       it('should apply rate limiting to login attempts', async () => {
-        jest.replaceProperty(config, 'NODE_ENV', 'test');
+        jest.replaceProperty(config, 'NODE_ENV', 'rate-limit-test');
         const loginAttempts = [];
         const maxAttempts = toNumber(config.RATE_LIMIT_AUTH_MAX_ATTEMPTS)! + 1; // Higher than configured limit
 
@@ -93,7 +99,7 @@ describe('Security Integration Tests', () => {
 
     describe('Password Reset Rate Limiting', () => {
       it('should apply stricter rate limiting to password reset', async () => {
-        jest.replaceProperty(config, 'NODE_ENV', 'test');
+        jest.replaceProperty(config, 'NODE_ENV', 'rate-limit-test');
         const resetAttempts = [];
         const maxAttempts = toNumber(config.RATE_LIMIT_PASSWORD_RESET_MAX_ATTEMPTS)! + 1; // Higher than configured limit
 
@@ -122,7 +128,9 @@ describe('Security Integration Tests', () => {
 
   describe('Security Logging', () => {
     it('should detect and log suspicious path traversal attempts', async () => {
-      const response = await request(app!.getServer()).get('/../admin/users').set('Authorization', `Bearer ${adminAccessToken}`);
+      const response = await request(app!.getServer())
+        .get('/../admin/users')
+        .set('Authorization', `Bearer ${adminAccessToken}`);
 
       // Should get 404 (path not found) but security event should be logged
       expect(response.status).toBe(404);
@@ -152,7 +160,7 @@ describe('Security Integration Tests', () => {
 
   describe('User Management Security', () => {
     it('should apply rate limiting to user modification', async () => {
-      jest.replaceProperty(config, 'NODE_ENV', 'test');
+      jest.replaceProperty(config, 'NODE_ENV', 'rate-limit-test');
 
       const userModificationAttempts = [];
       const maxAttempts = 25; // Should exceed rate limit
@@ -227,11 +235,14 @@ describe('Security Integration Tests', () => {
     });
 
     it('should reject weak passwords', async () => {
-      const response = await request(app!.getServer()).post(RouteConstants.USER_PATH).set('Authorization', `Bearer ${adminAccessToken}`).send({
-        email: 'test@example.com',
-        phone: '123456789',
-        passcode: 'weak-pass',
-      });
+      const response = await request(app!.getServer())
+        .post(RouteConstants.USER_PATH)
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+        .send({
+          email: 'test@example.com',
+          phone: '123456789',
+          passcode: 'weak-pass',
+        });
 
       // Should either fail with validation error (400) or rate limiting (429)
       expect([400, 429]).toContain(response.status);

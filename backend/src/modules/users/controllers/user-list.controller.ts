@@ -1,8 +1,8 @@
-import type { NextFunction, Response } from 'express';
-import { StatusCode } from 'status-code-enum';
-import { Container } from 'typedi';
 import { BaseController, type IPageData, type IRequestWithIdentity, type ISortData } from '@core';
 import { toNumber } from '@utils';
+import { type NextFunction, type Response } from 'express';
+import { StatusCode } from 'status-code-enum';
+import { Container } from 'typedi';
 import { UserListViewColumns } from '../../../dataBase/entities/users/vUser.entity';
 import { GetUserListReqDto, GetUserListResponseDto, type TUsersGridPageDto } from '../dtos/get-user-list.dto';
 import { UserListService } from '../services/user-list.service';

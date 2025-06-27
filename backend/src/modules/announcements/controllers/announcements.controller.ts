@@ -1,6 +1,7 @@
 import { BaseController, IRequestWithIdentity } from '@core';
 import { isGuid } from '@utils';
 import { NextFunction, Request, Response } from 'express';
+import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
 import {
   CreateAnnouncementsDto,
@@ -39,7 +40,7 @@ export class AnnouncementsController extends BaseController {
     try {
       const model: CreateAnnouncementsDto = req.body;
       const result = await this._service.create(new CreateAnnouncementsReqDto(model, this.getCurrentUserId(req)));
-      res.status(201).json(new CreateAnnouncementsResponseDto(result!.id));
+      res.status(StatusCode.SuccessCreated).json(new CreateAnnouncementsResponseDto(result!.id));
     } catch (error) {
       next(error);
     }

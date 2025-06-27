@@ -1,7 +1,7 @@
-import type { NextFunction, Response } from 'express';
+import { BaseController, type IRequestWithIdentity } from '@core';
+import { type NextFunction, type Response } from 'express';
 import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
-import { BaseController, type IRequestWithIdentity } from '@core';
 import { GetUserProfileReqDto, GetUserProfileResponseDto } from '../dtos/get-user-profile.dto';
 import {
   type UpdateUserProfileDto,

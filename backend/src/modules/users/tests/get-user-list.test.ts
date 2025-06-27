@@ -4,6 +4,7 @@ import { testHelpers } from '@helpers';
 import { userTestHelpers } from '@modules/users';
 import { getAdminLoginData, isNumber } from '@utils';
 import request from 'supertest';
+import { Container } from 'typedi';
 import { testEventHandlers } from '../../../helpers/event-handler-tests.helper';
 import { TestApp } from '../../../helpers/tests.utils';
 import { CreateUserResponseDto } from '../dtos/create-user.dto';
@@ -11,6 +12,7 @@ import { GetUserListResponseDto } from '../dtos/get-user-list.dto';
 import { UserListRetrievedEvent } from '../events/user-list-retrieved-event';
 import { UserListRoute } from '../routes/user-list.routes';
 import { UserRoute } from '../routes/user.routes';
+import { UserListService } from '../services/user-list.service';
 
 describe('GET/user-list', () => {
   let app: TestApp | undefined;
@@ -39,7 +41,10 @@ describe('GET/user-list', () => {
       expect(newUserDto?.id).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const getListResponse = await request(app!.getServer()).get(UserListRoute.path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      const getListResponse = await request(app!.getServer())
+        .get(UserListRoute.path)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(getListResponse.statusCode).toBe(200);
       expect(getListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = getListResponse.body;
@@ -65,7 +70,11 @@ describe('GET/user-list', () => {
       Object.entries(testEventHandlers)
         .filter(
           ([, eventHandler]) =>
-            ![testEventHandlers.onUserCreated, testEventHandlers.onUserListRetrieved, testEventHandlers.onUserDeleted].includes(eventHandler),
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserListRetrieved,
+              testEventHandlers.onUserDeleted,
+            ].includes(eventHandler),
         )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
@@ -111,10 +120,17 @@ describe('GET/user-list', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await testHelpers.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies ILoginModel))
-        ?.accessToken;
+      const newUserAccessToken = (
+        await testHelpers.loginAs(app!, {
+          email: requestData.email,
+          passcode: requestData.passcode,
+        } satisfies ILoginModel)
+      )?.accessToken;
 
-      const getListResponse = await request(app!.getServer()).get(UserListRoute.path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
+      const getListResponse = await request(app!.getServer())
+        .get(UserListRoute.path)
+        .send()
+        .set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(getListResponse.statusCode).toBe(403);
       expect(getListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getListResponse.body;
@@ -174,16 +190,26 @@ describe('GET/user-list', () => {
           const value = permission as number;
           if (value !== SystemPermissions.PreviewUserList) {
             const path = RouteConstants.PERMISSIONS_PATH + '/' + newUserDto.id + '/' + permission.toString();
-            const addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+            const addPermissionResponse = await request(app!.getServer())
+              .post(path)
+              .send()
+              .set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
           }
         }
       });
 
-      const newUserAccessToken = (await testHelpers.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies ILoginModel))
-        ?.accessToken;
+      const newUserAccessToken = (
+        await testHelpers.loginAs(app!, {
+          email: requestData.email,
+          passcode: requestData.passcode,
+        } satisfies ILoginModel)
+      )?.accessToken;
 
-      const getListResponse = await request(app!.getServer()).get(UserListRoute.path).send().set('Authorization', `Bearer ${newUserAccessToken}`);
+      const getListResponse = await request(app!.getServer())
+        .get(UserListRoute.path)
+        .send()
+        .set('Authorization', `Bearer ${newUserAccessToken}`);
       expect(getListResponse.statusCode).toBe(403);
       expect(getListResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getListResponse.body;
@@ -235,6 +261,18 @@ describe('GET/user-list', () => {
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
         expect(eventHandler).not.toHaveBeenCalled();
       });
+    });
+  });
+
+  describe('GET should handle errors', () => {
+    it('when service throws an error', async () => {
+      const userListService = Container.get(UserListService);
+      const mockGet = jest.spyOn(userListService, 'get').mockRejectedValue(new Error('Service error'));
+      const response = await request(app!.getServer())
+        .get(UserListRoute.path)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(response.statusCode).toBe(500);
+      expect(mockGet).toHaveBeenCalled();
     });
   });
 

@@ -1,6 +1,7 @@
 import { BaseController, IRequestWithIdentity } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { NextFunction, Response } from 'express';
+import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
 import { GetCalendarEventsReqDto, GetCalendarEventsResponseDto } from '../dtos/calendar.dto';
 import { CalendarService } from '../services/calendar.service';

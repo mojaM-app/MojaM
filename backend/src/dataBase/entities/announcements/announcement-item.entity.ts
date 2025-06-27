@@ -82,7 +82,7 @@ export class AnnouncementItem implements ICreateAnnouncementItem, IUpdateAnnounc
     type: 'int',
     nullable: true,
   })
-  public updatedBy: Relation<User>;
+  public updatedBy: Relation<User> | undefined;
 
   @ManyToOne(() => Announcement, announcement => announcement.items, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
   @JoinColumn({

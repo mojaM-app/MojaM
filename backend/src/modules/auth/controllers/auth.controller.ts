@@ -1,9 +1,10 @@
-import type { NextFunction, Request, Response } from 'express';
-import StatusCode from 'status-code-enum';
-import { Container } from 'typedi';
 import { BaseController } from '@core';
+import { errorKeys } from '@exceptions';
 import { SecurityLogger } from '@middlewares';
 import { isGuid } from '@utils';
+import { type NextFunction, type Request, type Response } from 'express';
+import StatusCode from 'status-code-enum';
+import { Container } from 'typedi';
 import type { ActivateAccountDto, IActivateAccountResultDto } from '../dtos/activate-account.dto';
 import { ActivateAccountReqDto, ActivateAccountResponseDto } from '../dtos/activate-account.dto';
 import type { ICheckResetPasscodeTokenResultDto } from '../dtos/check-reset-passcode-token.dto';
@@ -54,7 +55,7 @@ export class AuthController extends BaseController {
     try {
       const model: AccountTryingToLogInDto = req.body;
 
-      SecurityLogger.logPasswordReset(req, model.email || 'unknown');
+      SecurityLogger.logPasswordReset({ req, email: model.email || 'unknown', phone: model.phone || undefined });
 
       const result = await this._resetPasscodeService.requestResetPasscode(model);
       res.status(StatusCode.SuccessOK).json(new RequestResetPasscodeResponseDto(result));
@@ -89,20 +90,34 @@ export class AuthController extends BaseController {
     }
   };
   public logIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const model: LoginDto = req.body;
     try {
-      const model: LoginDto = req.body;
       const result: ILoginResult = await this._authService.login(model);
 
-      SecurityLogger.logSuccessfulLogin(req, result.user.id, result.user.email);
+      SecurityLogger.logSuccessfulLogin({
+        req,
+        userId: result.user.id,
+        email: result.user.email,
+        phone: result.user.phone,
+      });
 
       res.status(StatusCode.SuccessOK).json(new LoginResponseDto(result));
     } catch (error) {
-      const model: LoginDto = req.body;
-      SecurityLogger.logFailedLogin(
+      SecurityLogger.logFailedLogin({
         req,
-        model.email || undefined,
-        error instanceof Error ? error.message : 'Unknown error',
-      );
+        email: model.email || undefined,
+        phone: model.phone || undefined,
+        reason: error instanceof Error ? error.message : 'Unknown error',
+      });
+
+      if (error instanceof Error && error.message === errorKeys.login.Account_Is_Locked_Out) {
+        SecurityLogger.logAccountLockout({
+          req,
+          userId: undefined,
+          email: model.email || undefined,
+          phone: model.phone || undefined,
+        });
+      }
 
       next(error);
     }

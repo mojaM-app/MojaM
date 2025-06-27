@@ -50,8 +50,8 @@ describe('POST /login', () => {
       };
       const next: NextFunction = jest.fn();
       await setIdentity(req as any, {} as any, next);
-      expect((req as unknown as IRequestWithIdentity).identity.userUuid).toEqual(userLoggedIn.id);
-      expect((req as unknown as IRequestWithIdentity).identity.canEditUser()).toBeTruthy();
+      expect((req as unknown as IRequestWithIdentity).identity!.userUuid).toEqual(userLoggedIn.id);
+      expect((req as unknown as IRequestWithIdentity).identity!.canEditUser()).toBeTruthy();
       expect(next).toHaveBeenCalled();
 
       const token = decode(userLoggedIn.accessToken, { json: true });
@@ -97,8 +97,8 @@ describe('POST /login', () => {
       };
       const next: NextFunction = jest.fn();
       await setIdentity(req as any, {} as any, next);
-      expect((req as unknown as IRequestWithIdentity).identity.userUuid).toEqual(userLoggedIn.id);
-      expect((req as unknown as IRequestWithIdentity).identity.canEditUser()).toBeTruthy();
+      expect((req as unknown as IRequestWithIdentity).identity!.userUuid).toEqual(userLoggedIn.id);
+      expect((req as unknown as IRequestWithIdentity).identity!.canEditUser()).toBeTruthy();
       expect(next).toHaveBeenCalled();
 
       const token = decode(userLoggedIn.accessToken, { json: true });
@@ -454,7 +454,11 @@ describe('POST /login', () => {
       Object.entries(testEventHandlers)
         .filter(
           ([, eventHandler]) =>
-            ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserDeleted].includes(eventHandler),
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onUserDeleted,
+            ].includes(eventHandler),
         )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
@@ -534,7 +538,10 @@ describe('POST /login', () => {
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
-        .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler))
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler),
+        )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
@@ -653,7 +660,11 @@ describe('POST /login', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
 
-      const loginData: ILoginModel = { email: newUserDto.email, phone: newUserDto.phone, passcode: user.passcode + 'invalid_password' };
+      const loginData: ILoginModel = {
+        email: newUserDto.email,
+        phone: newUserDto.phone,
+        passcode: user.passcode + 'invalid_password',
+      };
       const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -755,7 +766,9 @@ describe('POST /login', () => {
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onFailedLoginAttempt).toHaveBeenCalledTimes(USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS);
+      expect(testEventHandlers.onFailedLoginAttempt).toHaveBeenCalledTimes(
+        USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS,
+      );
       expect(testEventHandlers.onUserLockedOut).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
@@ -778,7 +791,11 @@ describe('POST /login', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
 
-      const loginData: ILoginModel = { email: newUserDto.email, phone: newUserDto.phone, passcode: user.passcode + 'invalid_password' };
+      const loginData: ILoginModel = {
+        email: newUserDto.email,
+        phone: newUserDto.phone,
+        passcode: user.passcode + 'invalid_password',
+      };
 
       for (let index = 1; index < USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
         const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
@@ -825,7 +842,9 @@ describe('POST /login', () => {
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onFailedLoginAttempt).toHaveBeenCalledTimes(USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS);
+      expect(testEventHandlers.onFailedLoginAttempt).toHaveBeenCalledTimes(
+        USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS,
+      );
       expect(testEventHandlers.onUserLockedOut).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserLockedOut).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
@@ -865,7 +884,10 @@ describe('POST /login', () => {
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
-        .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler))
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler),
+        )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
@@ -891,7 +913,11 @@ describe('POST /login', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
 
-      const loginData: ILoginModel = { email: newUserDto.email, phone: newUserDto.phone, passcode: user.passcode + 'invalid_password' };
+      const loginData: ILoginModel = {
+        email: newUserDto.email,
+        phone: newUserDto.phone,
+        passcode: user.passcode + 'invalid_password',
+      };
 
       for (let index = 1; index <= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
         const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
@@ -932,7 +958,9 @@ describe('POST /login', () => {
         });
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onFailedLoginAttempt).toHaveBeenCalledTimes(USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS);
+      expect(testEventHandlers.onFailedLoginAttempt).toHaveBeenCalledTimes(
+        USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS,
+      );
       expect(testEventHandlers.onUserLockedOut).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.lockedUserTriesToLogIn).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserLockedOut).toHaveBeenCalledTimes(1);
@@ -1084,7 +1112,10 @@ describe('POST /login', () => {
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
-        .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler))
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler),
+        )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });

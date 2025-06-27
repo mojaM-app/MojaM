@@ -1,7 +1,7 @@
-import { Service } from 'typedi';
 import { COMMUNITY_INFO_URL } from '@config';
 import { BaseService, events } from '@core';
 import { isNullOrEmptyString } from '@utils';
+import { Service } from 'typedi';
 import { DEFAULT_COMMUNITY_DATA } from '../constants/default-community-data';
 import { IGetCommunityDto } from '../dtos/community.dto';
 import { CommunityRetrievedEvent } from '../events/community-retrieved-event';
@@ -47,8 +47,11 @@ export class CommunityService extends BaseService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      return data as IGetCommunityDto;
+      const data = (await response.json()) as IGetCommunityDto;
+      return {
+        info: data?.info ?? {},
+        tabs: data?.tabs ?? [],
+      } satisfies IGetCommunityDto;
     } finally {
       clearTimeout(timeoutId);
     }

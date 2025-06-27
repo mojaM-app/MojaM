@@ -21,7 +21,12 @@ const mockLogger = logger as jest.Mocked<typeof logger>;
 const mockGetRequestId = getRequestId as jest.MockedFunction<typeof getRequestId>;
 
 // Mock express types
-const mockRequest = (path = '/test', method = 'GET', ip = '127.0.0.1', userAgent = 'Test Browser'): Partial<Request> => ({
+const mockRequest = (
+  path = '/test',
+  method = 'GET',
+  ip = '127.0.0.1',
+  userAgent = 'Test Browser',
+): Partial<Request> => ({
   path,
   method,
   ip,
@@ -42,7 +47,7 @@ describe('Security Logging Middleware', () => {
       it('should log failed login attempt with high severity', () => {
         const req = mockRequest() as Request;
 
-        SecurityLogger.logFailedLogin(req, 'test@example.com', 'Invalid password');
+        SecurityLogger.logFailedLogin({ req, email: 'test@example.com', reason: 'Invalid password' });
         expect(mockLogger.warn).toHaveBeenCalledWith(
           expect.stringContaining('FAILED_LOGIN_ATTEMPT'),
           expect.objectContaining({
@@ -59,7 +64,7 @@ describe('Security Logging Middleware', () => {
       it('should handle missing email and reason', () => {
         const req = mockRequest() as Request;
 
-        SecurityLogger.logFailedLogin(req);
+        SecurityLogger.logFailedLogin({ req });
         expect(mockLogger.warn).toHaveBeenCalledWith(
           expect.stringContaining('FAILED_LOGIN_ATTEMPT'),
           expect.objectContaining({
@@ -75,7 +80,7 @@ describe('Security Logging Middleware', () => {
       it('should log successful login with low severity', () => {
         const req = mockRequest() as Request;
 
-        SecurityLogger.logSuccessfulLogin(req, 'user123', 'test@example.com');
+        SecurityLogger.logSuccessfulLogin({ req, userId: 'user123', email: 'test@example.com' });
 
         expect(mockLogger.debug).toHaveBeenCalledWith(
           expect.stringContaining('SUCCESSFUL_LOGIN'),
@@ -93,7 +98,7 @@ describe('Security Logging Middleware', () => {
       it('should log account lockout with critical severity', () => {
         const req = mockRequest() as Request;
 
-        SecurityLogger.logAccountLockout(req, 'user123', 'test@example.com');
+        SecurityLogger.logAccountLockout({ req, userId: 'user123', email: 'test@example.com' });
 
         expect(mockLogger.error).toHaveBeenCalledWith(
           expect.stringContaining('ACCOUNT_LOCKOUT'),
@@ -111,7 +116,7 @@ describe('Security Logging Middleware', () => {
       it('should log password reset with medium severity', () => {
         const req = mockRequest() as Request;
 
-        SecurityLogger.logPasswordReset(req, 'test@example.com');
+        SecurityLogger.logPasswordReset({ req, email: 'test@example.com' });
 
         expect(mockLogger.info).toHaveBeenCalledWith(
           expect.stringContaining('PASSWORD_RESET_REQUEST'),
@@ -129,7 +134,7 @@ describe('Security Logging Middleware', () => {
         const req = mockRequest() as Request;
         const additionalData = { pattern: 'SQL injection attempt' };
 
-        SecurityLogger.logSuspiciousActivity(req, 'Malicious request detected', additionalData);
+        SecurityLogger.logSuspiciousActivity({ req, reason: 'Malicious request detected', additionalData });
         expect(mockLogger.warn).toHaveBeenCalledWith(
           expect.stringContaining('SUSPICIOUS_ACTIVITY'),
           expect.objectContaining({
@@ -144,7 +149,7 @@ describe('Security Logging Middleware', () => {
       it('should handle missing additional data', () => {
         const req = mockRequest() as Request;
 
-        SecurityLogger.logSuspiciousActivity(req, 'Suspicious behavior');
+        SecurityLogger.logSuspiciousActivity({ req, reason: 'Suspicious behavior' });
         expect(mockLogger.warn).toHaveBeenCalledWith(
           expect.stringContaining('SUSPICIOUS_ACTIVITY'),
           expect.objectContaining({
@@ -158,7 +163,7 @@ describe('Security Logging Middleware', () => {
       it('should log rate limit exceeded with medium severity', () => {
         const req = mockRequest() as Request;
 
-        SecurityLogger.logRateLimitExceeded(req);
+        SecurityLogger.logRateLimitExceeded({ req });
 
         expect(mockLogger.info).toHaveBeenCalledWith(
           expect.stringContaining('RATE_LIMIT_EXCEEDED'),
@@ -174,7 +179,7 @@ describe('Security Logging Middleware', () => {
       it('should log unauthorized access with high severity', () => {
         const req = mockRequest() as Request;
 
-        SecurityLogger.logUnauthorizedAccess(req, 'user123');
+        SecurityLogger.logUnauthorizedAccess({ req, userId: 'user123' });
 
         expect(mockLogger.warn).toHaveBeenCalledWith(
           expect.stringContaining('UNAUTHORIZED_ACCESS_ATTEMPT'),
@@ -189,7 +194,7 @@ describe('Security Logging Middleware', () => {
       it('should handle missing user ID', () => {
         const req = mockRequest() as Request;
 
-        SecurityLogger.logUnauthorizedAccess(req);
+        SecurityLogger.logUnauthorizedAccess({ req });
 
         expect(mockLogger.warn).toHaveBeenCalledWith(
           expect.stringContaining('UNAUTHORIZED_ACCESS_ATTEMPT'),
@@ -204,7 +209,7 @@ describe('Security Logging Middleware', () => {
       it('should log token validation failure with high severity', () => {
         const req = mockRequest() as Request;
 
-        SecurityLogger.logTokenValidationFailure(req, 'Invalid signature');
+        SecurityLogger.logTokenValidationFailure({ req, reason: 'Invalid signature' });
         expect(mockLogger.warn).toHaveBeenCalledWith(
           expect.stringContaining('TOKEN_VALIDATION_FAILURE'),
           expect.objectContaining({
@@ -220,7 +225,12 @@ describe('Security Logging Middleware', () => {
       it('should log user management operation with medium severity', () => {
         const req = mockRequest() as Request;
 
-        SecurityLogger.logUserManagementOperation(req, 'CREATE_USER', 'target123', 'admin123');
+        SecurityLogger.logUserManagementOperation({
+          req,
+          operation: 'CREATE_USER',
+          targetUserId: 'target123',
+          performedBy: 'admin123',
+        });
         expect(mockLogger.info).toHaveBeenCalledWith(
           expect.stringContaining('USER_MANAGEMENT_OPERATION'),
           expect.objectContaining({
@@ -238,7 +248,7 @@ describe('Security Logging Middleware', () => {
       it('should log permission escalation with critical severity', () => {
         const req = mockRequest() as Request;
 
-        SecurityLogger.logPermissionEscalation(req, 'user123', 'access_admin_panel');
+        SecurityLogger.logPermissionEscalation({ req, userId: 'user123', attemptedAction: 'access_admin_panel' });
         expect(mockLogger.error).toHaveBeenCalledWith(
           expect.stringContaining('PERMISSION_ESCALATION_ATTEMPT'),
           expect.objectContaining({
@@ -255,7 +265,7 @@ describe('Security Logging Middleware', () => {
       it('should log data access with low severity', () => {
         const req = mockRequest() as Request;
 
-        SecurityLogger.logDataAccess(req, 'user123', 'user_profile', 'record456');
+        SecurityLogger.logDataAccess({ req, userId: 'user123', dataType: 'user_profile', recordId: 'record456' });
         expect(mockLogger.debug).toHaveBeenCalledWith(
           expect.stringContaining('SENSITIVE_DATA_ACCESS'),
           expect.objectContaining({
@@ -271,7 +281,7 @@ describe('Security Logging Middleware', () => {
       it('should handle missing record ID', () => {
         const req = mockRequest() as Request;
 
-        SecurityLogger.logDataAccess(req, 'user123', 'user_profile');
+        SecurityLogger.logDataAccess({ req, userId: 'user123', dataType: 'user_profile' });
         expect(mockLogger.debug).toHaveBeenCalledWith(
           expect.stringContaining('SENSITIVE_DATA_ACCESS'),
           expect.objectContaining({
@@ -293,7 +303,11 @@ describe('Security Logging Middleware', () => {
 
       securityLoggingMiddleware(req, res, next);
 
-      expect(logSpy).toHaveBeenCalledWith(req, 'Potential attack pattern detected', { suspiciousPattern: true });
+      expect(logSpy).toHaveBeenCalledWith({
+        req,
+        reason: 'Potential attack pattern detected',
+        additionalData: { suspiciousPattern: true },
+      });
       expect(next).toHaveBeenCalled();
     });
 
@@ -306,7 +320,11 @@ describe('Security Logging Middleware', () => {
 
       securityLoggingMiddleware(req, res, next);
 
-      expect(logSpy).toHaveBeenCalledWith(req, 'Potential attack pattern detected', { suspiciousPattern: true });
+      expect(logSpy).toHaveBeenCalledWith({
+        req,
+        reason: 'Potential attack pattern detected',
+        additionalData: { suspiciousPattern: true },
+      });
     });
 
     it('should detect script injection attempts', () => {
@@ -318,7 +336,11 @@ describe('Security Logging Middleware', () => {
 
       securityLoggingMiddleware(req, res, next);
 
-      expect(logSpy).toHaveBeenCalledWith(req, 'Potential attack pattern detected', { suspiciousPattern: true });
+      expect(logSpy).toHaveBeenCalledWith({
+        req,
+        reason: 'Potential attack pattern detected',
+        additionalData: { suspiciousPattern: true },
+      });
     });
 
     it('should detect bot user agents', () => {
@@ -330,7 +352,11 @@ describe('Security Logging Middleware', () => {
 
       securityLoggingMiddleware(req, res, next);
 
-      expect(logSpy).toHaveBeenCalledWith(req, 'Potential attack pattern detected', { suspiciousPattern: true });
+      expect(logSpy).toHaveBeenCalledWith({
+        req,
+        reason: 'Potential attack pattern detected',
+        additionalData: { suspiciousPattern: true },
+      });
     });
 
     it('should detect excessively long paths', () => {
@@ -343,7 +369,11 @@ describe('Security Logging Middleware', () => {
 
       securityLoggingMiddleware(req, res, next);
 
-      expect(logSpy).toHaveBeenCalledWith(req, 'Excessively long request path', { pathLength: longPath.length });
+      expect(logSpy).toHaveBeenCalledWith({
+        req,
+        reason: 'Excessively long request path',
+        additionalData: { pathLength: longPath.length },
+      });
     });
 
     it('should not log for normal requests', () => {
@@ -377,16 +407,19 @@ describe('Security Logging Middleware', () => {
     it('should include request ID in log message', () => {
       const req = mockRequest() as Request;
 
-      SecurityLogger.logFailedLogin(req, 'test@example.com');
+      SecurityLogger.logFailedLogin({ req, email: 'test@example.com' });
 
-      expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining('RequestID: test-request-id'), expect.any(Object));
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        expect.stringContaining('RequestID: test-request-id'),
+        expect.any(Object),
+      );
     });
 
     it('should handle unknown request ID', () => {
       mockGetRequestId.mockReturnValue('unknown');
       const req = mockRequest() as Request;
 
-      SecurityLogger.logFailedLogin(req, 'test@example.com');
+      SecurityLogger.logFailedLogin({ req, email: 'test@example.com' });
 
       expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining('RequestID: unknown'), expect.any(Object));
     });

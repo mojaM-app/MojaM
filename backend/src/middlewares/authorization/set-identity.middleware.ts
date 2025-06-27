@@ -1,4 +1,11 @@
-import { ACCESS_TOKEN_ALGORITHM, ACCESS_TOKEN_SECRET, REFRESH_TOKEN_EXPIRE_IN, REFRESH_TOKEN_SECRET, SECRET_AUDIENCE, SECRET_ISSUER } from '@config';
+import {
+  ACCESS_TOKEN_ALGORITHM,
+  ACCESS_TOKEN_SECRET,
+  REFRESH_TOKEN_EXPIRE_IN,
+  REFRESH_TOKEN_SECRET,
+  SECRET_AUDIENCE,
+  SECRET_ISSUER,
+} from '@config';
 import { Identity, IPermissionsService, IRequestWithIdentity, IUserService, logger } from '@core';
 import { errorKeys, UnauthorizedException } from '@exceptions';
 import { isNullOrEmptyString, isNullOrUndefined, isString } from '@utils';
@@ -98,7 +105,7 @@ export const setIdentity = async (req: IRequestWithIdentity, res: Response, next
       const user = await userService.getByUuid(sub);
 
       if (isNullOrUndefined(user)) {
-        SecurityLogger.logTokenValidationFailure(req, 'User not found for token subject');
+        SecurityLogger.logTokenValidationFailure({ req, reason: 'User not found for token subject' });
         next(new UnauthorizedException(errorKeys.login.Wrong_Authentication_Token));
       } else {
         const permissionsService = Container.get<IPermissionsService>('IPermissionsService');
@@ -113,13 +120,13 @@ export const setIdentity = async (req: IRequestWithIdentity, res: Response, next
     // Log specific JWT errors for security monitoring
     if (error instanceof Error) {
       if (error.message.includes('expired')) {
-        SecurityLogger.logTokenValidationFailure(req, 'Token expired');
+        SecurityLogger.logTokenValidationFailure({ req, reason: 'Token expired' });
       } else if (error.message.includes('invalid')) {
-        SecurityLogger.logTokenValidationFailure(req, 'Invalid token format');
+        SecurityLogger.logTokenValidationFailure({ req, reason: 'Invalid token format' });
       } else if (error.message.includes('malformed')) {
-        SecurityLogger.logTokenValidationFailure(req, 'Malformed token');
+        SecurityLogger.logTokenValidationFailure({ req, reason: 'Malformed token' });
       } else {
-        SecurityLogger.logTokenValidationFailure(req, `JWT validation error: ${error.message}`);
+        SecurityLogger.logTokenValidationFailure({ req, reason: `JWT validation error: ${error.message}` });
       }
     }
 

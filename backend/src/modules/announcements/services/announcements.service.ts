@@ -1,7 +1,7 @@
-import { Container, Service } from 'typedi';
 import { BaseService, events } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { isDate, isNullOrUndefined } from '@utils';
+import { Container, Service } from 'typedi';
 import { Announcement } from '../../../dataBase/entities/announcements/announcement.entity';
 import { CreateAnnouncementsReqDto } from '../dtos/create-announcements.dto';
 import { DeleteAnnouncementsReqDto } from '../dtos/delete-announcements.dto';
@@ -184,7 +184,7 @@ export class AnnouncementsService extends BaseService {
             createdAt: item.createdAt,
             createdBy: item.createdBy.getFirstLastName()!,
             updatedAt: item.updatedAt,
-            updatedBy: item.updatedBy.getFirstLastName() ?? undefined,
+            updatedBy: item.updatedBy?.getFirstLastName() ?? undefined,
           }) satisfies IAnnouncementItemDto,
       ),
     } satisfies IAnnouncementsDto;
