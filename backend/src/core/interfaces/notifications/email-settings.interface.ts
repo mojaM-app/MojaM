@@ -1,4 +1,4 @@
-import { type AuthenticationTypes } from '@core';
+import { type AuthenticationTypes } from '../../enums/authentication-types.enum';
 import { type IHasGuidId } from '../IHasGuidId';
 import { type IUser } from '../users/IUser';
 

@@ -1,4 +1,4 @@
-import { type IRoutes } from '@core';
+import { type IRoutes } from './routes.interfaces';
 
 export interface IModule {
   getRoutes: () => IRoutes[];

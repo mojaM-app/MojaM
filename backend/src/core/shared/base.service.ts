@@ -1,5 +1,5 @@
 import type { EventDispatcher } from 'event-dispatch';
-import { EventDispatcherService } from '@core';
+import { EventDispatcherService } from '../events/event-dispatcher.service';
 
 export abstract class BaseService {
   protected readonly _eventDispatcher: EventDispatcher;
