@@ -1,5 +1,5 @@
 import { Event } from '@core';
-import { IGetUserProfileDto } from '../dtos/get-user-profile.dto';
+import type { IGetUserProfileDto } from '../dtos/get-user-profile.dto';
 
 export class UserProfileRetrievedEvent extends Event {
   public readonly user: IGetUserProfileDto;

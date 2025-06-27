@@ -1,6 +1,16 @@
-import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from 'typeorm';
-import { ICreateAnnouncementItem, IUpdateAnnouncementItem } from './../../../core/interfaces';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Relation,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Announcement } from './announcement.entity';
+import { ICreateAnnouncementItem, IUpdateAnnouncementItem } from '../../../core/interfaces';
 import { EntityDefaultFunctions } from '../../EntityDefaultFunctions';
 import { User } from '../users/user.entity';
 

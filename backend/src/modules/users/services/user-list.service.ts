@@ -1,9 +1,9 @@
-import { BaseService, events, IGridPageResponseDto, IUserGridItemDto } from '@core';
 import { Service } from 'typedi';
-import { GetUserListReqDto, UsersGridPageDto } from '../dtos/get-user-list.dto';
+import { BaseService, events, IGridPageResponseDto, IUserGridItemDto } from '@core';
+import { vUser } from '../../../dataBase/entities/users/vUser.entity';
+import { GetUserListReqDto, TUsersGridPageDto } from '../dtos/get-user-list.dto';
 import { UserListRetrievedEvent } from '../events/user-list-retrieved-event';
 import { UserListRepository } from '../repositories/user-list.repository';
-import { vUser } from './../../../dataBase/entities/users/vUser.entity';
 
 @Service()
 export class UserListService extends BaseService {
@@ -11,7 +11,7 @@ export class UserListService extends BaseService {
     super();
   }
 
-  public async get(reqDto: GetUserListReqDto): Promise<UsersGridPageDto> {
+  public async get(reqDto: GetUserListReqDto): Promise<TUsersGridPageDto> {
     const recordsWithTotal: IGridPageResponseDto<vUser> = await this._repository.get(reqDto.page, reqDto.sort);
 
     this._eventDispatcher.dispatch(events.users.userListRetrieved, new UserListRetrievedEvent(reqDto.currentUserId));
@@ -19,7 +19,7 @@ export class UserListService extends BaseService {
     return {
       items: recordsWithTotal.items.map(entity => this.vUserToIUserGridItemDto(entity)),
       totalCount: recordsWithTotal.totalCount,
-    } satisfies UsersGridPageDto;
+    } satisfies TUsersGridPageDto;
   }
 
   private vUserToIUserGridItemDto(user: vUser): IUserGridItemDto {

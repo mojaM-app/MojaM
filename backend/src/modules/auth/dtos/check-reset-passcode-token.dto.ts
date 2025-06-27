@@ -1,4 +1,4 @@
-import { AuthenticationTypes, IResponse } from '@core';
+import { type AuthenticationTypes, type IResponse } from '@core';
 
 export class CheckResetPasscodeTokenReqDto {
   public readonly userGuid: string | undefined;

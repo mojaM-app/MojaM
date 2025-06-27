@@ -1,4 +1,4 @@
-import { Event, IHasGuidId, IUser } from '@core';
+import { Event, type IHasGuidId, type IUser } from '@core';
 
 export class UserProfileUpdatedEvent extends Event {
   public readonly user: IUser & IHasGuidId;

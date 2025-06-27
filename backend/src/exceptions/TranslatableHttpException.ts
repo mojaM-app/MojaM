@@ -1,4 +1,4 @@
-import StatusCode from 'status-code-enum';
+import type { StatusCode } from 'status-code-enum';
 import { HttpException } from './HttpException';
 
 export class TranslatableHttpException extends HttpException {

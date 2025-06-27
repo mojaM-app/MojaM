@@ -1,4 +1,4 @@
-import { ILoginModel, IUser, SystemPermissions } from '@core';
+import { type ILoginModel, type IUser, SystemPermissions } from '@core';
 import { DbConnectionManager } from '@db';
 import { testHelpers } from '@helpers';
 import { getAdminLoginData } from '@utils';
@@ -100,7 +100,9 @@ describe('Cache user data tests', () => {
               return {
                 where: (): any => {
                   return {
-                    getMany: () => [{ _is_from_mock_: true, userId: 1, systemPermission: { id: SystemPermissions.EditUser } }],
+                    getMany: () => [
+                      { _is_from_mock_: true, userId: 1, systemPermission: { id: SystemPermissions.EditUser } },
+                    ],
                   };
                 },
               };
@@ -122,10 +124,16 @@ describe('Cache user data tests', () => {
   });
 
   it('Should store userId', async () => {
-    let response = await request(app!.getServer()).get(`${UserRoute.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);
+    let response = await request(app!.getServer())
+      .get(`${UserRoute.path}/${adminUuid}`)
+      .send()
+      .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(response.statusCode).toBe(200);
 
-    response = await request(app!.getServer()).get(`${UserRoute.path}/${adminUuid}`).send().set('Authorization', `Bearer ${adminAccessToken}`);
+    response = await request(app!.getServer())
+      .get(`${UserRoute.path}/${adminUuid}`)
+      .send()
+      .set('Authorization', `Bearer ${adminAccessToken}`);
     expect(response.statusCode).toBe(200);
 
     expect(findOneByFn).toHaveBeenCalledTimes(5);

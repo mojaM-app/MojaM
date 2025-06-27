@@ -1,12 +1,13 @@
 import { VALIDATOR_SETTINGS } from '@config';
-import { IUser } from '@core';
+import { type IUser } from '@core';
 import { generateRandomEmail, generateRandomNumber, generateRandomPassword } from '../../../utils/random.utils';
-import { CreateUserDto } from '../dtos/create-user.dto';
+import { type CreateUserDto } from '../dtos/create-user.dto';
 
-const generateValidUser = (): any => {
+const generateValidUser = (): IUser => {
+  const phoneNumberCount = VALIDATOR_SETTINGS.PHONE_MAX_LENGTH - 2; // 2 for the country code '88'
   return {
     email: generateRandomEmail(),
-    phone: '88' + generateRandomNumber(7),
+    phone: `88${generateRandomNumber(phoneNumberCount)}`,
     getFirstLastName: () => 'John Doe',
     getFirstLastNameOrEmail: () => 'John Doe',
     getLastFirstName: () => 'Doe John',

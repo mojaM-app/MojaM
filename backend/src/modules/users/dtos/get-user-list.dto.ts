@@ -1,6 +1,14 @@
-import { BaseReqDto, events, IGridPageResponseDto, IPageData, IResponse, ISortData, IUserGridItemDto } from '@core';
+import {
+  BaseReqDto,
+  events,
+  type IGridPageResponseDto,
+  type IPageData,
+  type IResponse,
+  type ISortData,
+  type IUserGridItemDto,
+} from '@core';
 
-export type UsersGridPageDto = IGridPageResponseDto<IUserGridItemDto>;
+export type TUsersGridPageDto = IGridPageResponseDto<IUserGridItemDto>;
 
 export class GetUserListReqDto extends BaseReqDto {
   public readonly page: IPageData;
@@ -13,11 +21,11 @@ export class GetUserListReqDto extends BaseReqDto {
   }
 }
 
-export class GetUserListResponseDto implements IResponse<UsersGridPageDto> {
-  public readonly data: UsersGridPageDto;
+export class GetUserListResponseDto implements IResponse<TUsersGridPageDto> {
+  public readonly data: TUsersGridPageDto;
   public readonly message: string;
 
-  constructor(data: UsersGridPageDto) {
+  constructor(data: TUsersGridPageDto) {
     this.data = data;
     this.message = events.users.userListRetrieved;
   }

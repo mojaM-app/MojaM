@@ -1,6 +1,6 @@
+import { Service } from 'typedi';
 import { BaseService, events, SystemPermissions } from '@core';
 import { isEnumValue, isGuid, isNullOrUndefined } from '@utils';
-import { Service } from 'typedi';
 import { AddPermissionReqDto } from '../dtos/add-permission.dto';
 import { DeletePermissionsReqDto } from '../dtos/delete-permissions.dto';
 import { GetPermissionsReqDto, IUserPermissionsDto } from '../dtos/get-permissions.dto';
@@ -22,7 +22,10 @@ export class PermissionsService extends BaseService {
   public async get(reqDto: GetPermissionsReqDto): Promise<IUserPermissionsDto[]> {
     const result = await this._permissionsRepository.get();
 
-    this._eventDispatcher.dispatch(events.permissions.permissionsRetrieved, new PermissionsRetrievedEvent(reqDto.currentUserId));
+    this._eventDispatcher.dispatch(
+      events.permissions.permissionsRetrieved,
+      new PermissionsRetrievedEvent(reqDto.currentUserId),
+    );
 
     return result;
   }
@@ -45,7 +48,10 @@ export class PermissionsService extends BaseService {
   }
 
   public async delete(reqDto: DeletePermissionsReqDto): Promise<boolean> {
-    if (!isGuid(reqDto.userGuid) || (!isNullOrUndefined(reqDto.permissionId) && !isEnumValue(SystemPermissions, reqDto.permissionId))) {
+    if (
+      !isGuid(reqDto.userGuid) ||
+      (!isNullOrUndefined(reqDto.permissionId) && !isEnumValue(SystemPermissions, reqDto.permissionId))
+    ) {
       return false;
     }
 

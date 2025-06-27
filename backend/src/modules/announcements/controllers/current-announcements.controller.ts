@@ -15,7 +15,7 @@ export class CurrentAnnouncementsController extends BaseController {
   public get = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const data = await this._service.get(this.getCurrentUserId(req));
-      res.status(200).json(new GetCurrentAnnouncementsResponseDto(data));
+      res.status(StatusCode.SuccessOK).json(new GetCurrentAnnouncementsResponseDto(data));
     } catch (error) {
       next(error);
     }

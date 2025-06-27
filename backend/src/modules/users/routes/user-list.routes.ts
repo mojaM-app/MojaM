@@ -1,6 +1,6 @@
-import { IRoutes } from '@core';
-import { requirePermission, setIdentity } from '@middlewares';
 import express from 'express';
+import { type IRoutes } from '@core';
+import { requirePermission, setIdentity } from '@middlewares';
 import { UserListController } from '../controllers/user-list.controller';
 
 export class UserListRoute implements IRoutes {
@@ -14,6 +14,10 @@ export class UserListRoute implements IRoutes {
   }
 
   private initializeRoutes(): void {
-    this.router.get(`${UserListRoute.path}`, [setIdentity, requirePermission(user => user.canPreviewUserList())], this._controller.get);
+    this.router.get(
+      `${UserListRoute.path}`,
+      [setIdentity, requirePermission(user => user.canPreviewUserList())],
+      this._controller.get,
+    );
   }
 }

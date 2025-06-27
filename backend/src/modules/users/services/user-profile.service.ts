@@ -1,12 +1,12 @@
-import { BaseService, events, IUpdateUser } from '@core';
 import { Service } from 'typedi';
+import { BaseService, events, IUpdateUser } from '@core';
+import { User } from '../../../dataBase/entities/users/user.entity';
 import { GetUserProfileReqDto, IGetUserProfileDto } from '../dtos/get-user-profile.dto';
-import { UpdateUserProfileDto, UpdateUserProfileReqDto } from '../dtos/update-user-profile.dto';
+import { UpdateUserProfileReqDto } from '../dtos/update-user-profile.dto';
 import { UserProfileRetrievedEvent } from '../events/user-profile-retrieved-event';
 import { UserProfileUpdatedEvent } from '../events/user-profile-updated-event';
 import { UpdateUserModel } from '../models/update-user.model';
 import { UserRepository } from '../repositories/user.repository';
-import { User } from './../../../dataBase/entities/users/user.entity';
 
 @Service()
 export class UserProfileService extends BaseService {
@@ -19,7 +19,10 @@ export class UserProfileService extends BaseService {
 
     const userDto = this.userToIGetUserProfileDto(user!);
 
-    this._eventDispatcher.dispatch(events.users.userProfileRetrieved, new UserProfileRetrievedEvent(userDto, reqDto.currentUserId));
+    this._eventDispatcher.dispatch(
+      events.users.userProfileRetrieved,
+      new UserProfileRetrievedEvent(userDto, reqDto.currentUserId),
+    );
 
     return userDto;
   }
@@ -27,7 +30,7 @@ export class UserProfileService extends BaseService {
   public async update(reqDto: UpdateUserProfileReqDto): Promise<boolean> {
     const user = await this._userRepository.getById(reqDto.currentUserId);
 
-    const userData: UpdateUserProfileDto = reqDto.userData;
+    const { userData } = reqDto;
 
     const model = new UpdateUserModel(user!.id, {
       firstName: userData.firstName,
@@ -36,7 +39,10 @@ export class UserProfileService extends BaseService {
     } satisfies IUpdateUser) satisfies UpdateUserModel;
     const updatedUser = await this._userRepository.update(model);
 
-    this._eventDispatcher.dispatch(events.users.userProfileUpdated, new UserProfileUpdatedEvent(updatedUser!, reqDto.currentUserId));
+    this._eventDispatcher.dispatch(
+      events.users.userProfileUpdated,
+      new UserProfileUpdatedEvent(updatedUser!, reqDto.currentUserId),
+    );
 
     return true;
   }

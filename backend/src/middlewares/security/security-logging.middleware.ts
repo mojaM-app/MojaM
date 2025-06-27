@@ -1,5 +1,5 @@
+import type { NextFunction, Request, Response } from 'express';
 import { logger } from '@core';
-import { NextFunction, Request, Response } from 'express';
 import { getRequestId } from './request-id.middleware';
 
 interface SecurityLogData {
@@ -53,7 +53,7 @@ export class SecurityLogger {
   public static logFailedLogin(req: Request, email?: string, reason?: string): void {
     this.logSecurityEvent({
       event: 'FAILED_LOGIN_ATTEMPT',
-      ip: req.ip || 'unknown',
+      ip: req.ip ?? 'unknown',
       requestId: getRequestId(req),
       userAgent: req.get('User-Agent'),
       path: req.path,
@@ -68,7 +68,7 @@ export class SecurityLogger {
   public static logSuccessfulLogin(req: Request, userId: string, email: string): void {
     this.logSecurityEvent({
       event: 'SUCCESSFUL_LOGIN',
-      ip: req.ip || 'unknown',
+      ip: req.ip ?? 'unknown',
       requestId: getRequestId(req),
       userAgent: req.get('User-Agent'),
       path: req.path,
@@ -83,7 +83,7 @@ export class SecurityLogger {
   public static logAccountLockout(req: Request, userId: string, email: string): void {
     this.logSecurityEvent({
       event: 'ACCOUNT_LOCKOUT',
-      ip: req.ip || 'unknown',
+      ip: req.ip ?? 'unknown',
       requestId: getRequestId(req),
       userAgent: req.get('User-Agent'),
       path: req.path,
@@ -98,7 +98,7 @@ export class SecurityLogger {
   public static logPasswordReset(req: Request, email: string): void {
     this.logSecurityEvent({
       event: 'PASSWORD_RESET_REQUEST',
-      ip: req.ip || 'unknown',
+      ip: req.ip ?? 'unknown',
       requestId: getRequestId(req),
       userAgent: req.get('User-Agent'),
       path: req.path,
@@ -112,7 +112,7 @@ export class SecurityLogger {
   public static logSuspiciousActivity(req: Request, reason: string, additionalData?: Record<string, any>): void {
     this.logSecurityEvent({
       event: 'SUSPICIOUS_ACTIVITY',
-      ip: req.ip || 'unknown',
+      ip: req.ip ?? 'unknown',
       requestId: getRequestId(req),
       userAgent: req.get('User-Agent'),
       path: req.path,
@@ -126,7 +126,7 @@ export class SecurityLogger {
   public static logRateLimitExceeded(req: Request): void {
     this.logSecurityEvent({
       event: 'RATE_LIMIT_EXCEEDED',
-      ip: req.ip || 'unknown',
+      ip: req.ip ?? 'unknown',
       requestId: getRequestId(req),
       userAgent: req.get('User-Agent'),
       path: req.path,
@@ -139,7 +139,7 @@ export class SecurityLogger {
   public static logUnauthorizedAccess(req: Request, userId?: string): void {
     this.logSecurityEvent({
       event: 'UNAUTHORIZED_ACCESS_ATTEMPT',
-      ip: req.ip || 'unknown',
+      ip: req.ip ?? 'unknown',
       requestId: getRequestId(req),
       userAgent: req.get('User-Agent'),
       path: req.path,
@@ -153,7 +153,7 @@ export class SecurityLogger {
   public static logTokenValidationFailure(req: Request, reason: string): void {
     this.logSecurityEvent({
       event: 'TOKEN_VALIDATION_FAILURE',
-      ip: req.ip || 'unknown',
+      ip: req.ip ?? 'unknown',
       requestId: getRequestId(req),
       userAgent: req.get('User-Agent'),
       path: req.path,
@@ -164,10 +164,15 @@ export class SecurityLogger {
     });
   }
 
-  public static logUserManagementOperation(req: Request, operation: string, targetUserId?: string, performedBy?: string): void {
+  public static logUserManagementOperation(
+    req: Request,
+    operation: string,
+    targetUserId?: string,
+    performedBy?: string,
+  ): void {
     this.logSecurityEvent({
       event: 'USER_MANAGEMENT_OPERATION',
-      ip: req.ip || 'unknown',
+      ip: req.ip ?? 'unknown',
       requestId: getRequestId(req),
       userAgent: req.get('User-Agent'),
       path: req.path,
@@ -182,7 +187,7 @@ export class SecurityLogger {
   public static logPermissionEscalation(req: Request, userId: string, attemptedAction: string): void {
     this.logSecurityEvent({
       event: 'PERMISSION_ESCALATION_ATTEMPT',
-      ip: req.ip || 'unknown',
+      ip: req.ip ?? 'unknown',
       requestId: getRequestId(req),
       userAgent: req.get('User-Agent'),
       path: req.path,
@@ -197,7 +202,7 @@ export class SecurityLogger {
   public static logDataAccess(req: Request, userId: string, dataType: string, recordId?: string): void {
     this.logSecurityEvent({
       event: 'SENSITIVE_DATA_ACCESS',
-      ip: req.ip || 'unknown',
+      ip: req.ip ?? 'unknown',
       requestId: getRequestId(req),
       userAgent: req.get('User-Agent'),
       path: req.path,
@@ -213,8 +218,8 @@ export class SecurityLogger {
 // Middleware to log security events for requests
 export const securityLoggingMiddleware = (req: Request, res: Response, next: NextFunction): void => {
   // Log suspicious patterns
-  const userAgent = req.get('User-Agent') || '';
-  const path = req.path;
+  const userAgent = req.get('User-Agent') ?? '';
+  const { path } = req;
 
   // Check for common attack patterns
   if (

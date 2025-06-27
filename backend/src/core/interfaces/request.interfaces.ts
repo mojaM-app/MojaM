@@ -1,5 +1,5 @@
-import { Request } from 'express';
-import { Identity } from '../shared/identity';
+import { type Request } from 'express';
+import { type Identity } from '../shared/identity';
 
 export interface IRequestWithIdentity extends Request {
   identity: Identity;

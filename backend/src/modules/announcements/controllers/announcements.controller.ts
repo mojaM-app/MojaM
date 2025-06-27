@@ -2,11 +2,19 @@ import { BaseController, IRequestWithIdentity } from '@core';
 import { isGuid } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { Container } from 'typedi';
-import { CreateAnnouncementsDto, CreateAnnouncementsReqDto, CreateAnnouncementsResponseDto } from '../dtos/create-announcements.dto';
+import {
+  CreateAnnouncementsDto,
+  CreateAnnouncementsReqDto,
+  CreateAnnouncementsResponseDto,
+} from '../dtos/create-announcements.dto';
 import { DeleteAnnouncementsReqDto, DeleteAnnouncementsResponseDto } from '../dtos/delete-announcements.dto';
 import { GetAnnouncementsReqDto, GetAnnouncementsResponseDto } from '../dtos/get-announcements.dto';
 import { PublishAnnouncementsReqDto, PublishAnnouncementsResponseDto } from '../dtos/publish-announcements.dto';
-import { UpdateAnnouncementsDto, UpdateAnnouncementsReqDto, UpdateAnnouncementsResponseDto } from '../dtos/update-announcements.dto';
+import {
+  UpdateAnnouncementsDto,
+  UpdateAnnouncementsReqDto,
+  UpdateAnnouncementsResponseDto,
+} from '../dtos/update-announcements.dto';
 import { AnnouncementsService } from '../services/announcements.service';
 
 export class AnnouncementsController extends BaseController {
@@ -21,7 +29,7 @@ export class AnnouncementsController extends BaseController {
     try {
       const reqDto = new GetAnnouncementsReqDto(this.getAnnouncementsGuid(req), this.getCurrentUserId(req)!);
       const result = await this._service.get(reqDto);
-      res.status(200).json(new GetAnnouncementsResponseDto(result!));
+      res.status(StatusCode.SuccessOK).json(new GetAnnouncementsResponseDto(result!));
     } catch (error) {
       next(error);
     }
@@ -42,7 +50,7 @@ export class AnnouncementsController extends BaseController {
       const model: UpdateAnnouncementsDto = req.body;
       const reqDto = new UpdateAnnouncementsReqDto(this.getAnnouncementsGuid(req), model, this.getCurrentUserId(req));
       const result = await this._service.update(reqDto);
-      res.status(200).json(new UpdateAnnouncementsResponseDto(result!.id));
+      res.status(StatusCode.SuccessOK).json(new UpdateAnnouncementsResponseDto(result!.id));
     } catch (error) {
       next(error);
     }
@@ -52,7 +60,7 @@ export class AnnouncementsController extends BaseController {
     try {
       const reqDto = new DeleteAnnouncementsReqDto(this.getAnnouncementsGuid(req), this.getCurrentUserId(req)!);
       const result = await this._service.delete(reqDto);
-      res.status(200).json(new DeleteAnnouncementsResponseDto(result));
+      res.status(StatusCode.SuccessOK).json(new DeleteAnnouncementsResponseDto(result));
     } catch (error) {
       next(error);
     }
@@ -62,7 +70,7 @@ export class AnnouncementsController extends BaseController {
     try {
       const reqDto = new PublishAnnouncementsReqDto(this.getAnnouncementsGuid(req), this.getCurrentUserId(req)!);
       const result = await this._service.publish(reqDto);
-      res.status(200).json(new PublishAnnouncementsResponseDto(result));
+      res.status(StatusCode.SuccessOK).json(new PublishAnnouncementsResponseDto(result));
     } catch (error) {
       next(error);
     }

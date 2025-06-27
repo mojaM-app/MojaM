@@ -27,8 +27,10 @@ export class CalendarController extends BaseController {
         throw new BadRequestException(errorKeys.calendar.Invalid_End_Date, { endDate: endDate });
       }
 
-      const result = await this._calendarService.getEvents(new GetCalendarEventsReqDto(isoStartDate, isoEndDate, this.getCurrentUserId(req)));
-      res.status(200).json(new GetCalendarEventsResponseDto(result));
+      const result = await this._calendarService.getEvents(
+        new GetCalendarEventsReqDto(isoStartDate, isoEndDate, this.getCurrentUserId(req)),
+      );
+      res.status(StatusCode.SuccessOK).json(new GetCalendarEventsResponseDto(result));
     } catch (error) {
       next(error);
     }

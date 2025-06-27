@@ -14,7 +14,7 @@ export class CommunityController extends BaseController {
   public get = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const result: IGetCommunityDto = await this._communityService.get(this.getCurrentUserId(req));
-      res.status(200).json(new GetCommunityResponseDto(result));
+      res.status(StatusCode.SuccessOK).json(new GetCommunityResponseDto(result));
     } catch (error) {
       next(error);
     }

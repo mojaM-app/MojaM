@@ -1,5 +1,5 @@
 import { Event } from '@core';
-import { IUserDetailsDto } from '../dtos/get-user-details.dto';
+import type { IUserDetailsDto } from '../dtos/get-user-details.dto';
 
 export class UserDetailsRetrievedEvent extends Event {
   public readonly user: IUserDetailsDto;

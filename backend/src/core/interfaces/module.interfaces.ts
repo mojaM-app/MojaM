@@ -1,6 +1,6 @@
-import { IRoutes } from '@core';
+import { type IRoutes } from '@core';
 
 export interface IModule {
-  getRoutes(): IRoutes[];
-  register(): void;
+  getRoutes: () => IRoutes[];
+  register: () => void;
 }

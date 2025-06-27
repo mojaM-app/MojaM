@@ -1,6 +1,6 @@
-import { CacheService } from '@core';
 import { Service } from 'typedi';
-import { User } from './../../../dataBase/entities/users/user.entity';
+import { CacheService } from '@core';
+import { User } from '../../../dataBase/entities/users/user.entity';
 
 @Service()
 export class UserCacheService extends CacheService<User> {

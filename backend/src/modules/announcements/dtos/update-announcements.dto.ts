@@ -1,15 +1,17 @@
-import { VALIDATOR_SETTINGS } from '@config';
-import { BaseReqDto, DtoTransformFunctions, events, IResponse } from '@core';
-import { errorKeys } from '@exceptions';
 import { Transform, Type } from 'class-transformer';
 import { IsArray, IsDate, IsNotEmpty, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
+import { VALIDATOR_SETTINGS } from '@config';
+import { BaseReqDto, DtoTransformFunctions, events, type IResponse } from '@core';
+import { errorKeys } from '@exceptions';
 
 export class UpdateAnnouncementItemDto {
   public id?: string;
 
   @IsNotEmpty({ message: errorKeys.announcements.Item_Content_Is_Required })
   @IsString({ message: errorKeys.announcements.Item_Content_Is_Required })
-  @MaxLength(VALIDATOR_SETTINGS.ANNOUNCEMENT_ITEM_CONTENT_MAX_LENGTH, { message: errorKeys.announcements.Item_Content_Too_Long })
+  @MaxLength(VALIDATOR_SETTINGS.ANNOUNCEMENT_ITEM_CONTENT_MAX_LENGTH, {
+    message: errorKeys.announcements.Item_Content_Too_Long,
+  })
   @Transform(DtoTransformFunctions.getEmptyStringIfNotSet)
   public content: string;
 
@@ -39,7 +41,11 @@ export class UpdateAnnouncementsReqDto extends BaseReqDto {
   public readonly announcementsId: string | undefined;
   public readonly announcements: UpdateAnnouncementsDto;
 
-  constructor(announcementsId: string | undefined, announcements: UpdateAnnouncementsDto, currentUserId: number | undefined) {
+  constructor(
+    announcementsId: string | undefined,
+    announcements: UpdateAnnouncementsDto,
+    currentUserId: number | undefined,
+  ) {
     super(currentUserId);
     this.announcementsId = announcementsId;
     this.announcements = announcements;

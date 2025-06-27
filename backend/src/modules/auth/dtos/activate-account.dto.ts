@@ -1,9 +1,9 @@
-import { VALIDATOR_SETTINGS } from '@config';
-import { BaseReqDto, DtoTransformFunctions, events, IResponse } from '@core';
-import { errorKeys } from '@exceptions';
-import { IsPasswordOrPinValid } from '@validators';
 import { Transform, Type } from 'class-transformer';
 import { IsDate, IsOptional, IsString, MaxLength } from 'class-validator';
+import { VALIDATOR_SETTINGS } from '@config';
+import { BaseReqDto, DtoTransformFunctions, events, type IResponse } from '@core';
+import { errorKeys } from '@exceptions';
+import { IsPasswordOrPinValid } from '@validators';
 
 export class ActivateAccountDto {
   @IsOptional()

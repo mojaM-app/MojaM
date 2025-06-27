@@ -1,10 +1,11 @@
-import { BaseController, IPageData, IRequestWithIdentity, ISortData } from '@core';
-import { toNumber } from '@utils';
-import { NextFunction, Response } from 'express';
+import type { NextFunction, Response } from 'express';
+import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
-import { GetUserListReqDto, GetUserListResponseDto, UsersGridPageDto } from '../dtos/get-user-list.dto';
+import { BaseController, type IPageData, type IRequestWithIdentity, type ISortData } from '@core';
+import { toNumber } from '@utils';
+import { UserListViewColumns } from '../../../dataBase/entities/users/vUser.entity';
+import { GetUserListReqDto, GetUserListResponseDto, type TUsersGridPageDto } from '../dtos/get-user-list.dto';
 import { UserListService } from '../services/user-list.service';
-import { UserListViewColumns } from './../../../dataBase/entities/users/vUser.entity';
 
 export class UserListController extends BaseController {
   private readonly _service: UserListService;
@@ -17,24 +18,25 @@ export class UserListController extends BaseController {
   public get = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const reqDto = new GetUserListReqDto(this.getPageData(req), this.getSortData(req), this.getCurrentUserId(req));
-      const result: UsersGridPageDto = await this._service.get(reqDto);
-      res.status(200).json(new GetUserListResponseDto(result));
+      const result: TUsersGridPageDto = await this._service.get(reqDto);
+      res.status(StatusCode.SuccessOK).json(new GetUserListResponseDto(result));
     } catch (error) {
       next(error);
     }
   };
 
   private getPageData(req: IRequestWithIdentity): IPageData {
+    const defaultPageSize = 10;
     return {
-      pageIndex: toNumber(req?.query?.pageIndex) ?? 0,
-      pageSize: toNumber(req?.query?.pageSize) ?? 10,
+      pageIndex: toNumber(req.query.pageIndex) ?? 0,
+      pageSize: toNumber(req.query.pageSize) ?? defaultPageSize,
     } satisfies IPageData;
   }
 
   private getSortData(req: IRequestWithIdentity): ISortData {
     return {
-      column: req?.query?.column?.toString() ?? UserListViewColumns.firstName,
-      direction: req?.query?.direction?.toString() ?? 'asc',
+      column: req.query.column?.toString() ?? UserListViewColumns.firstName,
+      direction: req.query.direction?.toString() ?? 'asc',
     } satisfies ISortData;
   }
 }

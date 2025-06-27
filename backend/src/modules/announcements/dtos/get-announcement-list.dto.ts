@@ -1,4 +1,12 @@
-import { BaseReqDto, events, IAnnouncementGridItemDto, IGridPageResponseDto, IPageData, IResponse, ISortData } from '@core';
+import {
+  BaseReqDto,
+  events,
+  type IAnnouncementGridItemDto,
+  type IGridPageResponseDto,
+  type IPageData,
+  type IResponse,
+  type ISortData,
+} from '@core';
 
 export type AnnouncementsGridPageDto = IGridPageResponseDto<IAnnouncementGridItemDto>;
 

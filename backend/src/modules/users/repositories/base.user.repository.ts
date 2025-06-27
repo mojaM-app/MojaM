@@ -1,7 +1,7 @@
 import { BaseRepository } from '@db';
 import { isGuid, isPositiveNumber } from '@utils';
-import { UserCacheService } from '../services/user-cache.service';
-import { User } from './../../../dataBase/entities/users/user.entity';
+import type { User } from '../../../dataBase/entities/users/user.entity';
+import type { UserCacheService } from '../services/user-cache.service';
 
 export abstract class BaseUserRepository extends BaseRepository {
   constructor(protected readonly _cacheService: UserCacheService) {

@@ -1,4 +1,4 @@
-import { BaseReqDto, events, IResponse, IUserDto } from '@core';
+import { BaseReqDto, events, type IResponse, type IUserDto } from '@core';
 
 export class GetUserDetailsReqDto extends BaseReqDto {
   public readonly userGuid: string | undefined;

@@ -1,12 +1,19 @@
-import { ICreateUser, ICryptoService, IPasscodeService, IResetPasscodeService, IUpdateUser, IUpdateUserPasscode } from '@core';
+import { Container, Service } from 'typedi';
+import { Not } from 'typeorm';
+import {
+  ICreateUser,
+  ICryptoService,
+  IPasscodeService,
+  IResetPasscodeService,
+  IUpdateUser,
+  IUpdateUserPasscode,
+} from '@core';
 import { relatedDataNames } from '@db';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { getDateTimeNow, isNullOrEmptyString } from '@utils';
-import Container, { Service } from 'typedi';
-import { Not } from 'typeorm';
-import { User } from './../../../dataBase/entities/users/user.entity';
 import { BaseUserRepository } from './base.user.repository';
-import { CreateUserDto, CreateUserReqDto } from '../dtos/create-user.dto';
+import { User } from '../../../dataBase/entities/users/user.entity';
+import { CreateUserReqDto } from '../dtos/create-user.dto';
 import { DeleteUserReqDto } from '../dtos/delete-user.dto';
 import { UpdateUserModel } from '../models/update-user.model';
 import { UserCacheService } from '../services/user-cache.service';
@@ -40,7 +47,10 @@ export class UserRepository extends BaseUserRepository {
     return users;
   }
 
-  public async checkIfExists(user: { email: string; phone: string } | null | undefined, skippedUserId?: number): Promise<boolean> {
+  public async checkIfExists(
+    user: { email: string; phone: string } | null | undefined,
+    skippedUserId?: number,
+  ): Promise<boolean> {
     if (isNullOrEmptyString(user?.email) || isNullOrEmptyString(user?.phone)) {
       throw new BadRequestException(errorKeys.users.Invalid_Email_Or_Phone);
     }
@@ -57,10 +67,12 @@ export class UserRepository extends BaseUserRepository {
   }
 
   public async create(reqDto: CreateUserReqDto): Promise<User> {
-    const userData: CreateUserDto = reqDto.userData;
+    const { userData } = reqDto;
 
     const salt = this._cryptoService.generateSalt();
-    const hashedPasscode = isNullOrEmptyString(userData.passcode) ? null : this._passcodeService.getHash(salt, userData.passcode!);
+    const hashedPasscode = isNullOrEmptyString(userData.passcode)
+      ? null
+      : this._passcodeService.getHash(salt, userData.passcode);
     const model = {
       email: userData.email,
       phone: userData.phone,
@@ -135,7 +147,11 @@ export class UserRepository extends BaseUserRepository {
   }
 
   public async delete(userId: number, reqDto: DeleteUserReqDto): Promise<boolean> {
-    await this._dbContext.userSystemPermissions.createQueryBuilder().delete().where('userId = :userId', { userId }).execute();
+    await this._dbContext.userSystemPermissions
+      .createQueryBuilder()
+      .delete()
+      .where('userId = :userId', { userId })
+      .execute();
     await this._resetPasscodeService.deleteResetPasscodeTokens(userId);
 
     await this._dbContext.users.delete({ id: userId });
@@ -229,6 +245,9 @@ export class UserRepository extends BaseUserRepository {
   private async _update(model: UpdateUserModel): Promise<User | null> {
     await this._dbContext.users.update(model.userId, model.userData);
 
-    return await this._dbContext.users.createQueryBuilder('user').where('user.id = :userId', { userId: model.userId }).getOne();
+    return await this._dbContext.users
+      .createQueryBuilder('user')
+      .where('user.id = :userId', { userId: model.userId })
+      .getOne();
   }
 }

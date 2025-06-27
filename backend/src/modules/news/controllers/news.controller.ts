@@ -15,7 +15,7 @@ export class NewsController extends BaseController {
   public get = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const result: IGetNewsDto = await this._newsService.get(this.getCurrentUserId(req));
-      res.status(200).json(new GetNewsResponseDto(result));
+      res.status(StatusCode.SuccessOK).json(new GetNewsResponseDto(result));
     } catch (error) {
       next(error);
     }

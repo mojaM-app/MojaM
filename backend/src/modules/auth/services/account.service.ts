@@ -1,8 +1,8 @@
-import { AuthenticationTypes, BaseService, events, IUpdateUser , IUserEntity, IUserService } from '@core';
+import { Container, Service } from 'typedi';
+import { AuthenticationTypes, BaseService, events, IUpdateUser, IUserEntity, IUserService } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { UserActivatedEvent, UserUnlockedEvent } from '@modules/users';
-import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
-import Container, { Service } from 'typedi';
+import { isArray, isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { ActivateAccountDto, ActivateAccountReqDto, IActivateAccountResultDto } from '../dtos/activate-account.dto';
 import { AccountTryingToLogInDto, IGetAccountBeforeLogInResultDto } from '../dtos/get-account-before-log-in.dto';
 import { GetAccountToActivateReqDto, IAccountToActivateResultDto } from '../dtos/get-account-to-activate.dto';
@@ -20,9 +20,9 @@ export class AccountService extends BaseService {
   }
 
   public async getAccountBeforeLogIn(data: AccountTryingToLogInDto): Promise<IGetAccountBeforeLogInResultDto> {
-    const users: IUserEntity[] = await this._userService.findManyByLogin(data?.email, data?.phone);
+    const users: IUserEntity[] = await this._userService.findManyByLogin(data.email, data.phone);
 
-    if ((users?.length ?? 0) === 0) {
+    if (!isArray(users) || users.length === 0) {
       return {
         authType: AuthenticationTypes.Password,
         isActive: true,
@@ -35,7 +35,7 @@ export class AccountService extends BaseService {
       } satisfies IGetAccountBeforeLogInResultDto;
     }
 
-    const user = users[0];
+    const [user] = users;
 
     return {
       authType: getAuthenticationType(user),

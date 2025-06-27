@@ -1,7 +1,7 @@
+import { Container, Service } from 'typedi';
 import { BaseService, events } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { isDate, isNullOrUndefined } from '@utils';
-import Container, { Service } from 'typedi';
 import { Announcement } from '../../../dataBase/entities/announcements/announcement.entity';
 import { CreateAnnouncementsReqDto } from '../dtos/create-announcements.dto';
 import { DeleteAnnouncementsReqDto } from '../dtos/delete-announcements.dto';
@@ -36,7 +36,10 @@ export class AnnouncementsService extends BaseService {
 
     const dto = this.announcementToIAnnouncements(announcements!);
 
-    this._eventDispatcher.dispatch(events.announcements.announcementsRetrieved, new AnnouncementsRetrievedEvent(dto, reqDto.currentUserId!));
+    this._eventDispatcher.dispatch(
+      events.announcements.announcementsRetrieved,
+      new AnnouncementsRetrievedEvent(dto, reqDto.currentUserId!),
+    );
 
     return dto;
   }
@@ -48,7 +51,9 @@ export class AnnouncementsService extends BaseService {
 
     const announcementsModel = reqDto.announcements;
 
-    const existAnnouncementWithSameDate = await this._announcementsRepository.checkIfExistWithDate(announcementsModel.validFromDate);
+    const existAnnouncementWithSameDate = await this._announcementsRepository.checkIfExistWithDate(
+      announcementsModel.validFromDate,
+    );
     if (existAnnouncementWithSameDate) {
       throw new BadRequestException(errorKeys.announcements.Announcements_With_Given_ValidFromDate_Already_Exists, {
         validFromDate: reqDto.announcements.validFromDate,
@@ -59,7 +64,10 @@ export class AnnouncementsService extends BaseService {
     const announcements = await this._announcementsRepository.get(announcementsId);
     const dto = this.announcementToIAnnouncements(announcements!);
 
-    this._eventDispatcher.dispatch(events.announcements.announcementsCreated, new AnnouncementsCreatedEvent(dto, reqDto.currentUserId!));
+    this._eventDispatcher.dispatch(
+      events.announcements.announcementsCreated,
+      new AnnouncementsCreatedEvent(dto, reqDto.currentUserId!),
+    );
 
     return dto;
   }
@@ -87,7 +95,10 @@ export class AnnouncementsService extends BaseService {
     const announcements = await this._announcementsRepository.get(announcementsId);
     const dto = this.announcementToIAnnouncements(announcements!);
 
-    this._eventDispatcher.dispatch(events.announcements.announcementsUpdated, new AnnouncementsUpdatedEvent(dto, reqDto.currentUserId!));
+    this._eventDispatcher.dispatch(
+      events.announcements.announcementsUpdated,
+      new AnnouncementsUpdatedEvent(dto, reqDto.currentUserId!),
+    );
 
     return dto;
   }
@@ -173,7 +184,7 @@ export class AnnouncementsService extends BaseService {
             createdAt: item.createdAt,
             createdBy: item.createdBy.getFirstLastName()!,
             updatedAt: item.updatedAt,
-            updatedBy: item.updatedBy?.getFirstLastName() ?? undefined,
+            updatedBy: item.updatedBy.getFirstLastName() ?? undefined,
           }) satisfies IAnnouncementItemDto,
       ),
     } satisfies IAnnouncementsDto;

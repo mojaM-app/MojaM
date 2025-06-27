@@ -1,4 +1,4 @@
-import { BaseReqDto, events, IResponse } from '@core';
+import { BaseReqDto, events, type IResponse } from '@core';
 
 export class GetCalendarEventsReqDto extends BaseReqDto {
   public readonly startDate: Date;

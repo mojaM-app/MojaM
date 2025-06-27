@@ -1,4 +1,3 @@
-import { IUserDto } from '@core';
 import {
   Column,
   CreateDateColumn,
@@ -11,14 +10,15 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { EntityDefaultFunctions } from './../../EntityDefaultFunctions';
-import { EntityTransformFunctions } from './../../EntityTransformFunctions';
+import { IUserDto } from '@core';
 import { UserResetPasscodeToken } from './user-reset-passcode-tokens.entity';
 import { UserSystemPermission } from './user-system-permission.entity';
 import { ICreateUser, IHasGuidId, IUpdateUser, IUserEntity } from '../../../core/interfaces';
+import { getAdminLoginData } from '../../../utils/user.utils';
+import { EntityDefaultFunctions } from '../../EntityDefaultFunctions';
+import { EntityTransformFunctions } from '../../EntityTransformFunctions';
 import { AnnouncementItem } from '../announcements/announcement-item.entity';
 import { Announcement } from '../announcements/announcement.entity';
-import { getAdminLoginData } from './../../../utils/user.utils';
 
 @Unique('UQ_User_Email_Phone', ['email', 'phone'])
 @Entity({
@@ -203,9 +203,8 @@ export class User implements IHasGuidId, ICreateUser, IUpdateUser, IUserEntity {
       return this.firstName!;
     } else if ((this.lastName?.length ?? 0) > 0) {
       return this.lastName!;
-    } else {
-      return null;
     }
+    return null;
   }
 
   public getFirstLastNameOrEmail(): string {
@@ -219,9 +218,8 @@ export class User implements IHasGuidId, ICreateUser, IUpdateUser, IUserEntity {
       return this.lastName!;
     } else if ((this.firstName?.length ?? 0) > 0) {
       return this.firstName!;
-    } else {
-      return null;
     }
+    return null;
   }
 
   public getLastFirstNameOrEmail(): string {

@@ -1,4 +1,4 @@
-import { IModule, IRoutes } from '@core';
+import { type IModule, type IRoutes } from '@core';
 import { SecurityRoute } from './routes/security.routes';
 
 export class SecurityModule implements IModule {

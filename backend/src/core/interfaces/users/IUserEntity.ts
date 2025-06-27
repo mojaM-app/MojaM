@@ -1,6 +1,6 @@
-import { IHasGuidId } from '../IHasGuidId';
-import { IUser } from './IUser';
-import { IUserId } from './IUser.Id';
+import { type IHasGuidId } from '../IHasGuidId';
+import { type IUser } from './IUser';
+import { type IUserId } from './IUser.Id';
 
 export interface IUserEntity extends IUser, IUserId, IHasGuidId {
   uuid: string;

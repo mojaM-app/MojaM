@@ -1,13 +1,14 @@
+import type { NextFunction, Request, Response } from 'express';
+import { StatusCode } from 'status-code-enum';
 import { SECURITY_CSP_REPORT_URI } from '@config';
 import { logger } from '@core';
-import { NextFunction, Request, Response } from 'express';
 
 /**
  * Content Security Policy middleware
  * Implements strict CSP headers to prevent XSS attacks
  */
 export const contentSecurityPolicy = (req: Request, res: Response, next: NextFunction): void => {
-  const reportUri = SECURITY_CSP_REPORT_URI || '/security/csp-report';
+  const reportUri = SECURITY_CSP_REPORT_URI ?? '/security/csp-report';
 
   // CSP directives for API endpoints
   const cspDirectives = [
@@ -41,9 +42,9 @@ export const cspReportHandler = (req: Request, res: Response): void => {
     timestamp: new Date().toISOString(),
     userAgent: req.get('User-Agent'),
     ip: req.ip,
-    report: report,
+    report,
   });
 
   // Respond with 204 No Content
-  res.status(204).end();
+  res.status(StatusCode.SuccessNoContent).end();
 };

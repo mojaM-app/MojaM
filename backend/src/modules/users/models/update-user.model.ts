@@ -1,4 +1,4 @@
-import { TUpdateUser } from '@core';
+import type { TUpdateUser } from '@core';
 
 export class UpdateUserModel {
   public readonly userId: number;

@@ -1,5 +1,5 @@
-import { IUser } from '@core';
-import { CreateUserDto } from './dtos/create-user.dto';
+import { type IUser } from '@core';
+import { type CreateUserDto } from './dtos/create-user.dto';
 import { generateValidUserWithPassword, generateValidUserWithPin } from './tests/test.helpers';
 
 export { UserActivatedEvent } from './events/user-activated-event';
@@ -15,7 +15,7 @@ export { UserUnlockedEvent } from './events/user-unlocked-event';
 export { UserUpdatedEvent } from './events/user-updated-event';
 
 export { CreateUserResponseDto } from './dtos/create-user.dto';
-export { GetUserResponseDto, IGetUserDto } from './dtos/get-user.dto';
+export { GetUserResponseDto, type IGetUserDto } from './dtos/get-user.dto';
 
 export let userTestHelpers: {
   generateValidUserWithPassword: () => CreateUserDto & IUser;

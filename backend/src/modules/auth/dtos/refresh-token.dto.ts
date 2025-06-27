@@ -1,6 +1,6 @@
-import { DtoTransformFunctions, events, IResponse } from '@core';
 import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { DtoTransformFunctions, events, type IResponse } from '@core';
 
 export class RefreshTokenDto {
   @IsNotEmpty()

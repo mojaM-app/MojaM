@@ -1,6 +1,6 @@
-import { AuthenticationTypes } from '@core';
-import { IHasGuidId } from '../IHasGuidId';
-import { IUser } from '../users/IUser';
+import { type AuthenticationTypes } from '@core';
+import { type IHasGuidId } from '../IHasGuidId';
+import { type IUser } from '../users/IUser';
 
 export interface IEmailSettings {
   user: IUser & IHasGuidId;

@@ -9,7 +9,8 @@ const getDateTimeNow = (): Date => {
 
 const getDateNow = (): Date => {
   const now = new Date();
-  return new Date(now.toISOString().slice(0, 10));
+  const datePartLength = 10; // YYYY-MM-DD format length
+  return new Date(now.toISOString().slice(0, datePartLength));
 };
 
 export { getDateNow, getDateTimeNow, isDate };

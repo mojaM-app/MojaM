@@ -1,6 +1,6 @@
+import { Container, Service } from 'typedi';
 import { BaseService, events } from '@core';
 import { isNullOrUndefined } from '@utils';
-import Container, { Service } from 'typedi';
 import { Announcement } from '../../../dataBase/entities/announcements/announcement.entity';
 import { ICurrentAnnouncementsDto, IGetCurrentAnnouncementsDto } from '../dtos/get-current-announcements.dto';
 import { CurrentAnnouncementsRetrievedEvent } from '../events/current-announcements-retrieved-event';
@@ -21,7 +21,9 @@ export class CurrentAnnouncementsService extends BaseService {
   public async get(currentUserId: number | undefined): Promise<IGetCurrentAnnouncementsDto> {
     const announcement = await this._currentAnnouncementsRepository.get();
 
-    const currentAnnouncements = isNullOrUndefined(announcement) ? null : this.announcementToICurrentAnnouncements(announcement!);
+    const currentAnnouncements = isNullOrUndefined(announcement)
+      ? null
+      : this.announcementToICurrentAnnouncements(announcement!);
     const count = await this._announcementsRepository.count();
 
     if (!isNullOrUndefined(announcement)) {
@@ -52,7 +54,7 @@ export class CurrentAnnouncementsService extends BaseService {
         content: item.content,
         createdBy: item.createdBy.getFirstLastName()!,
         createdAt: item.createdAt,
-        updatedBy: item.updatedBy?.getFirstLastName() ?? undefined,
+        updatedBy: item.updatedBy.getFirstLastName() ?? undefined,
         updatedAt: item.updatedAt,
       })),
     } satisfies ICurrentAnnouncementsDto;

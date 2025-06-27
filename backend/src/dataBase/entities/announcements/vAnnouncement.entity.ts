@@ -1,6 +1,6 @@
 import { DataSource, PrimaryColumn, ViewColumn, ViewEntity } from 'typeorm';
-import { IAnnouncementGridItemDto } from './../../../core/dtos';
 import { Announcement } from './announcement.entity';
+import { IAnnouncementGridItemDto } from '../../../core/dtos';
 import { EntityTransformFunctions } from '../../EntityTransformFunctions';
 import { User } from '../users/user.entity';
 
@@ -30,7 +30,10 @@ export const AnnouncementListViewColumns: { [K in keyof IAnnouncementGridItemDto
       .addSelect('announcement.UpdatedAt', AnnouncementListViewColumns.updatedAt)
       .addSelect('announcement.PublishedAt', AnnouncementListViewColumns.publishedAt)
       .addSelect("concat(publishedBy.FirstName, ' ', publishedBy.LastName)", AnnouncementListViewColumns.publishedBy)
-      .addSelect('(select count(0) from announcement_items as ai where announcement.Id = ai.AnnouncementId)', AnnouncementListViewColumns.itemsCount)
+      .addSelect(
+        '(select count(0) from announcement_items as ai where announcement.Id = ai.AnnouncementId)',
+        AnnouncementListViewColumns.itemsCount,
+      )
       .from(Announcement, 'announcement')
       .innerJoin(User, 'createdBy', 'createdBy.id = announcement.CreatedById')
       .leftJoin(User, 'publishedBy', 'publishedBy.id = announcement.PublishedById'),

@@ -1,9 +1,9 @@
+import { Service } from 'typedi';
 import { SystemPermissions } from '@core';
 import { BaseRepository } from '@db';
 import { getAdminLoginData } from '@utils';
-import { Service } from 'typedi';
-import { UserSystemPermission } from './../../../dataBase/entities/users/user-system-permission.entity';
 import { UserPermissionsRepository } from './user-permissions.repository';
+import { UserSystemPermission } from '../../../dataBase/entities/users/user-system-permission.entity';
 import { IUserPermissionsDto } from '../dtos/get-permissions.dto';
 
 @Service()
@@ -26,7 +26,7 @@ export class PermissionsRepository extends BaseRepository {
 
     for (const user of users) {
       const userPermissions: SystemPermissions[] = user.systemPermissions
-        ? user.systemPermissions.map(p => p.systemPermission?.id as SystemPermissions)
+        ? user.systemPermissions.map(permission => permission.systemPermission.id as SystemPermissions)
         : [];
 
       const readonlyPermissions = await this._userPermissionsRepository.getByAttributes(user);

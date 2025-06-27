@@ -3,7 +3,11 @@ import { toNumber } from '@utils';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
 import { AnnouncementListViewColumns } from '../../../dataBase/entities/announcements/vAnnouncement.entity';
-import { AnnouncementsGridPageDto, GetAnnouncementListReqDto, GetAnnouncementListResponseDto } from '../dtos/get-announcement-list.dto';
+import {
+  AnnouncementsGridPageDto,
+  GetAnnouncementListReqDto,
+  GetAnnouncementListResponseDto,
+} from '../dtos/get-announcement-list.dto';
 import { AnnouncementsListService } from '../services/announcements-list.service';
 
 export class AnnouncementsListController extends BaseController {
@@ -16,9 +20,13 @@ export class AnnouncementsListController extends BaseController {
 
   public get = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const reqDto = new GetAnnouncementListReqDto(this.getPageData(req), this.getSortData(req), this.getCurrentUserId(req));
+      const reqDto = new GetAnnouncementListReqDto(
+        this.getPageData(req),
+        this.getSortData(req),
+        this.getCurrentUserId(req),
+      );
       const result: AnnouncementsGridPageDto = await this._service.get(reqDto);
-      res.status(200).json(new GetAnnouncementListResponseDto(result));
+      res.status(StatusCode.SuccessOK).json(new GetAnnouncementListResponseDto(result));
     } catch (error) {
       next(error);
     }

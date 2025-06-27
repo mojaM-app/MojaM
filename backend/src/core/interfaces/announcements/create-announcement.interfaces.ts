@@ -1,5 +1,5 @@
-import { IAnnouncementId } from './IAnnouncement.Id';
-import { IUserId } from '../users/IUser.Id';
+import { type IAnnouncementId } from './IAnnouncement.Id';
+import { type IUserId } from '../users/IUser.Id';
 
 export interface ICreateAnnouncementItem {
   announcement: IAnnouncementId;

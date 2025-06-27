@@ -1,15 +1,16 @@
+import { Service } from 'typedi';
 import { BaseService, events, IUpdateUser, IUserDto } from '@core';
 import { userToIUser } from '@db';
 import { BadRequestException, ConflictException, errorKeys } from '@exceptions';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
-import { Service } from 'typedi';
+import { User } from '../../../dataBase/entities/users/user.entity';
 import { ActivateUserReqDto } from '../dtos/activate-user.dto';
-import { CreateUserDto, CreateUserReqDto } from '../dtos/create-user.dto';
+import { CreateUserReqDto } from '../dtos/create-user.dto';
 import { DeactivateUserReqDto } from '../dtos/deactivate-user.dto';
 import { DeleteUserReqDto } from '../dtos/delete-user.dto';
 import { GetUserReqDto, IGetUserDto } from '../dtos/get-user.dto';
 import { UnlockUserReqDto } from '../dtos/unlock-user.dto';
-import { UpdateUserDto, UpdateUserReqDto } from '../dtos/update-user.dto';
+import { UpdateUserReqDto } from '../dtos/update-user.dto';
 import { UserActivatedEvent } from '../events/user-activated-event';
 import { UserCreatedEvent } from '../events/user-created-event';
 import { UserDeactivatedEvent } from '../events/user-deactivated-event';
@@ -19,7 +20,6 @@ import { UserUnlockedEvent } from '../events/user-unlocked-event';
 import { UserUpdatedEvent } from '../events/user-updated-event';
 import { UpdateUserModel } from '../models/update-user.model';
 import { UserRepository } from '../repositories/user.repository';
-import { User } from './../../../dataBase/entities/users/user.entity';
 
 @Service()
 export class UsersService extends BaseService {
@@ -42,7 +42,7 @@ export class UsersService extends BaseService {
   }
 
   public async create(reqDto: CreateUserReqDto): Promise<IUserDto> {
-    const userData: CreateUserDto = reqDto.userData;
+    const { userData } = reqDto;
 
     const userExists = await this._userRepository.checkIfExists({ email: userData.email, phone: userData.phone });
 
@@ -66,7 +66,7 @@ export class UsersService extends BaseService {
       throw new BadRequestException(errorKeys.users.User_Does_Not_Exist, { id: reqDto.userGuid });
     }
 
-    const userData: UpdateUserDto = reqDto.userData;
+    const { userData } = reqDto;
 
     let newEmail = userData.email;
     if (newEmail !== undefined && isNullOrEmptyString(newEmail)) {
@@ -128,11 +128,11 @@ export class UsersService extends BaseService {
       });
     }
 
-    const result = await this._userRepository.delete(user!.id, reqDto);
+    const isDeleted = await this._userRepository.delete(user!.id, reqDto);
 
     this._eventDispatcher.dispatch(events.users.userDeleted, new UserDeletedEvent(user!, reqDto.currentUserId));
 
-    return result;
+    return isDeleted;
   }
 
   public async activate(reqDto: ActivateUserReqDto): Promise<boolean> {
@@ -152,7 +152,10 @@ export class UsersService extends BaseService {
 
     const activatedUser = await this._userRepository.activate(user!.id);
 
-    this._eventDispatcher.dispatch(events.users.userActivated, new UserActivatedEvent(activatedUser!, reqDto.currentUserId));
+    this._eventDispatcher.dispatch(
+      events.users.userActivated,
+      new UserActivatedEvent(activatedUser!, reqDto.currentUserId),
+    );
 
     return activatedUser!.isActive;
   }
@@ -170,7 +173,10 @@ export class UsersService extends BaseService {
 
     const deactivatedUser = await this._userRepository.deactivate(user!.id);
 
-    this._eventDispatcher.dispatch(events.users.userDeactivated, new UserDeactivatedEvent(deactivatedUser!, reqDto.currentUserId));
+    this._eventDispatcher.dispatch(
+      events.users.userDeactivated,
+      new UserDeactivatedEvent(deactivatedUser!, reqDto.currentUserId),
+    );
 
     return !deactivatedUser!.isActive;
   }
@@ -188,7 +194,10 @@ export class UsersService extends BaseService {
 
     const unlockedUser = await this._userRepository.unlock(user!.id);
 
-    this._eventDispatcher.dispatch(events.users.userUnlocked, new UserUnlockedEvent(unlockedUser!, reqDto.currentUserId));
+    this._eventDispatcher.dispatch(
+      events.users.userUnlocked,
+      new UserUnlockedEvent(unlockedUser!, reqDto.currentUserId),
+    );
 
     return !unlockedUser!.isLockedOut;
   }

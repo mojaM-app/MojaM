@@ -1,8 +1,8 @@
-import { IAddUserSystemPermission } from '@core';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, Relation } from 'typeorm';
-import { EntityDefaultFunctions } from './../../EntityDefaultFunctions';
-import { SystemPermission } from './../permissions/system-permission.entity';
+import { IAddUserSystemPermission } from '@core';
 import { User } from './user.entity';
+import { EntityDefaultFunctions } from '../../EntityDefaultFunctions';
+import { SystemPermission } from '../permissions/system-permission.entity';
 
 @Entity({
   name: 'user_to_systempermissions',
@@ -21,7 +21,10 @@ export class UserSystemPermission implements IAddUserSystemPermission {
   })
   public user: Relation<User>;
 
-  @ManyToOne(() => SystemPermission, (systemPermission: SystemPermission) => systemPermission.users, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
+  @ManyToOne(() => SystemPermission, (systemPermission: SystemPermission) => systemPermission.users, {
+    onDelete: 'RESTRICT',
+    onUpdate: 'RESTRICT',
+  })
   @JoinColumn({
     name: 'PermissionId',
     referencedColumnName: 'id',

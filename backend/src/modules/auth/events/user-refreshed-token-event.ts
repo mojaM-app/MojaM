@@ -1,4 +1,4 @@
-import { Event, IUser } from '@core';
+import { Event, type IUser } from '@core';
 
 export class UserRefreshedTokenEvent extends Event {
   public readonly user: IUser;

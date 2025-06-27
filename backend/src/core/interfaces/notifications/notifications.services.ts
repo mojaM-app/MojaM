@@ -1,5 +1,5 @@
-import { IResetPasscodeEmailSettings } from './email-settings.interface';
+import { type IResetPasscodeEmailSettings } from './email-settings.interface';
 
 export interface INotificationsService {
-  sendEmailResetPasscode(settings: IResetPasscodeEmailSettings): Promise<boolean>;
+  sendEmailResetPasscode: (settings: IResetPasscodeEmailSettings) => Promise<boolean>;
 }

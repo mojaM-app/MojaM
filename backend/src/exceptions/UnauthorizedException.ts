@@ -1,4 +1,4 @@
-import StatusCode from 'status-code-enum';
+import { StatusCode } from 'status-code-enum';
 import { errorKeys } from './error.keys';
 import { TranslatableHttpException } from './TranslatableHttpException';
 

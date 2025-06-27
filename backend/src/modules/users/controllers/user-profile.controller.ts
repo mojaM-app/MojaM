@@ -1,8 +1,13 @@
-import { BaseController, IRequestWithIdentity } from '@core';
-import { NextFunction, Response } from 'express';
+import type { NextFunction, Response } from 'express';
+import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
+import { BaseController, type IRequestWithIdentity } from '@core';
 import { GetUserProfileReqDto, GetUserProfileResponseDto } from '../dtos/get-user-profile.dto';
-import { UpdateUserProfileDto, UpdateUserProfileReqDto, UpdateUserProfileResponseDto } from '../dtos/update-user-profile.dto';
+import {
+  type UpdateUserProfileDto,
+  UpdateUserProfileReqDto,
+  UpdateUserProfileResponseDto,
+} from '../dtos/update-user-profile.dto';
 import { UserProfileService } from '../services/user-profile.service';
 
 export class UserProfileController extends BaseController {
@@ -17,7 +22,7 @@ export class UserProfileController extends BaseController {
     try {
       const reqDto = new GetUserProfileReqDto(this.getCurrentUserId(req));
       const result = await this._service.get(reqDto);
-      res.status(200).json(new GetUserProfileResponseDto(result));
+      res.status(StatusCode.SuccessOK).json(new GetUserProfileResponseDto(result));
     } catch (error) {
       next(error);
     }
@@ -28,7 +33,7 @@ export class UserProfileController extends BaseController {
       const bodyData: UpdateUserProfileDto = req.body;
       const reqDto = new UpdateUserProfileReqDto(this.getCurrentUserId(req), bodyData);
       const result = await this._service.update(reqDto);
-      res.status(200).json(new UpdateUserProfileResponseDto(result));
+      res.status(StatusCode.SuccessOK).json(new UpdateUserProfileResponseDto(result));
     } catch (error) {
       next(error);
     }

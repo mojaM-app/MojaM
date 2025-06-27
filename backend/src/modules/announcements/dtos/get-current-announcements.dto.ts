@@ -1,4 +1,4 @@
-import { events, IResponse } from '@core';
+import { events, type IResponse } from '@core';
 
 export interface ICurrentAnnouncementsItemDto {
   id: string;

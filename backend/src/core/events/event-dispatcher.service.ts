@@ -1,7 +1,7 @@
 import { EventDispatcher } from 'event-dispatch';
 
 export class EventDispatcherService {
-  private static instance: any | undefined = undefined;
+  private static instance: EventDispatcherService | undefined = undefined;
 
   private readonly _eventDispatcher: EventDispatcher;
 

@@ -1,4 +1,4 @@
-import { BaseController , IRequestWithIdentity } from '@core';
+import { BaseController, IRequestWithIdentity } from '@core';
 import { isGuid, toNumber } from '@utils';
 import { NextFunction, Response } from 'express';
 import { Container } from 'typedi';
@@ -19,7 +19,7 @@ export class PermissionsController extends BaseController {
     try {
       const reqDto = new GetPermissionsReqDto(this.getCurrentUserId(req));
       const result = await this._permissionService.get(reqDto);
-      res.status(200).json(new GetPermissionsResponseDto(result));
+      res.status(StatusCode.SuccessOK).json(new GetPermissionsResponseDto(result));
     } catch (error) {
       next(error);
     }
@@ -46,7 +46,7 @@ export class PermissionsController extends BaseController {
       const reqDto = new DeletePermissionsReqDto(userGuid, permissionId, currentUserId);
       const result = await this._permissionService.delete(reqDto);
       if (result) {
-        res.status(200).json(new DeletePermissionsResponseDto(result));
+        res.status(StatusCode.SuccessOK).json(new DeletePermissionsResponseDto(result));
       } else {
         res.status(400).json(new DeletePermissionsResponseDto(result));
       }

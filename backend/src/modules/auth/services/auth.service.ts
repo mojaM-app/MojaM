@@ -1,11 +1,11 @@
+import { decode, JwtPayload, sign, verify, VerifyErrors } from 'jsonwebtoken';
+import { StatusCode } from 'status-code-enum';
+import { Container, Service } from 'typedi';
 import { ACCESS_TOKEN_ALGORITHM, USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
 import { BaseService, events, IPermissionsService, IUserEntity, IUserService } from '@core';
 import { userToIUser } from '@db';
 import { BadRequestException, errorKeys, TranslatableHttpException } from '@exceptions';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
-import { decode, JwtPayload, sign, verify, VerifyErrors } from 'jsonwebtoken';
-import StatusCode from 'status-code-enum';
-import Container, { Service } from 'typedi';
 import { PasscodeService } from './passcode.service';
 import {
   getAccessTokenExpiration,
@@ -38,9 +38,9 @@ export class AuthService extends BaseService {
   }
 
   public async login(data: LoginDto): Promise<ILoginResult> {
-    const users: IUserEntity[] = await this._userService.findManyByLogin(data?.email, data?.phone);
+    const users: IUserEntity[] = await this._userService.findManyByLogin(data.email, data.phone);
 
-    if (users?.length !== 1) {
+    if (users.length !== 1) {
       throw new BadRequestException(errorKeys.login.Invalid_Login_Or_Passcode);
     }
 
@@ -65,7 +65,10 @@ export class AuthService extends BaseService {
     if (isPasscodeMatching) {
       await this._userService.updateAfterLogin(user.id);
     } else {
-      const failedLoginAttempts = await this._userService.increaseFailedLoginAttempts(user.id, user.failedLoginAttempts);
+      const failedLoginAttempts = await this._userService.increaseFailedLoginAttempts(
+        user.id,
+        user.failedLoginAttempts,
+      );
 
       this._eventDispatcher.dispatch(events.users.failedLoginAttempt, new FailedLoginAttemptEvent(user));
 
@@ -93,7 +96,7 @@ export class AuthService extends BaseService {
   }
 
   public async refreshAccessToken(data: RefreshTokenDto): Promise<string | null> {
-    if (isNullOrEmptyString(data?.refreshToken)) {
+    if (isNullOrEmptyString(data.refreshToken)) {
       return null;
     }
 
@@ -123,7 +126,10 @@ export class AuthService extends BaseService {
       },
       (err: VerifyErrors | null): void => {
         if (!isNullOrUndefined(err)) {
-          throw new TranslatableHttpException(StatusCode.ClientErrorLoginTimeOut, errorKeys.login.Refresh_Token_Expired);
+          throw new TranslatableHttpException(
+            StatusCode.ClientErrorLoginTimeOut,
+            errorKeys.login.Refresh_Token_Expired,
+          );
         }
       },
     );

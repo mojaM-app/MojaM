@@ -1,5 +1,5 @@
-import { IRoutes } from '@core';
 import express from 'express';
+import { type IRoutes } from '@core';
 import { SecurityController } from '../controllers/security.controller';
 
 export class SecurityRoute implements IRoutes {

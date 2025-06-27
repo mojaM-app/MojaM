@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryColumn, Relation } from 'typeorm';
-import { EntityDefaultFunctions } from './../../EntityDefaultFunctions';
 import { User } from './user.entity';
 import { ICreateResetPasscodeToken } from '../../../core/interfaces';
+import { EntityDefaultFunctions } from '../../EntityDefaultFunctions';
 
 @Entity({
   name: 'user_reset_passcode_tokens',

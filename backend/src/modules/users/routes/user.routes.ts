@@ -1,7 +1,7 @@
-import { REGEX_PATTERNS } from '@config';
-import { IRoutes, RouteConstants } from '@core';
-import { requirePermission, setIdentity, userManagementRateLimit, validateData } from '@middlewares';
 import express from 'express';
+import { REGEX_PATTERNS } from '@config';
+import { type IRoutes, RouteConstants } from '@core';
+import { requirePermission, setIdentity, userManagementRateLimit, validateData } from '@middlewares';
 import { UserController } from '../controllers/user.controller';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
@@ -25,6 +25,7 @@ export class UserRoute implements IRoutes {
       [setIdentity, requirePermission(user => user.canEditUser())],
       this._controller.get,
     );
+
     this.router.post(
       `${UserRoute.path}`,
       [userManagementRateLimit, validateData(CreateUserDto), setIdentity, requirePermission(user => user.canAddUser())],
@@ -51,7 +52,12 @@ export class UserRoute implements IRoutes {
 
     this.router.put(
       `${UserRoute.path}/:id(${REGEX_PATTERNS.GUID})`,
-      [userManagementRateLimit, validateData(UpdateUserDto), setIdentity, requirePermission(user => user.canEditUser())],
+      [
+        userManagementRateLimit,
+        validateData(UpdateUserDto),
+        setIdentity,
+        requirePermission(user => user.canEditUser()),
+      ],
       this._controller.update,
     );
 

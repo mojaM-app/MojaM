@@ -1,5 +1,5 @@
 import { Event } from '@core';
-import { IGetUserDto } from '../dtos/get-user.dto';
+import type { IGetUserDto } from '../dtos/get-user.dto';
 
 export class UserRetrievedEvent extends Event {
   public readonly user: IGetUserDto;

@@ -1,5 +1,5 @@
-import { IUserEntity } from '../users/IUserEntity';
+import { type IUserEntity } from '../users/IUserEntity';
 
 export interface IPermissionsService {
-  getUserPermissions(user: IUserEntity | null | undefined): Promise<number[]>;
+  getUserPermissions: (user: IUserEntity | null | undefined) => Promise<number[]>;
 }

@@ -2,11 +2,11 @@ import { SystemPermissions } from '../enums/system-permissions.enum';
 
 export class Identity {
   public get userId(): number | undefined {
-    return this._user?.id;
+    return this._user.id;
   }
 
   public get userUuid(): string | undefined {
-    return this._user?.uuid;
+    return this._user.uuid;
   }
 
   private readonly _user: { id: number | undefined; uuid: string | undefined };
@@ -93,6 +93,11 @@ export class Identity {
   }
 
   protected hasAnyPermission(permissions: SystemPermissions[]): boolean {
-    return this.isAuthenticated() && this._permissions.length > 0 && permissions.length > 0 && permissions.some(s => this._permissions.includes(s));
+    return (
+      this.isAuthenticated() &&
+      this._permissions.length > 0 &&
+      permissions.length > 0 &&
+      permissions.some(permission => this._permissions.includes(permission))
+    );
   }
 }

@@ -1,8 +1,9 @@
-import { BaseController, IRequestWithIdentity } from '@core';
-import { isGuid } from '@utils';
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
+import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
-import { GetUserDetailsReqDto, GetUserDetailsResponseDto, IUserDetailsDto } from '../dtos/get-user-details.dto';
+import { BaseController, type IRequestWithIdentity } from '@core';
+import { isGuid } from '@utils';
+import { GetUserDetailsReqDto, GetUserDetailsResponseDto, type IUserDetailsDto } from '../dtos/get-user-details.dto';
 import { UsersDetailsService } from '../services/user-details.service';
 
 export class UserDetailsController extends BaseController {
@@ -17,13 +18,13 @@ export class UserDetailsController extends BaseController {
     try {
       const reqDto = new GetUserDetailsReqDto(this.getUserGuid(req), this.getCurrentUserId(req));
       const result: IUserDetailsDto | null = await this._service.get(reqDto);
-      res.status(200).json(new GetUserDetailsResponseDto(result));
+      res.status(StatusCode.SuccessOK).json(new GetUserDetailsResponseDto(result));
     } catch (error) {
       next(error);
     }
   };
 
   private getUserGuid(req: Request): string | undefined {
-    return isGuid(req.params?.id) ? req.params.id : undefined;
+    return isGuid(req.params.id) ? req.params.id : undefined;
   }
 }
