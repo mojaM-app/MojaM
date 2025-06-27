@@ -1,14 +1,14 @@
-import { SystemPermissions } from '@core';
 import { CacheContainer } from 'node-ts-cache';
 import { MemoryStorage } from 'node-ts-cache-storage-memory';
 import { Service } from 'typedi';
+import { SystemPermissions } from '@core';
 
 @Service()
 export class PermissionsCacheService {
-  private readonly cache: CacheContainer;
+  private readonly _cache: CacheContainer;
 
   constructor() {
-    this.cache = new CacheContainer(new MemoryStorage());
+    this._cache = new CacheContainer(new MemoryStorage());
   }
 
   public async readAsync(userId: number): Promise<SystemPermissions[] | undefined> {
@@ -39,7 +39,7 @@ export class PermissionsCacheService {
   }
 
   private async getDataFromCache(keyName: string): Promise<SystemPermissions[] | undefined> {
-    return await this.cache.getItem<SystemPermissions[] | undefined>(keyName);
+    return await this._cache.getItem<SystemPermissions[] | undefined>(keyName);
   }
 
   private async saveDataInCache(
@@ -47,6 +47,6 @@ export class PermissionsCacheService {
     data: SystemPermissions[] | undefined,
     options: { ttl?: number; isLazy?: boolean; isCachedForever?: boolean },
   ): Promise<void> {
-    await this.cache.setItem(keyName, data, options);
+    await this._cache.setItem(keyName, data, options);
   }
 }

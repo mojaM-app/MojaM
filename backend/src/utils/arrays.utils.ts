@@ -1,6 +1,80 @@
 import { isNullOrUndefined } from './object.utils';
 
-const objectsEqual = (x: any, y: any): boolean => {
+interface IObjectLike {
+  [key: string]: unknown;
+  constructor: unknown;
+  hasOwnProperty: (property: string) => boolean;
+}
+
+const hasOwnProperty = (obj: Record<string, unknown>, prop: string): boolean => {
+  return Object.hasOwn(obj, prop);
+};
+
+const isSpecialObjectType = (x: IObjectLike, y: IObjectLike): boolean => {
+  const specialTypes = [
+    typeof x === 'function' && typeof y === 'function',
+    x instanceof Date && y instanceof Date,
+    x instanceof RegExp && y instanceof RegExp,
+    x instanceof String && y instanceof String,
+    x instanceof Number && y instanceof Number,
+  ];
+
+  return specialTypes.some(Boolean);
+};
+
+const compareSpecialObjects = (x: IObjectLike, y: IObjectLike): boolean => {
+  // Use valueOf for proper comparison of special objects
+  if (x instanceof Date && y instanceof Date) {
+    return x.valueOf() === y.valueOf();
+  }
+  if (x instanceof Number && y instanceof Number) {
+    return x.valueOf() === y.valueOf();
+  }
+  if (x instanceof String && y instanceof String) {
+    return x.valueOf() === y.valueOf();
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-base-to-string
+  return x.toString() === y.toString();
+};
+
+const compareObjectProperties = (x: IObjectLike, y: IObjectLike): boolean => {
+  const xKeys = Object.getOwnPropertyNames(x);
+  const yKeys = Object.getOwnPropertyNames(y);
+
+  if (xKeys.length !== yKeys.length) {
+    return false;
+  }
+
+  for (const propertyKey of xKeys) {
+    const objY = y as Record<string, unknown>;
+    if (!hasOwnProperty(objY, propertyKey)) {
+      return false;
+    }
+
+    // eslint-disable-next-line security/detect-object-injection
+    const xValue = (x as Record<string, unknown>)[propertyKey];
+    // eslint-disable-next-line security/detect-object-injection
+    const yValue = objY[propertyKey];
+
+    if (xValue === yValue) {
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+
+    if (typeof xValue !== 'object') {
+      return false;
+    }
+
+    if (!objectsEqual(xValue, yValue)) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+function objectsEqual(x: unknown, y: unknown): boolean {
   if (x === y) {
     return true;
   }
@@ -9,82 +83,77 @@ const objectsEqual = (x: any, y: any): boolean => {
     return false;
   }
 
-  if (x.constructor !== y.constructor) {
+  const objX = x as IObjectLike;
+  const objY = y as IObjectLike;
+
+  if (objX.constructor !== objY.constructor) {
     return false;
   }
 
-  if (
-    (typeof x === 'function' && typeof y === 'function') ||
-    (x instanceof Date && y instanceof Date) ||
-    (x instanceof RegExp && y instanceof RegExp) ||
-    (x instanceof String && y instanceof String) ||
-    (x instanceof Number && y instanceof Number)
-  ) {
-    return x.toString() === y.toString();
+  if (isSpecialObjectType(objX, objY)) {
+    return compareSpecialObjects(objX, objY);
   }
 
-  for (const p in x) {
-    if (!x.hasOwnProperty(p)) {
-      continue;
-    }
+  return compareObjectProperties(objX, objY);
+}
 
-    if (!y.hasOwnProperty(p)) {
-      return false;
-    }
+// eslint-disable-next-line complexity -- Complex logic needed for comprehensive array comparison
+const isArraysEmpty = (arr1: unknown[] | null | undefined, arr2: unknown[] | null | undefined): boolean => {
+  const arr1Length = arr1?.length ?? 0;
+  const arr2Length = arr2?.length ?? 0;
 
-    if (x[p] === y[p]) {
-      continue;
-    }
-
-    if (typeof x[p] !== 'object') {
-      return false;
-    }
-
-    if (!objectsEqual(x[p], y[p])) {
-      return false;
-    }
-  }
-
-  for (const p in y) {
-    if (y.hasOwnProperty(p) && !x.hasOwnProperty(p)) {
-      return false;
-    }
-  }
-
-  return true;
-};
-
-export const arraysEquals = (arr1: any[] | null | undefined, arr2: any[] | null | undefined): boolean => {
-  if (
+  return (
     (isNullOrUndefined(arr1) && isNullOrUndefined(arr2)) ||
-    (isNullOrUndefined(arr1) && arr2!.length === 0) ||
-    (isNullOrUndefined(arr2) && arr1!.length === 0) ||
-    ((arr1?.length ?? 0) === 0 && arr2!.length === 0)
-  ) {
+    (isNullOrUndefined(arr1) && arr2Length === 0) ||
+    (isNullOrUndefined(arr2) && arr1Length === 0) ||
+    (arr1Length === 0 && arr2Length === 0)
+  );
+};
+
+// eslint-disable-next-line complexity -- Complex logic needed for comprehensive array comparison
+const isArraysDifferentLength = (arr1: unknown[] | null | undefined, arr2: unknown[] | null | undefined): boolean => {
+  const arr1Length = arr1?.length ?? 0;
+  const arr2Length = arr2?.length ?? 0;
+
+  return (
+    (isNullOrUndefined(arr1) && arr2Length > 0) ||
+    (isNullOrUndefined(arr2) && arr1Length > 0) ||
+    arr1Length !== arr2Length
+  );
+};
+
+const getUniqueElements = (sourceArray: unknown[], compareArray: unknown[]): unknown[] => {
+  return sourceArray.filter(obj => {
+    return !compareArray.some((obj2: unknown) => objectsEqual(obj, obj2));
+  });
+};
+
+export const arraysEquals = (arr1: unknown[] | null | undefined, arr2: unknown[] | null | undefined): boolean => {
+  if (isArraysEmpty(arr1, arr2)) {
     return true;
-  } else if ((isNullOrUndefined(arr1) && arr2!.length > 0) || (isNullOrUndefined(arr2) && arr1!.length > 0) || arr1!.length !== arr2!.length) {
+  }
+
+  if (isArraysDifferentLength(arr1, arr2)) {
     return false;
   }
 
-  const uniqueArr1 = arr1!.filter(obj => {
-    return !arr2!.some((obj2: any) => objectsEqual(obj, obj2));
-  });
+  const validArr1 = arr1 as unknown[];
+  const validArr2 = arr2 as unknown[];
 
-  const uniqueArr2 = arr2!.filter((obj: any) => {
-    return !arr1!.some(obj2 => objectsEqual(obj, obj2));
-  });
+  const uniqueArr1 = getUniqueElements(validArr1, validArr2);
+  const uniqueArr2 = getUniqueElements(validArr2, validArr1);
 
-  return arr1!.length === arr2!.length && uniqueArr1.length === 0 && uniqueArr2.length === 0;
+  return validArr1.length === validArr2.length && uniqueArr1.length === 0 && uniqueArr2.length === 0;
 };
 
-export const isArray = (array: any): boolean => {
-  if (isNullOrUndefined(array) || isNullOrUndefined(array.length)) {
+export const isArray = (array: unknown): boolean => {
+  if (isNullOrUndefined(array)) {
     return false;
   }
 
   return Array.isArray(array);
 };
 
-export const isArrayEmpty = (array: any): boolean => {
-  return isArray(array) && array.length === 0;
+export const isArrayEmpty = (array: unknown): boolean => {
+  return isArray(array) && (array as unknown[]).length === 0;
 };

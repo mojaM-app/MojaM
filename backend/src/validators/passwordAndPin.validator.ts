@@ -1,22 +1,26 @@
+import {
+  registerDecorator,
+  type ValidationDecoratorOptions,
+  type ValidationOptions,
+} from 'class-validator';
+import { Container } from 'typedi';
 import { isNullOrUndefined } from '@utils';
-import { registerDecorator, ValidationOptions } from 'class-validator';
-import Container from 'typedi';
 import { PasswordService } from '../modules/auth/services/password.service';
 import { PinService } from '../modules/auth/services/pin.service';
 
 /**
  * Check if both password and pin are valid
  */
-export const IsPasswordOrPinValid = (validationOptions?: ValidationOptions): PropertyDecorator => {
-  return function (object: any, propertyName: string): void {
+export const isPasswordOrPinValid = (validationOptions?: ValidationOptions): PropertyDecorator => {
+  return (target: Object, propertyName: string): void => {
     registerDecorator({
       name: 'isPasswordOrPinValid',
-      target: object.constructor,
+      target: target.constructor,
       propertyName,
       constraints: [],
       options: validationOptions,
       validator: {
-        validate(value: any) {
+        validate(value: unknown): boolean {
           if (isNullOrUndefined(value)) {
             return false;
           }
@@ -28,6 +32,6 @@ export const IsPasswordOrPinValid = (validationOptions?: ValidationOptions): Pro
           return isPasswordValid || isPinValid;
         },
       },
-    });
+    } satisfies ValidationDecoratorOptions);
   };
 };

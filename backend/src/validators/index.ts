@@ -1,2 +1,2 @@
-export { IsNotSetIf } from './isNotSetIf.validator';
-export { IsPasswordOrPinValid } from './passwordAndPin.validator';
+export { isNotSetIf as IsNotSetIf } from './isNotSetIf.validator';
+export { isPasswordOrPinValid as IsPasswordOrPinValid } from './passwordAndPin.validator';

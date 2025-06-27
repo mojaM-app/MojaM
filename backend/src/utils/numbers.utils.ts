@@ -1,4 +1,4 @@
-const toNumber = (value: any): number | null => {
+const toNumber = (value: unknown): number | null => {
   if (value === null || value === undefined) {
     return null;
   }
@@ -6,30 +6,29 @@ const toNumber = (value: any): number | null => {
   if (typeof value === 'number') {
     if (isFinite(value)) {
       return value + 0;
-    } else {
-      return null;
     }
+    return null;
   }
 
   if (typeof value === 'string') {
-    if ((value + '').trim().length === 0) {
+    let strValue = value.trim();
+    if (strValue.length === 0) {
       return null;
     }
 
-    value = (value + '').trim().replace(',', '.').replace(/\s/g, '');
+    strValue = strValue.replace(',', '.').replace(/\s/gu, '');
 
-    // eslint-disable-next-line eqeqeq
-    return value == value * 1 ? toNumber(value * 1) : null;
+    return toNumber(Number(strValue));
   }
 
   return null;
 };
 
-const isNumber = (value: any): boolean => {
+const isNumber = (value: unknown): boolean => {
   return toNumber(value) !== null;
 };
 
-const isPositiveNumber = (value: any): boolean => {
+const isPositiveNumber = (value: unknown): boolean => {
   return (toNumber(value) ?? 0) > 0;
 };
 

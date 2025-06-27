@@ -2,7 +2,7 @@ import { isUUID } from 'class-validator';
 import { isNullOrUndefined } from './object.utils';
 import { isEmptyString } from './strings.utils';
 
-const isGuid = (value: any): boolean => {
+const isGuid = (value: unknown): boolean => {
   if (isNullOrUndefined(value) || isEmptyString(value)) {
     return false;
   }

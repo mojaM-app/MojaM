@@ -10,7 +10,7 @@ const getFullUrl = (req: any): string => {
     protocol: req.protocol,
     host: req.get('host'),
     pathname,
-    search: query ? `?${query}` : undefined,
+    search: query?.length > 0 ? `?${query}` : undefined,
   });
 };
 

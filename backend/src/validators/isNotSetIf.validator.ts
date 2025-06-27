@@ -1,19 +1,27 @@
+import {
+  registerDecorator,
+  type ValidationArguments,
+  type ValidationDecoratorOptions,
+  type ValidationOptions,
+} from 'class-validator';
 import { isNullOrUndefined } from '@utils';
-import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
 
 /**
  * Check if property is not set if related property is set
  */
-export function IsNotSetIf(property: string, validationOptions?: ValidationOptions): PropertyDecorator {
-  return function (object: any, propertyName: string): void {
+export const isNotSetIf = (
+  property: string,
+  validationOptions?: ValidationOptions,
+): PropertyDecorator => {
+  return (target: Object, propertyName: string): void => {
     registerDecorator({
       name: 'isNotSetIf',
-      target: object.constructor,
+      target: target.constructor,
       propertyName,
       constraints: [property],
       options: validationOptions,
       validator: {
-        validate(value: any, args: ValidationArguments) {
+        validate(value: unknown, args: ValidationArguments): boolean {
           const [relatedPropertyName] = args.constraints;
           const relatedValue = (args.object as any)[relatedPropertyName];
           if (isNullOrUndefined(relatedValue)) {
@@ -23,6 +31,6 @@ export function IsNotSetIf(property: string, validationOptions?: ValidationOptio
           return isNullOrUndefined(value);
         },
       },
-    });
+    } satisfies ValidationDecoratorOptions);
   };
-}
+};

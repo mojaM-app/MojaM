@@ -1,4 +1,4 @@
-const isDate = (date: any): boolean => {
+const isDate = (date: unknown): boolean => {
   return date !== null && date !== undefined && date instanceof Date && !isNaN(date.getTime());
 };
 
