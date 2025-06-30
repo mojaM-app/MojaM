@@ -3,7 +3,6 @@ import { BaseRepository } from '@db';
 import { getAdminLoginData } from '@utils';
 import { Service } from 'typedi';
 import { UserPermissionsRepository } from './user-permissions.repository';
-import { UserSystemPermission } from '../../../dataBase/entities/users/user-system-permission.entity';
 import { IUserPermissionsDto } from '../dtos/get-permissions.dto';
 
 @Service()
@@ -17,7 +16,7 @@ export class PermissionsRepository extends BaseRepository {
   public async get(): Promise<IUserPermissionsDto[]> {
     const users = await this._dbContext.users
       .createQueryBuilder('user')
-      .leftJoinAndSelect(UserSystemPermission, 'permissions', 'permissions.UserId = user.Id')
+      .leftJoinAndSelect('user.systemPermissions', 'permissions')
       .leftJoinAndSelect('permissions.systemPermission', 'systemPermission')
       .where('user.uuid != :adminUuid', { adminUuid: this._adminUserUuid })
       .getMany();

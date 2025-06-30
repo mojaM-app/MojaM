@@ -77,8 +77,12 @@ describe('GET /permissions', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await testHelpers.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies ILoginModel))
-        ?.accessToken;
+      const newUserAccessToken = (
+        await testHelpers.loginAs(app!, {
+          email: requestData.email,
+          passcode: requestData.passcode,
+        } satisfies ILoginModel)
+      )?.accessToken;
 
       const getPermissionsResponse = await request(app!.getServer())
         .get(PermissionsRoute.path)
@@ -140,14 +144,21 @@ describe('GET /permissions', () => {
           const value = permission as number;
           if (value !== SystemPermissions.AddPermission && value !== SystemPermissions.DeletePermission) {
             const path = PermissionsRoute.path + '/' + user.id + '/' + permission.toString();
-            const addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+            const addPermissionResponse = await request(app!.getServer())
+              .post(path)
+              .send()
+              .set('Authorization', `Bearer ${adminAccessToken}`);
             expect(addPermissionResponse.statusCode).toBe(201);
           }
         }
       });
 
-      const newUserAccessToken = (await testHelpers.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies ILoginModel))
-        ?.accessToken;
+      const newUserAccessToken = (
+        await testHelpers.loginAs(app!, {
+          email: requestData.email,
+          passcode: requestData.passcode,
+        } satisfies ILoginModel)
+      )?.accessToken;
 
       const getPermissionsResponse = await request(app!.getServer())
         .get(PermissionsRoute.path)
@@ -207,11 +218,18 @@ describe('GET /permissions', () => {
       expect(activateNewUserResponse.statusCode).toBe(200);
 
       const path = PermissionsRoute.path + '/' + user.id + '/' + SystemPermissions.AddPermission.toString();
-      const addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      const addPermissionResponse = await request(app!.getServer())
+        .post(path)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(addPermissionResponse.statusCode).toBe(201);
 
-      const newUserAccessToken = (await testHelpers.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies ILoginModel))
-        ?.accessToken;
+      const newUserAccessToken = (
+        await testHelpers.loginAs(app!, {
+          email: requestData.email,
+          passcode: requestData.passcode,
+        } satisfies ILoginModel)
+      )?.accessToken;
 
       const getPermissionsResponse = await request(app!.getServer())
         .get(PermissionsRoute.path)
@@ -224,6 +242,9 @@ describe('GET /permissions', () => {
       const { data: getPermissionsResult, message: getPermissionsMessage }: GetPermissionsResponseDto = body;
       expect(Array.isArray(getPermissionsResult)).toBe(true);
       expect(getPermissionsMessage).toBe(events.permissions.permissionsRetrieved);
+
+      const userWithPermissions = getPermissionsResult.find((item: any) => item.id === user.id);
+      expect(userWithPermissions?.permissions).toContain(SystemPermissions.AddPermission.toString());
 
       const deleteUserResponse = await request(app!.getServer())
         .delete(RouteConstants.USER_PATH + '/' + user.id)
@@ -274,11 +295,18 @@ describe('GET /permissions', () => {
       expect(activateNewUserResponse.statusCode).toBe(200);
 
       const path = PermissionsRoute.path + '/' + user.id + '/' + SystemPermissions.DeletePermission.toString();
-      const addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
+      const addPermissionResponse = await request(app!.getServer())
+        .post(path)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(addPermissionResponse.statusCode).toBe(201);
 
-      const newUserAccessToken = (await testHelpers.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies ILoginModel))
-        ?.accessToken;
+      const newUserAccessToken = (
+        await testHelpers.loginAs(app!, {
+          email: requestData.email,
+          passcode: requestData.passcode,
+        } satisfies ILoginModel)
+      )?.accessToken;
 
       const getPermissionsResponse = await request(app!.getServer())
         .get(PermissionsRoute.path)
@@ -327,7 +355,9 @@ describe('GET /permissions', () => {
     it('when service throws an error', async () => {
       const permissionsService = Container.get(PermissionsService);
       const mockGet = jest.spyOn(permissionsService, 'get').mockRejectedValue(new Error('Service error'));
-      const response = await request(app!.getServer()).get(PermissionsRoute.path).set('Authorization', `Bearer ${adminAccessToken}`);
+      const response = await request(app!.getServer())
+        .get(PermissionsRoute.path)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(response.statusCode).toBe(500);
       expect(mockGet).toHaveBeenCalled();
     });
