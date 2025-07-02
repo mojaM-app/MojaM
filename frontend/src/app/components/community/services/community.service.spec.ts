@@ -9,7 +9,7 @@ describe('CommunityService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [...COMMON_TEST_IMPORTS],
-      providers: [...COMMON_TEST_PROVIDERS]
+      providers: [...COMMON_TEST_PROVIDERS],
     });
     service = TestBed.inject(CommunityService);
   });
