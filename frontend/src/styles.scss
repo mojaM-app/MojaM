@@ -358,12 +358,13 @@ body {
   }
 }
 
-@import url('./app/components/calendar/calendar.style.scss');
-@import url('./app/components/announcements/announcements.style.scss');
-@import url('./app/components/static/wysiwyg-editor/wysiwyg-editor.style.scss');
-@import url('./app/components/static/grid/grid.style.scss');
-@import url('./app/components/management/management.style.scss');
-@import url('./styles/_font-size.scss');
+@import './app/components/calendar/calendar.style.scss';
+@import './app/components/announcements/announcements.style.scss';
+@import './app/components/static/wysiwyg-editor/wysiwyg-editor.style.scss';
+@import './app/components/static/grid/grid.style.scss';
+@import './app/components/management/management.style.scss';
+@import './styles/_font-size.scss';
+@import './styles/_colors.scss';
 
 .swipe-animation-container {
   position: absolute;
