@@ -25,6 +25,9 @@
       "ES2022",
       "dom"
     ],
+    "types": [
+      "node"
+    ],
     "paths": {
       "cldr": [
         "node_modules/cldrjs/dist/cldr"
