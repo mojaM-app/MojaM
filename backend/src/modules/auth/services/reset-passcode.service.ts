@@ -1,16 +1,26 @@
-import { BaseService, events, INotificationsService, IResetPasscodeEmailSettings, IUserEntity, IUserService, LinkHelper } from '@core';
+import { Container, Service } from 'typedi';
+import {
+  BaseService,
+  events,
+  INotificationsService,
+  IResetPasscodeEmailSettings,
+  IUserEntity,
+  IUserService,
+  LinkHelper,
+} from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
-import Container, { Service } from 'typedi';
-import { CheckResetPasscodeTokenReqDto, ICheckResetPasscodeTokenResultDto } from '../dtos/check-reset-passcode-token.dto';
+import { CryptoService } from './crypto.service';
+import { PasscodeService } from './passcode.service';
+import {
+  CheckResetPasscodeTokenReqDto,
+  ICheckResetPasscodeTokenResultDto,
+} from '../dtos/check-reset-passcode-token.dto';
 import { AccountTryingToLogInDto } from '../dtos/get-account-before-log-in.dto';
 import { IResetPasscodeResultDto, ResetPasscodeReqDto } from '../dtos/reset-passcode.dto';
 import { UserPasscodeChangedEvent } from '../events/user-passcode-changed-event';
 import { getAuthenticationType } from '../helpers/auth.helper';
 import { ResetPasscodeTokensRepository } from '../repositories/reset-passcode-tokens.repository';
-import { User } from './../../../dataBase/entities/users/user.entity';
-import { CryptoService } from './crypto.service';
-import { PasscodeService } from './passcode.service';
 
 @Service()
 export class ResetPasscodeService extends BaseService {
@@ -28,15 +38,19 @@ export class ResetPasscodeService extends BaseService {
   }
 
   public async requestResetPasscode(data: AccountTryingToLogInDto): Promise<boolean> {
-    const users: User[] = (await this._userService.findManyByLogin(data?.email, data?.phone)) as any;
+    const users: IUserEntity[] = await this._userService.findManyByLogin(data.email, data.phone);
 
-    if ((users?.length ?? 0) !== 1) {
+    if (users.length !== 1) {
       return true;
     }
 
-    const user = users[0];
+    const [user] = users;
     const authType = getAuthenticationType(user);
-    if (isNullOrEmptyString(user.passcode) || authType === undefined || !(await this._resetPasscodeTokensRepository.isLastTokenExpired(user.id))) {
+    if (
+      isNullOrEmptyString(user.passcode) ||
+      authType === undefined ||
+      !(await this._resetPasscodeTokensRepository.isLastTokenExpired(user.id))
+    ) {
       return true;
     }
 
@@ -46,13 +60,15 @@ export class ResetPasscodeService extends BaseService {
     const resetPasscodeToken = await this._resetPasscodeTokensRepository.createToken(user.id, token);
 
     return await this._notificationsService.sendEmailResetPasscode({
-      user: user as any,
-      authType: authType as any,
+      user,
+      authType,
       link: LinkHelper.resetPasscodeLink(user.uuid, resetPasscodeToken.token),
     } satisfies IResetPasscodeEmailSettings);
   }
 
-  public async checkResetPasscodeToken(data: CheckResetPasscodeTokenReqDto): Promise<ICheckResetPasscodeTokenResultDto> {
+  public async checkResetPasscodeToken(
+    data: CheckResetPasscodeTokenReqDto,
+  ): Promise<ICheckResetPasscodeTokenResultDto> {
     const userId = await this._userService.getIdByUuid(data.userGuid);
 
     if (isNullOrUndefined(userId)) {
@@ -63,7 +79,11 @@ export class ResetPasscodeService extends BaseService {
 
     const token = await this._resetPasscodeTokensRepository.getLastToken(userId!);
 
-    if (isNullOrUndefined(token) || this._resetPasscodeTokensRepository.isTokenExpired(token) || token!.token !== data.token) {
+    if (
+      isNullOrUndefined(token) ||
+      this._resetPasscodeTokensRepository.isTokenExpired(token) ||
+      token!.token !== data.token
+    ) {
       return {
         isValid: false,
       } satisfies ICheckResetPasscodeTokenResultDto;
@@ -95,7 +115,11 @@ export class ResetPasscodeService extends BaseService {
 
     const token = await this._resetPasscodeTokensRepository.getLastToken(user!.id);
 
-    if (isNullOrUndefined(token) || this._resetPasscodeTokensRepository.isTokenExpired(token) || token!.token !== data.model!.token) {
+    if (
+      isNullOrUndefined(token) ||
+      this._resetPasscodeTokensRepository.isTokenExpired(token) ||
+      token!.token !== data.model!.token
+    ) {
       throw new BadRequestException(errorKeys.login.Invalid_Reset_Passcode_Token);
     }
 

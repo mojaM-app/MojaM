@@ -6,5 +6,8 @@ export class NewsModule implements IModule {
     return [new NewsRoutes()];
   }
 
-  public register(): void {}
+  public register(): void {
+    // This module does not require any specific registration logic.
+    // If any services or repositories need to be registered, they can be added here.
+  }
 }

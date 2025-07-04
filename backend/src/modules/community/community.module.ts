@@ -6,5 +6,8 @@ export class CommunityModule implements IModule {
     return [new CommunityRoute()];
   }
 
-  public register(): void {}
+  public register(): void {
+    // This module does not require any specific registration logic.
+    // If any services or repositories need to be registered, they can be added here.
+  }
 }

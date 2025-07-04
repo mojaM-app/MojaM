@@ -1,5 +1,11 @@
+import compression from 'compression';
+import cookieParser from 'cookie-parser';
+import { default as express, type Request, type Response } from 'express';
+import hpp from 'hpp';
+import morgan from 'morgan';
+import { StatusCode } from 'status-code-enum';
 import { BASE_PATH, LOG_FORMAT, NODE_ENV, PORT } from '@config';
-import { IRoutes, logger, stream } from '@core';
+import { type IRoutes, logger, stream } from '@core';
 import { DbConnectionManager } from '@db';
 import { errorKeys } from '@exceptions';
 import {
@@ -10,14 +16,8 @@ import {
   securityHeaders,
   securityLoggingMiddleware,
 } from '@middlewares';
-import { getFullUrl } from '@utils';
-import compression from 'compression';
-import cookieParser from 'cookie-parser';
-import { default as express } from 'express';
-import hpp from 'hpp';
-import morgan from 'morgan';
+import { getFullUrl, isNullOrUndefined } from '@utils';
 import 'reflect-metadata';
-import { StatusCode } from 'status-code-enum';
 
 export class App {
   public app: express.Application;
@@ -80,33 +80,25 @@ export class App {
     // Configure trust proxy settings
     // This is essential for proper IP detection when behind a reverse proxy (nginx, load balancer, etc.)
 
-    const trustProxyEnv = process.env.TRUST_PROXY;
-
-    if (trustProxyEnv !== undefined) {
-      // Use explicit environment variable value
-      if (trustProxyEnv === 'true') {
-        this.app.set('trust proxy', true);
-        logger.info('Trust proxy enabled: true (all proxies trusted)');
-      } else if (trustProxyEnv === 'false') {
-        this.app.set('trust proxy', false);
-        logger.info('Trust proxy disabled: false');
-      } else {
-        // Treat as specific proxy configuration (IP addresses, hop count, etc.)
-        this.app.set('trust proxy', trustProxyEnv);
-        logger.info(`Trust proxy configured with custom value: ${trustProxyEnv}`);
-      }
-    } else {
-      // Default behavior based on environment
-      const currentEnv = process.env.NODE_ENV ?? 'development';
-      if (currentEnv === 'production') {
-        // In production, enable trust proxy by default as it's likely behind a reverse proxy
-        this.app.set('trust proxy', true);
+    const trustProxyEnv = process.env.TRUST_PROXY?.trim().toLowerCase();
+    const trustProxyName = 'trust proxy';
+    if (isNullOrUndefined(trustProxyEnv)) {
+      if (this.env === 'production') {
+        this.app.set(trustProxyName, true);
         logger.info('Trust proxy enabled by default in production environment');
       } else {
-        // In development, disable trust proxy by default
-        this.app.set('trust proxy', false);
+        this.app.set(trustProxyName, false);
         logger.info('Trust proxy disabled by default in development environment');
       }
+    } else if (trustProxyEnv === 'true') {
+      this.app.set(trustProxyName, true);
+      logger.info('Trust proxy enabled: true (all proxies trusted)');
+    } else if (trustProxyEnv === 'false') {
+      this.app.set(trustProxyName, false);
+      logger.info('Trust proxy disabled: false');
+    } else {
+      this.app.set(trustProxyName, trustProxyEnv);
+      logger.info(`Trust proxy configured with custom value: ${trustProxyEnv}`);
     }
   }
 
@@ -115,7 +107,7 @@ export class App {
       this.setRout(route);
     });
 
-    this.app.use(function (req, res) {
+    this.app.use((req: Request, res: Response) => {
       const url = getFullUrl(req);
       res.status(StatusCode.ClientErrorNotFound).json({ message: errorKeys.general.Resource_Does_Not_Exist, url });
     });
@@ -131,7 +123,6 @@ export class App {
   }
 
   private async initializeDatabase(): Promise<void> {
-    // establish database connection
     logger.info('=== establishing database connection ===');
 
     const connection = DbConnectionManager.getConnection();
@@ -141,7 +132,7 @@ export class App {
       logger.info('Database connection established successfully!');
     });
 
-    connection.on('connection-failed', (error: any) => {
+    connection.on('connection-failed', (error: unknown) => {
       logger.error('Database connection failed:', error);
     });
 

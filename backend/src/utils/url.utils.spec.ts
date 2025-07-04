@@ -11,7 +11,7 @@ describe('URL Utils tests', () => {
       };
 
       // Act
-      const result = getFullUrl(mockRequest);
+      const result = getFullUrl(mockRequest as any); // Cast to any to avoid type issues in the mock
 
       // Assert
       expect(result).toBe('https://example.com/api/users?page=1');
@@ -27,7 +27,7 @@ describe('URL Utils tests', () => {
       };
 
       // Act
-      const result = getFullUrl(mockRequest);
+      const result = getFullUrl(mockRequest as any); // Cast to any to avoid type issues in the mock
 
       // Assert
       expect(result).toBe('http://localhost:3000/api/users');
@@ -43,7 +43,7 @@ describe('URL Utils tests', () => {
       };
 
       // Act
-      const result = getFullUrl(mockRequest);
+      const result = getFullUrl(mockRequest as any); // Cast to any to avoid type issues in the mock
 
       // Assert
       expect(result).toBe('https://api.example.com/search?query=test&page=2&limit=10');
@@ -59,7 +59,7 @@ describe('URL Utils tests', () => {
       };
 
       // Act
-      const result = getFullUrl(mockRequest);
+      const result = getFullUrl(mockRequest as any); // Cast to any to avoid type issues in the mock
 
       // Assert
       expect(result).toBe('https://example.org/');
