@@ -1,3 +1,12 @@
+/* eslint-disable security/detect-non-literal-fs-filename */
+import { PathOrFileDescriptor, readFileSync } from 'fs';
+import { compile } from 'handlebars';
+import { default as nodemailer } from 'nodemailer';
+import Mail from 'nodemailer/lib/mailer';
+import SMTPConnection from 'nodemailer/lib/smtp-connection';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import { join } from 'path';
+import { Service } from 'typedi';
 import {
   NOTIFICATIONS_EMAIL,
   SMTP_SERVICE_HOST,
@@ -9,24 +18,22 @@ import {
   TPL_VAR_RESET_PIN_TITLE,
   TPL_VAR_WELCOME_EMAIL_TITLE,
 } from '@config';
-import { AuthenticationTypes, IResetPasscodeEmailSettings, IUnlockAccountEmailSettings, IWelcomeEmailSettings, logger } from '@core';
+import {
+  AuthenticationTypes,
+  IResetPasscodeEmailSettings,
+  IUnlockAccountEmailSettings,
+  IWelcomeEmailSettings,
+  logger,
+} from '@core';
 import { toNumber } from '@utils';
-import { readFileSync } from 'fs';
-import { compile } from 'handlebars';
-import nodemailer from 'nodemailer';
-import Mail from 'nodemailer/lib/mailer';
-import SMTPConnection from 'nodemailer/lib/smtp-connection';
-import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { join } from 'path';
-import { Service } from 'typedi';
 import { TemplateVariablesHelper } from './template-variables.helper';
 
 @Service()
 export class EmailService {
-  private readonly language: string = 'pl';
+  private readonly _language: string = 'pl';
 
   public async sendWelcomeEmail(settings: IWelcomeEmailSettings): Promise<boolean> {
-    const templatePath = join(__dirname, `./../email.templates/welcomeEmail.${this.language}.handlebars`);
+    const templatePath = join(__dirname, `./../email.templates/welcomeEmail.${this._language}.handlebars`);
 
     const templateVariables = {
       ...TemplateVariablesHelper.get(),
@@ -43,11 +50,11 @@ export class EmailService {
     let title: string;
     switch (settings.authType) {
       case AuthenticationTypes.Password:
-        templatePath = join(__dirname, `./../email.templates/requestResetPassword.${this.language}.handlebars`);
+        templatePath = join(__dirname, `./../email.templates/requestResetPassword.${this._language}.handlebars`);
         title = TPL_VAR_RESET_PASSWORD_TITLE!;
         break;
       case AuthenticationTypes.Pin:
-        templatePath = join(__dirname, `./../email.templates/requestResetPin.${this.language}.handlebars`);
+        templatePath = join(__dirname, `./../email.templates/requestResetPin.${this._language}.handlebars`);
         title = TPL_VAR_RESET_PIN_TITLE!;
         break;
       default:
@@ -65,20 +72,27 @@ export class EmailService {
   }
 
   public async sendUnlockAccountEmail(settings: IUnlockAccountEmailSettings): Promise<boolean> {
-    const templatePath = join(__dirname, `./../email.templates/unlockAccount.${this.language}.handlebars`);
+    const templatePath = join(__dirname, `./../email.templates/unlockAccount.${this._language}.handlebars`);
 
     const templateVariables = {
       ...TemplateVariablesHelper.get(),
       title: TPL_VAR_ACCOUNT_BLOCKED_EMAIL_TITLE,
       link: settings.link,
       name: settings.user.getFirstLastNameOrEmail(),
-      lockDateTime: `${settings.lockDateTime.toLocaleDateString(this.language)} ${settings.lockDateTime.toLocaleTimeString(this.language)}`,
+      lockDateTime:
+        `${settings.lockDateTime.toLocaleDateString(this._language)}` +
+        ' ' +
+        `${settings.lockDateTime.toLocaleTimeString(this._language)}`,
     };
 
     return await this.fillTemplateAndSendEmail(settings.user.email, templatePath, templateVariables);
   }
 
-  private async fillTemplateAndSendEmail(recipient: string, templatePath: string, templateVariables: Record<string, any>): Promise<boolean> {
+  private async fillTemplateAndSendEmail(
+    recipient: string,
+    templatePath: PathOrFileDescriptor,
+    templateVariables: Record<string, any>,
+  ): Promise<boolean> {
     return await new Promise((resolve, _reject) => {
       try {
         const source = readFileSync(templatePath, 'utf8');
@@ -107,7 +121,9 @@ export class EmailService {
   private sendMail(mailOptions: Mail.Options, callback: (success: boolean) => void): void {
     const transporter = this.createTransporter();
 
-    transporter.sendMail(mailOptions, (error, info) => {
+    transporter.sendMail(mailOptions, (error: Error | null, info: SMTPTransport.SentMessageInfo) => {
+      logger.debug('Email sent', info ?? 'No info provided');
+
       if (error !== null && error !== undefined) {
         logger.error('Error sending email', error);
         transporter.close();
@@ -115,10 +131,6 @@ export class EmailService {
       } else {
         transporter.close();
         callback(true);
-      }
-
-      if (info !== null && info !== undefined) {
-        logger.debug('Email sent', info);
       }
     });
   }

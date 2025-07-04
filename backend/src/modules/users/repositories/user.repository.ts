@@ -1,3 +1,5 @@
+import { Container, Service } from 'typedi';
+import { Not } from 'typeorm';
 import {
   ICreateUser,
   ICryptoService,
@@ -8,9 +10,7 @@ import {
 } from '@core';
 import { relatedDataNames } from '@db';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { getDateTimeNow, isNullOrEmptyString } from '@utils';
-import { Container, Service } from 'typedi';
-import { Not } from 'typeorm';
+import { getDateTimeNow, isNullOrEmptyString, toNumber } from '@utils';
 import { BaseUserRepository } from './base.user.repository';
 import { User } from '../../../dataBase/entities/users/user.entity';
 import { CreateUserReqDto } from '../dtos/create-user.dto';
@@ -138,7 +138,7 @@ export class UserRepository extends BaseUserRepository {
     return relatedDataConnectedWithUser
       .map((x: { count: string; entities: string }) => {
         return {
-          count: parseInt(x.count),
+          count: toNumber(x.count),
           entities: x.entities,
         };
       })

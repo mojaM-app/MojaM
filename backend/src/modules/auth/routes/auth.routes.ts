@@ -1,7 +1,7 @@
 import { REGEX_PATTERNS } from '@config';
 import { IRoutes, RouteConstants } from '@core';
 import { authRateLimit, passwordResetRateLimit, validateData } from '@middlewares';
-import express from 'express';
+import { default as express } from 'express';
 import { AuthController } from '../controllers/auth.controller';
 import { ActivateAccountDto } from '../dtos/activate-account.dto';
 import { AccountTryingToLogInDto } from '../dtos/get-account-before-log-in.dto';
@@ -50,7 +50,11 @@ export class AuthRoute implements IRoutes {
       [passwordResetRateLimit, validateData(ResetPasscodeDto)],
       this._authController.resetPasscode,
     );
-    this.router.post(AuthRoute.refreshTokenPath, [authRateLimit, validateData(RefreshTokenDto)], this._authController.refreshAccessToken);
+    this.router.post(
+      AuthRoute.refreshTokenPath,
+      [authRateLimit, validateData(RefreshTokenDto)],
+      this._authController.refreshAccessToken,
+    );
     this.router.post(
       AuthRoute.getAccountToActivatePath + `/:userId(${REGEX_PATTERNS.GUID})`,
       [authRateLimit],
@@ -61,7 +65,11 @@ export class AuthRoute implements IRoutes {
       [authRateLimit, validateData(ActivateAccountDto)],
       this._authController.activateAccount,
     );
-    this.router.post(AuthRoute.unlockAccountPath + `/:userId(${REGEX_PATTERNS.GUID})`, [authRateLimit], this._authController.unlockAccount);
+    this.router.post(
+      AuthRoute.unlockAccountPath + `/:userId(${REGEX_PATTERNS.GUID})`,
+      [authRateLimit],
+      this._authController.unlockAccount,
+    );
     // this.router.post(`${AuthRoute.path}logout`, verifyToken, this._authController.logOut);
   }
 }

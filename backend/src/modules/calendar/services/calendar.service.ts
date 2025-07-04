@@ -1,5 +1,5 @@
-import { BaseService, events } from '@core';
 import { Service } from 'typedi';
+import { BaseService, events } from '@core';
 import { GoogleCalendarService } from './google-calendar.service';
 import { GetCalendarEventsReqDto, ICalendarEventDto } from '../dtos/calendar.dto';
 import { CalendarEventsRetrievedEvent } from '../events/calendar-events-retrieved-event';

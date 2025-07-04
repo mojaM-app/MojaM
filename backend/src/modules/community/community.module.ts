@@ -1,4 +1,4 @@
-import { IModule, IRoutes } from '@core';
+import { type IModule, type IRoutes } from '@core';
 import { CommunityRoute } from './routes/community.routes';
 
 export class CommunityModule implements IModule {

@@ -1,4 +1,4 @@
-import express from 'express';
+import { default as express } from 'express';
 import { REGEX_PATTERNS } from '@config';
 import { type IRoutes, RouteConstants } from '@core';
 import { requirePermission, setIdentity } from '@middlewares';

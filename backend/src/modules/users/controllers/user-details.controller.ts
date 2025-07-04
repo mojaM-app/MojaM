@@ -1,8 +1,8 @@
-import { BaseController, type IRequestWithIdentity } from '@core';
-import { isGuid } from '@utils';
 import type { NextFunction, Request, Response } from 'express';
 import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
+import { BaseController, type IRequestWithIdentity } from '@core';
+import { isGuid } from '@utils';
 import { GetUserDetailsReqDto, GetUserDetailsResponseDto, type IUserDetailsDto } from '../dtos/get-user-details.dto';
 import { UsersDetailsService } from '../services/user-details.service';
 

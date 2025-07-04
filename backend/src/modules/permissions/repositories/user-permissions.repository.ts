@@ -1,7 +1,7 @@
+import { Container, Service } from 'typedi';
 import { IAddUserSystemPermission, IUserEntity, IUserService, SystemPermissions } from '@core';
 import { BaseRepository } from '@db';
 import { getDateTimeNow, isArrayEmpty, isEnumValue, isNullOrUndefined, isPositiveNumber } from '@utils';
-import Container, { Service } from 'typedi';
 import { AddPermissionReqDto } from '../dtos/add-permission.dto';
 import { DeletePermissionsReqDto } from '../dtos/delete-permissions.dto';
 import { PermissionsCacheService } from '../services/permissions-cache.service';
@@ -20,7 +20,7 @@ export class UserPermissionsRepository extends BaseRepository {
       return [];
     }
 
-    const permissionsByUserAttr = await this.getByAttributes(user);
+    const permissionsByUserAttr = this.getByAttributes(user);
 
     const cachedPermissions = await this._permissionsCacheService.readAsync(user!.id);
     if (!isNullOrUndefined(cachedPermissions)) {
@@ -33,7 +33,9 @@ export class UserPermissionsRepository extends BaseRepository {
       .where('u_to_p.UserId = :userId', { userId: user!.id })
       .getMany();
 
-    const permissions = isArrayEmpty(systemPermissions) ? [] : systemPermissions.map(m => m.systemPermission.id);
+    const permissions = isArrayEmpty(systemPermissions)
+      ? []
+      : systemPermissions.map(permission => permission.systemPermission.id);
 
     const result = Array.from(new Set([...permissions, ...permissionsByUserAttr]));
 
@@ -74,11 +76,16 @@ export class UserPermissionsRepository extends BaseRepository {
   public async delete(reqDto: DeletePermissionsReqDto): Promise<boolean> {
     const userId = await this._userService.getIdByUuid(reqDto.userGuid);
 
-    if (!isPositiveNumber(userId) || (!isNullOrUndefined(reqDto.permissionId) && !isEnumValue(SystemPermissions, reqDto.permissionId))) {
+    if (
+      !isPositiveNumber(userId) ||
+      (!isNullOrUndefined(reqDto.permissionId) && !isEnumValue(SystemPermissions, reqDto.permissionId))
+    ) {
       return false;
     }
 
-    const queryBuilder = this._dbContext.userSystemPermissions.createQueryBuilder().where('UserId = :userId', { userId });
+    const queryBuilder = this._dbContext.userSystemPermissions
+      .createQueryBuilder()
+      .where('UserId = :userId', { userId });
 
     if (isEnumValue(SystemPermissions, reqDto.permissionId)) {
       queryBuilder.andWhere('PermissionId = :permissionId', { permissionId: reqDto.permissionId });
@@ -97,7 +104,7 @@ export class UserPermissionsRepository extends BaseRepository {
     return !isNullOrUndefined(deleteResult);
   }
 
-  public async getByAttributes(user: IUserEntity | null | undefined): Promise<SystemPermissions[]> {
+  public getByAttributes(user: IUserEntity | null | undefined): SystemPermissions[] {
     if (user?.isAdmin() === true) {
       return this.getAllPermissions();
     }
@@ -106,6 +113,8 @@ export class UserPermissionsRepository extends BaseRepository {
   }
 
   private getAllPermissions(): SystemPermissions[] {
-    return (Object.values(SystemPermissions).filter(value => typeof value === 'number') as number[]).map(m => m as SystemPermissions);
+    return (Object.values(SystemPermissions).filter(value => typeof value === 'number') as number[]).map(
+      permission => permission as SystemPermissions,
+    );
   }
 }

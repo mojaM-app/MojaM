@@ -1,6 +1,6 @@
 import { IRoutes } from '@core';
 import { requirePermission, setIdentity } from '@middlewares';
-import express from 'express';
+import { default as express } from 'express';
 import { AnnouncementsListController } from '../controllers/announcements-list.controller';
 
 export class AnnouncementsListRoute implements IRoutes {

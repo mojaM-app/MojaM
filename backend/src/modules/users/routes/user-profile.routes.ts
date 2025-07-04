@@ -1,4 +1,4 @@
-import express from 'express';
+import { default as express } from 'express';
 import { type IRoutes } from '@core';
 import { requirePermission, setIdentity, userManagementRateLimit, validateData } from '@middlewares';
 import { UserProfileController } from '../controllers/user-profile.controller';

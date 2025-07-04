@@ -1,6 +1,6 @@
+import { type NextFunction, type Request, type Response } from 'express';
 import { BaseController } from '@core';
 import { cspReportHandler } from '@middlewares';
-import { type NextFunction, type Request, type Response } from 'express';
 
 export class SecurityController extends BaseController {
   constructor() {

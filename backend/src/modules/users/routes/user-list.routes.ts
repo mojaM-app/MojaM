@@ -1,4 +1,4 @@
-import express from 'express';
+import { default as express } from 'express';
 import { type IRoutes } from '@core';
 import { requirePermission, setIdentity } from '@middlewares';
 import { UserListController } from '../controllers/user-list.controller';

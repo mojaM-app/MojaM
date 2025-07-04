@@ -1,30 +1,31 @@
+import { type Credentials } from 'google-auth-library';
+import { calendar_v3 as CalendarV3, google } from 'googleapis';
+import { Service } from 'typedi';
 import { GOOGLE_API_CLIENT_ID, GOOGLE_API_CLIENT_SECRET, GOOGLE_API_REFRESH_TOKEN, GOOGLE_CALENDAR_ID } from '@config';
 import { logger } from '@core';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
-import { calendar_v3, google } from 'googleapis';
-import { Service } from 'typedi';
 import { ICalendarEventDto } from '../dtos/calendar.dto';
-import Calendar = calendar_v3.Calendar;
-import Schema$Event = calendar_v3.Schema$Event;
-import Schema$EventDateTime = calendar_v3.Schema$EventDateTime;
+import Calendar = CalendarV3.Calendar;
+import Schema$Event = CalendarV3.Schema$Event;
+import Schema$EventDateTime = CalendarV3.Schema$EventDateTime;
 
 @Service()
 export class GoogleCalendarService {
-  private readonly googleAuthClient: any | undefined;
+  private readonly _googleAuthClient: any | undefined;
 
   constructor() {
     if (isNullOrEmptyString(GOOGLE_API_CLIENT_ID) || isNullOrEmptyString(GOOGLE_API_CLIENT_SECRET)) {
-      this.googleAuthClient = undefined;
+      this._googleAuthClient = undefined;
     } else {
-      this.googleAuthClient = new google.auth.OAuth2(GOOGLE_API_CLIENT_ID, GOOGLE_API_CLIENT_SECRET);
-      this.googleAuthClient.setCredentials({
+      this._googleAuthClient = new google.auth.OAuth2(GOOGLE_API_CLIENT_ID, GOOGLE_API_CLIENT_SECRET);
+      this._googleAuthClient.setCredentials({
         refresh_token: GOOGLE_API_REFRESH_TOKEN,
-      });
+      } satisfies Credentials);
     }
   }
 
   public async getEvents(startDate: Date, endDate: Date): Promise<any[] | undefined> {
-    if (this.googleAuthClient === undefined) {
+    if (this._googleAuthClient === undefined) {
       logger.error('Google Calendar API is not configured.');
       return [];
     }
@@ -34,7 +35,7 @@ export class GoogleCalendarService {
       return [];
     }
 
-    const calendar: Calendar = google.calendar({ version: 'v3', auth: this.googleAuthClient });
+    const calendar: Calendar = google.calendar({ version: 'v3', auth: this._googleAuthClient });
     const calendarResponse = await calendar.events.list({
       calendarId: GOOGLE_CALENDAR_ID,
       timeMin: startDate.toISOString(),
@@ -43,7 +44,7 @@ export class GoogleCalendarService {
       timeMax: endDate.toISOString(),
     });
 
-    const events = calendarResponse.data?.items;
+    const events = calendarResponse.data.items;
 
     return this.processEvents(events);
   }
@@ -71,7 +72,7 @@ export class GoogleCalendarService {
   private getEndDate(date: Schema$EventDateTime | undefined): Date | undefined {
     if (!isNullOrEmptyString(date?.date)) {
       const endDate = this.getDate({
-        dateTime: date!.date + 'T00:00:00Z',
+        dateTime: `${date!.date}T00:00:00Z`,
         timeZone: 'UTC',
       } satisfies Schema$EventDateTime);
 
@@ -86,7 +87,7 @@ export class GoogleCalendarService {
   private getStartDate(date: Schema$EventDateTime | undefined): Date | undefined {
     if (!isNullOrEmptyString(date?.date)) {
       return this.getDate({
-        dateTime: date!.date + 'T00:00:00Z',
+        dateTime: `${date!.date}T00:00:00Z`,
         timeZone: 'UTC',
       } satisfies Schema$EventDateTime);
     }
@@ -111,9 +112,7 @@ export class GoogleCalendarService {
     if (value?.length === 0) {
       return new Date();
     }
-    const date = new Date(value!);
-
-    return date;
+    return new Date(value!);
   }
 
   private isAllDayEvent(start?: Schema$EventDateTime): boolean {

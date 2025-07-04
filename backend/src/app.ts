@@ -2,11 +2,18 @@ import { BASE_PATH, LOG_FORMAT, NODE_ENV, PORT } from '@config';
 import { IRoutes, logger, stream } from '@core';
 import { DbConnectionManager } from '@db';
 import { errorKeys } from '@exceptions';
-import { corsOptions, ErrorMiddleware, generalRateLimit, requestIdMiddleware, securityHeaders, securityLoggingMiddleware } from '@middlewares';
+import {
+  corsOptions,
+  ErrorMiddleware,
+  generalRateLimit,
+  requestIdMiddleware,
+  securityHeaders,
+  securityLoggingMiddleware,
+} from '@middlewares';
 import { getFullUrl } from '@utils';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
-import express from 'express';
+import { default as express } from 'express';
 import hpp from 'hpp';
 import morgan from 'morgan';
 import 'reflect-metadata';

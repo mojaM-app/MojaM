@@ -1,7 +1,7 @@
-import { events, IUnlockAccountEmailSettings, LinkHelper, logger } from '@core';
-import { UserLockedOutEvent } from '@modules/auth';
 import { EventSubscriber, On } from 'event-dispatch';
 import { Container } from 'typedi';
+import { events, IUnlockAccountEmailSettings, LinkHelper, logger } from '@core';
+import { UserLockedOutEvent } from '@modules/auth';
 import { EmailService } from '../services/email.service';
 
 @EventSubscriber()
@@ -20,6 +20,7 @@ export class UserLockedOutEventSubscriber {
         if (success) {
           logger.debug(`Unlock account email sent to '${data.user.email}'`);
         }
+        return success;
       })
       .catch((error: Error) => {
         logger.error(`Failed to send unlock account email to ${data.user.email}`, error);

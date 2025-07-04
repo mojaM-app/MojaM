@@ -1,13 +1,13 @@
+import { type ClassConstructor, plainToInstance } from 'class-transformer';
+import { validateOrReject, type ValidationError } from 'class-validator';
+import type { NextFunction, Request, Response } from 'express';
 import { BadRequestException } from '@exceptions';
-import { plainToInstance } from 'class-transformer';
-import { validateOrReject, ValidationError } from 'class-validator';
-import { NextFunction, Request, Response } from 'express';
 
 const getErrorConstraints = (error: ValidationError | null | undefined): string[] => {
   const constraints: string[] = [];
 
   if (error !== undefined && error !== null) {
-    if (error.constraints !== undefined && error.constraints !== null) {
+    if (error.constraints !== undefined) {
       constraints.push(...Object.values(error.constraints));
     }
 
@@ -22,11 +22,16 @@ const getErrorConstraints = (error: ValidationError | null | undefined): string[
   return [...new Set(constraints)];
 };
 
-export const validateData = (type: any, skipMissingProperties = false, whitelist = false, forbidNonWhitelisted = false) => {
-  return (req: Request, res: Response, next: NextFunction): void => {
+export const validateData = (
+  type: ClassConstructor<object>,
+  skipMissingProperties = false,
+  whitelist = false,
+  forbidNonWhitelisted = false,
+) => {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const dto = plainToInstance(type, req.body);
 
-    validateOrReject(dto, { skipMissingProperties, whitelist, forbidNonWhitelisted })
+    await validateOrReject(dto, { skipMissingProperties, whitelist, forbidNonWhitelisted })
       .then(() => {
         req.body = dto;
         next();
@@ -38,7 +43,7 @@ export const validateData = (type: any, skipMissingProperties = false, whitelist
   };
 };
 
-export let exportsForTesting: any;
+export let exportsForTesting: { getErrorConstraints: (error: ValidationError | null | undefined) => string[] };
 if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
   exportsForTesting = { getErrorConstraints };
 }

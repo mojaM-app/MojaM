@@ -1,4 +1,4 @@
-import { IModule, IRoutes } from '@core';
+import { type IModule, type IRoutes } from '@core';
 import { NewsRoutes } from './routes/news.routes';
 
 export class NewsModule implements IModule {

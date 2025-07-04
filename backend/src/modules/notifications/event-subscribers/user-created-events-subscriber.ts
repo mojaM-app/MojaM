@@ -1,7 +1,7 @@
+import { EventSubscriber, On } from 'event-dispatch';
+import { Container } from 'typedi';
 import { events, IWelcomeEmailSettings, LinkHelper, logger } from '@core';
 import { UserCreatedEvent } from '@modules/users';
-import { EventSubscriber, On } from 'event-dispatch';
-import Container from 'typedi';
 import { EmailService } from '../services/email.service';
 
 @EventSubscriber()
@@ -19,6 +19,7 @@ export class UserCreatedEventSubscriber {
         if (success) {
           logger.debug(`Welcome email sent to '${data.user.email}'`);
         }
+        return success;
       })
       .catch((error: Error) => {
         logger.error(`Failed to send welcome email to ${data.user.email}`, error);

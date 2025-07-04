@@ -1,8 +1,8 @@
-import { BaseController, IRequestWithIdentity } from '@core';
-import { isGuid, toNumber } from '@utils';
-import { NextFunction, Response } from 'express';
+import type { NextFunction, Response } from 'express';
 import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
+import { BaseController, type IRequestWithIdentity } from '@core';
+import { isGuid, toNumber } from '@utils';
 import { AddPermissionReqDto, AddPermissionsResponseDto } from '../dtos/add-permission.dto';
 import { DeletePermissionsReqDto, DeletePermissionsResponseDto } from '../dtos/delete-permissions.dto';
 import { GetPermissionsReqDto, GetPermissionsResponseDto } from '../dtos/get-permissions.dto';
@@ -61,8 +61,8 @@ export class PermissionsController extends BaseController {
     permissionId: number | undefined;
     currentUserId: number | undefined;
   } {
-    const userGuid = isGuid(req.params?.userId) ? req.params.userId : undefined;
-    const permissionId = toNumber(req.params?.permissionId) ?? undefined;
+    const userGuid = isGuid(req.params.userId) ? req.params.userId : undefined;
+    const permissionId = toNumber(req.params.permissionId) ?? undefined;
     const currentUserId = this.getCurrentUserId(req);
     return { userGuid, permissionId, currentUserId };
   }
