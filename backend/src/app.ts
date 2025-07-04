@@ -17,6 +17,7 @@ import { default as express } from 'express';
 import hpp from 'hpp';
 import morgan from 'morgan';
 import 'reflect-metadata';
+import { StatusCode } from 'status-code-enum';
 
 export class App {
   public app: express.Application;
@@ -54,6 +55,9 @@ export class App {
   }
 
   private initializeMiddlewares(): void {
+    // Trust proxy configuration - must be set before other middleware that depends on req.ip
+    this.configureTrustProxy();
+
     // Security middleware - order matters!
     this.app.use(requestIdMiddleware); // First - add request ID to all requests
     this.app.use(securityLoggingMiddleware); // Second - log security events with request ID
@@ -72,6 +76,40 @@ export class App {
     this.app.use(cookieParser());
   }
 
+  private configureTrustProxy(): void {
+    // Configure trust proxy settings
+    // This is essential for proper IP detection when behind a reverse proxy (nginx, load balancer, etc.)
+
+    const trustProxyEnv = process.env.TRUST_PROXY;
+
+    if (trustProxyEnv !== undefined) {
+      // Use explicit environment variable value
+      if (trustProxyEnv === 'true') {
+        this.app.set('trust proxy', true);
+        logger.info('Trust proxy enabled: true (all proxies trusted)');
+      } else if (trustProxyEnv === 'false') {
+        this.app.set('trust proxy', false);
+        logger.info('Trust proxy disabled: false');
+      } else {
+        // Treat as specific proxy configuration (IP addresses, hop count, etc.)
+        this.app.set('trust proxy', trustProxyEnv);
+        logger.info(`Trust proxy configured with custom value: ${trustProxyEnv}`);
+      }
+    } else {
+      // Default behavior based on environment
+      const currentEnv = process.env.NODE_ENV ?? 'development';
+      if (currentEnv === 'production') {
+        // In production, enable trust proxy by default as it's likely behind a reverse proxy
+        this.app.set('trust proxy', true);
+        logger.info('Trust proxy enabled by default in production environment');
+      } else {
+        // In development, disable trust proxy by default
+        this.app.set('trust proxy', false);
+        logger.info('Trust proxy disabled by default in development environment');
+      }
+    }
+  }
+
   private initializeRoutes(routes: IRoutes[]): void {
     routes.forEach(route => {
       this.setRout(route);
@@ -79,7 +117,7 @@ export class App {
 
     this.app.use(function (req, res) {
       const url = getFullUrl(req);
-      res.status(404).json({ message: errorKeys.general.Resource_Does_Not_Exist, url });
+      res.status(StatusCode.ClientErrorNotFound).json({ message: errorKeys.general.Resource_Does_Not_Exist, url });
     });
   }
 

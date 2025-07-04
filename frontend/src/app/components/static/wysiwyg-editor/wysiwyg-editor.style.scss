@@ -31,36 +31,31 @@
 
       .mat-mdc-dialog-content {
         height: calc(
-          var(--main-container-height) - var(--mat-mdc-dialog-margin) * 2 - var(
-              --mat-mdc-dialog-actions-height
-            )
+          var(--main-container-height) - var(--mat-mdc-dialog-margin) *
+            2 - var(--mat-mdc-dialog-actions-height)
         );
         max-height: calc(
-          var(--main-container-height) - var(--mat-mdc-dialog-margin) * 2 - var(
-              --mat-mdc-dialog-actions-height
-            )
+          var(--main-container-height) - var(--mat-mdc-dialog-margin) *
+            2 - var(--mat-mdc-dialog-actions-height)
         );
         width: calc(var(--main-container-width) - var(--mat-mdc-dialog-margin) * 2);
         max-width: calc(var(--main-container-width) - var(--mat-mdc-dialog-margin) * 2);
 
         app-wysiwyg-editor {
           width: calc(
-            var(--main-container-width) - var(--mat-mdc-dialog-margin) * 2 - var(
-                --mat-mdc-dialog-content-padding
-              ) * 2
+            var(--main-container-width) - var(--mat-mdc-dialog-margin) *
+              2 - var(--mat-mdc-dialog-content-padding) * 2
           );
           height: calc(
-            var(--main-container-height) - var(--mat-mdc-dialog-margin) * 2 - var(
-                --mat-mdc-dialog-content-padding
-              ) - var(--mat-mdc-dialog-actions-height)
+            var(--main-container-height) - var(--mat-mdc-dialog-margin) *
+              2 - var(--mat-mdc-dialog-content-padding) - var(--mat-mdc-dialog-actions-height)
           );
           display: block;
 
           quill-editor {
             height: calc(
-              var(--main-container-height) - var(--mat-mdc-dialog-margin) * 2 - var(
-                  --mat-mdc-dialog-content-padding
-                ) - var(--mat-mdc-dialog-actions-height)
+              var(--main-container-height) - var(--mat-mdc-dialog-margin) *
+                2 - var(--mat-mdc-dialog-content-padding) - var(--mat-mdc-dialog-actions-height)
             );
             display: grid;
             grid-template-columns: 100%;
@@ -93,36 +88,31 @@
 
       .mat-mdc-dialog-content {
         height: calc(
-          var(--main-container-height) - var(--mat-mdc-dialog-margin-y) * 2 - var(
-              --mat-mdc-dialog-actions-height
-            )
+          var(--main-container-height) - var(--mat-mdc-dialog-margin-y) *
+            2 - var(--mat-mdc-dialog-actions-height)
         );
         max-height: calc(
-          var(--main-container-height) - var(--mat-mdc-dialog-margin-y) * 2 - var(
-              --mat-mdc-dialog-actions-height
-            )
+          var(--main-container-height) - var(--mat-mdc-dialog-margin-y) *
+            2 - var(--mat-mdc-dialog-actions-height)
         );
         width: calc(var(--main-container-width) - var(--mat-mdc-dialog-margin-x) * 2);
         max-width: calc(var(--main-container-width) - var(--mat-mdc-dialog-margin-x) * 2);
 
         app-wysiwyg-editor {
           width: calc(
-            var(--main-container-width) - var(--mat-mdc-dialog-margin-x) * 2 - var(
-                --mat-mdc-dialog-content-padding
-              ) * 2
+            var(--main-container-width) - var(--mat-mdc-dialog-margin-x) *
+              2 - var(--mat-mdc-dialog-content-padding) * 2
           );
           height: calc(
-            var(--main-container-height) - var(--mat-mdc-dialog-margin-y) * 2 - var(
-                --mat-mdc-dialog-content-padding
-              ) - var(--mat-mdc-dialog-actions-height)
+            var(--main-container-height) - var(--mat-mdc-dialog-margin-y) *
+              2 - var(--mat-mdc-dialog-content-padding) - var(--mat-mdc-dialog-actions-height)
           );
           display: block;
 
           quill-editor {
             height: calc(
-              var(--main-container-height) - var(--mat-mdc-dialog-margin-y) * 2 - var(
-                  --mat-mdc-dialog-content-padding
-                ) - var(--mat-mdc-dialog-actions-height)
+              var(--main-container-height) - var(--mat-mdc-dialog-margin-y) *
+                2 - var(--mat-mdc-dialog-content-padding) - var(--mat-mdc-dialog-actions-height)
             );
             display: grid;
             grid-template-columns: 100%;
@@ -150,7 +140,7 @@
   }
 
   &.ql-blank::before {
-    color: var(--mat-app-text-color);
+    color: var(--mat-sys-on-surface);
     opacity: 0.4;
   }
 
@@ -161,14 +151,14 @@
 
 .theme-dark {
   .ql-editor.ql-blank::before {
-    color: var(--mat-app-text-color);
+    color: var(--mat-sys-on-surface);
   }
   .ql-snow .ql-stroke {
-    stroke: var(--mat-app-text-color);
+    stroke: var(--mat-sys-on-surface);
   }
   .ql-snow .ql-fill,
   .ql-snow .ql-stroke.ql-fill {
-    fill: var(--mat-app-text-color);
+    fill: var(--mat-sys-on-surface);
   }
   .ql-snow .ql-editor blockquote {
     border-left: 4px solid #ccc;
@@ -185,7 +175,7 @@
     color: #444;
   }
   .ql-snow .ql-picker-label {
-    color: var(--mat-app-text-color);
+    color: var(--mat-sys-on-surface);
   }
   .ql-snow .ql-picker-options {
     background-color: #fff;
@@ -269,7 +259,7 @@
   }
 
   &.ql-blank::before {
-    color: var(--mat-app-text-color);
+    color: var(--mat-sys-on-surface);
     opacity: 0.4;
   }
 

@@ -47,8 +47,7 @@
               "node_modules/bootstrap/dist/css/bootstrap.css",
               "@angular/material/prebuilt-themes/azure-blue.css",
               "node_modules/angular-calendar/css/angular-calendar.css",
-              "src/styles.scss",
-              "src/styles/_colors.scss"
+              "src/styles.scss"
             ],
             "scripts": [
               "node_modules/quill/dist/quill.js",

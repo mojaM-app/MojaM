@@ -51,9 +51,23 @@ export class EventPreviewModel {
 
     if ((event.location?.length ?? 0) > 0) {
       result += '<br/>' + translationService.get('Shared/Location') + ': ';
-      result += `<a href="http://maps.apple.com/?daddr=${event.location}" target="_blank">${event.location}</a>`;
+      result += `<a href="${this.getMapsAddress(event.location!)}" target="_blank">${event.location}</a>`;
     }
 
     return result;
+  }
+
+  private getMapsAddress(location: string): string {
+    //depends on device
+    // For iOS devices
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+      return `comgooglemaps://?daddr=${location}`;
+    }
+    // For Android devices
+    else if (/Android/.test(navigator.userAgent)) {
+      return `comgooglemaps://?daddr=${location}`;
+    }
+    // For other devices
+    return `http://maps.google.com/?daddr=${location}`;
   }
 }

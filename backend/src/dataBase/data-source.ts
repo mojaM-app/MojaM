@@ -2,7 +2,15 @@ import 'reflect-metadata';
 import { toNumber } from './../utils/numbers.utils';
 import { DbContext } from './dbContext';
 import { TitleCaseNamingStrategy } from './title-case-naming.strategy';
-import { DATABASE_HOST, DATABASE_MIGRATIONS_PATH, DATABASE_NAME, DATABASE_PASSWORD, DATABASE_PORT, DATABASE_USERNAME } from '../config/index';
+import {
+  DATABASE_HOST,
+  DATABASE_MIGRATIONS_PATH,
+  DATABASE_NAME,
+  DATABASE_PASSWORD,
+  DATABASE_PORT,
+  DATABASE_USERNAME,
+  NODE_ENV,
+} from '../config/index';
 import { AnnouncementItem } from './entities/announcements/announcement-item.entity';
 import { Announcement } from './entities/announcements/announcement.entity';
 import { vAnnouncement } from './entities/announcements/vAnnouncement.entity';
@@ -20,8 +28,17 @@ export const AppDataSource = new DbContext({
   password: DATABASE_PASSWORD,
   database: DATABASE_NAME,
   synchronize: false,
-  logging: true,
-  entities: [User, SystemPermission, UserSystemPermission, UserResetPasscodeToken, vUser, Announcement, AnnouncementItem, vAnnouncement],
+  logging: NODE_ENV !== 'production',
+  entities: [
+    User,
+    SystemPermission,
+    UserSystemPermission,
+    UserResetPasscodeToken,
+    vUser,
+    Announcement,
+    AnnouncementItem,
+    vAnnouncement,
+  ],
   subscribers: [],
   namingStrategy: new TitleCaseNamingStrategy(),
   migrationsTableName: '_migrations_history',
@@ -31,7 +48,7 @@ export const AppDataSource = new DbContext({
   dateStrings: ['DATE'],
 
   // Connection pool settings
-  poolSize: 10, // Maximum number of connections in the pool
+  poolSize: NODE_ENV !== 'production' ? 10 : 5, // Maximum number of connections in the pool
   connectTimeout: 15000, // Connection timeout in ms (15 seconds)
 
   // Maximum query execution time in milliseconds

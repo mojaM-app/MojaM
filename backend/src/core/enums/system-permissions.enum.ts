@@ -16,4 +16,6 @@ export enum SystemPermissions {
   EditAnnouncements = 302,
   DeleteAnnouncements = 303,
   PublishAnnouncements = 304,
+
+  PreviewLogList = 400,
 }
