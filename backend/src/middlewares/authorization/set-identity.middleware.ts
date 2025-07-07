@@ -1,18 +1,19 @@
 import {
   ACCESS_TOKEN_ALGORITHM,
   ACCESS_TOKEN_SECRET,
+  NODE_ENV,
   REFRESH_TOKEN_EXPIRE_IN,
   REFRESH_TOKEN_SECRET,
   SECRET_AUDIENCE,
   SECRET_ISSUER,
 } from '@config';
-import { Identity, IPermissionsService, IRequestWithIdentity, IUserService, logger } from '@core';
+import { Identity, IPermissionsService, IRequestWithIdentity, IUserService } from '@core';
 import { errorKeys, UnauthorizedException } from '@exceptions';
 import { isNullOrEmptyString, isNullOrUndefined, isString } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { JwtPayload, verify } from 'jsonwebtoken';
 import Container from 'typedi';
-import { SecurityLogger } from '../security/security-logging.middleware';
+import { SecurityLoggerService } from './../../core/logger/security-logger.service';
 
 const getAuthorization = (req: Request): string | null => {
   let header: string | string[] | undefined = req?.headers?.Authorization;
@@ -86,6 +87,7 @@ export const getAccessTokenExpiration = (): string => {
 };
 
 export const setIdentity = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  const securityLoggerService = Container.get(SecurityLoggerService);
   try {
     const authorization: string | null = getAuthorization(req);
     if (isNullOrEmptyString(authorization)) {
@@ -105,7 +107,7 @@ export const setIdentity = async (req: IRequestWithIdentity, res: Response, next
       const user = await userService.getByUuid(sub);
 
       if (isNullOrUndefined(user)) {
-        SecurityLogger.logTokenValidationFailure({ req, reason: 'User not found for token subject' });
+        securityLoggerService.logTokenValidationFailure({ req, reason: 'User not found for token subject' });
         next(new UnauthorizedException(errorKeys.login.Wrong_Authentication_Token));
       } else {
         const permissionsService = Container.get<IPermissionsService>('IPermissionsService');
@@ -115,18 +117,22 @@ export const setIdentity = async (req: IRequestWithIdentity, res: Response, next
       }
     }
   } catch (error) {
-    logger.error('Error in setIdentity middleware:', error);
+    securityLoggerService.logError({
+      req,
+      message: 'Error in setIdentity middleware',
+      error,
+    });
 
     // Log specific JWT errors for security monitoring
     if (error instanceof Error) {
       if (error.message.includes('expired')) {
-        SecurityLogger.logTokenValidationFailure({ req, reason: 'Token expired' });
+        securityLoggerService.logTokenValidationFailure({ req, reason: 'Token expired' });
       } else if (error.message.includes('invalid')) {
-        SecurityLogger.logTokenValidationFailure({ req, reason: 'Invalid token format' });
+        securityLoggerService.logTokenValidationFailure({ req, reason: 'Invalid token format' });
       } else if (error.message.includes('malformed')) {
-        SecurityLogger.logTokenValidationFailure({ req, reason: 'Malformed token' });
+        securityLoggerService.logTokenValidationFailure({ req, reason: 'Malformed token' });
       } else {
-        SecurityLogger.logTokenValidationFailure({ req, reason: `JWT validation error: ${error.message}` });
+        securityLoggerService.logTokenValidationFailure({ req, reason: `JWT validation error: ${error.message}` });
       }
     }
 
@@ -136,6 +142,6 @@ export const setIdentity = async (req: IRequestWithIdentity, res: Response, next
 };
 
 export let exportsForTesting: any;
-if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
+if (NODE_ENV === 'test' || NODE_ENV === 'development') {
   exportsForTesting = { getAuthorization };
 }

@@ -14,6 +14,8 @@ import {
 import { AnnouncementItem } from './entities/announcements/announcement-item.entity';
 import { Announcement } from './entities/announcements/announcement.entity';
 import { vAnnouncement } from './entities/announcements/vAnnouncement.entity';
+import { Log } from './entities/logs/log.entity';
+import { vLog } from './entities/logs/vLog.entity';
 import { SystemPermission } from './entities/permissions/system-permission.entity';
 import { UserResetPasscodeToken } from './entities/users/user-reset-passcode-tokens.entity';
 import { UserSystemPermission } from './entities/users/user-system-permission.entity';
@@ -38,6 +40,8 @@ export const AppDataSource = new DbContext({
     Announcement,
     AnnouncementItem,
     vAnnouncement,
+    Log,
+    vLog,
   ],
   subscribers: [],
   namingStrategy: new TitleCaseNamingStrategy(),

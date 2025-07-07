@@ -1,11 +1,10 @@
-import { BASE_PATH, LOG_FORMAT, NODE_ENV, PORT } from '@config';
-import { IRoutes, logger, stream } from '@core';
+import { BASE_PATH, LOG_FORMAT, NODE_ENV, PORT, TRUST_PROXY } from '@config';
+import { fileStream, IRoutes, fileLogger as logger } from '@core';
 import { DbConnectionManager } from '@db';
 import { errorKeys } from '@exceptions';
 import {
   corsOptions,
   ErrorMiddleware,
-  generalRateLimit,
   requestIdMiddleware,
   securityHeaders,
   securityLoggingMiddleware,
@@ -61,11 +60,10 @@ export class App {
     // Security middleware - order matters!
     this.app.use(requestIdMiddleware); // First - add request ID to all requests
     this.app.use(securityLoggingMiddleware); // Second - log security events with request ID
-    this.app.use(generalRateLimit); // Third - rate limiting
     this.app.use(securityHeaders); // Fourth - security headers (now array)
     this.app.use(corsOptions); // Fifth - CORS
 
-    this.app.use(morgan(LOG_FORMAT ?? 'combined', { stream }));
+    this.app.use(morgan(LOG_FORMAT ?? 'combined', { stream: fileStream }));
 
     this.app.disable('x-powered-by');
     this.app.use(hpp());
@@ -80,7 +78,7 @@ export class App {
     // Configure trust proxy settings
     // This is essential for proper IP detection when behind a reverse proxy (nginx, load balancer, etc.)
 
-    const trustProxyEnv = process.env.TRUST_PROXY;
+    const trustProxyEnv = TRUST_PROXY;
 
     if (trustProxyEnv !== undefined) {
       // Use explicit environment variable value
@@ -97,7 +95,7 @@ export class App {
       }
     } else {
       // Default behavior based on environment
-      const currentEnv = process.env.NODE_ENV ?? 'development';
+      const currentEnv = NODE_ENV ?? 'development';
       if (currentEnv === 'production') {
         // In production, enable trust proxy by default as it's likely behind a reverse proxy
         this.app.set('trust proxy', true);

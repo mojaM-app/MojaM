@@ -8,12 +8,12 @@ export const corsOptions = cors({
     if (NODE_ENV === 'production') {
       const allowedOrigins = ORIGIN?.split(',').map(o => o.trim()) || [];
 
-      // Allow requests with no origin (mobile apps, postman, etc.) only in development
-      if (!origin && NODE_ENV !== 'production') {
-        return callback(null, true);
+      // In production, reject requests with no origin
+      if (!origin) {
+        return callback(new Error('Not allowed by CORS policy'));
       }
 
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS policy'));
@@ -22,8 +22,11 @@ export const corsOptions = cors({
       // In development, be more permissive but still validate if ORIGIN is set
       if (ORIGIN === '*') {
         callback(null, true);
+      } else if (!ORIGIN) {
+        // If ORIGIN is undefined/null in development, allow all origins
+        callback(null, true);
       } else {
-        const allowedOrigins = ORIGIN?.split(',').map(o => o.trim()) || [];
+        const allowedOrigins = ORIGIN.split(',').map(o => o.trim());
         if (!origin || allowedOrigins.includes(origin)) {
           callback(null, true);
         } else {

@@ -3,38 +3,38 @@ import { toNumber } from '@utils';
 import { NextFunction, Response } from 'express';
 import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
-import { AnnouncementListViewColumns } from '../../../dataBase/entities/announcements/vAnnouncement.entity';
-import {
-  AnnouncementsGridPageDto,
-  GetAnnouncementListReqDto,
-  GetAnnouncementListResponseDto,
-} from '../dtos/get-announcement-list.dto';
-import { AnnouncementsListService } from '../services/announcements-list.service';
+import { GetLogListReqDto, GetLogListResponseDto, LogsGridPageDto } from '../dtos/get-log-list.dto';
+import { LogService } from '../services/log.service';
 
-export class AnnouncementsListController extends BaseController {
-  private readonly _service: AnnouncementsListService;
+export class LogListController extends BaseController {
+  private readonly _service: LogService;
 
   constructor() {
     super();
-    this._service = Container.get(AnnouncementsListService);
+    this._service = Container.get(LogService);
   }
 
   public get = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const reqDto = new GetAnnouncementListReqDto(
+      const reqDto = new GetLogListReqDto(
         this.getPageData(req),
         this.getSortData(req),
+        req.query?.search?.toString(),
         this.getCurrentUserId(req),
+        req.query?.level?.toString(),
+        req.query?.isSecurityEvent ? req.query.isSecurityEvent === 'true' : undefined,
+        req.query?.startDate ? new Date(req.query.startDate.toString()) : undefined,
+        req.query?.endDate ? new Date(req.query.endDate.toString()) : undefined,
       );
-      const result: AnnouncementsGridPageDto = await this._service.get(reqDto);
-      res.status(StatusCode.SuccessOK).json(new GetAnnouncementListResponseDto(result));
+      const result: LogsGridPageDto = await this._service.getList(reqDto);
+      res.status(StatusCode.SuccessOK).json(new GetLogListResponseDto(result));
     } catch (error) {
       next(error);
     }
   };
 
   private getPageData(req: IRequestWithIdentity): IPageData {
-    const maxPageSize = 100;
+    const maxPageSize = 1000;
     let pageSize = toNumber(req.query?.pageSize) ?? 10;
     if (pageSize > maxPageSize) {
       pageSize = maxPageSize;
@@ -43,7 +43,7 @@ export class AnnouncementsListController extends BaseController {
       pageSize = 1;
     }
 
-    let pageIndex = toNumber(req.query?.pageIndex) ?? 0;
+    let pageIndex = toNumber(req.query?.page) ?? 0;
     if (pageIndex < 0) {
       pageIndex = 0;
     }
@@ -56,8 +56,8 @@ export class AnnouncementsListController extends BaseController {
 
   private getSortData(req: IRequestWithIdentity): ISortData {
     return {
-      column: req.query?.column?.toString() ?? AnnouncementListViewColumns.validFromDate,
-      direction: req.query?.direction?.toString() ?? 'asc',
+      column: req.query?.column?.toString() ?? 'createdAt',
+      direction: req.query?.direction?.toString() ?? 'desc',
     } satisfies ISortData;
   }
 }

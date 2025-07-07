@@ -7,7 +7,6 @@ export { setIdentity } from './authorization/set-identity.middleware';
 
 export { securityHeaders } from './security/security-headers.middleware';
 export { corsOptions } from './security/cors.middleware';
-export { authRateLimit, generalRateLimit, passwordResetRateLimit, userManagementRateLimit } from './security/rate-limit.middleware';
-export { SecurityLogger, securityLoggingMiddleware } from './security/security-logging.middleware';
+export { securityLoggingMiddleware } from './security/security-logging.middleware';
 export { requestIdMiddleware, getRequestId } from './security/request-id.middleware';
 export { contentSecurityPolicy, cspReportHandler } from './security/csp.middleware';

@@ -9,7 +9,14 @@ import {
   TPL_VAR_RESET_PIN_TITLE,
   TPL_VAR_WELCOME_EMAIL_TITLE,
 } from '@config';
-import { AuthenticationTypes, IResetPasscodeEmailSettings, IUnlockAccountEmailSettings, IWelcomeEmailSettings, logger } from '@core';
+import {
+  AuthenticationTypes,
+  DatabaseLoggerService,
+  ILogMetadata,
+  IResetPasscodeEmailSettings,
+  IUnlockAccountEmailSettings,
+  IWelcomeEmailSettings,
+} from '@core';
 import { toNumber } from '@utils';
 import { readFileSync } from 'fs';
 import { compile } from 'handlebars';
@@ -18,12 +25,16 @@ import Mail from 'nodemailer/lib/mailer';
 import SMTPConnection from 'nodemailer/lib/smtp-connection';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { join } from 'path';
-import { Service } from 'typedi';
+import { Container, Service } from 'typedi';
 import { TemplateVariablesHelper } from './template-variables.helper';
 
 @Service()
 export class EmailService {
   private readonly language: string = 'pl';
+  private readonly _databaseLoggerService: DatabaseLoggerService;
+  constructor() {
+    this._databaseLoggerService = Container.get(DatabaseLoggerService);
+  }
 
   public async sendWelcomeEmail(settings: IWelcomeEmailSettings): Promise<boolean> {
     const templatePath = join(__dirname, `./../email.templates/welcomeEmail.${this.language}.handlebars`);
@@ -78,7 +89,11 @@ export class EmailService {
     return await this.fillTemplateAndSendEmail(settings.user.email, templatePath, templateVariables);
   }
 
-  private async fillTemplateAndSendEmail(recipient: string, templatePath: string, templateVariables: Record<string, any>): Promise<boolean> {
+  private async fillTemplateAndSendEmail(
+    recipient: string,
+    templatePath: string,
+    templateVariables: Record<string, any>,
+  ): Promise<boolean> {
     return await new Promise((resolve, _reject) => {
       try {
         const source = readFileSync(templatePath, 'utf8');
@@ -98,7 +113,7 @@ export class EmailService {
           resolve(success);
         });
       } catch (error) {
-        logger.error('Error sending email', error);
+        this._databaseLoggerService.error('Error sending email', error);
         resolve(false);
       }
     });
@@ -107,9 +122,9 @@ export class EmailService {
   private sendMail(mailOptions: Mail.Options, callback: (success: boolean) => void): void {
     const transporter = this.createTransporter();
 
-    transporter.sendMail(mailOptions, (error, info) => {
+    transporter.sendMail(mailOptions, (error: Error | null, info: SMTPTransport.SentMessageInfo | null) => {
       if (error !== null && error !== undefined) {
-        logger.error('Error sending email', error);
+        this._databaseLoggerService.error('Error sending email', error);
         transporter.close();
         callback(false);
       } else {
@@ -118,7 +133,18 @@ export class EmailService {
       }
 
       if (info !== null && info !== undefined) {
-        logger.debug('Email sent', info);
+        this._databaseLoggerService.debug('Email sent', {
+          additionalData: {
+            recipient: mailOptions.to,
+            subject: mailOptions.subject,
+            messageId: info.messageId,
+            response: info.response,
+            accepted: info.accepted,
+            rejected: info.rejected,
+            pending: info.pending,
+            envelope: info.envelope ? info.envelope.toString() : undefined,
+          },
+        } satisfies ILogMetadata);
       }
     });
   }

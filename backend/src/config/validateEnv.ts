@@ -1,4 +1,4 @@
-import { cleanEnv, email, num, port, str, url } from 'envalid';
+import { cleanEnv, email, port, str, url } from 'envalid';
 
 export const ValidateEnv = (): void => {
   cleanEnv(process.env, {
@@ -37,14 +37,6 @@ export const ValidateEnv = (): void => {
     NOTIFICATIONS_EMAIL: email(),
     RESET_PASSWORD_TOKEN_EXPIRE_IN: str({ default: '1h' }), // Default to 1 hour
 
-    // Rate limiting configuration
-    RATE_LIMIT_AUTH_WINDOW_MS: num({ default: 900000 }), // 15 minutes
-    RATE_LIMIT_AUTH_MAX_ATTEMPTS: num({ default: 5 }),
-    RATE_LIMIT_GENERAL_WINDOW_MS: num({ default: 900000 }), // 15 minutes
-    RATE_LIMIT_GENERAL_MAX_REQUESTS: num({ default: 100 }),
-    RATE_LIMIT_PASSWORD_RESET_WINDOW_MS: num({ default: 3600000 }), // 1 hour
-    RATE_LIMIT_PASSWORD_RESET_MAX_ATTEMPTS: num({ default: 3 }),
-
     // Security configuration
     SECURITY_REQUEST_ID_HEADER: str({ default: 'X-Request-ID' }),
     SECURITY_LOG_FAILED_REQUESTS: str({ default: 'true' }),
@@ -53,5 +45,8 @@ export const ValidateEnv = (): void => {
     ADMIN_EMAIL: email(),
     ADMIN_PASSWORD: str(),
     ADMIN_UUID: str(),
+
+    // Logging configuration
+    LOG_LEVEL: str({ default: 'warn', choices: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'] }),
   });
 };

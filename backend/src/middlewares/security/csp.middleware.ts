@@ -1,7 +1,8 @@
+import { SECURITY_CSP_REPORT_URI } from '@config';
+import { DatabaseLoggerService, ILogMetadata } from '@core';
 import type { NextFunction, Request, Response } from 'express';
 import { StatusCode } from 'status-code-enum';
-import { SECURITY_CSP_REPORT_URI } from '@config';
-import { logger } from '@core';
+import { Container } from 'typedi';
 
 /**
  * Content Security Policy middleware
@@ -36,15 +37,13 @@ export const contentSecurityPolicy = (req: Request, res: Response, next: NextFun
  */
 export const cspReportHandler = (req: Request, res: Response): void => {
   const report = req.body;
+  const logger = Container.get(DatabaseLoggerService);
 
-  // Log CSP violation
-  logger.warn('CSP Violation Report:', {
-    timestamp: new Date().toISOString(),
+  logger.warn('CSP Violation Report', {
     userAgent: req.get('User-Agent'),
-    ip: req.ip,
-    report,
-  });
+    ipAddress: req.ip,
+    additionalData: report,
+  } satisfies ILogMetadata);
 
-  // Respond with 204 No Content
   res.status(StatusCode.SuccessNoContent).end();
 };

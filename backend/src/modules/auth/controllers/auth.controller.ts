@@ -1,6 +1,5 @@
 import { BaseController } from '@core';
 import { errorKeys } from '@exceptions';
-import { SecurityLogger } from '@middlewares';
 import { isGuid } from '@utils';
 import { type NextFunction, type Request, type Response } from 'express';
 import StatusCode from 'status-code-enum';
@@ -29,17 +28,20 @@ import type { ILoginResult } from '../interfaces/login.interfaces';
 import { AccountService } from '../services/account.service';
 import { AuthService } from '../services/auth.service';
 import { ResetPasscodeService } from '../services/reset-passcode.service';
+import { SecurityLoggerService } from './../../../core/logger/security-logger.service';
 
 export class AuthController extends BaseController {
   private readonly _authService: AuthService;
   private readonly _accountService: AccountService;
   private readonly _resetPasscodeService: ResetPasscodeService;
+  private readonly _securityLoggerService: SecurityLoggerService;
 
   constructor() {
     super();
     this._authService = Container.get(AuthService);
     this._accountService = Container.get(AccountService);
     this._resetPasscodeService = Container.get(ResetPasscodeService);
+    this._securityLoggerService = Container.get(SecurityLoggerService);
   }
 
   public getAccountBeforeLogIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -55,7 +57,11 @@ export class AuthController extends BaseController {
     try {
       const model: AccountTryingToLogInDto = req.body;
 
-      SecurityLogger.logPasswordReset({ req, email: model.email || 'unknown', phone: model.phone || undefined });
+      this._securityLoggerService.logPasswordReset({
+        req,
+        email: model.email || 'unknown',
+        phone: model.phone || undefined,
+      });
 
       const result = await this._resetPasscodeService.requestResetPasscode(model);
       res.status(StatusCode.SuccessOK).json(new RequestResetPasscodeResponseDto(result));
@@ -94,7 +100,7 @@ export class AuthController extends BaseController {
     try {
       const result: ILoginResult = await this._authService.login(model);
 
-      SecurityLogger.logSuccessfulLogin({
+      this._securityLoggerService.logSuccessfulLogin({
         req,
         userId: result.user.id,
         email: result.user.email,
@@ -103,7 +109,7 @@ export class AuthController extends BaseController {
 
       res.status(StatusCode.SuccessOK).json(new LoginResponseDto(result));
     } catch (error) {
-      SecurityLogger.logFailedLogin({
+      this._securityLoggerService.logFailedLogin({
         req,
         email: model.email || undefined,
         phone: model.phone || undefined,
@@ -111,7 +117,7 @@ export class AuthController extends BaseController {
       });
 
       if (error instanceof Error && error.message === errorKeys.login.Account_Is_Locked_Out) {
-        SecurityLogger.logAccountLockout({
+        this._securityLoggerService.logAccountLockout({
           req,
           userId: undefined,
           email: model.email || undefined,

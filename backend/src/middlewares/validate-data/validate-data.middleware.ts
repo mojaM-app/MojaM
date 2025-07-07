@@ -1,3 +1,4 @@
+import { NODE_ENV } from '@config';
 import { BadRequestException } from '@exceptions';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject, ValidationError } from 'class-validator';
@@ -22,7 +23,12 @@ const getErrorConstraints = (error: ValidationError | null | undefined): string[
   return [...new Set(constraints)];
 };
 
-export const validateData = (type: any, skipMissingProperties = false, whitelist = false, forbidNonWhitelisted = false) => {
+export const validateData = (
+  type: any,
+  skipMissingProperties = false,
+  whitelist = false,
+  forbidNonWhitelisted = false,
+) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     const dto = plainToInstance(type, req.body);
 
@@ -39,6 +45,6 @@ export const validateData = (type: any, skipMissingProperties = false, whitelist
 };
 
 export let exportsForTesting: any;
-if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
+if (NODE_ENV === 'test' || NODE_ENV === 'development') {
   exportsForTesting = { getErrorConstraints };
 }

@@ -1,4 +1,4 @@
-import { events, IUnlockAccountEmailSettings, LinkHelper, logger } from '@core';
+import { DatabaseLoggerService, events, IUnlockAccountEmailSettings, LinkHelper } from '@core';
 import { UserLockedOutEvent } from '@modules/auth';
 import { EventSubscriber, On } from 'event-dispatch';
 import { Container } from 'typedi';
@@ -6,6 +6,12 @@ import { EmailService } from '../services/email.service';
 
 @EventSubscriber()
 export class UserLockedOutEventSubscriber {
+  private readonly _databaseLoggerService: DatabaseLoggerService;
+
+  constructor() {
+    this._databaseLoggerService = Container.get(DatabaseLoggerService);
+  }
+
   @On(events.users.userLockedOut)
   public eventHandler(data: UserLockedOutEvent): void {
     const emailService = Container.get(EmailService);
@@ -18,11 +24,11 @@ export class UserLockedOutEventSubscriber {
       } satisfies IUnlockAccountEmailSettings)
       .then((success: boolean) => {
         if (success) {
-          logger.debug(`Unlock account email sent to '${data.user.email}'`);
+          this._databaseLoggerService.debug(`Unlock account email sent to '${data.user.email}'`);
         }
       })
       .catch((error: Error) => {
-        logger.error(`Failed to send unlock account email to ${data.user.email}`, error);
+        this._databaseLoggerService.error(`Failed to send unlock account email to ${data.user.email}`, error);
       });
   }
 }

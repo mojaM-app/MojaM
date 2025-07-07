@@ -10,7 +10,10 @@ import { Guid } from 'guid-typescript';
 import ms from 'ms';
 import request from 'supertest';
 import Container from 'typedi';
-import { CheckResetPasscodeTokenResponseDto, ICheckResetPasscodeTokenResultDto } from '../dtos/check-reset-passcode-token.dto';
+import {
+  CheckResetPasscodeTokenResponseDto,
+  ICheckResetPasscodeTokenResultDto,
+} from '../dtos/check-reset-passcode-token.dto';
 import { AccountTryingToLogInDto } from '../dtos/get-account-before-log-in.dto';
 import { LoginResponseDto } from '../dtos/login.dto';
 import { RequestResetPasscodeResponseDto } from '../dtos/request-reset-passcode.dto';
@@ -107,8 +110,9 @@ describe('POST /auth/reset-passcode', () => {
       expect(resetPasscodeMessage).toBe(events.users.userPasscodeChanged);
       expect(resetPasscodeResult.isPasscodeSet).toBe(true);
 
-      const newUserAccessToken = (await testHelpers.loginAs(app!, { email: newUserDto.email, passcode: newPassword } satisfies ILoginModel))
-        ?.accessToken;
+      const newUserAccessToken = (
+        await testHelpers.loginAs(app!, { email: newUserDto.email, passcode: newPassword } satisfies ILoginModel)
+      )?.accessToken;
       expect(newUserAccessToken).toBeDefined();
       expect(newUserAccessToken!.length).toBeGreaterThan(1);
 
@@ -211,8 +215,9 @@ describe('POST /auth/reset-passcode', () => {
       expect(resetPasscodeMessage).toBe(events.users.userPasscodeChanged);
       expect(resetPasscodeResult.isPasscodeSet).toBe(true);
 
-      const newUserAccessToken = (await testHelpers.loginAs(app!, { email: newUserDto.email, passcode: newPassword } satisfies ILoginModel))
-        ?.accessToken;
+      const newUserAccessToken = (
+        await testHelpers.loginAs(app!, { email: newUserDto.email, passcode: newPassword } satisfies ILoginModel)
+      )?.accessToken;
       expect(newUserAccessToken).toBeDefined();
       expect(newUserAccessToken!.length).toBeGreaterThan(1);
 
@@ -262,7 +267,11 @@ describe('POST /auth/reset-passcode', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(activateUserResponse.statusCode).toBe(200);
 
-      const loginData: ILoginModel = { email: newUserDto.email, phone: newUserDto.phone, passcode: user.passcode + 'invalid_password' };
+      const loginData: ILoginModel = {
+        email: newUserDto.email,
+        phone: newUserDto.phone,
+        passcode: user.passcode + 'invalid_password',
+      };
       for (let index = 1; index < USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
         const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
         expect(loginResponse.statusCode).toBe(400);
@@ -375,7 +384,9 @@ describe('POST /auth/reset-passcode', () => {
       expect(testEventHandlers.onUserCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserActivated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserLockedOut).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onFailedLoginAttempt).toHaveBeenCalledTimes(USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS);
+      expect(testEventHandlers.onFailedLoginAttempt).toHaveBeenCalledTimes(
+        USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS,
+      );
       expect(testEventHandlers.onUserPasscodeChanged).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
     });
@@ -471,7 +482,11 @@ describe('POST /auth/reset-passcode', () => {
       Object.entries(testEventHandlers)
         .filter(
           ([, eventHandler]) =>
-            ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserDeleted].includes(eventHandler),
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onUserDeleted,
+            ].includes(eventHandler),
         )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
@@ -622,7 +637,10 @@ describe('POST /auth/reset-passcode', () => {
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
-        .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler))
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler),
+        )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
@@ -701,7 +719,10 @@ describe('POST /auth/reset-passcode', () => {
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
-        .filter(([, eventHandler]) => ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler))
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onUserCreated, testEventHandlers.onUserDeleted].includes(eventHandler),
+        )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });

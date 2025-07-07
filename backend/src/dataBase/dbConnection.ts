@@ -1,4 +1,5 @@
-import { logger } from '@core';
+import { NODE_ENV } from '@config';
+import { fileLogger as logger } from '@core';
 import { EventEmitter } from 'events';
 import { DbContext } from './dbContext';
 
@@ -79,7 +80,7 @@ export class DbConnection extends EventEmitter implements IDbConnection {
     this._connectPromise = this.connectWithRetry()
       .then(async () => {
         // Only setup health check if not disabled and not in test environment
-        if (!this._disableHealthCheck && process.env.NODE_ENV !== 'test') {
+        if (!this._disableHealthCheck && NODE_ENV !== 'test') {
           this.setupHealthCheck();
         }
 
@@ -92,7 +93,10 @@ export class DbConnection extends EventEmitter implements IDbConnection {
       })
       .catch(error => {
         this._connectPromise = null;
-        const dbError = new DbConnectionError('Failed to establish database connection', error instanceof Error ? error : new Error(String(error)));
+        const dbError = new DbConnectionError(
+          'Failed to establish database connection',
+          error instanceof Error ? error : new Error(String(error)),
+        );
         this.emit('connection-failed', dbError);
         throw dbError;
       });
@@ -115,7 +119,10 @@ export class DbConnection extends EventEmitter implements IDbConnection {
         logger.info('Database connection closed successfully');
       } catch (error) {
         logger.error('Error closing database connection:', error);
-        throw new DbConnectionError('Failed to close database connection', error instanceof Error ? error : new Error(String(error)));
+        throw new DbConnectionError(
+          'Failed to close database connection',
+          error instanceof Error ? error : new Error(String(error)),
+        );
       }
     }
 
@@ -167,9 +174,14 @@ export class DbConnection extends EventEmitter implements IDbConnection {
       }
     } catch (error) {
       if (retryCount < this._config.maxRetries && !this._isShuttingDown) {
-        const delay = Math.min(this._config.initialDelayMs * Math.pow(this._config.factor, retryCount), this._config.maxDelayMs);
+        const delay = Math.min(
+          this._config.initialDelayMs * Math.pow(this._config.factor, retryCount),
+          this._config.maxDelayMs,
+        );
 
-        logger.warn(`Database connection failed. Retrying in ${delay}ms... (Attempt ${retryCount + 1}/${this._config.maxRetries})`);
+        logger.warn(
+          `Database connection failed. Retrying in ${delay}ms... (Attempt ${retryCount + 1}/${this._config.maxRetries})`,
+        );
         logger.error(`Connection error: ${error instanceof Error ? error.message : String(error)}`);
 
         await this.delay(delay);
@@ -244,7 +256,9 @@ export class DbConnection extends EventEmitter implements IDbConnection {
         await this._dataContext.destroy();
       }
     } catch (closeError) {
-      logger.error(`Error closing connection: ${closeError instanceof Error ? closeError.message : String(closeError)}`);
+      logger.error(
+        `Error closing connection: ${closeError instanceof Error ? closeError.message : String(closeError)}`,
+      );
     }
 
     this._connectPromise = null;
@@ -252,7 +266,9 @@ export class DbConnection extends EventEmitter implements IDbConnection {
     try {
       await this.connect();
     } catch (reconnectError) {
-      logger.error(`Failed to reconnect: ${reconnectError instanceof Error ? reconnectError.message : String(reconnectError)}`);
+      logger.error(
+        `Failed to reconnect: ${reconnectError instanceof Error ? reconnectError.message : String(reconnectError)}`,
+      );
       this.emit('reconnection-failed', reconnectError);
     }
   }

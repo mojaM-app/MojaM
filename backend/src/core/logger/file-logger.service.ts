@@ -1,5 +1,6 @@
 import { LOG_DIR } from '@config';
 import { existsSync, mkdirSync } from 'fs';
+import { StreamOptions } from 'morgan';
 import { join } from 'path';
 import winston from 'winston';
 import winstonDaily from 'winston-daily-rotate-file';
@@ -21,7 +22,7 @@ const logFormat = winston.format.printf(
  * Log Level
  * error: 0, warn: 1, info: 2, http: 3, verbose: 4, debug: 5, silly: 6
  */
-const logger = winston.createLogger({
+const fileLogger = winston.createLogger({
   format: winston.format.combine(
     winston.format.timestamp({
       format: 'YYYY-MM-DD HH:mm:ss',
@@ -51,16 +52,16 @@ const logger = winston.createLogger({
   ],
 });
 
-logger.add(
+fileLogger.add(
   new winston.transports.Console({
     format: winston.format.combine(winston.format.splat(), winston.format.colorize()),
   }),
 );
 
-const stream = {
+const fileStream: StreamOptions = {
   write: (message: string): void => {
-    logger.info(message.substring(0, message.lastIndexOf('\n')));
+    fileLogger.info(message.substring(0, message.lastIndexOf('\n')));
   },
 };
 
-export { logger, stream };
+export { fileLogger, fileStream };

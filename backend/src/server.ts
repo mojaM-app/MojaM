@@ -1,5 +1,5 @@
 import { ValidateEnv } from '@config';
-import { logger } from '@core';
+import { fileLogger as logger } from '@core';
 import { DbConnectionManager } from '@db';
 import { ModulesRegistry } from '@modules/modules-registry';
 import { App } from 'app';

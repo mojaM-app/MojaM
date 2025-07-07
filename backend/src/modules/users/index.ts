@@ -1,3 +1,4 @@
+import { NODE_ENV } from '@config';
 import { type IUser } from '@core';
 import { type CreateUserDto } from './dtos/create-user.dto';
 import { generateValidUserWithPassword, generateValidUserWithPin } from './tests/test.helpers';
@@ -21,7 +22,7 @@ export let userTestHelpers: {
   generateValidUserWithPassword: () => CreateUserDto & IUser;
   generateValidUserWithPin: () => CreateUserDto & IUser;
 };
-if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
+if (NODE_ENV === 'test' || NODE_ENV === 'development') {
   userTestHelpers = {
     generateValidUserWithPassword,
     generateValidUserWithPin,

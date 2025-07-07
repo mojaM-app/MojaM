@@ -42,6 +42,9 @@ export const events = {
     permissionDeleted: 'onPermissionDeleted',
     permissionsRetrieved: 'onPermissionsRetrieved',
   },
+  log: {
+    logListRetrieved: 'onLogListRetrieved',
+  },
 };
 
 export { Event } from './Event';

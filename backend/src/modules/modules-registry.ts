@@ -3,6 +3,7 @@ import { AnnouncementsModule } from './announcements/announcements.module';
 import { AuthModule } from './auth/auth.module';
 import { CalendarModule } from './calendar/calendar.module';
 import { CommunityModule } from './community/community.module';
+import { LogModule } from './log/log.module';
 import { NewsModule } from './news/news.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PermissionsModule } from './permissions/permissions.module';
@@ -20,6 +21,7 @@ export class ModulesRegistry {
     new NewsModule(),
     new CalendarModule(),
     new SecurityModule(),
+    new LogModule(),
   ];
 
   public static registerAll(): void {

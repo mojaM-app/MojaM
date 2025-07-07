@@ -27,9 +27,23 @@ export class UserListController extends BaseController {
 
   private getPageData(req: IRequestWithIdentity): IPageData {
     const defaultPageSize = 10;
+    const maxPageSize = 100;
+    let pageSize = toNumber(req.query.pageSize) ?? defaultPageSize;
+    if (pageSize > maxPageSize) {
+      pageSize = maxPageSize;
+    }
+    if (pageSize < 1) {
+      pageSize = 1;
+    }
+
+    let pageIndex = toNumber(req.query.pageIndex) ?? 0;
+    if (pageIndex < 0) {
+      pageIndex = 0;
+    }
+
     return {
-      pageIndex: toNumber(req.query.pageIndex) ?? 0,
-      pageSize: toNumber(req.query.pageSize) ?? defaultPageSize,
+      pageIndex,
+      pageSize,
     } satisfies IPageData;
   }
 

@@ -2,14 +2,16 @@ import { DataSource, DataSourceOptions, Repository } from 'typeorm';
 import { AnnouncementItem } from './entities/announcements/announcement-item.entity';
 import { Announcement } from './entities/announcements/announcement.entity';
 import { vAnnouncement } from './entities/announcements/vAnnouncement.entity';
+import { Log } from './entities/logs/log.entity';
+import { vLog } from './entities/logs/vLog.entity';
 import { UserResetPasscodeToken } from './entities/users/user-reset-passcode-tokens.entity';
 import { UserSystemPermission } from './entities/users/user-system-permission.entity';
 import { User } from './entities/users/user.entity';
 import { vUser } from './entities/users/vUser.entity';
 
 export class DbContext extends DataSource {
-  public get vUsers(): Repository<vUser> {
-    return this.getRepository(vUser);
+  public get logs(): Repository<Log> {
+    return this.getRepository(Log);
   }
 
   public get users(): Repository<User> {
@@ -30,6 +32,14 @@ export class DbContext extends DataSource {
 
   public get announcementItems(): Repository<AnnouncementItem> {
     return this.getRepository(AnnouncementItem);
+  }
+
+  public get vLogs(): Repository<vLog> {
+    return this.getRepository(vLog);
+  }
+
+  public get vUsers(): Repository<vUser> {
+    return this.getRepository(vUser);
   }
 
   public get vAnnouncements(): Repository<vAnnouncement> {

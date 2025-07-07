@@ -1,4 +1,5 @@
-export { logger, stream } from './logger/logger';
+export { fileLogger, fileStream } from './logger/file-logger.service';
+export { ILogMetadata, DatabaseLoggerService } from './logger/database-logger.service';
 
 // Constants
 export * from './constants';

@@ -88,6 +88,10 @@ export class Identity {
     return this.hasPermission(SystemPermissions.DeletePermission);
   }
 
+  public canPreviewLogList(): boolean {
+    return this.hasPermission(SystemPermissions.PreviewLogList);
+  }
+
   protected hasPermission(permission: SystemPermissions): boolean {
     return this.hasAnyPermission([permission]);
   }

@@ -1,20 +1,7 @@
 import * as config from '@config';
-import { logger } from '@core';
+import { DatabaseLoggerService } from '@core';
 import { NextFunction, Request, Response } from 'express';
 import { contentSecurityPolicy, cspReportHandler } from '../csp.middleware';
-
-// Mock dependencies
-jest.mock('@core', () => ({
-  logger: {
-    error: jest.fn(),
-    warn: jest.fn(),
-    info: jest.fn(),
-    debug: jest.fn(),
-  },
-}));
-
-// Mock mockLogger.warn to avoid noise in tests
-const mockLogger = logger as jest.Mocked<typeof logger>;
 
 // Mock express types
 const mockRequest = (body?: any, headers?: Record<string, string>): Partial<Request> => ({
@@ -31,9 +18,12 @@ const mockResponse = (): Partial<Response> => ({
 
 const mockNext = (): NextFunction => jest.fn();
 
+let loggerWarnSpy: jest.SpyInstance;
+
 describe('CSP Middleware', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    loggerWarnSpy = jest.spyOn(DatabaseLoggerService.prototype, 'warn');
   });
 
   describe('contentSecurityPolicy', () => {
@@ -44,8 +34,14 @@ describe('CSP Middleware', () => {
 
       contentSecurityPolicy(req, res, next);
 
-      expect(res.setHeader).toHaveBeenCalledWith('Content-Security-Policy', expect.stringContaining("default-src 'self'"));
-      expect(res.setHeader).toHaveBeenCalledWith('Content-Security-Policy', expect.stringContaining('report-uri /security/csp-report'));
+      expect(res.setHeader).toHaveBeenCalledWith(
+        'Content-Security-Policy',
+        expect.stringContaining("default-src 'self'"),
+      );
+      expect(res.setHeader).toHaveBeenCalledWith(
+        'Content-Security-Policy',
+        expect.stringContaining('report-uri /security/csp-report'),
+      );
       expect(next).toHaveBeenCalled();
     });
 
@@ -57,7 +53,10 @@ describe('CSP Middleware', () => {
 
       contentSecurityPolicy(req, res, next);
 
-      expect(res.setHeader).toHaveBeenCalledWith('Content-Security-Policy', expect.stringContaining('report-uri /custom/csp-report'));
+      expect(res.setHeader).toHaveBeenCalledWith(
+        'Content-Security-Policy',
+        expect.stringContaining('report-uri /custom/csp-report'),
+      );
     });
 
     it('should include all required CSP directives', () => {
@@ -94,13 +93,14 @@ describe('CSP Middleware', () => {
 
       cspReportHandler(req, res);
 
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        'CSP Violation Report:',
+      expect(loggerWarnSpy).toHaveBeenCalledWith(
+        'CSP Violation Report',
         expect.objectContaining({
-          timestamp: expect.any(String),
+          additionalData: expect.objectContaining({
+            ...cspReport,
+          }),
           userAgent: 'Test Browser',
-          ip: '127.0.0.1',
-          report: cspReport,
+          ipAddress: '127.0.0.1',
         }),
       );
       expect(res.status).toHaveBeenCalledWith(204);
@@ -114,11 +114,13 @@ describe('CSP Middleware', () => {
 
       cspReportHandler(req, res);
 
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        'CSP Violation Report:',
+      expect(loggerWarnSpy).toHaveBeenCalledWith(
+        'CSP Violation Report',
         expect.objectContaining({
+          additionalData: expect.objectContaining({
+            ...cspReport,
+          }),
           userAgent: undefined,
-          report: cspReport,
         }),
       );
       expect(res.status).toHaveBeenCalledWith(204);

@@ -47,4 +47,5 @@ export const errorKeys = {
     Invalid_Start_Date: 'Invalid_Start_Date',
     Invalid_End_Date: 'Invalid_End_Date',
   },
+  logs: {},
 };

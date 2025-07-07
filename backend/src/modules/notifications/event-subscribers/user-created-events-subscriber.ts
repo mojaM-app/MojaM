@@ -1,4 +1,4 @@
-import { events, IWelcomeEmailSettings, LinkHelper, logger } from '@core';
+import { DatabaseLoggerService, events, IWelcomeEmailSettings, LinkHelper } from '@core';
 import { UserCreatedEvent } from '@modules/users';
 import { EventSubscriber, On } from 'event-dispatch';
 import Container from 'typedi';
@@ -6,6 +6,12 @@ import { EmailService } from '../services/email.service';
 
 @EventSubscriber()
 export class UserCreatedEventSubscriber {
+  private readonly _databaseLoggerService: DatabaseLoggerService;
+
+  constructor() {
+    this._databaseLoggerService = Container.get(DatabaseLoggerService);
+  }
+
   @On(events.users.userCreated)
   public eventHandler(data: UserCreatedEvent): void {
     const emailService = Container.get(EmailService);
@@ -17,11 +23,11 @@ export class UserCreatedEventSubscriber {
       } satisfies IWelcomeEmailSettings)
       .then((success: boolean) => {
         if (success) {
-          logger.debug(`Welcome email sent to '${data.user.email}'`);
+          this._databaseLoggerService.debug(`Welcome email sent to '${data.user.email}'`);
         }
       })
       .catch((error: Error) => {
-        logger.error(`Failed to send welcome email to ${data.user.email}`, error);
+        this._databaseLoggerService.error(`Failed to send welcome email to '${data.user.email}'`, error);
       });
   }
 }

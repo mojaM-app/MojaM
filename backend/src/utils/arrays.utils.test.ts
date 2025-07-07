@@ -523,5 +523,28 @@ describe('arrays.utils', () => {
 
       expect(arraysEquals([objWithSymbol1], [objWithSymbol3])).toBe(true);
     });
+
+    it('should return false if property exists but values are different', () => {
+      const obj1 = { a: 1, b: 2 };
+      const obj2 = { a: 1, b: 3 };
+      // arraysEquals uses objectsEqual, which uses compareObjectProperties
+      // which should hit the line: if (xValue !== yValue) { return false; }
+      expect(arraysEquals([obj1], [obj2])).toBe(false);
+    });
+
+    it('should return false if object x has property that object y does not have', () => {
+      // Create objects with same number of properties but different property names
+      // This should bypass the length check but hit the hasOwnProperty check
+      const obj1 = { a: 1, b: 2 };
+      const obj2 = { a: 1, c: 2 }; // Same length but different property name
+
+      // First object has 'b' property, second has 'c' - should hit line 52
+      expect(arraysEquals([obj1], [obj2])).toBe(false);
+
+      // Test with more complex case
+      const obj3 = { x: 1, y: 2, z: 3 };
+      const obj4 = { x: 1, y: 2, w: 3 }; // Same length but different property 'w' instead of 'z'
+      expect(arraysEquals([obj3], [obj4])).toBe(false);
+    });
   });
 });
