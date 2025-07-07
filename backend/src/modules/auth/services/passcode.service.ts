@@ -1,6 +1,6 @@
+import { Service } from 'typedi';
 import { AuthenticationTypes, IPasscodeService } from '@core';
 import { isNullOrEmptyString } from '@utils';
-import { Service } from 'typedi';
 import { PasswordService } from './password.service';
 import { PinService } from './pin.service';
 import { getAuthenticationType } from '../helpers/auth.helper';
@@ -26,6 +26,10 @@ export class PasscodeService implements IPasscodeService {
     }
 
     const authType = getAuthenticationType(user);
+    if (authType === undefined) {
+      return false;
+    }
+
     switch (authType) {
       case AuthenticationTypes.Password:
         return this._passwordService.match(passcode!, user.salt, user.passcode!);

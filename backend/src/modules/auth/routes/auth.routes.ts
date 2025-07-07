@@ -1,7 +1,7 @@
-import { REGEX_PATTERNS } from '@config';
-import { IRoutes, RouteConstants } from '@core';
-import { authRateLimit, passwordResetRateLimit, validateData } from '@middlewares';
 import { default as express } from 'express';
+import { REGEX_PATTERNS } from '@config';
+import { type IRoutes, RouteConstants } from '@core';
+import { authRateLimit, passwordResetRateLimit, validateData } from '@middlewares';
 import { AuthController } from '../controllers/auth.controller';
 import { ActivateAccountDto } from '../dtos/activate-account.dto';
 import { AccountTryingToLogInDto } from '../dtos/get-account-before-log-in.dto';
@@ -41,12 +41,12 @@ export class AuthRoute implements IRoutes {
       this._authController.requestResetPasscode,
     );
     this.router.post(
-      AuthRoute.checkResetPasscodeTokenPath + `/:userId(${REGEX_PATTERNS.GUID})/:token`,
+      `${AuthRoute.checkResetPasscodeTokenPath}/:userId(${REGEX_PATTERNS.GUID})/:token`,
       [passwordResetRateLimit],
       this._authController.checkResetPasscodeToken,
     );
     this.router.post(
-      AuthRoute.resetPasscodePath + `/:userId(${REGEX_PATTERNS.GUID})`,
+      `${AuthRoute.resetPasscodePath}/:userId(${REGEX_PATTERNS.GUID})`,
       [passwordResetRateLimit, validateData(ResetPasscodeDto)],
       this._authController.resetPasscode,
     );
@@ -56,17 +56,17 @@ export class AuthRoute implements IRoutes {
       this._authController.refreshAccessToken,
     );
     this.router.post(
-      AuthRoute.getAccountToActivatePath + `/:userId(${REGEX_PATTERNS.GUID})`,
+      `${AuthRoute.getAccountToActivatePath}/:userId(${REGEX_PATTERNS.GUID})`,
       [authRateLimit],
       this._authController.getAccountToActivate,
     );
     this.router.post(
-      AuthRoute.activateAccountPath + `/:userId(${REGEX_PATTERNS.GUID})`,
+      `${AuthRoute.activateAccountPath}/:userId(${REGEX_PATTERNS.GUID})`,
       [authRateLimit, validateData(ActivateAccountDto)],
       this._authController.activateAccount,
     );
     this.router.post(
-      AuthRoute.unlockAccountPath + `/:userId(${REGEX_PATTERNS.GUID})`,
+      `${AuthRoute.unlockAccountPath}/:userId(${REGEX_PATTERNS.GUID})`,
       [authRateLimit],
       this._authController.unlockAccount,
     );

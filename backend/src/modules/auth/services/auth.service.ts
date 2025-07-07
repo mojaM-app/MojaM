@@ -1,11 +1,11 @@
+import { decode, JwtPayload, sign, verify, VerifyErrors } from 'jsonwebtoken';
+import { StatusCode } from 'status-code-enum';
+import { Container, Service } from 'typedi';
 import { ACCESS_TOKEN_ALGORITHM, USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
 import { BaseService, events, IPermissionsService, IUserEntity, IUserService } from '@core';
 import { userToIUser } from '@db';
 import { BadRequestException, errorKeys, TranslatableHttpException } from '@exceptions';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
-import { decode, JwtPayload, sign, verify, VerifyErrors } from 'jsonwebtoken';
-import { StatusCode } from 'status-code-enum';
-import { Container, Service } from 'typedi';
 import { PasscodeService } from './passcode.service';
 import {
   getAccessTokenExpiration,
@@ -44,7 +44,7 @@ export class AuthService extends BaseService {
       throw new BadRequestException(errorKeys.login.Invalid_Login_Or_Passcode);
     }
 
-    const user: IUserEntity = users[0];
+    const [user]: IUserEntity = users;
 
     if (isNullOrEmptyString(user.passcode)) {
       throw new BadRequestException(errorKeys.login.User_Passcode_Is_Not_Set);

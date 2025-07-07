@@ -1,10 +1,10 @@
+import ms from 'ms';
+import { Service } from 'typedi';
 import { RESET_PASSWORD_TOKEN_EXPIRE_IN } from '@config';
 import { ICreateResetPasscodeToken, IUserId } from '@core';
 import { BaseRepository } from '@db';
 import { getDateTimeNow, isNullOrUndefined } from '@utils';
-import ms from 'ms';
-import { Service } from 'typedi';
-import { UserResetPasscodeToken } from './../../../dataBase/entities/users/user-reset-passcode-tokens.entity';
+import { UserResetPasscodeToken } from '../../../dataBase/entities/users/user-reset-passcode-tokens.entity';
 
 @Service()
 export class ResetPasscodeTokensRepository extends BaseRepository {
@@ -36,7 +36,9 @@ export class ResetPasscodeTokensRepository extends BaseRepository {
   }
 
   public async deleteTokens(userId: number): Promise<boolean> {
-    const queryBuilder = this._dbContext.userResetPasscodeTokens.createQueryBuilder().where('UserId = :userId', { userId });
+    const queryBuilder = this._dbContext.userResetPasscodeTokens
+      .createQueryBuilder()
+      .where('UserId = :userId', { userId });
 
     const count = await queryBuilder.getCount();
 
