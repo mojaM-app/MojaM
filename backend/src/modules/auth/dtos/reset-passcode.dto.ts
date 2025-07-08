@@ -1,8 +1,8 @@
-import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsString } from 'class-validator';
 import { DtoTransformFunctions, events, type IResponse } from '@core';
 import { errorKeys } from '@exceptions';
 import { IsPasswordOrPinValid } from '@validators';
+import { Transform } from 'class-transformer';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class ResetPasscodeDto {
   @IsNotEmpty({

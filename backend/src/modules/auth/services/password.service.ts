@@ -1,9 +1,9 @@
 import { isStrongPassword, maxLength } from 'class-validator';
-import * as crypto from 'crypto';
+import { pbkdf2Sync } from 'crypto';
 import { Service } from 'typedi';
+import { VALIDATOR_SETTINGS } from '../../../config/index';
+import { isNullOrEmptyString } from '../../../utils/index';
 import { IAuthenticationTypeService } from '../interfaces/IAuthenticationTypeService';
-import { VALIDATOR_SETTINGS } from './../../../config/index';
-import { isNullOrEmptyString } from './../../../utils/index';
 
 @Service()
 export class PasswordService implements IAuthenticationTypeService {
@@ -15,7 +15,8 @@ export class PasswordService implements IAuthenticationTypeService {
       throw new Error('Salt and password are required to hash a password');
     }
 
-    return crypto.pbkdf2Sync(password, salt, 1000, PasswordService.KEY_LENGTH, 'sha512').toString('hex');
+    const numberOfIterations = 10_000;
+    return pbkdf2Sync(password, salt, numberOfIterations, PasswordService.KEY_LENGTH, 'sha512').toString('hex');
   }
 
   public match(password: string, salt: string, hashedPassword: string): boolean {
@@ -27,6 +28,9 @@ export class PasswordService implements IAuthenticationTypeService {
       return false;
     }
 
-    return maxLength(password, VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH) && isStrongPassword(password, VALIDATOR_SETTINGS.STRONG_PASSWORD_OPTIONS);
+    return (
+      maxLength(password, VALIDATOR_SETTINGS.PASSWORD_MAX_LENGTH) &&
+      isStrongPassword(password, VALIDATOR_SETTINGS.STRONG_PASSWORD_OPTIONS)
+    );
   }
 }

@@ -1,4 +1,4 @@
-import { IUserDto } from '@core';
+import { type IUserDto } from '@core';
 
 export interface ILoginResult {
   user: IUserDto;

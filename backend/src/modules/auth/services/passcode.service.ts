@@ -26,6 +26,10 @@ export class PasscodeService implements IPasscodeService {
     }
 
     const authType = getAuthenticationType(user);
+    if (authType === undefined) {
+      return false;
+    }
+
     switch (authType) {
       case AuthenticationTypes.Password:
         return this._passwordService.match(passcode!, user.salt, user.passcode!);

@@ -1,5 +1,5 @@
-import { Service } from 'typedi';
 import { CacheService } from '@core';
+import { Service } from 'typedi';
 import { User } from '../../../dataBase/entities/users/user.entity';
 
 @Service()

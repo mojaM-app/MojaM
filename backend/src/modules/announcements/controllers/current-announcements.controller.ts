@@ -1,5 +1,5 @@
-import { BaseController, IRequestWithIdentity } from '@core';
-import { NextFunction, Response } from 'express';
+import { BaseController, type IRequestWithIdentity } from '@core';
+import type { NextFunction, Response } from 'express';
 import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
 import { GetCurrentAnnouncementsResponseDto } from '../dtos/get-current-announcements.dto';

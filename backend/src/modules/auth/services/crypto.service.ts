@@ -1,18 +1,21 @@
 import { ICryptoService } from '@core';
-import * as crypto from 'crypto';
+import { randomBytes } from 'crypto';
 import { Service } from 'typedi';
 
 @Service()
 export class CryptoService implements ICryptoService {
   public generateSalt(): string {
-    return crypto.randomBytes(16).toString('hex');
+    const numberOfBytes = 16;
+    return randomBytes(numberOfBytes).toString('hex');
   }
 
   public generateUserRefreshTokenKey(): string {
-    return crypto.randomBytes(32).toString('hex');
+    const numberOfBytes = 32;
+    return randomBytes(numberOfBytes).toString('hex');
   }
 
   public generateResetPasscodeToken(): string {
-    return crypto.randomBytes(32).toString('hex');
+    const numberOfBytes = 32;
+    return randomBytes(numberOfBytes).toString('hex');
   }
 }

@@ -26,6 +26,7 @@ export class UserLockedOutEventSubscriber {
         if (success) {
           this._databaseLoggerService.debug(`Unlock account email sent to '${data.user.email}'`);
         }
+        return success;
       })
       .catch((error: Error) => {
         this._databaseLoggerService.error(`Failed to send unlock account email to ${data.user.email}`, error);

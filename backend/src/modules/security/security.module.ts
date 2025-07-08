@@ -2,13 +2,12 @@ import { type IModule, type IRoutes } from '@core';
 import { SecurityRoute } from './routes/security.routes';
 
 export class SecurityModule implements IModule {
-  private _routes: IRoutes[] = [];
-
-  public register(): void {
-    this._routes = [new SecurityRoute()];
+  public getRoutes(): IRoutes[] {
+    return [new SecurityRoute()];
   }
 
-  public getRoutes(): IRoutes[] {
-    return this._routes;
+  public register(): void {
+    // This module does not require any specific registration logic.
+    // If any services or repositories need to be registered, they can be added here.
   }
 }

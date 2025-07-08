@@ -1,10 +1,10 @@
-import { BaseController, IRequestWithIdentity } from '@core';
+import { BaseController, type IRequestWithIdentity } from '@core';
 import { isGuid } from '@utils';
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
 import {
-  CreateAnnouncementsDto,
+  type CreateAnnouncementsDto,
   CreateAnnouncementsReqDto,
   CreateAnnouncementsResponseDto,
 } from '../dtos/create-announcements.dto';
@@ -12,7 +12,7 @@ import { DeleteAnnouncementsReqDto, DeleteAnnouncementsResponseDto } from '../dt
 import { GetAnnouncementsReqDto, GetAnnouncementsResponseDto } from '../dtos/get-announcements.dto';
 import { PublishAnnouncementsReqDto, PublishAnnouncementsResponseDto } from '../dtos/publish-announcements.dto';
 import {
-  UpdateAnnouncementsDto,
+  type UpdateAnnouncementsDto,
   UpdateAnnouncementsReqDto,
   UpdateAnnouncementsResponseDto,
 } from '../dtos/update-announcements.dto';
@@ -78,6 +78,6 @@ export class AnnouncementsController extends BaseController {
   };
 
   private getAnnouncementsGuid(req: Request): string | undefined {
-    return isGuid(req.params?.id) ? req.params.id : undefined;
+    return isGuid(req.params.id) ? req.params.id : undefined;
   }
 }

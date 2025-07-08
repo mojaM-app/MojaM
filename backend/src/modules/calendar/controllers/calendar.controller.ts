@@ -1,6 +1,7 @@
-import { BaseController, IRequestWithIdentity } from '@core';
+import { BaseController, type IRequestWithIdentity } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { NextFunction, Response } from 'express';
+import { isNullOrUndefined } from '@utils';
+import type { NextFunction, Response } from 'express';
 import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
 import { GetCalendarEventsReqDto, GetCalendarEventsResponseDto } from '../dtos/calendar.dto';
@@ -16,16 +17,16 @@ export class CalendarController extends BaseController {
 
   public getEvents = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const startDate = req?.query?.start?.toString();
+      const startDate = req.query.start?.toString();
       const isoStartDate = this.getISODate(startDate);
-      if (isoStartDate && !this.isValidISODate(isoStartDate)) {
-        throw new BadRequestException(errorKeys.calendar.Invalid_Start_Date, { startDate: startDate });
+      if ((isoStartDate?.length ?? 0) > 0 && !this.isValidISODate(isoStartDate)) {
+        throw new BadRequestException(errorKeys.calendar.Invalid_Start_Date, { startDate });
       }
 
-      const endDate = req?.query?.end?.toString();
+      const endDate = req.query.end?.toString();
       const isoEndDate = this.getISODate(endDate);
-      if (isoEndDate && !this.isValidISODate(isoEndDate)) {
-        throw new BadRequestException(errorKeys.calendar.Invalid_End_Date, { endDate: endDate });
+      if ((isoEndDate?.length ?? 0) > 0 && !this.isValidISODate(isoEndDate)) {
+        throw new BadRequestException(errorKeys.calendar.Invalid_End_Date, { endDate });
       }
 
       const result = await this._calendarService.getEvents(
@@ -37,13 +38,13 @@ export class CalendarController extends BaseController {
     }
   };
 
-  private isValidISODate(dateString: string): boolean {
+  private isValidISODate(dateString: string | undefined): boolean {
     try {
-      if (!dateString) {
+      if (isNullOrUndefined(dateString) || dateString!.length === 0) {
         return false;
       }
 
-      const date = new Date(dateString);
+      const date = new Date(dateString!);
       return !isNaN(date.getTime()) && dateString === date.toISOString();
     } catch {
       return false;
@@ -51,10 +52,11 @@ export class CalendarController extends BaseController {
   }
 
   private getISODate(date: string | undefined): string | undefined {
-    if (!date) {
+    if (isNullOrUndefined(date) || date!.length === 0) {
       return undefined;
     }
-    let dateString = date.toString();
+
+    let dateString = date!.toString();
 
     if (!dateString.includes('T')) {
       dateString += 'T00:00:00.000Z';

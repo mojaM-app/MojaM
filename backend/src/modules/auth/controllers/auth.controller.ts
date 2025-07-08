@@ -2,28 +2,43 @@ import { BaseController } from '@core';
 import { errorKeys } from '@exceptions';
 import { isGuid } from '@utils';
 import { type NextFunction, type Request, type Response } from 'express';
-import StatusCode from 'status-code-enum';
+import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
-import type { ActivateAccountDto, IActivateAccountResultDto } from '../dtos/activate-account.dto';
-import { ActivateAccountReqDto, ActivateAccountResponseDto } from '../dtos/activate-account.dto';
-import type { ICheckResetPasscodeTokenResultDto } from '../dtos/check-reset-passcode-token.dto';
+import {
+  type ActivateAccountDto,
+  ActivateAccountReqDto,
+  ActivateAccountResponseDto,
+  type IActivateAccountResultDto,
+} from '../dtos/activate-account.dto';
 import {
   CheckResetPasscodeTokenReqDto,
   CheckResetPasscodeTokenResponseDto,
+  type ICheckResetPasscodeTokenResultDto,
 } from '../dtos/check-reset-passcode-token.dto';
-import type { AccountTryingToLogInDto, IGetAccountBeforeLogInResultDto } from '../dtos/get-account-before-log-in.dto';
-import { GetAccountBeforeLogInResponseDto } from '../dtos/get-account-before-log-in.dto';
-import type { IAccountToActivateResultDto } from '../dtos/get-account-to-activate.dto';
-import { GetAccountToActivateReqDto, GetAccountToActivateResponseDto } from '../dtos/get-account-to-activate.dto';
-import type { LoginDto } from '../dtos/login.dto';
-import { LoginResponseDto } from '../dtos/login.dto';
-import type { RefreshTokenDto } from '../dtos/refresh-token.dto';
-import { RefreshTokenResponseDto } from '../dtos/refresh-token.dto';
+import {
+  type AccountTryingToLogInDto,
+  GetAccountBeforeLogInResponseDto,
+  type IGetAccountBeforeLogInResultDto,
+} from '../dtos/get-account-before-log-in.dto';
+import {
+  GetAccountToActivateReqDto,
+  GetAccountToActivateResponseDto,
+  type IAccountToActivateResultDto,
+} from '../dtos/get-account-to-activate.dto';
+import { type LoginDto, LoginResponseDto } from '../dtos/login.dto';
+import { type RefreshTokenDto, RefreshTokenResponseDto } from '../dtos/refresh-token.dto';
 import { RequestResetPasscodeResponseDto } from '../dtos/request-reset-passcode.dto';
-import type { IResetPasscodeResultDto, ResetPasscodeDto } from '../dtos/reset-passcode.dto';
-import { ResetPasscodeReqDto, ResetPasscodeResponseDto } from '../dtos/reset-passcode.dto';
-import type { IUnlockAccountResultDto } from '../dtos/unlock-account.dto';
-import { UnlockAccountReqDto, UnlockAccountResponseDto } from '../dtos/unlock-account.dto';
+import {
+  type IResetPasscodeResultDto,
+  type ResetPasscodeDto,
+  ResetPasscodeReqDto,
+  ResetPasscodeResponseDto,
+} from '../dtos/reset-passcode.dto';
+import {
+  type IUnlockAccountResultDto,
+  UnlockAccountReqDto,
+  UnlockAccountResponseDto,
+} from '../dtos/unlock-account.dto';
 import type { ILoginResult } from '../interfaces/login.interfaces';
 import { AccountService } from '../services/account.service';
 import { AuthService } from '../services/auth.service';
@@ -95,6 +110,7 @@ export class AuthController extends BaseController {
       next(error);
     }
   };
+
   public logIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const model: LoginDto = req.body;
     try {

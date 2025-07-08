@@ -1,5 +1,5 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, Relation } from 'typeorm';
 import { IAddUserSystemPermission } from '@core';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, Relation } from 'typeorm';
 import { User } from './user.entity';
 import { EntityDefaultFunctions } from '../../EntityDefaultFunctions';
 import { SystemPermission } from '../permissions/system-permission.entity';

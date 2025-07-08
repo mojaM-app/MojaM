@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import { isNullOrUndefined } from './object.utils';
 
 interface IObjectLike {
@@ -34,7 +35,6 @@ const compareSpecialObjects = (x: IObjectLike, y: IObjectLike): boolean => {
     return x.valueOf() === y.valueOf();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-base-to-string
   return x.toString() === y.toString();
 };
 
@@ -52,13 +52,10 @@ const compareObjectProperties = (x: IObjectLike, y: IObjectLike): boolean => {
       return false;
     }
 
-    // eslint-disable-next-line security/detect-object-injection
     const xValue = (x as Record<string, unknown>)[propertyKey];
-    // eslint-disable-next-line security/detect-object-injection
     const yValue = objY[propertyKey];
 
     if (xValue === yValue) {
-      // eslint-disable-next-line no-continue
       continue;
     }
 
@@ -97,7 +94,6 @@ function objectsEqual(x: unknown, y: unknown): boolean {
   return compareObjectProperties(objX, objY);
 }
 
-// eslint-disable-next-line complexity -- Complex logic needed for comprehensive array comparison
 const isArraysEmpty = (arr1: unknown[] | null | undefined, arr2: unknown[] | null | undefined): boolean => {
   const arr1Length = arr1?.length ?? 0;
   const arr2Length = arr2?.length ?? 0;
@@ -110,7 +106,6 @@ const isArraysEmpty = (arr1: unknown[] | null | undefined, arr2: unknown[] | nul
   );
 };
 
-// eslint-disable-next-line complexity -- Complex logic needed for comprehensive array comparison
 const isArraysDifferentLength = (arr1: unknown[] | null | undefined, arr2: unknown[] | null | undefined): boolean => {
   const arr1Length = arr1?.length ?? 0;
   const arr2Length = arr2?.length ?? 0;

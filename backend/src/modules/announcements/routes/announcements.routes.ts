@@ -1,7 +1,7 @@
 import { REGEX_PATTERNS } from '@config';
-import { IRoutes, RouteConstants } from '@core';
+import { type IRoutes, RouteConstants } from '@core';
 import { requirePermission, setIdentity, validateData } from '@middlewares';
-import express from 'express';
+import { default as express } from 'express';
 import { AnnouncementsController } from '../controllers/announcements.controller';
 import { CurrentAnnouncementsController } from '../controllers/current-announcements.controller';
 import { CreateAnnouncementsDto } from '../dtos/create-announcements.dto';

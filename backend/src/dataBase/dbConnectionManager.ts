@@ -1,6 +1,6 @@
 import { AppDataSource } from './data-source';
-import { DbConnection, IDbConnection } from './dbConnection';
-import { DbContext } from './dbContext';
+import { DbConnection, type IDbConnection } from './dbConnection';
+import type { DbContext } from './dbContext';
 
 export class DbConnectionManager {
   private static instance: IDbConnection | null = null;
@@ -27,7 +27,7 @@ export class DbConnectionManager {
   }
 
   public static async gracefulShutdown(): Promise<void> {
-    if (DbConnectionManager.instance) {
+    if (DbConnectionManager.instance?.isConnected() === true) {
       await DbConnectionManager.instance.gracefulShutdown();
       DbConnectionManager.reset();
     }

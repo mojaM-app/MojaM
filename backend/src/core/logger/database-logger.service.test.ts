@@ -1,3 +1,5 @@
+import * as config from '@config';
+import { LOG_LEVEL } from '@config';
 import { DatabaseLoggerService, ILogMetadata, LogLevel } from './database-logger.service';
 
 // Mock dependencies
@@ -29,8 +31,7 @@ describe('DatabaseLoggerService', () => {
   let mockLogRepository: any;
 
   beforeEach(() => {
-    // Reset environment variable
-    process.env.LOG_LEVEL = 'warn';
+    jest.replaceProperty(config, 'LOG_LEVEL', 'warn');
 
     // Create mock database context
     mockLogRepository = {
@@ -51,48 +52,15 @@ describe('DatabaseLoggerService', () => {
     jest.clearAllMocks();
   });
 
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
-
   describe('constructor', () => {
     it('should initialize with default log level warn', () => {
       const newService = new DatabaseLoggerService();
-      expect(newService.getLogLevel()).toBe('warn');
-    });
-
-    it('should initialize with custom log level from environment', () => {
-      // Since LOG_LEVEL is read from process.env at module initialization,
-      // we need to test the current implementation behavior
-      const newService = new DatabaseLoggerService();
-      // The constructor uses LOG_LEVEL from config, which is set at module load time
-      // This test verifies that the service can be initialized
-      expect(newService.getLogLevel()).toBeDefined();
-    });
-
-    it('should handle invalid log level gracefully', () => {
-      const newService = new DatabaseLoggerService();
-      expect(newService.getLogLevel()).toBe('warn');
-    });
-  });
-
-  describe('getLogLevel', () => {
-    it('should return current log level', () => {
-      expect(service.getLogLevel()).toBe('warn');
-    });
-  });
-
-  describe('setLogLevel', () => {
-    it('should change log level at runtime', () => {
-      service.setLogLevel('debug');
-      expect(service.getLogLevel()).toBe('debug');
+      expect((newService as any).configuredLogLevel).toBe('warn');
     });
   });
 
   describe('shouldLog', () => {
     it('should respect log level hierarchy', () => {
-      service.setLogLevel('warn');
-
       // These should be logged (equal or higher priority)
       expect((service as any).shouldLog('error')).toBe(true);
       expect((service as any).shouldLog('warn')).toBe(true);
@@ -104,7 +72,9 @@ describe('DatabaseLoggerService', () => {
     });
 
     it('should handle debug level', () => {
-      service.setLogLevel('debug');
+      jest.replaceProperty(config, 'LOG_LEVEL', 'debug');
+      service = new DatabaseLoggerService();
+      (service as any)._dbContext = mockDbContext;
 
       expect((service as any).shouldLog('error')).toBe(true);
       expect((service as any).shouldLog('warn')).toBe(true);
@@ -166,7 +136,9 @@ describe('DatabaseLoggerService', () => {
     });
 
     it('should skip logging when log level is not met', async () => {
-      service.setLogLevel('error');
+      jest.replaceProperty(config, 'LOG_LEVEL', 'error');
+      service = new DatabaseLoggerService();
+      (service as any)._dbContext = mockDbContext;
 
       await (service as any).writeLog('info', 'test message', metadata);
 
@@ -218,8 +190,9 @@ describe('DatabaseLoggerService', () => {
 
   describe('error', () => {
     it('should skip logging when log level is not met', async () => {
-      service.setLogLevel('silly'); // Error level should still be logged
-
+      jest.replaceProperty(config, 'LOG_LEVEL', 'silly');
+      service = new DatabaseLoggerService();
+      (service as any)._dbContext = mockDbContext;
       await service.error('test error');
 
       expect(mockLogRepository.create).toHaveBeenCalled();
@@ -285,7 +258,9 @@ describe('DatabaseLoggerService', () => {
 
   describe('warn', () => {
     it('should skip logging when log level is not met', async () => {
-      service.setLogLevel('error');
+      jest.replaceProperty(config, 'LOG_LEVEL', 'custom-log-level');
+      service = new DatabaseLoggerService();
+      (service as any)._dbContext = mockDbContext;
 
       await service.warn('test warning');
 
@@ -318,15 +293,15 @@ describe('DatabaseLoggerService', () => {
 
   describe('info', () => {
     it('should skip logging when log level is not met', async () => {
-      service.setLogLevel('warn');
-
       await service.info('test info');
 
       expect(mockLogRepository.create).not.toHaveBeenCalled();
     });
 
     it('should log info with low severity', async () => {
-      service.setLogLevel('info');
+      jest.replaceProperty(config, 'LOG_LEVEL', 'info');
+      service = new DatabaseLoggerService();
+      (service as any)._dbContext = mockDbContext;
 
       await service.info('test info');
 
@@ -342,7 +317,9 @@ describe('DatabaseLoggerService', () => {
 
   describe('http', () => {
     it('should skip logging when log level is not met', async () => {
-      service.setLogLevel('info');
+      jest.replaceProperty(config, 'LOG_LEVEL', 'info');
+      service = new DatabaseLoggerService();
+      (service as any)._dbContext = mockDbContext;
 
       await service.http('test http');
 
@@ -350,7 +327,9 @@ describe('DatabaseLoggerService', () => {
     });
 
     it('should log http with low severity', async () => {
-      service.setLogLevel('http');
+      jest.replaceProperty(config, 'LOG_LEVEL', 'http');
+      service = new DatabaseLoggerService();
+      (service as any)._dbContext = mockDbContext;
 
       await service.http('test http');
 
@@ -366,7 +345,9 @@ describe('DatabaseLoggerService', () => {
 
   describe('verbose', () => {
     it('should skip logging when log level is not met', async () => {
-      service.setLogLevel('http');
+      jest.replaceProperty(config, 'LOG_LEVEL', 'http');
+      service = new DatabaseLoggerService();
+      (service as any)._dbContext = mockDbContext;
 
       await service.verbose('test verbose');
 
@@ -374,7 +355,9 @@ describe('DatabaseLoggerService', () => {
     });
 
     it('should log verbose with low severity', async () => {
-      service.setLogLevel('verbose');
+      jest.replaceProperty(config, 'LOG_LEVEL', 'verbose');
+      service = new DatabaseLoggerService();
+      (service as any)._dbContext = mockDbContext;
 
       await service.verbose('test verbose');
 
@@ -390,7 +373,9 @@ describe('DatabaseLoggerService', () => {
 
   describe('debug', () => {
     it('should skip logging when log level is not met', async () => {
-      service.setLogLevel('verbose');
+      jest.replaceProperty(config, 'LOG_LEVEL', 'verbose');
+      service = new DatabaseLoggerService();
+      (service as any)._dbContext = mockDbContext;
 
       await service.debug('test debug');
 
@@ -398,7 +383,9 @@ describe('DatabaseLoggerService', () => {
     });
 
     it('should log debug with low severity', async () => {
-      service.setLogLevel('debug');
+      jest.replaceProperty(config, 'LOG_LEVEL', 'debug');
+      service = new DatabaseLoggerService();
+      (service as any)._dbContext = mockDbContext;
 
       await service.debug('test debug');
 
@@ -414,7 +401,9 @@ describe('DatabaseLoggerService', () => {
 
   describe('silly', () => {
     it('should skip logging when log level is not met', async () => {
-      service.setLogLevel('debug');
+      jest.replaceProperty(config, 'LOG_LEVEL', 'debug');
+      service = new DatabaseLoggerService();
+      (service as any)._dbContext = mockDbContext;
 
       await service.silly('test silly');
 
@@ -422,7 +411,9 @@ describe('DatabaseLoggerService', () => {
     });
 
     it('should log silly with low severity', async () => {
-      service.setLogLevel('silly');
+      jest.replaceProperty(config, 'LOG_LEVEL', 'silly');
+      service = new DatabaseLoggerService();
+      (service as any)._dbContext = mockDbContext;
 
       await service.silly('test silly');
 
@@ -438,7 +429,9 @@ describe('DatabaseLoggerService', () => {
 
   describe('security', () => {
     it('should always log security events regardless of log level', async () => {
-      service.setLogLevel('error'); // Very restrictive level
+      jest.replaceProperty(config, 'LOG_LEVEL', 'error'); // Very restrictive level
+      service = new DatabaseLoggerService();
+      (service as any)._dbContext = mockDbContext;
 
       await service.security('debug', 'security event');
 
@@ -498,7 +491,6 @@ describe('DatabaseLoggerService', () => {
 
   describe('log level filtering integration', () => {
     it('should filter logs based on configured level', () => {
-      service.setLogLevel('warn');
       expect((service as any).shouldLog('error')).toBe(true);
       expect((service as any).shouldLog('warn')).toBe(true);
       expect((service as any).shouldLog('info')).toBe(false);
@@ -508,8 +500,8 @@ describe('DatabaseLoggerService', () => {
       const levels: LogLevel[] = ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'];
 
       levels.forEach(level => {
-        service.setLogLevel(level);
-        expect(service.getLogLevel()).toBe(level);
+        jest.replaceProperty(config, 'LOG_LEVEL', level);
+        expect(LOG_LEVEL).toBe(level);
       });
     });
   });
@@ -525,6 +517,9 @@ describe('DatabaseLoggerService', () => {
     });
 
     it('should catch and handle database errors in all log methods', async () => {
+      jest.replaceProperty(config, 'LOG_LEVEL', 'silly');
+      service = new DatabaseLoggerService();
+      (service as any)._dbContext = mockDbContext;
       mockLogRepository.save.mockRejectedValue(new Error('Database error'));
 
       await service.warn('Test warn');
@@ -579,5 +574,13 @@ describe('DatabaseLoggerService', () => {
         }),
       );
     });
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
   });
 });

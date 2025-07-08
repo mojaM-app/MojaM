@@ -47,7 +47,7 @@ describe('Cache user data tests', () => {
           salt: adminLoginData.salt,
           refreshTokenKey: adminLoginData.refreshTokenKey,
           passcode:
-            '0054475aec0228265ef119a559090cf84fe6a986ce5fa6a621ea22d965087408aaab71efcb84eff4df5106bdd8304b0b8e446ff3ebdd555b588549e586df5c52',
+            'e6406308f2432e12965cbc9639f215d0574b6f9de2f310c5ff5535578ac081898e37bc46a26a017cecb773bebc792399373d6ecfc0dacb5b95b87d25ca33dd3c',
           isActive: true,
           email: adminLoginData.email,
           phone: adminLoginData.phone,
@@ -124,6 +124,7 @@ describe('Cache user data tests', () => {
   });
 
   it('Should store userId', async () => {
+    //if this test fails, check if getAdminLoginData returns same data as in the database
     let response = await request(app!.getServer())
       .get(`${UserRoute.path}/${adminUuid}`)
       .send()

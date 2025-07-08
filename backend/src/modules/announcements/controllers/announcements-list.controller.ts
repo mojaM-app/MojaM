@@ -1,11 +1,11 @@
-import { BaseController, IPageData, IRequestWithIdentity, ISortData } from '@core';
+import { BaseController, type IPageData, type IRequestWithIdentity, type ISortData } from '@core';
 import { toNumber } from '@utils';
-import { NextFunction, Response } from 'express';
+import type { NextFunction, Response } from 'express';
 import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
 import { AnnouncementListViewColumns } from '../../../dataBase/entities/announcements/vAnnouncement.entity';
 import {
-  AnnouncementsGridPageDto,
+  type AnnouncementsGridPageDto,
   GetAnnouncementListReqDto,
   GetAnnouncementListResponseDto,
 } from '../dtos/get-announcement-list.dto';
@@ -56,8 +56,8 @@ export class AnnouncementsListController extends BaseController {
 
   private getSortData(req: IRequestWithIdentity): ISortData {
     return {
-      column: req.query?.column?.toString() ?? AnnouncementListViewColumns.validFromDate,
-      direction: req.query?.direction?.toString() ?? 'asc',
+      column: req.query.column?.toString() ?? AnnouncementListViewColumns.validFromDate,
+      direction: req.query.direction?.toString() ?? 'asc',
     } satisfies ISortData;
   }
 }

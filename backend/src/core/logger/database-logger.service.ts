@@ -222,12 +222,4 @@ export class DatabaseLoggerService extends BaseRepository {
       fileLogger[level](`[SECURITY] ${message}`, metadata);
     }
   }
-
-  public getLogLevel(): LogLevel {
-    return this.configuredLogLevel;
-  }
-
-  public setLogLevel(level: LogLevel): void {
-    (this as any).configuredLogLevel = level;
-  }
 }

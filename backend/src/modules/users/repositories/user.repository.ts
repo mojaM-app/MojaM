@@ -8,7 +8,7 @@ import {
 } from '@core';
 import { relatedDataNames } from '@db';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { getDateTimeNow, isNullOrEmptyString } from '@utils';
+import { getDateTimeNow, isNullOrEmptyString, toNumber } from '@utils';
 import { Container, Service } from 'typedi';
 import { Not } from 'typeorm';
 import { BaseUserRepository } from './base.user.repository';
@@ -138,7 +138,7 @@ export class UserRepository extends BaseUserRepository {
     return relatedDataConnectedWithUser
       .map((x: { count: string; entities: string }) => {
         return {
-          count: parseInt(x.count),
+          count: toNumber(x.count),
           entities: x.entities,
         };
       })

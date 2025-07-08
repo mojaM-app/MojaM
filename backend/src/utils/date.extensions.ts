@@ -14,7 +14,10 @@ Date.prototype.addMonths = function (months: number): Date {
 
   const date = this as Date;
   const newDate = new Date(new Date(date).setMonth(date.getMonth() + months));
-  return new Date(newDate.getTime() + (date.getTimezoneOffset() - newDate.getTimezoneOffset()) * 60 * 1000);
+  const oneMinuteInMilliseconds = 60 * 1000;
+  return new Date(
+    newDate.getTime() + (date.getTimezoneOffset() - newDate.getTimezoneOffset()) * oneMinuteInMilliseconds,
+  );
 };
 
 Date.prototype.addDays = function (days: number): Date {
@@ -24,5 +27,8 @@ Date.prototype.addDays = function (days: number): Date {
 
   const date = this as Date;
   const newDate = new Date(new Date(date).setDate(date.getDate() + days));
-  return new Date(newDate.getTime() + (date.getTimezoneOffset() - newDate.getTimezoneOffset()) * 60 * 1000);
+  const oneMinuteInMilliseconds = 60 * 1000;
+  return new Date(
+    newDate.getTime() + (date.getTimezoneOffset() - newDate.getTimezoneOffset()) * oneMinuteInMilliseconds,
+  );
 };

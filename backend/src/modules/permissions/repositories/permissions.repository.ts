@@ -24,11 +24,12 @@ export class PermissionsRepository extends BaseRepository {
     const result: IUserPermissionsDto[] = [];
 
     for (const user of users) {
-      const userPermissions: SystemPermissions[] = user.systemPermissions
-        ? user.systemPermissions.map(permission => permission.systemPermission.id as SystemPermissions)
-        : [];
+      const userPermissions: SystemPermissions[] =
+        user.systemPermissions.length > 0
+          ? user.systemPermissions.map(permission => permission.systemPermission.id as SystemPermissions)
+          : [];
 
-      const readonlyPermissions = await this._userPermissionsRepository.getByAttributes(user);
+      const readonlyPermissions = this._userPermissionsRepository.getByAttributes(user);
 
       result.push({
         id: user.uuid,

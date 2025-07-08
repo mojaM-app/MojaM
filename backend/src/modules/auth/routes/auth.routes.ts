@@ -1,7 +1,7 @@
 import { REGEX_PATTERNS } from '@config';
-import { IRoutes, RouteConstants } from '@core';
+import { type IRoutes, RouteConstants } from '@core';
 import { validateData } from '@middlewares';
-import express from 'express';
+import { default as express } from 'express';
 import { AuthController } from '../controllers/auth.controller';
 import { ActivateAccountDto } from '../dtos/activate-account.dto';
 import { AccountTryingToLogInDto } from '../dtos/get-account-before-log-in.dto';
@@ -30,36 +30,52 @@ export class AuthRoute implements IRoutes {
 
   private initializeRoutes(): void {
     this.router.post(AuthRoute.loginPath, [validateData(LoginDto)], this._authController.logIn);
+
     this.router.post(
       AuthRoute.getAccountBeforeLogInPath,
       [validateData(AccountTryingToLogInDto)],
       this._authController.getAccountBeforeLogIn,
     );
+
     this.router.post(
       AuthRoute.requestResetPasscodePath,
       [validateData(AccountTryingToLogInDto)],
       this._authController.requestResetPasscode,
     );
+
     this.router.post(
-      AuthRoute.checkResetPasscodeTokenPath + `/:userId(${REGEX_PATTERNS.GUID})/:token`,
+      `${AuthRoute.checkResetPasscodeTokenPath}/:userId(${REGEX_PATTERNS.GUID})/:token`,
       this._authController.checkResetPasscodeToken,
     );
+
     this.router.post(
-      AuthRoute.resetPasscodePath + `/:userId(${REGEX_PATTERNS.GUID})`,
+      `${AuthRoute.resetPasscodePath}/:userId(${REGEX_PATTERNS.GUID})`,
       [validateData(ResetPasscodeDto)],
       this._authController.resetPasscode,
     );
-    this.router.post(AuthRoute.refreshTokenPath, [validateData(RefreshTokenDto)], this._authController.refreshAccessToken);
+
     this.router.post(
-      AuthRoute.getAccountToActivatePath + `/:userId(${REGEX_PATTERNS.GUID})`,
+      AuthRoute.refreshTokenPath,
+      [validateData(RefreshTokenDto)],
+      this._authController.refreshAccessToken,
+    );
+
+    this.router.post(
+      `${AuthRoute.getAccountToActivatePath}/:userId(${REGEX_PATTERNS.GUID})`,
       this._authController.getAccountToActivate,
     );
+
     this.router.post(
-      AuthRoute.activateAccountPath + `/:userId(${REGEX_PATTERNS.GUID})`,
-      [ validateData(ActivateAccountDto)],
+      `${AuthRoute.activateAccountPath}/:userId(${REGEX_PATTERNS.GUID})`,
+      [validateData(ActivateAccountDto)],
       this._authController.activateAccount,
     );
-    this.router.post(AuthRoute.unlockAccountPath + `/:userId(${REGEX_PATTERNS.GUID})`, this._authController.unlockAccount);
+
+    this.router.post(
+      `${AuthRoute.unlockAccountPath}/:userId(${REGEX_PATTERNS.GUID})`,
+      this._authController.unlockAccount,
+    );
+
     // this.router.post(`${AuthRoute.path}logout`, verifyToken, this._authController.logOut);
   }
 }

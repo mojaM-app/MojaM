@@ -1,7 +1,7 @@
-import express from 'express';
 import { REGEX_PATTERNS } from '@config';
 import { type IRoutes, RouteConstants } from '@core';
 import { requirePermission, setIdentity } from '@middlewares';
+import { default as express } from 'express';
 import { UserDetailsController } from '../controllers/user-details.controller';
 
 export class UserDetailsRoute implements IRoutes {

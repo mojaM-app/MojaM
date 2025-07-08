@@ -1,6 +1,6 @@
 import { type IRoutes } from '@core';
 import { requirePermission, setIdentity, validateData } from '@middlewares';
-import express from 'express';
+import { default as express } from 'express';
 import { UserProfileController } from '../controllers/user-profile.controller';
 import { UpdateUserProfileDto } from '../dtos/update-user-profile.dto';
 

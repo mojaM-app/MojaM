@@ -1,3 +1,4 @@
+import { IUserDto } from '@core';
 import {
   Column,
   CreateDateColumn,
@@ -10,7 +11,6 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { IUserDto } from '@core';
 import { UserResetPasscodeToken } from './user-reset-passcode-tokens.entity';
 import { UserSystemPermission } from './user-system-permission.entity';
 import { ICreateUser, IHasGuidId, IUpdateUser, IUserEntity } from '../../../core/interfaces';

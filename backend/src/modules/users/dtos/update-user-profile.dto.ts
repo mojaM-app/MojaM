@@ -1,8 +1,8 @@
-import { Transform, Type } from 'class-transformer';
-import { IsDate, IsOptional, IsString, MaxLength } from 'class-validator';
 import { VALIDATOR_SETTINGS } from '@config';
 import { BaseReqDto, DtoTransformFunctions, events, type IResponse } from '@core';
 import { errorKeys } from '@exceptions';
+import { Transform, Type } from 'class-transformer';
+import { IsDate, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class UpdateUserProfileDto {
   @IsOptional()

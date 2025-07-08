@@ -1,7 +1,7 @@
 import { REGEX_PATTERNS, VALIDATOR_SETTINGS } from '@config';
 import { isNullOrEmptyString } from '@utils';
 import { matches, maxLength, minLength } from 'class-validator';
-import * as crypto from 'crypto';
+import { pbkdf2Sync } from 'crypto';
 import { Service } from 'typedi';
 import { IAuthenticationTypeService } from '../interfaces/IAuthenticationTypeService';
 
@@ -15,7 +15,8 @@ export class PinService implements IAuthenticationTypeService {
       throw new Error('Salt and pin are required to hash a pin');
     }
 
-    return crypto.pbkdf2Sync(pin, salt, 1000, PinService.KEY_LENGTH, 'sha512').toString('hex');
+    const numberOfIterations = 10_000;
+    return pbkdf2Sync(pin, salt, numberOfIterations, PinService.KEY_LENGTH, 'sha512').toString('hex');
   }
 
   public match(pin: string, salt: string, hashedPin: string): boolean {
@@ -27,6 +28,10 @@ export class PinService implements IAuthenticationTypeService {
       return false;
     }
 
-    return minLength(pin, VALIDATOR_SETTINGS.PIN_LENGTH) && maxLength(pin, VALIDATOR_SETTINGS.PIN_LENGTH) && matches(pin!, REGEX_PATTERNS.PIN);
+    return (
+      minLength(pin, VALIDATOR_SETTINGS.PIN_LENGTH) &&
+      maxLength(pin, VALIDATOR_SETTINGS.PIN_LENGTH) &&
+      matches(pin!, REGEX_PATTERNS.PIN)
+    );
   }
 }

@@ -1,5 +1,5 @@
-import { Service } from 'typedi';
 import { BaseService, events } from '@core';
+import { Service } from 'typedi';
 import { type IGetNewsDto } from '../dtos/news.dto';
 import { NewsRetrievedEvent } from '../events/news-retrieved-event';
 

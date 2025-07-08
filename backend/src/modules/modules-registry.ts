@@ -1,4 +1,4 @@
-import { IModule, IRoutes } from '@core';
+import { type IModule, type IRoutes } from '@core';
 import { AnnouncementsModule } from './announcements/announcements.module';
 import { AuthModule } from './auth/auth.module';
 import { CalendarModule } from './calendar/calendar.module';
@@ -11,7 +11,7 @@ import { SecurityModule } from './security/security.module';
 import { UsersModule } from './users/users.module';
 
 export class ModulesRegistry {
-  private static _modules: IModule[] = [
+  private static readonly _modules: IModule[] = [
     new NotificationsModule(),
     new AuthModule(),
     new UsersModule(),
@@ -25,7 +25,9 @@ export class ModulesRegistry {
   ];
 
   public static registerAll(): void {
-    this._modules.forEach(module => module.register());
+    this._modules.forEach(module => {
+      module.register();
+    });
   }
 
   public static getRoutes(): IRoutes[] {

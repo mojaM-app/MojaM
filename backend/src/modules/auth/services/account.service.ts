@@ -1,8 +1,8 @@
-import { Container, Service } from 'typedi';
 import { AuthenticationTypes, BaseService, events, IUpdateUser, IUserEntity, IUserService } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { UserActivatedEvent, UserUnlockedEvent } from '@modules/users';
 import { isArray, isNullOrEmptyString, isNullOrUndefined } from '@utils';
+import { Container, Service } from 'typedi';
 import { ActivateAccountDto, ActivateAccountReqDto, IActivateAccountResultDto } from '../dtos/activate-account.dto';
 import { AccountTryingToLogInDto, IGetAccountBeforeLogInResultDto } from '../dtos/get-account-before-log-in.dto';
 import { GetAccountToActivateReqDto, IAccountToActivateResultDto } from '../dtos/get-account-to-activate.dto';

@@ -47,7 +47,7 @@ export class CommunityService extends BaseService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = (await response.json()) as IGetCommunityDto;
+      const data = (await response.json()) as IGetCommunityDto | null | undefined;
       return {
         info: data?.info ?? {},
         tabs: data?.tabs ?? [],
