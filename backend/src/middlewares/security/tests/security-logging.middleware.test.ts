@@ -17,7 +17,7 @@ jest.mock('@core/logger/database-logger.service', () => ({
   })),
 }));
 
-jest.mock('@core/logger/security-logger.service', () => ({
+jest.mock('../security-logger.service', () => ({
   SecurityLoggerService: jest.fn().mockImplementation(() => ({
     logSuspiciousActivity: jest.fn(),
     logFailedLogin: jest.fn(),
