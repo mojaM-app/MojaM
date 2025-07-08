@@ -13,7 +13,7 @@ import { isNullOrEmptyString, isNullOrUndefined, isString } from '@utils';
 import { NextFunction, Request, Response } from 'express';
 import { JwtPayload, verify } from 'jsonwebtoken';
 import Container from 'typedi';
-import { SecurityLoggerService } from './../../core/logger/security-logger.service';
+import { SecurityLoggerService } from '../security/security-logger.service';
 
 const getAuthorization = (req: Request): string | null => {
   let header: string | string[] | undefined = req?.headers?.Authorization;

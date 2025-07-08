@@ -1,6 +1,6 @@
-import { SecurityLoggerService } from '@core/logger/security-logger.service';
 import { NextFunction, Request, Response } from 'express';
 import { getRequestId } from '../request-id.middleware';
+import { SecurityLoggerService } from '../security-logger.service';
 import { securityLoggingMiddleware } from '../security-logging.middleware';
 
 jest.mock('../request-id.middleware', () => ({

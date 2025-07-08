@@ -1,7 +1,7 @@
-import { getRequestId } from '@middlewares';
+import { DatabaseLoggerService } from '@core';
 import { type Request } from 'express';
 import { Service } from 'typedi';
-import { DatabaseLoggerService } from './database-logger.service';
+import { getRequestId } from './request-id.middleware';
 
 interface ISecurityLogData {
   event: string;

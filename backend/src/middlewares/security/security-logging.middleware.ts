@@ -1,6 +1,6 @@
 import { type NextFunction, type Request, type Response } from 'express';
 import { Container } from 'typedi';
-import { SecurityLoggerService } from './../../core/logger/security-logger.service';
+import { SecurityLoggerService } from './security-logger.service';
 
 // Middleware to log security events for requests
 export const securityLoggingMiddleware = (req: Request, res: Response, next: NextFunction): void => {

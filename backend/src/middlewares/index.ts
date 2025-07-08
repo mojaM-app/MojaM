@@ -10,3 +10,4 @@ export { corsOptions } from './security/cors.middleware';
 export { securityLoggingMiddleware } from './security/security-logging.middleware';
 export { requestIdMiddleware, getRequestId } from './security/request-id.middleware';
 export { contentSecurityPolicy, cspReportHandler } from './security/csp.middleware';
+export { SecurityLoggerService } from './security/security-logger.service';

@@ -1,5 +1,6 @@
 import { BaseController } from '@core';
 import { errorKeys } from '@exceptions';
+import { SecurityLoggerService } from '@middlewares';
 import { isGuid } from '@utils';
 import { type NextFunction, type Request, type Response } from 'express';
 import { StatusCode } from 'status-code-enum';
@@ -43,7 +44,6 @@ import type { ILoginResult } from '../interfaces/login.interfaces';
 import { AccountService } from '../services/account.service';
 import { AuthService } from '../services/auth.service';
 import { ResetPasscodeService } from '../services/reset-passcode.service';
-import { SecurityLoggerService } from './../../../core/logger/security-logger.service';
 
 export class AuthController extends BaseController {
   private readonly _authService: AuthService;
