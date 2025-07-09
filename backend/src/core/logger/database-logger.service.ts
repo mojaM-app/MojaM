@@ -1,7 +1,7 @@
 import { LOG_LEVEL } from '@config';
-import { BaseRepository } from '@db';
 import { Service } from 'typedi';
 import { fileLogger } from './file-logger.service';
+import { BaseRepository } from '../../dataBase/shared/base.repository';
 
 export interface ILogMetadata {
   userId?: string;

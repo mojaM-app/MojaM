@@ -1,4 +1,4 @@
-import { IAddUserSystemPermission } from '@core';
+import { IAddUserSystemPermission } from '@core/interfaces';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, Relation } from 'typeorm';
 import { User } from './user.entity';
 import { EntityDefaultFunctions } from '../../EntityDefaultFunctions';

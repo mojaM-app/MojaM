@@ -1,4 +1,4 @@
-import { exportsForTesting } from '../config/index';
+import { exportsForTesting } from '../config';
 
 describe('getEnvName', () => {
   test('getEnvName', () => {

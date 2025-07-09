@@ -1,4 +1,4 @@
-import { ICryptoService } from '@core';
+import { ICryptoService } from '@core/interfaces';
 import { randomBytes } from 'crypto';
 import { Service } from 'typedi';
 

@@ -1,8 +1,8 @@
 import { isStrongPassword, maxLength } from 'class-validator';
 import { pbkdf2Sync } from 'crypto';
 import { Service } from 'typedi';
-import { VALIDATOR_SETTINGS } from '../../../config/index';
-import { isNullOrEmptyString } from '../../../utils/index';
+import { VALIDATOR_SETTINGS } from '../../../config';
+import { isNullOrEmptyString } from '../../../utils';
 import { IAuthenticationTypeService } from '../interfaces/IAuthenticationTypeService';
 
 @Service()

@@ -1,4 +1,4 @@
-import { IUserDto } from '@core';
+import { IUserDto } from '@core/dtos';
 import {
   Column,
   CreateDateColumn,
@@ -11,10 +11,10 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
+import { ADMIN_UUID } from './../../../config';
 import { UserResetPasscodeToken } from './user-reset-passcode-tokens.entity';
 import { UserSystemPermission } from './user-system-permission.entity';
 import { ICreateUser, IHasGuidId, IUpdateUser, IUserEntity } from '../../../core/interfaces';
-import { getAdminLoginData } from '../../../utils/user.utils';
 import { EntityDefaultFunctions } from '../../EntityDefaultFunctions';
 import { EntityTransformFunctions } from '../../EntityTransformFunctions';
 import { AnnouncementItem } from '../announcements/announcement-item.entity';
@@ -227,7 +227,7 @@ export class User implements IHasGuidId, ICreateUser, IUpdateUser, IUserEntity {
   }
 
   public isAdmin(): boolean {
-    return this.uuid === getAdminLoginData().uuid;
+    return this.uuid === ADMIN_UUID;
   }
 
   public isPasscodeSet(): boolean {

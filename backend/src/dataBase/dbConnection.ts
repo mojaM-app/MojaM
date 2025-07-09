@@ -1,7 +1,7 @@
 import { NODE_ENV } from '@config';
-import { fileLogger as logger } from '@core';
 import { EventEmitter } from 'events';
 import { DbContext } from './dbContext';
+import { fileLogger as logger } from '../core/logger/file-logger.service';
 
 export interface IDbConnectionConfig {
   maxRetries: number;

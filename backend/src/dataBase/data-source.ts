@@ -10,7 +10,7 @@ import {
   DATABASE_PORT,
   DATABASE_USERNAME,
   NODE_ENV,
-} from '../config/index';
+} from '../config';
 import { AnnouncementItem } from './entities/announcements/announcement-item.entity';
 import { Announcement } from './entities/announcements/announcement.entity';
 import { vAnnouncement } from './entities/announcements/vAnnouncement.entity';
