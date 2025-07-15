@@ -1,5 +1,5 @@
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
-import { ILoginModel, RouteConstants } from '@core';
+import { ILoginModel } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { userTestHelpers } from '@modules/users';
@@ -7,11 +7,11 @@ import { getAdminLoginData } from '@utils';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
 import Container from 'typedi';
+import { TestApp } from '../../../helpers/test-helpers/test.app';
 import { IUnlockAccountResultDto, UnlockAccountResponseDto } from '../dtos/unlock-account.dto';
 import { AuthRoute } from '../routes/auth.routes';
 import { AccountService } from '../services/account.service';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
-import { TestApp } from './../../../helpers/tests.utils';
 
 describe('POST /auth/unlock-account/', () => {
   let app: TestApp | undefined;
@@ -21,7 +21,7 @@ describe('POST /auth/unlock-account/', () => {
     app = await testHelpers.getTestApp();
     app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-    adminAccessToken = (await testHelpers.loginAs(app, { email, passcode } satisfies ILoginModel))?.accessToken;
+    adminAccessToken = (await app.auth.loginAs({ email, passcode } satisfies ILoginModel))?.accessToken;
   });
 
   beforeEach(async () => {
@@ -49,19 +49,13 @@ describe('POST /auth/unlock-account/', () => {
     it('when user with given id exist and is not locked out', async () => {
       // Create a user
       const user = userTestHelpers.generateValidUserWithPassword();
-      const createUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH)
-        .send(user)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await app!.user.create(user, adminAccessToken);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto } = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
 
       // Activate the user
-      const activateResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH + '/' + newUserDto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const activateResponse = await app!.user.activate(newUserDto.id, adminAccessToken);
       expect(activateResponse.statusCode).toBe(200);
 
       // Try to unlock the user who is not locked
@@ -78,18 +72,18 @@ describe('POST /auth/unlock-account/', () => {
         success: true,
       } satisfies IUnlockAccountResultDto);
 
-      // Clean up
-      const deleteResponse = await request(app!.getServer())
-        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteResponse.statusCode).toBe(200);
+      const deleteUserResponse = await app!.user.delete(newUserDto.id, adminAccessToken);
+      expect(deleteUserResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
         .filter(
           ([, eventHandler]) =>
-            ![testEventHandlers.onUserCreated, testEventHandlers.onUserActivated, testEventHandlers.onUserDeleted].includes(eventHandler),
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onUserDeleted,
+            ].includes(eventHandler),
         )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
@@ -102,19 +96,13 @@ describe('POST /auth/unlock-account/', () => {
     it('when user with given id exist and is locked out', async () => {
       // Create a user
       const user = userTestHelpers.generateValidUserWithPassword();
-      const createUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH)
-        .send(user)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await app!.user.create(user, adminAccessToken);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto } = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
 
       // Activate the user
-      const activateResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH + '/' + newUserDto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const activateResponse = await app!.user.activate(newUserDto.id, adminAccessToken);
       expect(activateResponse.statusCode).toBe(200);
 
       // Lock out the user by making multiple failed login attempts
@@ -146,15 +134,13 @@ describe('POST /auth/unlock-account/', () => {
       } satisfies IUnlockAccountResultDto);
 
       // Verify user can now log in
-      const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send({ email: newUserDto.email, passcode: user.passcode });
+      const loginResponse = await request(app!.getServer())
+        .post(AuthRoute.loginPath)
+        .send({ email: newUserDto.email, passcode: user.passcode });
       expect(loginResponse.statusCode).toBe(200);
 
-      // Clean up
-      const deleteResponse = await request(app!.getServer())
-        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteResponse.statusCode).toBe(200);
+      const deleteUserResponse = await app!.user.delete(newUserDto.id, adminAccessToken);
+      expect(deleteUserResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -187,19 +173,13 @@ describe('POST /auth/unlock-account/', () => {
     it('when user in unlocked, failed login attempts is reset', async () => {
       // Create a user
       const user = userTestHelpers.generateValidUserWithPassword();
-      const createUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH)
-        .send(user)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await app!.user.create(user, adminAccessToken);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto } = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
 
       // Activate the user
-      const activateResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH + '/' + newUserDto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const activateResponse = await app!.user.activate(newUserDto.id, adminAccessToken);
       expect(activateResponse.statusCode).toBe(200);
 
       // Lock out the user by making multiple failed login attempts
@@ -223,7 +203,9 @@ describe('POST /auth/unlock-account/', () => {
       expect(unlockResponse.statusCode).toBe(200);
 
       // Verify successful login after unlock (this proves the failed login attempts counter was reset)
-      const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send({ email: newUserDto.email, passcode: user.passcode });
+      const loginResponse = await request(app!.getServer())
+        .post(AuthRoute.loginPath)
+        .send({ email: newUserDto.email, passcode: user.passcode });
       expect(loginResponse.statusCode).toBe(200);
 
       // Verify we can attempt invalid login again without immediately locking out (which would happen if counter wasn't reset)
@@ -239,12 +221,8 @@ describe('POST /auth/unlock-account/', () => {
         .send({ email: newUserDto.email, passcode: user.passcode });
       expect(secondLoginResponse.statusCode).toBe(200);
 
-      // Clean up
-      const deleteResponse = await request(app!.getServer())
-        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteResponse.statusCode).toBe(200);
+      const deleteUserResponse = await app!.user.delete(newUserDto.id, adminAccessToken);
+      expect(deleteUserResponse.statusCode).toBe(200);
 
       // Verify events
       Object.entries(testEventHandlers)

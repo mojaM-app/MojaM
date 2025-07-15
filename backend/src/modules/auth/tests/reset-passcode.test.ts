@@ -1,5 +1,5 @@
 import { RESET_PASSWORD_TOKEN_EXPIRE_IN, USER_ACCOUNT_LOCKOUT_SETTINGS, VALIDATOR_SETTINGS } from '@config';
-import { AuthenticationTypes, events, ILoginModel, IResetPasscodeEmailSettings, RouteConstants } from '@core';
+import { AuthenticationTypes, events, ILoginModel, IResetPasscodeEmailSettings } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { EmailService } from '@modules/notifications/services/email.service';
@@ -10,6 +10,7 @@ import { Guid } from 'guid-typescript';
 import ms from 'ms';
 import request from 'supertest';
 import Container from 'typedi';
+import { TestApp } from '../../../helpers/test-helpers/test.app';
 import {
   CheckResetPasscodeTokenResponseDto,
   ICheckResetPasscodeTokenResultDto,
@@ -21,7 +22,6 @@ import { ResetPasscodeDto, ResetPasscodeResponseDto } from '../dtos/reset-passco
 import { AuthRoute } from '../routes/auth.routes';
 import { ResetPasscodeService } from '../services/reset-passcode.service';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
-import { TestApp } from './../../../helpers/tests.utils';
 
 describe('POST /auth/reset-passcode', () => {
   let app: TestApp | undefined;
@@ -36,7 +36,7 @@ describe('POST /auth/reset-passcode', () => {
     app.mock_nodemailer_createTransport();
 
     const { email, passcode } = getAdminLoginData();
-    adminAccessToken = (await testHelpers.loginAs(app, { email, passcode } satisfies ILoginModel))?.accessToken;
+    adminAccessToken = (await app.auth.loginAs({ email, passcode } satisfies ILoginModel))?.accessToken;
   });
 
   beforeEach(async () => {
@@ -46,10 +46,7 @@ describe('POST /auth/reset-passcode', () => {
   describe('when reset password data are valid', () => {
     it('when user is inactive, after reset password user should be active and should be able to log in', async () => {
       const user = userTestHelpers.generateValidUserWithPassword();
-      const createUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH)
-        .send(user)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await app!.user.create(user, adminAccessToken);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
@@ -111,16 +108,13 @@ describe('POST /auth/reset-passcode', () => {
       expect(resetPasscodeResult.isPasscodeSet).toBe(true);
 
       const newUserAccessToken = (
-        await testHelpers.loginAs(app!, { email: newUserDto.email, passcode: newPassword } satisfies ILoginModel)
+        await app!.auth.loginAs({ email: newUserDto.email, passcode: newPassword } satisfies ILoginModel)
       )?.accessToken;
       expect(newUserAccessToken).toBeDefined();
       expect(newUserAccessToken!.length).toBeGreaterThan(1);
 
-      const deleteResponse = await request(app!.getServer())
-        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteResponse.statusCode).toBe(200);
+      const deleteUserResponse = await app!.user.delete(newUserDto.id, adminAccessToken);
+      expect(deleteUserResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -145,19 +139,13 @@ describe('POST /auth/reset-passcode', () => {
 
     it('when user is active, after reset password user should be active and should be able to log in', async () => {
       const user = userTestHelpers.generateValidUserWithPassword();
-      const createUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH)
-        .send(user)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await app!.user.create(user, adminAccessToken);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(newUserDto.email).toBe(user.email);
 
-      const activateUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH + '/' + newUserDto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const activateUserResponse = await app!.user.activate(newUserDto.id, adminAccessToken);
       expect(activateUserResponse.statusCode).toBe(200);
 
       let url = '';
@@ -216,16 +204,13 @@ describe('POST /auth/reset-passcode', () => {
       expect(resetPasscodeResult.isPasscodeSet).toBe(true);
 
       const newUserAccessToken = (
-        await testHelpers.loginAs(app!, { email: newUserDto.email, passcode: newPassword } satisfies ILoginModel)
+        await app!.auth.loginAs({ email: newUserDto.email, passcode: newPassword } satisfies ILoginModel)
       )?.accessToken;
       expect(newUserAccessToken).toBeDefined();
       expect(newUserAccessToken!.length).toBeGreaterThan(1);
 
-      const deleteResponse = await request(app!.getServer())
-        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteResponse.statusCode).toBe(200);
+      const deleteUserResponse = await app!.user.delete(newUserDto.id, adminAccessToken);
+      expect(deleteUserResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -252,19 +237,13 @@ describe('POST /auth/reset-passcode', () => {
 
     it('when user is lockedOut, after reset password user should be active and should be unlocked (should be able to log in)', async () => {
       const user = userTestHelpers.generateValidUserWithPassword();
-      const createUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH)
-        .send(user)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await app!.user.create(user, adminAccessToken);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(newUserDto.email).toBe(user.email);
 
-      const activateUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH + '/' + newUserDto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const activateUserResponse = await app!.user.activate(newUserDto.id, adminAccessToken);
       expect(activateUserResponse.statusCode).toBe(200);
 
       const loginData: ILoginModel = {
@@ -356,11 +335,8 @@ describe('POST /auth/reset-passcode', () => {
       expect(userLoggedIn.email).toBe(newUserDto.email);
       expect(userLoggedIn.phone).toBe(newUserDto.phone);
 
-      const deleteResponse = await request(app!.getServer())
-        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteResponse.statusCode).toBe(200);
+      const deleteUserResponse = await app!.user.delete(newUserDto.id, adminAccessToken);
+      expect(deleteUserResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -441,20 +417,14 @@ describe('POST /auth/reset-passcode', () => {
       const user = userTestHelpers.generateValidUserWithPassword();
       user.passcode = undefined;
 
-      const createUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH)
-        .send(user)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await app!.user.create(user, adminAccessToken);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createUserMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createUserMessage).toBe(events.users.userCreated);
       expect(newUserDto.email).toBe(user.email);
 
-      const deleteUserResponse = await request(app!.getServer())
-        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteUserResponse = await app!.user.delete(newUserDto.id, adminAccessToken);
       expect(deleteUserResponse.statusCode).toBe(200);
 
       const resetPasscodeModels = [
@@ -585,10 +555,7 @@ describe('POST /auth/reset-passcode', () => {
 
     it('when token is valid but userId is from different user', async () => {
       const user = userTestHelpers.generateValidUserWithPassword();
-      const createUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH)
-        .send(user)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await app!.user.create(user, adminAccessToken);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
@@ -629,11 +596,8 @@ describe('POST /auth/reset-passcode', () => {
       const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.login.Invalid_Reset_Passcode_Token).length).toBe(0);
 
-      const deleteResponse = await request(app!.getServer())
-        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteResponse.statusCode).toBe(200);
+      const deleteUserResponse = await app!.user.delete(newUserDto.id, adminAccessToken);
+      expect(deleteUserResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -648,10 +612,7 @@ describe('POST /auth/reset-passcode', () => {
 
     it('when token expired', async () => {
       const user = userTestHelpers.generateValidUserWithPassword();
-      const createUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH)
-        .send(user)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await app!.user.create(user, adminAccessToken);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
@@ -711,11 +672,8 @@ describe('POST /auth/reset-passcode', () => {
 
       getDateTimeNow.mockRestore();
 
-      const deleteResponse = await request(app!.getServer())
-        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteResponse.statusCode).toBe(200);
+      const deleteUserResponse = await app!.user.delete(newUserDto.id, adminAccessToken);
+      expect(deleteUserResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)

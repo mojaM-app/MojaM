@@ -1,11 +1,11 @@
 import { REGEX_PATTERNS } from '@config';
-import { type IRoutes, RouteConstants } from '@core';
+import { type IRoutes } from '@core';
 import { requirePermission, setIdentity } from '@middlewares';
 import { default as express } from 'express';
 import { UserDetailsController } from '../controllers/user-details.controller';
 
 export class UserDetailsRoute implements IRoutes {
-  public static path = RouteConstants.USER_DETAILS_PATH;
+  public static path = '/user-details';
   public router = express.Router();
   private readonly _controller: UserDetailsController;
 

@@ -10,15 +10,15 @@ import { RefreshTokenDto } from '../dtos/refresh-token.dto';
 import { ResetPasscodeDto } from '../dtos/reset-passcode.dto';
 
 export class AuthRoute implements IRoutes {
-  public static loginPath = RouteConstants.AUTH_LOGIN_PATH;
-  public static getAccountBeforeLogInPath = RouteConstants.AUTH_GET_ACCOUNT_BEFORE_LOG_IN_PATH;
-  public static requestResetPasscodePath = RouteConstants.AUTH_REQUEST_RESET_PASSCODE_PATH;
-  public static checkResetPasscodeTokenPath = `${RouteConstants.AUTH_PATH}/check-reset-passcode-token`;
-  public static resetPasscodePath = `${RouteConstants.AUTH_PATH}/${RouteConstants.AUTH_RESET_PASSCODE}`;
-  public static refreshTokenPath = `${RouteConstants.AUTH_PATH}/refresh-token`;
-  public static getAccountToActivatePath = `${RouteConstants.AUTH_PATH}/get-account-to-activate`;
-  public static activateAccountPath = `${RouteConstants.AUTH_PATH}/activate-account`;
-  public static unlockAccountPath = `${RouteConstants.AUTH_PATH}/unlock-account`;
+  public static loginPath = '/login';
+  public static getAccountBeforeLogInPath = '/auth/get-account-before-log-in';
+  public static requestResetPasscodePath = '/auth/request-reset-passcode';
+  public static checkResetPasscodeTokenPath = '/auth/check-reset-passcode-token';
+  public static resetPasscodePath = `/auth/${RouteConstants.AUTH_RESET_PASSCODE}`;
+  public static refreshTokenPath = '/auth/refresh-token';
+  public static getAccountToActivatePath = '/auth/get-account-to-activate';
+  public static activateAccountPath = `/auth/activate-account`;
+  public static unlockAccountPath = `/auth/unlock-account`;
   public router = express.Router();
 
   private readonly _authController: AuthController;

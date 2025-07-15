@@ -1,4 +1,4 @@
-import { events, ILoginModel, IRequestWithIdentity, RouteConstants } from '@core';
+import { events, ILoginModel, IRequestWithIdentity } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { setIdentity } from '@middlewares';
@@ -11,6 +11,7 @@ import { decode } from 'jsonwebtoken';
 import ms from 'ms';
 import StatusCode from 'status-code-enum';
 import request from 'supertest';
+import { TestApp } from '../../../helpers/test-helpers/test.app';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import {
   getAccessTokenExpiration,
@@ -19,7 +20,6 @@ import {
 import { ActivateAccountDto, ActivateAccountResponseDto } from '../dtos/activate-account.dto';
 import { RefreshTokenDto, RefreshTokenResponseDto } from '../dtos/refresh-token.dto';
 import { AuthRoute } from '../routes/auth.routes';
-import { TestApp } from './../../../helpers/tests.utils';
 
 describe('POST /auth/refresh-token', () => {
   let app: TestApp | undefined;
@@ -29,7 +29,7 @@ describe('POST /auth/refresh-token', () => {
     app = await testHelpers.getTestApp();
     app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-    adminAccessToken = (await testHelpers.loginAs(app, { email, passcode } satisfies ILoginModel))?.accessToken;
+    adminAccessToken = (await app.auth.loginAs({ email, passcode } satisfies ILoginModel))?.accessToken;
   });
 
   beforeEach(async () => {
@@ -94,10 +94,7 @@ describe('POST /auth/refresh-token', () => {
       jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] }).setSystemTime(new Date(expirationDate));
 
       const user = userTestHelpers.generateValidUserWithPassword();
-      let createUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH)
-        .send(user)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      let createUserResponse = await app!.user.create(user, adminAccessToken);
       expect(createUserResponse.statusCode).toBe(401);
 
       const refreshTokenResponse = await request(app!.getServer())
@@ -112,21 +109,15 @@ describe('POST /auth/refresh-token', () => {
       expect(userRefreshedTokenMessage).toBe(events.users.userRefreshedToken);
       expect(newAccessToken).toBeDefined();
 
-      createUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH)
-        .send(user)
-        .set('Authorization', `Bearer ${newAccessToken}`);
+      createUserResponse = await app!.user.create(user, newAccessToken!);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUserDto, message: createUserMessage }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
       expect(createUserMessage).toBe(events.users.userCreated);
       expect(newUserDto.email).toBe(user.email);
 
-      const deleteResponse = await request(app!.getServer())
-        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
-        .send()
-        .set('Authorization', `Bearer ${newAccessToken}`);
-      expect(deleteResponse.statusCode).toBe(200);
+      const deleteUserResponse = await app!.user.delete(newUserDto.id, newAccessToken!);
+      expect(deleteUserResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalledTimes(1);
@@ -209,10 +200,7 @@ describe('POST /auth/refresh-token', () => {
       jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] }).setSystemTime(new Date(expirationDate));
 
       const user = userTestHelpers.generateValidUserWithPassword();
-      const createUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH)
-        .send(user)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await app!.user.create(user, adminAccessToken);
       expect(createUserResponse.statusCode).toBe(401);
 
       const refreshTokenResponse = await request(app!.getServer())
@@ -268,10 +256,7 @@ describe('POST /auth/refresh-token', () => {
       jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] }).setSystemTime(new Date(expirationDate));
 
       const user = userTestHelpers.generateValidUserWithPassword();
-      const createUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH)
-        .send(user)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await app!.user.create(user, adminAccessToken);
       expect(createUserResponse.statusCode).toBe(401);
 
       const refreshTokenResponse = await request(app!.getServer())
@@ -299,10 +284,7 @@ describe('POST /auth/refresh-token', () => {
 
     it('when user stored in refresh token not exists', async () => {
       const requestData = userTestHelpers.generateValidUserWithPassword();
-      const createUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await app!.user.create(requestData, adminAccessToken);
       expect(createUserResponse.statusCode).toBe(201);
       let body = createUserResponse.body;
       const { data: newUserDto }: CreateUserResponseDto = body;
@@ -320,18 +302,15 @@ describe('POST /auth/refresh-token', () => {
       });
 
       const newUserRefreshToken = (
-        await testHelpers.loginAs(app!, {
+        await app!.auth.loginAs({
           email: requestData.email,
           passcode: requestData.passcode,
         } satisfies ILoginModel)
       )?.refreshToken;
       expect(newUserRefreshToken).toBeDefined();
 
-      const deleteResponse = await request(app!.getServer())
-        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteResponse.statusCode).toBe(200);
+      const deleteUserResponse = await app!.user.delete(newUserDto.id, adminAccessToken);
+      expect(deleteUserResponse.statusCode).toBe(200);
 
       const refreshTokenResponse = await request(app!.getServer())
         .post(AuthRoute.refreshTokenPath)

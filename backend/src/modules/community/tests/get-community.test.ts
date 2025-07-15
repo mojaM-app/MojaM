@@ -5,7 +5,7 @@ import { getAdminLoginData } from '@utils';
 import request from 'supertest';
 import { Container } from 'typedi';
 import { testEventHandlers } from '../../../helpers/event-handler-tests.helper';
-import { TestApp } from '../../../helpers/tests.utils';
+import { TestApp } from '../../../helpers/test-helpers/test.app';
 import { GetCommunityResponseDto } from '../dtos/community.dto';
 import { CommunityRoute } from '../routes/community.routes';
 import { CommunityService } from '../services/community.service';
@@ -18,7 +18,7 @@ describe('GET /news', () => {
     app = await testHelpers.getTestApp();
     app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-    adminAccessToken = (await testHelpers.loginAs(app, { email, passcode } satisfies ILoginModel))?.accessToken;
+    adminAccessToken = (await app.auth.loginAs({ email, passcode } satisfies ILoginModel))?.accessToken;
   });
 
   beforeEach(async () => {

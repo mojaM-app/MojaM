@@ -5,11 +5,11 @@ import { testHelpers } from '@helpers';
 import { getAdminLoginData } from '@utils';
 import { google } from 'googleapis';
 import request from 'supertest';
+import { TestApp } from '../../../helpers/test-helpers/test.app';
 import { GetCalendarEventsResponseDto, ICalendarEventDto } from '../dtos/calendar.dto';
 import { CalendarRoutes } from '../routes/calendar.routes';
 import { GoogleCalendarService } from '../services/google-calendar.service';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
-import { TestApp } from './../../../helpers/tests.utils';
 
 describe('GET /calendar/events', () => {
   let app: TestApp | undefined;
@@ -19,7 +19,7 @@ describe('GET /calendar/events', () => {
     app = await testHelpers.getTestApp();
     app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-    adminAccessToken = (await testHelpers.loginAs(app, { email, passcode } satisfies ILoginModel))?.accessToken;
+    adminAccessToken = (await app.auth.loginAs({ email, passcode } satisfies ILoginModel))?.accessToken;
   });
 
   beforeEach(async () => {
@@ -155,7 +155,9 @@ describe('GET /calendar/events', () => {
 
       jest.spyOn(GoogleCalendarService.prototype, 'getEvents').mockResolvedValue(mockEvents);
 
-      const response = await request(app!.getServer()).get(`${CalendarRoutes.path}/events`).set('Authorization', `Bearer ${adminAccessToken}`);
+      const response = await request(app!.getServer())
+        .get(`${CalendarRoutes.path}/events`)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
 
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
@@ -296,7 +298,9 @@ describe('GET /calendar/events', () => {
       const startDate = '2025-05-01';
       const endDate = '2025-05-07';
 
-      const response = await request(app!.getServer()).get(`${CalendarRoutes.path}/events?start=${startDate}&end=${endDate}`);
+      const response = await request(app!.getServer()).get(
+        `${CalendarRoutes.path}/events?start=${startDate}&end=${endDate}`,
+      );
 
       expect(response.statusCode).toBe(200);
     });
@@ -412,21 +416,23 @@ describe('GET /calendar/events', () => {
     });
 
     it('when Google Calendar API returns events with dateTime format', async () => {
-      jest.spyOn(GoogleCalendarService.prototype, 'getEvents').mockImplementation(async function (_startDate, _endDate) {
-        const parseDateTime = (this as any).parseDateTime.bind(this);
-        const date1 = parseDateTime('2025-05-10T09:00:00+02:00');
-        const date2 = parseDateTime('2025-05-10T11:00:00+02:00');
+      jest
+        .spyOn(GoogleCalendarService.prototype, 'getEvents')
+        .mockImplementation(async function (_startDate, _endDate) {
+          const parseDateTime = (this as any).parseDateTime.bind(this);
+          const date1 = parseDateTime('2025-05-10T09:00:00+02:00');
+          const date2 = parseDateTime('2025-05-10T11:00:00+02:00');
 
-        return [
-          {
-            start: date1,
-            end: date2,
-            title: 'Timezone Test Event',
-            location: 'Virtual',
-            allDay: false,
-          },
-        ];
-      });
+          return [
+            {
+              start: date1,
+              end: date2,
+              title: 'Timezone Test Event',
+              location: 'Virtual',
+              allDay: false,
+            },
+          ];
+        });
 
       const response = await request(app!.getServer())
         .get(`${CalendarRoutes.path}/events?start=2025-05-10&end=2025-05-11`)
@@ -438,23 +444,25 @@ describe('GET /calendar/events', () => {
     });
 
     it('when Google Calendar API returns events with date format (all-day events)', async () => {
-      jest.spyOn(GoogleCalendarService.prototype, 'getEvents').mockImplementation(async function (_startDate, _endDate) {
-        const getStartDate = (this as any).getStartDate.bind(this);
-        const getEndDate = (this as any).getEndDate.bind(this);
+      jest
+        .spyOn(GoogleCalendarService.prototype, 'getEvents')
+        .mockImplementation(async function (_startDate, _endDate) {
+          const getStartDate = (this as any).getStartDate.bind(this);
+          const getEndDate = (this as any).getEndDate.bind(this);
 
-        const start = getStartDate({ date: '2025-05-15' }); // All-day event
-        const end = getEndDate({ date: '2025-05-16' }); // End date processing for all-day event
+          const start = getStartDate({ date: '2025-05-15' }); // All-day event
+          const end = getEndDate({ date: '2025-05-16' }); // End date processing for all-day event
 
-        return [
-          {
-            start: start,
-            end: end,
-            title: 'All Day Format Test',
-            location: 'Everywhere',
-            allDay: true,
-          },
-        ];
-      });
+          return [
+            {
+              start: start,
+              end: end,
+              title: 'All Day Format Test',
+              location: 'Everywhere',
+              allDay: true,
+            },
+          ];
+        });
 
       const response = await request(app!.getServer())
         .get(`${CalendarRoutes.path}/events?start=2025-05-14&end=2025-05-17`)
@@ -467,28 +475,30 @@ describe('GET /calendar/events', () => {
     });
 
     it('when handling special date cases including undefined and null values', async () => {
-      jest.spyOn(GoogleCalendarService.prototype, 'getEvents').mockImplementation(async function (_startDate, _endDate) {
-        const parseDateTime = (this as any).parseDateTime.bind(this);
-        const getDate = (this as any).getDate.bind(this);
+      jest
+        .spyOn(GoogleCalendarService.prototype, 'getEvents')
+        .mockImplementation(async function (_startDate, _endDate) {
+          const parseDateTime = (this as any).parseDateTime.bind(this);
+          const getDate = (this as any).getDate.bind(this);
 
-        parseDateTime(null);
-        parseDateTime('');
-        parseDateTime(undefined);
+          parseDateTime(null);
+          parseDateTime('');
+          parseDateTime(undefined);
 
-        getDate(undefined);
-        getDate({ dateTime: '', date: '' });
-        getDate({});
+          getDate(undefined);
+          getDate({ dateTime: '', date: '' });
+          getDate({});
 
-        return [
-          {
-            start: new Date('2025-05-25T10:00:00Z'),
-            end: new Date('2025-05-25T11:00:00Z'),
-            title: 'Edge Case Test Event',
-            location: 'Test Location',
-            allDay: false,
-          },
-        ];
-      });
+          return [
+            {
+              start: new Date('2025-05-25T10:00:00Z'),
+              end: new Date('2025-05-25T11:00:00Z'),
+              title: 'Edge Case Test Event',
+              location: 'Test Location',
+              allDay: false,
+            },
+          ];
+        });
 
       const response = await request(app!.getServer())
         .get(`${CalendarRoutes.path}/events?start=2025-05-25&end=2025-05-26`)
@@ -672,7 +682,9 @@ describe('GET /calendar/events', () => {
 
       expect(getDate({})).toBeUndefined();
 
-      expect(getDate({ dateTime: '2025-05-05T10:00:00Z', date: '2025-05-05' })).toEqual(new Date('2025-05-05T10:00:00Z'));
+      expect(getDate({ dateTime: '2025-05-05T10:00:00Z', date: '2025-05-05' })).toEqual(
+        new Date('2025-05-05T10:00:00Z'),
+      );
     });
 
     test('should properly handle the isAllDayEvent detection', () => {

@@ -7,7 +7,7 @@ import { CheckResetPasscodeTokenResponseDto } from '../dtos/check-reset-passcode
 import { AuthRoute } from '../routes/auth.routes';
 import { ResetPasscodeService } from '../services/reset-passcode.service';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
-import { TestApp } from './../../../helpers/tests.utils';
+import { TestApp } from '../../../helpers/test-helpers/test.app';
 
 describe('POST /auth/check-reset-passcode-token/:userId/:token', () => {
   let app: TestApp | undefined;
@@ -63,7 +63,9 @@ describe('POST /auth/check-reset-passcode-token/:userId/:token', () => {
   describe('GET should handle errors', () => {
     it('when service throws an error', async () => {
       const resetPasscodeService = Container.get(ResetPasscodeService);
-      const mockGet = jest.spyOn(resetPasscodeService, 'checkResetPasscodeToken').mockRejectedValue(new Error('Service error'));
+      const mockGet = jest
+        .spyOn(resetPasscodeService, 'checkResetPasscodeToken')
+        .mockRejectedValue(new Error('Service error'));
       const response = await request(app!.getServer())
         .post(AuthRoute.checkResetPasscodeTokenPath + '/' + Guid.EMPTY + '/validToken')
         .send();

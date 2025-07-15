@@ -1,5 +1,5 @@
 import { REGEX_PATTERNS } from '@config';
-import { type IRoutes, RouteConstants } from '@core';
+import { type IRoutes } from '@core';
 import { requirePermission, setIdentity, validateData } from '@middlewares';
 import { default as express } from 'express';
 import { UserController } from '../controllers/user.controller';
@@ -7,9 +7,9 @@ import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 
 export class UserRoute implements IRoutes {
-  public static path = RouteConstants.USER_PATH;
-  public static deactivatePath = RouteConstants.USER_DEACTIVATE_PATH;
-  public static activatePath = RouteConstants.USER_ACTIVATE_PATH;
+  public static path = '/user';
+  public static deactivatePath = 'deactivate';
+  public static activatePath = 'activate';
   public static unlockPath = 'unlock';
   public router = express.Router();
   private readonly _controller: UserController;

@@ -1,5 +1,5 @@
 import { USER_ACCOUNT_LOCKOUT_SETTINGS } from '@config';
-import { ILoginModel, RouteConstants } from '@core';
+import { ILoginModel } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
@@ -7,11 +7,11 @@ import { generateRandomDate, getAdminLoginData } from '@utils';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
 import Container from 'typedi';
+import { TestApp } from '../../../helpers/test-helpers/test.app';
 import { GetAccountToActivateResponseDto, IAccountToActivateResultDto } from '../dtos/get-account-to-activate.dto';
 import { AuthRoute } from '../routes/auth.routes';
 import { AccountService } from '../services/account.service';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
-import { TestApp } from './../../../helpers/tests.utils';
 
 describe('POST /auth/get-account-to-activate/:userId/', () => {
   let app: TestApp | undefined;
@@ -21,7 +21,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
     app = await testHelpers.getTestApp();
     app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-    adminAccessToken = (await testHelpers.loginAs(app, { email, passcode } satisfies ILoginModel))?.accessToken;
+    adminAccessToken = (await app.auth.loginAs({ email, passcode } satisfies ILoginModel))?.accessToken;
   });
 
   beforeEach(async () => {
@@ -68,19 +68,12 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
 
     it('when user with given id is active and is lockedOut', async () => {
       const user = userTestHelpers.generateValidUserWithPassword();
-
-      const createResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH)
-        .send(user)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(createResponse.statusCode).toBe(201);
-      const { data: newUserDto }: CreateUserResponseDto = createResponse.body;
+      const createUserResponse = await app!.user.create(user, adminAccessToken);
+      expect(createUserResponse.statusCode).toBe(201);
+      const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
 
-      const activateUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH + '/' + newUserDto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const activateUserResponse = await app!.user.activate(newUserDto.id, adminAccessToken);
       expect(activateUserResponse.statusCode).toBe(200);
 
       const loginData: ILoginModel = { email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' };
@@ -117,11 +110,8 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
         isActive: true,
       } satisfies IAccountToActivateResultDto);
 
-      const deleteResponse = await request(app!.getServer())
-        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteResponse.statusCode).toBe(200);
+      const deleteUserResponse = await app!.user.delete(newUserDto.id, adminAccessToken);
+      expect(deleteUserResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -143,19 +133,12 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
 
     it('when user with given id is inactive and is lockedOut', async () => {
       const user = userTestHelpers.generateValidUserWithPassword();
-
-      const createResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH)
-        .send(user)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(createResponse.statusCode).toBe(201);
-      const { data: newUserDto }: CreateUserResponseDto = createResponse.body;
+      const createUserResponse = await app!.user.create(user, adminAccessToken);
+      expect(createUserResponse.statusCode).toBe(201);
+      const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
 
-      const activateUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH + '/' + newUserDto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const activateUserResponse = await app!.user.activate(newUserDto.id, adminAccessToken);
       expect(activateUserResponse.statusCode).toBe(200);
 
       const loginData: ILoginModel = { email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' };
@@ -181,11 +164,8 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
       const { message: login1Message }: { message: string } = data;
       expect(login1Message).toBe(errorKeys.login.Account_Is_Locked_Out);
 
-      const deactivateUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH + '/' + newUserDto.id + '/' + RouteConstants.USER_DEACTIVATE_PATH)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deactivateUserResponse.statusCode).toBe(200);
+      const deactivateResponse = await app!.user.deactivate(newUserDto.id, adminAccessToken);
+      expect(deactivateResponse.statusCode).toBe(200);
 
       const toActivateResponse = await request(app!.getServer())
         .post(AuthRoute.getAccountToActivatePath + '/' + newUserDto.id)
@@ -199,11 +179,8 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
         isLockedOut: true,
       } satisfies IAccountToActivateResultDto);
 
-      const deleteResponse = await request(app!.getServer())
-        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteResponse.statusCode).toBe(200);
+      const deleteUserResponse = await app!.user.delete(newUserDto.id, adminAccessToken);
+      expect(deleteUserResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
@@ -232,12 +209,9 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
         joiningDate: generateRandomDate(),
       };
 
-      const createResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH)
-        .send(user)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(createResponse.statusCode).toBe(201);
-      const { data: newUserDto }: CreateUserResponseDto = createResponse.body;
+      const createUserResponse = await app!.user.create(user, adminAccessToken);
+      expect(createUserResponse.statusCode).toBe(201);
+      const { data: newUserDto }: CreateUserResponseDto = createUserResponse.body;
       expect(newUserDto?.id).toBeDefined();
 
       const toActivateResponse = await request(app!.getServer())
@@ -258,11 +232,8 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
         isLockedOut: false,
       } satisfies IAccountToActivateResultDto);
 
-      const deleteResponse = await request(app!.getServer())
-        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(deleteResponse.statusCode).toBe(200);
+      const deleteUserResponse = await app!.user.delete(newUserDto.id, adminAccessToken);
+      expect(deleteUserResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)

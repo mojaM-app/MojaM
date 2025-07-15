@@ -1,12 +1,10 @@
 import { events, ILoginModel } from '@core';
 import { testHelpers } from '@helpers';
 import { getAdminLoginData } from '@utils';
-import request from 'supertest';
 import { Container } from 'typedi';
 import { testEventHandlers } from '../../../helpers/event-handler-tests.helper';
-import { TestApp } from '../../../helpers/tests.utils';
+import { TestApp } from '../../../helpers/test-helpers/test.app';
 import { GetNewsResponseDto } from '../dtos/news.dto';
-import { NewsRoutes } from '../routes/news.routes';
 import { NewsService } from '../services/news.service';
 
 describe('GET /news', () => {
@@ -17,7 +15,7 @@ describe('GET /news', () => {
     app = await testHelpers.getTestApp();
     app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-    adminAccessToken = (await testHelpers.loginAs(app, { email, passcode } satisfies ILoginModel))?.accessToken;
+    adminAccessToken = (await app.auth.loginAs({ email, passcode } satisfies ILoginModel))?.accessToken;
   });
 
   beforeEach(async () => {
@@ -26,7 +24,7 @@ describe('GET /news', () => {
 
   describe('GET should respond with a status code of 200', () => {
     it('when valid request is made', async () => {
-      const response = await request(app!.getServer()).get(NewsRoutes.path).set('Authorization', `Bearer ${adminAccessToken}`);
+      const response = await app!.news.get(adminAccessToken);
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = response.body as GetNewsResponseDto;
@@ -43,8 +41,7 @@ describe('GET /news', () => {
     });
 
     it('when token is invalid', async () => {
-      const response = await request(app!.getServer()).get(NewsRoutes.path).set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
-
+      const response = await app!.news.get(`Bearer invalid_token_${adminAccessToken}`);
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = response.body as GetNewsResponseDto;
@@ -61,8 +58,7 @@ describe('GET /news', () => {
     });
 
     it('when token is not set', async () => {
-      const response = await request(app!.getServer()).get(NewsRoutes.path);
-
+      const response = await app!.news.get();
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = response.body as GetNewsResponseDto;
@@ -83,7 +79,7 @@ describe('GET /news', () => {
     it('when service throws an error', async () => {
       const newsService = Container.get(NewsService);
       const mockGet = jest.spyOn(newsService, 'get').mockRejectedValue(new Error('Service error'));
-      const response = await request(app!.getServer()).get(NewsRoutes.path).set('Authorization', `Bearer ${adminAccessToken}`);
+      const response = await app!.news.get(adminAccessToken);
       expect(response.statusCode).toBe(500);
       expect(mockGet).toHaveBeenCalled();
     });

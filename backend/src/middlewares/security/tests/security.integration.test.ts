@@ -1,9 +1,10 @@
 import { RouteConstants } from '@core';
 import { testHelpers } from '@helpers';
+import { AuthRoute } from '@modules/auth/routes/auth.routes';
 import { getAdminLoginData } from '@utils';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
-import { TestApp } from '../../../helpers/tests.utils';
+import { TestApp } from '../../../helpers/test-helpers/test.app';
 
 describe('Security Integration Tests', () => {
   let app: TestApp | undefined;
@@ -13,7 +14,7 @@ describe('Security Integration Tests', () => {
     app = await testHelpers.getTestApp();
 
     const adminLoginData = getAdminLoginData();
-    const loginResult = await testHelpers.loginAs(app!, adminLoginData);
+    const loginResult = await app.auth.loginAs(adminLoginData);
     adminAccessToken = loginResult?.accessToken || '';
   });
 
@@ -83,7 +84,7 @@ describe('Security Integration Tests', () => {
     });
 
     it('should log failed authentication attempts', async () => {
-      const response = await request(app!.getServer()).post(RouteConstants.AUTH_LOGIN_PATH).send({
+      const response = await request(app!.getServer()).post(AuthRoute.loginPath).send({
         email: 'test@example.com',
         passcode: 'wrongpassword',
       });
@@ -125,10 +126,14 @@ describe('Security Integration Tests', () => {
 
   describe('Input Validation Security', () => {
     it('should reject invalid email formats', async () => {
-      const response = await request(app!.getServer()).post(RouteConstants.USER_PATH).send({
-        email: 'invalid-email',
-        passcode: 'password',
-      });
+      const response = await app!.user.create(
+        {
+          email: 'invalid-email',
+          phone: '123456789',
+          passcode: 'password',
+        },
+        adminAccessToken,
+      );
 
       // Should either fail with validation error (400)
       expect(400).toEqual(response.status);
@@ -138,14 +143,14 @@ describe('Security Integration Tests', () => {
     });
 
     it('should reject weak passwords', async () => {
-      const response = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH)
-        .set('Authorization', `Bearer ${adminAccessToken}`)
-        .send({
+      const response = await app!.user.create(
+        {
           email: 'test@example.com',
           phone: '123456789',
           passcode: 'weak-pass',
-        });
+        },
+        adminAccessToken,
+      );
 
       // Should either fail with validation error (400)
       expect(400).toEqual(response.status);
@@ -153,7 +158,7 @@ describe('Security Integration Tests', () => {
     });
 
     it('should sanitize SQL injection attempts', async () => {
-      const response = await request(app!.getServer()).post(RouteConstants.AUTH_LOGIN_PATH).send({
+      const response = await request(app!.getServer()).post(AuthRoute.loginPath).send({
         email: "admin@example.com'; DROP TABLE users; --",
         passcode: 'password',
       });
@@ -182,7 +187,7 @@ describe('Security Integration Tests', () => {
       const attempts = [];
       for (let i = 0; i < 5; i++) {
         attempts.push(
-          request(app!.getServer()).post(RouteConstants.AUTH_LOGIN_PATH).send({
+          request(app!.getServer()).post(AuthRoute.loginPath).send({
             email: 'test@example.com',
             passcode: 'wrongpassword',
           }),
@@ -199,9 +204,7 @@ describe('Security Integration Tests', () => {
 
     it('should track permission escalation attempts', async () => {
       // Try to access admin functionality without proper permissions
-      const response = await request(app!.getServer())
-        .get(RouteConstants.USER_PATH + '/' + Guid.EMPTY)
-        .set('Authorization', `Bearer invalid-or-limited-token`);
+      const response = await app!.user.get(Guid.EMPTY, 'invalid-or-limited-token');
 
       // Should either fail with unauthorized (401)
       expect(401).toEqual(response.status);

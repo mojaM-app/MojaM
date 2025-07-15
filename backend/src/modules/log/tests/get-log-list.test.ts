@@ -2,7 +2,7 @@ import { events, ILoginModel } from '@core';
 import { testHelpers } from '@helpers';
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
 import { getAdminLoginData } from '@utils';
-import { TestApp } from 'helpers/tests.utils';
+import { TestApp } from 'helpers/test-helpers/test.app';
 import request from 'supertest';
 import { GetLogListResponseDto } from '../dtos/get-log-list.dto';
 import { LogRoute } from '../routes/log.routes';
@@ -15,7 +15,7 @@ describe('GET /log', () => {
     app = await testHelpers.getTestApp();
     app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-    adminAccessToken = (await testHelpers.loginAs(app, { email, passcode } satisfies ILoginModel))?.accessToken;
+    adminAccessToken = (await app.auth.loginAs({ email, passcode } satisfies ILoginModel))?.accessToken;
   });
 
   describe('GET should respond with a status code of 200', () => {

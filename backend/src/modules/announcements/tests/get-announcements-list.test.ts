@@ -1,16 +1,16 @@
-import { events, ILoginModel, RouteConstants, SystemPermissions } from '@core';
+import { events, ILoginModel, SystemPermissions } from '@core';
 import { errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
-import { getAdminLoginData, isNumber } from '@utils';
+import { getAdminLoginData } from '@utils';
 import request from 'supertest';
+import { TestApp } from '../../../helpers/test-helpers/test.app';
 import { CreateAnnouncementsResponseDto } from '../dtos/create-announcements.dto';
 import { GetAnnouncementListReqDto, GetAnnouncementListResponseDto } from '../dtos/get-announcement-list.dto';
 import { AnnouncementsListRetrievedEvent } from '../events/announcements-list-retrieved-event';
 import { AnnouncementsListRoute } from '../routes/announcements-list.routes';
 import { AnnouncementsListService } from '../services/announcements-list.service';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
-import { TestApp } from './../../../helpers/tests.utils';
 import { generateValidAnnouncements } from './test.helpers';
 import { AnnouncementsRout } from '../routes/announcements.routes';
 
@@ -22,7 +22,7 @@ describe('GET/announcements-list', () => {
     app = await testHelpers.getTestApp();
     app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-    adminAccessToken = (await testHelpers.loginAs(app, { email, passcode } satisfies ILoginModel))?.accessToken;
+    adminAccessToken = (await app.auth.loginAs({ email, passcode } satisfies ILoginModel))?.accessToken;
   });
 
   beforeEach(async () => {
@@ -62,7 +62,9 @@ describe('GET/announcements-list', () => {
       expect(gridPage.items.length).toBeGreaterThan(0);
 
       const announcements = gridPage.items[0];
-      expect(new Date(announcements.validFromDate!).toDateString()).toBe(newAnnouncements.validFromDate!.toDateString());
+      expect(new Date(announcements.validFromDate!).toDateString()).toBe(
+        newAnnouncements.validFromDate!.toDateString(),
+      );
       expect(announcements.itemsCount).toBeDefined();
       expect(announcements.itemsCount).toBe(newAnnouncements.items!.length);
 
@@ -87,7 +89,9 @@ describe('GET/announcements-list', () => {
         });
       expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onAnnouncementsListRetrieved).toHaveBeenCalledTimes(1);
-      expect(testEventHandlers.onAnnouncementsListRetrieved).toHaveBeenCalledWith(new AnnouncementsListRetrievedEvent(1));
+      expect(testEventHandlers.onAnnouncementsListRetrieved).toHaveBeenCalledWith(
+        new AnnouncementsListRetrievedEvent(1),
+      );
       expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
     });
   });
@@ -108,10 +112,7 @@ describe('GET/announcements-list', () => {
 
     test('when user has no permission', async () => {
       const requestData = userTestHelpers.generateValidUserWithPassword();
-      const createUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await app!.user.create(requestData, adminAccessToken);
       expect(createUserResponse.statusCode).toBe(201);
       let body = createUserResponse.body;
       expect(typeof body).toBe('object');
@@ -120,14 +121,15 @@ describe('GET/announcements-list', () => {
       expect(newUserDto?.email).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const activateNewUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH + '/' + newUserDto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const activateNewUserResponse = await app!.user.activate(newUserDto.id, adminAccessToken);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const newUserAccessToken = (await testHelpers.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies ILoginModel))
-        ?.accessToken;
+      const newUserAccessToken = (
+        await app!.auth.loginAs({
+          email: requestData.email,
+          passcode: requestData.passcode,
+        } satisfies ILoginModel)
+      )?.accessToken;
 
       const getAnnouncementsListResponse = await request(app!.getServer())
         .get(AnnouncementsListRoute.path)
@@ -139,10 +141,7 @@ describe('GET/announcements-list', () => {
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
-      const deleteUserResponse = await request(app!.getServer())
-        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteUserResponse = await app!.user.delete(newUserDto.id, adminAccessToken);
       expect(deleteUserResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -168,10 +167,7 @@ describe('GET/announcements-list', () => {
 
     test('when user have all permissions expect PreviewAnnouncementsList', async () => {
       const requestData = userTestHelpers.generateValidUserWithPassword();
-      const createUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createUserResponse = await app!.user.create(requestData, adminAccessToken);
       expect(createUserResponse.statusCode).toBe(201);
       let body = createUserResponse.body;
       expect(typeof body).toBe('object');
@@ -180,26 +176,20 @@ describe('GET/announcements-list', () => {
       expect(newUserDto?.email).toBeDefined();
       expect(createMessage).toBe(events.users.userCreated);
 
-      const activateNewUserResponse = await request(app!.getServer())
-        .post(RouteConstants.USER_PATH + '/' + newUserDto.id + '/' + RouteConstants.USER_ACTIVATE_PATH)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const activateNewUserResponse = await app!.user.activate(newUserDto.id, adminAccessToken);
       expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const systemPermissions = Object.values(SystemPermissions);
-      systemPermissions.forEach(async permission => {
-        if (isNumber(permission)) {
-          const value = permission as number;
-          if (value !== SystemPermissions.PreviewAnnouncementsList) {
-            const path = RouteConstants.PERMISSIONS_PATH + '/' + newUserDto.id + '/' + permission.toString();
-            const addPermissionResponse = await request(app!.getServer()).post(path).send().set('Authorization', `Bearer ${adminAccessToken}`);
-            expect(addPermissionResponse.statusCode).toBe(201);
-          }
-        }
-      });
+      const addPermissionsResponse = await app!.permissions.addAllPermissionsToUser(newUserDto.id, adminAccessToken, [
+        SystemPermissions.PreviewAnnouncementsList,
+      ]);
+      expect(addPermissionsResponse!.statusCode).toBe(201);
 
-      const newUserAccessToken = (await testHelpers.loginAs(app!, { email: requestData.email, passcode: requestData.passcode } satisfies ILoginModel))
-        ?.accessToken;
+      const newUserAccessToken = (
+        await app!.auth.loginAs({
+          email: requestData.email,
+          passcode: requestData.passcode,
+        } satisfies ILoginModel)
+      )?.accessToken;
 
       const getAnnouncementsListResponse = await request(app!.getServer())
         .get(AnnouncementsListRoute.path)
@@ -211,10 +201,7 @@ describe('GET/announcements-list', () => {
       expect(typeof body).toBe('object');
       expect(body.data.message).toBe(errorKeys.login.User_Not_Authorized);
 
-      const deleteUserResponse = await request(app!.getServer())
-        .delete(RouteConstants.USER_PATH + '/' + newUserDto.id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteUserResponse = await app!.user.delete(newUserDto.id, adminAccessToken);
       expect(deleteUserResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher

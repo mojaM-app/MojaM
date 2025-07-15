@@ -2,10 +2,8 @@ import { type ILoginModel, type IUser, SystemPermissions } from '@core';
 import { DbConnectionManager } from '@db';
 import { testHelpers } from '@helpers';
 import { getAdminLoginData } from '@utils';
-import request from 'supertest';
 import { User } from '../../../dataBase/entities/users/user.entity';
-import { TestApp } from '../../../helpers/tests.utils';
-import { UserRoute } from '../routes/user.routes';
+import { TestApp } from '../../../helpers/test-helpers/test.app';
 
 describe('Cache user data tests', () => {
   let app: TestApp | undefined;
@@ -118,24 +116,18 @@ describe('Cache user data tests', () => {
 
     app = await testHelpers.getTestApp();
     const { email, passcode } = getAdminLoginData();
-    const adminLoginResult = await testHelpers.loginAs(app, { email, passcode } satisfies ILoginModel);
+    const adminLoginResult = await app.auth.loginAs({ email, passcode } satisfies ILoginModel);
     adminAccessToken = adminLoginResult?.accessToken;
     adminUuid = adminLoginResult?.id;
   });
 
   it('Should store userId', async () => {
     //if this test fails, check if getAdminLoginData returns same data as in the database
-    let response = await request(app!.getServer())
-      .get(`${UserRoute.path}/${adminUuid}`)
-      .send()
-      .set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(response.statusCode).toBe(200);
+    let getUserResponse = await app!.user.get(adminUuid!, adminAccessToken);
+    expect(getUserResponse.statusCode).toBe(200);
 
-    response = await request(app!.getServer())
-      .get(`${UserRoute.path}/${adminUuid}`)
-      .send()
-      .set('Authorization', `Bearer ${adminAccessToken}`);
-    expect(response.statusCode).toBe(200);
+    getUserResponse = await app!.user.get(adminUuid!, adminAccessToken);
+    expect(getUserResponse.statusCode).toBe(200);
 
     expect(findOneByFn).toHaveBeenCalledTimes(5);
   });

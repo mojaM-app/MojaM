@@ -3,14 +3,14 @@ import { testHelpers } from '@helpers';
 import { getAdminLoginData, getDateNow, isGuid } from '@utils';
 import { isDateString } from 'class-validator';
 import request from 'supertest';
-import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
-import { TestApp } from './../../../helpers/tests.utils';
 import { generateValidAnnouncements } from './test.helpers';
+import { TestApp } from '../../../helpers/test-helpers/test.app';
 import { CreateAnnouncementsResponseDto } from '../dtos/create-announcements.dto';
 import { GetCurrentAnnouncementsResponseDto, IGetCurrentAnnouncementsDto } from '../dtos/get-current-announcements.dto';
 import { PublishAnnouncementsResponseDto } from '../dtos/publish-announcements.dto';
 import { AnnouncementsRout } from '../routes/announcements.routes';
 import { CurrentAnnouncementsService } from '../services/current-announcements.service';
+import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 
 describe('GET /announcements/current', () => {
   let app: TestApp | undefined;
@@ -20,7 +20,7 @@ describe('GET /announcements/current', () => {
     app = await testHelpers.getTestApp();
     app.mock_nodemailer_createTransport();
     const { email, passcode } = getAdminLoginData();
-    adminAccessToken = (await testHelpers.loginAs(app, { email, passcode } satisfies ILoginModel))?.accessToken;
+    adminAccessToken = (await app.auth.loginAs({ email, passcode } satisfies ILoginModel))?.accessToken;
   });
 
   beforeEach(async () => {
@@ -76,7 +76,12 @@ describe('GET /announcements/current', () => {
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
-        .filter(([, eventHandler]) => ![testEventHandlers.onAnnouncementsCreated, testEventHandlers.onAnnouncementsDeleted].includes(eventHandler))
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onAnnouncementsCreated, testEventHandlers.onAnnouncementsDeleted].includes(
+              eventHandler,
+            ),
+        )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
@@ -115,7 +120,12 @@ describe('GET /announcements/current', () => {
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers)
-        .filter(([, eventHandler]) => ![testEventHandlers.onAnnouncementsCreated, testEventHandlers.onAnnouncementsDeleted].includes(eventHandler))
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onAnnouncementsCreated, testEventHandlers.onAnnouncementsDeleted].includes(
+              eventHandler,
+            ),
+        )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
         });
@@ -233,7 +243,9 @@ describe('GET /announcements/current', () => {
       expect(currentAnnouncements?.title).toBe(requestData1.title);
       expect(currentAnnouncements?.publishedAt).toBeDefined();
       expect(currentAnnouncements?.publishedBy.length).toBeGreaterThan(0);
-      expect(new Date(currentAnnouncements!.validFromDate).toDateString()).toBe(requestData1.validFromDate.toDateString());
+      expect(new Date(currentAnnouncements!.validFromDate).toDateString()).toBe(
+        requestData1.validFromDate.toDateString(),
+      );
       expect(currentAnnouncements?.items).toBeDefined();
       expect(currentAnnouncements?.items.length).toBe(requestData1.items!.length);
       expect(currentAnnouncements!.items.every(item => isGuid(item.id))).toBe(true);
@@ -363,11 +375,15 @@ describe('GET /announcements/current', () => {
 
   describe('GET should handle error', () => {
     test('when error occurs in the process', async () => {
-      jest.spyOn(CurrentAnnouncementsService.prototype, 'get').mockImplementation(async (_currentUserId: number | undefined) => {
-        throw new Error('Test error');
-      });
+      jest
+        .spyOn(CurrentAnnouncementsService.prototype, 'get')
+        .mockImplementation(async (_currentUserId: number | undefined) => {
+          throw new Error('Test error');
+        });
 
-      const getAnnouncementsListResponse = await request(app!.getServer()).get(AnnouncementsRout.currentAnnouncementsPath).send();
+      const getAnnouncementsListResponse = await request(app!.getServer())
+        .get(AnnouncementsRout.currentAnnouncementsPath)
+        .send();
       expect(getAnnouncementsListResponse.statusCode).toBe(500);
       const body = getAnnouncementsListResponse.body;
       expect(typeof body).toBe('object');
