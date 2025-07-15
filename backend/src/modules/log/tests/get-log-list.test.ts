@@ -5,7 +5,7 @@ import { getAdminLoginData } from '@utils';
 import { TestApp } from 'helpers/test-helpers/test.app';
 import request from 'supertest';
 import { GetLogListResponseDto } from '../dtos/get-log-list.dto';
-import { LogRoute } from '../routes/log.routes';
+import { LogListRoutes } from '../routes/log-list.routes';
 
 let app: TestApp | undefined;
 let adminAccessToken: string | undefined;
@@ -20,11 +20,8 @@ describe('GET /log', () => {
 
   describe('GET should respond with a status code of 200', () => {
     it('when user has permission and logs exist', async () => {
-      const response = await request(app!.getServer())
-        .get(LogRoute.path)
-        .set('Authorization', `Bearer ${adminAccessToken}`)
-        .expect(200);
-
+      const response = await app!.logList.get(adminAccessToken);
+      expect(response.status).toBe(200);
       const body = response.body;
       expect(typeof body).toBe('object');
       const { data: gridPage, message: getLogListMessage }: GetLogListResponseDto = body;
@@ -41,7 +38,7 @@ describe('GET /log', () => {
 
     it('when user has permission with pagination parameters', async () => {
       const response = await request(app!.getServer())
-        .get(`${LogRoute.path}?page=1&pageSize=10`)
+        .get(`${LogListRoutes.path}?page=1&pageSize=10`)
         .set('Authorization', `Bearer ${adminAccessToken}`)
         .expect(200);
 
@@ -62,7 +59,7 @@ describe('GET /log', () => {
     it('when user has permission with level filter', async () => {
       const level = 'ERROR'; // Example log level
       const response = await request(app!.getServer())
-        .get(`${LogRoute.path}?level=${level}`)
+        .get(`${LogListRoutes.path}?level=${level}`)
         .set('Authorization', `Bearer ${adminAccessToken}`)
         .expect(200);
 
@@ -83,7 +80,7 @@ describe('GET /log', () => {
 
     it('when user has permission with security events filter', async () => {
       const response = await request(app!.getServer())
-        .get(`${LogRoute.path}?isSecurityEvent=true`)
+        .get(`${LogListRoutes.path}?isSecurityEvent=true`)
         .set('Authorization', `Bearer ${adminAccessToken}`)
         .expect(200);
 
@@ -107,7 +104,7 @@ describe('GET /log', () => {
       const endDate = new Date().toISOString();
 
       const response = await request(app!.getServer())
-        .get(`${LogRoute.path}?startDate=${startDate}&endDate=${endDate}`)
+        .get(`${LogListRoutes.path}?startDate=${startDate}&endDate=${endDate}`)
         .set('Authorization', `Bearer ${adminAccessToken}`)
         .expect(200);
 
@@ -127,35 +124,35 @@ describe('GET /log', () => {
 
     it('when invalid page parameter is provided', async () => {
       await request(app!.getServer())
-        .get(`${LogRoute.path}?page=invalid`)
+        .get(`${LogListRoutes.path}?page=invalid`)
         .set('Authorization', `Bearer ${adminAccessToken}`)
         .expect(200);
     });
 
     it('when invalid pageSize parameter is provided', async () => {
       await request(app!.getServer())
-        .get(`${LogRoute.path}?pageSize=invalid`)
+        .get(`${LogListRoutes.path}?pageSize=invalid`)
         .set('Authorization', `Bearer ${adminAccessToken}`)
         .expect(200);
     });
 
     it('when invalid date format is provided', async () => {
       await request(app!.getServer())
-        .get(`${LogRoute.path}?startDate=invalid-date`)
+        .get(`${LogListRoutes.path}?startDate=invalid-date`)
         .set('Authorization', `Bearer ${adminAccessToken}`)
         .expect(200);
     });
 
     it('when invalid level is provided', async () => {
       await request(app!.getServer())
-        .get(`${LogRoute.path}?level=INVALID_LEVEL`)
+        .get(`${LogListRoutes.path}?level=INVALID_LEVEL`)
         .set('Authorization', `Bearer ${adminAccessToken}`)
         .expect(200);
     });
 
     it('when pageSize exceeds maximum allowed', async () => {
       await request(app!.getServer())
-        .get(`${LogRoute.path}?pageSize=1000`)
+        .get(`${LogListRoutes.path}?pageSize=1000`)
         .set('Authorization', `Bearer ${adminAccessToken}`)
         .expect(200);
     });
@@ -163,11 +160,13 @@ describe('GET /log', () => {
 
   describe('GET should respond with a status code of 401', () => {
     it('when token is not provided', async () => {
-      await request(app!.getServer()).get(LogRoute.path).expect(401);
+      const response = await app!.logList.get();
+      expect(response.status).toBe(401);
     });
 
     it('when token is invalid', async () => {
-      await request(app!.getServer()).get(LogRoute.path).set('Authorization', 'Bearer invalid-token').expect(401);
+      const response = await app!.logList.get('invalid-token');
+      expect(response.status).toBe(401);
     });
   });
 

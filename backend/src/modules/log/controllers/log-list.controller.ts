@@ -4,14 +4,14 @@ import { NextFunction, Response } from 'express';
 import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
 import { GetLogListReqDto, GetLogListResponseDto, LogsGridPageDto } from '../dtos/get-log-list.dto';
-import { LogService } from '../services/log.service';
+import { LogListService } from '../services/log-list.service';
 
 export class LogListController extends BaseController {
-  private readonly _service: LogService;
+  private readonly _service: LogListService;
 
   constructor() {
     super();
-    this._service = Container.get(LogService);
+    this._service = Container.get(LogListService);
   }
 
   public get = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
@@ -26,7 +26,7 @@ export class LogListController extends BaseController {
         req.query?.startDate ? new Date(req.query.startDate.toString()) : undefined,
         req.query?.endDate ? new Date(req.query.endDate.toString()) : undefined,
       );
-      const result: LogsGridPageDto = await this._service.getList(reqDto);
+      const result: LogsGridPageDto = await this._service.get(reqDto);
       res.status(StatusCode.SuccessOK).json(new GetLogListResponseDto(result));
     } catch (error) {
       next(error);

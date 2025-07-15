@@ -1,9 +1,9 @@
 import { IModule, IRoutes } from '@core';
-import { LogRoute } from './routes/log.routes';
+import { LogListRoutes } from './routes/log-list.routes';
 
 export class LogModule implements IModule {
   public getRoutes(): IRoutes[] {
-    return [new LogRoute()];
+    return [new LogListRoutes()];
   }
 
   public register(): void {}

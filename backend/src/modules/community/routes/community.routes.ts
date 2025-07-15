@@ -3,7 +3,7 @@ import { setIdentity } from '@middlewares';
 import { default as express } from 'express';
 import { CommunityController } from '../controllers/community.controller';
 
-export class CommunityRoute implements IRoutes {
+export class CommunityRoutes implements IRoutes {
   public static path = '/community';
   public router = express.Router();
   private readonly _controller: CommunityController;
@@ -14,6 +14,6 @@ export class CommunityRoute implements IRoutes {
   }
 
   private initializeRoutes(): void {
-    this.router.get(`${CommunityRoute.path}`, [setIdentity], this._controller.get);
+    this.router.get(`${CommunityRoutes.path}`, [setIdentity], this._controller.get);
   }
 }

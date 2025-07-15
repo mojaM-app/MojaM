@@ -3,7 +3,7 @@ import { requirePermission, setIdentity } from '@middlewares';
 import express from 'express';
 import { LogListController } from '../controllers/log-list.controller';
 
-export class LogRoute implements IRoutes {
+export class LogListRoutes implements IRoutes {
   public static path = '/logs';
   public router = express.Router();
   private readonly _controller: LogListController;
@@ -15,7 +15,7 @@ export class LogRoute implements IRoutes {
 
   private initializeRoutes(): void {
     this.router.get(
-      `${LogRoute.path}`,
+      `${LogListRoutes.path}`,
       [setIdentity, requirePermission(user => user.canPreviewLogList())],
       this._controller.get,
     );

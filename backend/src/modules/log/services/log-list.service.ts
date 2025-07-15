@@ -2,15 +2,15 @@ import { BaseService } from '@core';
 import { Service } from 'typedi';
 import { vLog } from '../../../dataBase/entities/logs/vLog.entity';
 import { GetLogListReqDto, ILogGridItemDto, LogsGridPageDto } from '../dtos/get-log-list.dto';
-import { LogFilters, LogRepository } from '../repositories/log.repository';
+import { LogFilters, LogListRepository } from '../repositories/log-list.repository';
 
 @Service()
-export class LogService extends BaseService {
-  constructor(private readonly _repository: LogRepository) {
+export class LogListService extends BaseService {
+  constructor(private readonly _repository: LogListRepository) {
     super();
   }
 
-  public async getList(reqDto: GetLogListReqDto): Promise<LogsGridPageDto> {
+  public async get(reqDto: GetLogListReqDto): Promise<LogsGridPageDto> {
     const filters: LogFilters = {
       level: reqDto.level,
       isSecurityEvent: reqDto.isSecurityEvent,

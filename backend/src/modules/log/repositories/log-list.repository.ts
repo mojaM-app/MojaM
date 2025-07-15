@@ -12,7 +12,7 @@ export interface LogFilters {
 }
 
 @Service()
-export class LogRepository extends BaseRepository {
+export class LogListRepository extends BaseRepository {
   constructor() {
     super();
   }

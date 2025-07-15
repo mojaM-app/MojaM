@@ -113,9 +113,10 @@ describe('POST /auth/unlock-account/', () => {
       }
 
       // Verify user is locked out
-      const verifyLockedResponse = await request(app!.getServer())
-        .post(AuthRoute.loginPath)
-        .send({ email: newUserDto.email, passcode: user.passcode });
+      const verifyLockedResponse = await app!.auth.login({
+        email: newUserDto.email,
+        passcode: user.passcode,
+      } satisfies ILoginModel);
       expect(verifyLockedResponse.statusCode).toBe(400);
       expect(verifyLockedResponse.body.data.message).toBe(errorKeys.login.Account_Is_Locked_Out);
 
@@ -134,9 +135,10 @@ describe('POST /auth/unlock-account/', () => {
       } satisfies IUnlockAccountResultDto);
 
       // Verify user can now log in
-      const loginResponse = await request(app!.getServer())
-        .post(AuthRoute.loginPath)
-        .send({ email: newUserDto.email, passcode: user.passcode });
+      const loginResponse = await app!.auth.login({
+        email: newUserDto.email,
+        passcode: user.passcode,
+      } satisfies ILoginModel);
       expect(loginResponse.statusCode).toBe(200);
 
       const deleteUserResponse = await app!.user.delete(newUserDto.id, adminAccessToken);
@@ -190,9 +192,10 @@ describe('POST /auth/unlock-account/', () => {
       }
 
       // Verify user is locked out
-      const verifyLockedResponse = await request(app!.getServer())
-        .post(AuthRoute.loginPath)
-        .send({ email: newUserDto.email, passcode: user.passcode });
+      const verifyLockedResponse = await app!.auth.login({
+        email: newUserDto.email,
+        passcode: user.passcode,
+      } satisfies ILoginModel);
       expect(verifyLockedResponse.statusCode).toBe(400);
       expect(verifyLockedResponse.body.data.message).toBe(errorKeys.login.Account_Is_Locked_Out);
 
@@ -203,22 +206,25 @@ describe('POST /auth/unlock-account/', () => {
       expect(unlockResponse.statusCode).toBe(200);
 
       // Verify successful login after unlock (this proves the failed login attempts counter was reset)
-      const loginResponse = await request(app!.getServer())
-        .post(AuthRoute.loginPath)
-        .send({ email: newUserDto.email, passcode: user.passcode });
+      const loginResponse = await app!.auth.login({
+        email: newUserDto.email,
+        passcode: user.passcode,
+      } satisfies ILoginModel);
       expect(loginResponse.statusCode).toBe(200);
 
       // Verify we can attempt invalid login again without immediately locking out (which would happen if counter wasn't reset)
-      const invalidLoginResponse = await request(app!.getServer())
-        .post(AuthRoute.loginPath)
-        .send({ email: newUserDto.email, passcode: user.passcode + 'invalid_password' });
+      const invalidLoginResponse = await app!.auth.login({
+        email: newUserDto.email,
+        passcode: user.passcode + 'invalid_password',
+      } satisfies ILoginModel);
       expect(invalidLoginResponse.statusCode).toBe(400);
       expect(invalidLoginResponse.body.data.message).toBe(errorKeys.login.Invalid_Login_Or_Passcode);
 
       // We should still be able to log in successfully (proving counter was reset to 0, not just decremented)
-      const secondLoginResponse = await request(app!.getServer())
-        .post(AuthRoute.loginPath)
-        .send({ email: newUserDto.email, passcode: user.passcode });
+      const secondLoginResponse = await app!.auth.login({
+        email: newUserDto.email,
+        passcode: user.passcode,
+      } satisfies ILoginModel);
       expect(secondLoginResponse.statusCode).toBe(200);
 
       const deleteUserResponse = await app!.user.delete(newUserDto.id, adminAccessToken);

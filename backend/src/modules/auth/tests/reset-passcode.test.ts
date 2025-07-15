@@ -325,9 +325,10 @@ describe('POST /auth/reset-passcode', () => {
       expect(resetPasscodeMessage).toBe(events.users.userPasscodeChanged);
       expect(resetPasscodeResult.isPasscodeSet).toBe(true);
 
-      loginResponse = await request(app!.getServer())
-        .post(AuthRoute.loginPath)
-        .send({ email: newUserDto.email, passcode: newPassword } satisfies ILoginModel);
+      loginResponse = await app!.auth.login({
+        email: newUserDto.email,
+        passcode: newPassword,
+      } satisfies ILoginModel);
       expect(loginResponse.statusCode).toBe(200);
       body = loginResponse.body as LoginResponseDto;
       const { data: userLoggedIn, message: loginMessage } = body;

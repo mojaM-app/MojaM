@@ -2,12 +2,10 @@ import * as config from '@config';
 import { events, ILoginModel } from '@core';
 import { testHelpers } from '@helpers';
 import { getAdminLoginData } from '@utils';
-import request from 'supertest';
 import { Container } from 'typedi';
 import { testEventHandlers } from '../../../helpers/event-handler-tests.helper';
 import { TestApp } from '../../../helpers/test-helpers/test.app';
 import { GetCommunityResponseDto } from '../dtos/community.dto';
-import { CommunityRoute } from '../routes/community.routes';
 import { CommunityService } from '../services/community.service';
 
 describe('GET /news', () => {
@@ -27,9 +25,7 @@ describe('GET /news', () => {
 
   describe('GET should respond with a status code of 200', () => {
     it('when valid request is made and COMMUNITY_INFO_URL is undefined', async () => {
-      const response = await request(app!.getServer())
-        .get(CommunityRoute.path)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const response = await app!.community.get(adminAccessToken);
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = response.body as GetCommunityResponseDto;
@@ -49,9 +45,8 @@ describe('GET /news', () => {
 
     it('when valid request is made and COMMUNITY_INFO_URL is set', async () => {
       jest.replaceProperty(config, 'COMMUNITY_INFO_URL', 'https://jsonplaceholder.typicode.com/todos/1');
-      const response = await request(app!.getServer())
-        .get(CommunityRoute.path)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+
+      const response = await app!.community.get(adminAccessToken);
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = response.body as GetCommunityResponseDto;
@@ -71,9 +66,8 @@ describe('GET /news', () => {
 
     it('when valid request is made and COMMUNITY_INFO_URL is set but url is invalid', async () => {
       jest.replaceProperty(config, 'COMMUNITY_INFO_URL', 'https://invalid-url.domain.com');
-      const response = await request(app!.getServer())
-        .get(CommunityRoute.path)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+
+      const response = await app!.community.get(adminAccessToken);
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = response.body as GetCommunityResponseDto;
@@ -92,10 +86,7 @@ describe('GET /news', () => {
     });
 
     it('when token is invalid', async () => {
-      const response = await request(app!.getServer())
-        .get(CommunityRoute.path)
-        .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
-
+      const response = await app!.community.get(`invalid_token_${adminAccessToken}`);
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = response.body as GetCommunityResponseDto;
@@ -114,8 +105,7 @@ describe('GET /news', () => {
     });
 
     it('when token is not set', async () => {
-      const response = await request(app!.getServer()).get(CommunityRoute.path);
-
+      const response = await app!.community.get();
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = response.body as GetCommunityResponseDto;
@@ -138,9 +128,7 @@ describe('GET /news', () => {
     it('when service throws an error', async () => {
       const communityService = Container.get(CommunityService);
       const mockGet = jest.spyOn(communityService, 'get').mockRejectedValue(new Error('Service error'));
-      const response = await request(app!.getServer())
-        .get(CommunityRoute.path)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const response = await app!.community.get(adminAccessToken);
       expect(response.statusCode).toBe(500);
       expect(mockGet).toHaveBeenCalled();
     });

@@ -53,7 +53,7 @@ describe('PUT/user-profile', () => {
         firstName: 'Average',
         lastName: 'Joe',
       } satisfies UpdateUserProfileDto;
-      const updateUserProfileResponse = await app!.userProfile.updateProfile(updateModel, newUserAccessToken);
+      const updateUserProfileResponse = await app!.userProfile.update(updateModel, newUserAccessToken);
       expect(updateUserProfileResponse.statusCode).toBe(200);
       const { data: updateResult, message: updateMessage }: UpdateUserProfileResponseDto =
         updateUserProfileResponse.body;
@@ -124,7 +124,7 @@ describe('PUT/user-profile', () => {
         firstName: 'Average',
         lastName: 'Joe',
       } satisfies UpdateUserProfileDto;
-      const updateUserProfileResponse = await app!.userProfile.updateProfile(updateModel, newUserAccessToken);
+      const updateUserProfileResponse = await app!.userProfile.update(updateModel, newUserAccessToken);
       expect(updateUserProfileResponse.statusCode).toBe(200);
       body = updateUserProfileResponse.body;
       const { data: updateResult, message: updateMessage }: UpdateUserProfileResponseDto = body;
@@ -185,7 +185,7 @@ describe('PUT/user-profile', () => {
         await app!.auth.loginAs({ email: newUser.email, passcode: newUser.passcode } satisfies ILoginModel)
       )?.accessToken;
 
-      const updateUserProfileResponse = await app!.userProfile.updateProfile(
+      const updateUserProfileResponse = await app!.userProfile.update(
         {
           firstName: undefined,
           lastName: undefined,
@@ -255,7 +255,7 @@ describe('PUT/user-profile', () => {
         await app!.auth.loginAs({ email: newUser.email, passcode: newUser.passcode } satisfies ILoginModel)
       )?.accessToken;
 
-      const updateUserProfileResponse = await app!.userProfile.updateProfile(
+      const updateUserProfileResponse = await app!.userProfile.update(
         {
           firstName: null,
           lastName: null,
@@ -325,7 +325,7 @@ describe('PUT/user-profile', () => {
         await app!.auth.loginAs({ email: newUser.email, passcode: newUser.passcode } satisfies ILoginModel)
       )?.accessToken;
 
-      const updateUserProfileResponse = await app!.userProfile.updateProfile(
+      const updateUserProfileResponse = await app!.userProfile.update(
         {
           firstName: '',
           lastName: '',
@@ -395,7 +395,7 @@ describe('PUT/user-profile', () => {
         await app!.auth.loginAs({ email: newUser.email, passcode: newUser.passcode } satisfies ILoginModel)
       )?.accessToken;
 
-      const updateUserProfileResponse = await app!.userProfile.updateProfile(
+      const updateUserProfileResponse = await app!.userProfile.update(
         {
           joiningDate: null,
         } satisfies UpdateUserProfileDto,
@@ -464,7 +464,7 @@ describe('PUT/user-profile', () => {
       const deleteUserResponse = await app!.user.delete(newUserDto.id, adminAccessToken);
       expect(deleteUserResponse.statusCode).toBe(200);
 
-      const updateUserProfileResponse = await app!.userProfile.updateProfile(
+      const updateUserProfileResponse = await app!.userProfile.update(
         {
           firstName: 'Average',
           lastName: 'Joe',
@@ -499,7 +499,7 @@ describe('PUT/user-profile', () => {
     });
 
     test('when token is invalid', async () => {
-      const updateUserProfileResponse = await app!.userProfile.updateProfile(
+      const updateUserProfileResponse = await app!.userProfile.update(
         {
           firstName: 'John',
           lastName: 'Doe',
@@ -520,7 +520,7 @@ describe('PUT/user-profile', () => {
 
   describe('PUT should respond with a status code of 403', () => {
     test('when token is not set', async () => {
-      const updateUserProfileResponse = await app!.userProfile.updateProfile({
+      const updateUserProfileResponse = await app!.userProfile.update({
         firstName: 'John',
         lastName: 'Doe',
       } satisfies UpdateUserProfileDto);
@@ -567,7 +567,7 @@ describe('PUT/user-profile', () => {
         firstName: 'Average',
         lastName: 'Joe',
       } satisfies UpdateUserProfileDto;
-      const updateUserProfileResponse = await app!.userProfile.updateProfile(updateModel, adminAccessToken);
+      const updateUserProfileResponse = await app!.userProfile.update(updateModel, adminAccessToken);
       expect(updateUserProfileResponse.statusCode).toBe(500);
       expect(mockGet).toHaveBeenCalled();
     });

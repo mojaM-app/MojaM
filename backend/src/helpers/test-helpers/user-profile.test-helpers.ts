@@ -13,7 +13,7 @@ export class UserProfileHelpers {
       .send();
   }
 
-  public async updateProfile(profileData: UpdateUserProfileDto, accessToken?: string): Promise<Response> {
+  public async update(profileData: UpdateUserProfileDto, accessToken?: string): Promise<Response> {
     return await request(this.app.getServer())
       .put(UserProfileRoute.path)
       .set('Authorization', `Bearer ${accessToken}`)

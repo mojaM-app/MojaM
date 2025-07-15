@@ -6,6 +6,8 @@ import { type ITestApp } from './test-helpers.interface';
 import { App } from '../../app';
 import { registerTestEventHandlers } from '../event-handler-tests.helper';
 import { AuthHelpers } from './auth.test-helpers';
+import { CommunityHelpers } from './community.test-helpers';
+import { LogListHelpers } from './log-list.test-helpers';
 import { NewsHelpers } from './news.test-helpers';
 import { PermissionsHelpers } from './permission.test-helpers';
 import { UserDetailsHelpers } from './user-details.test-helpers';
@@ -24,13 +26,15 @@ import '../../modules/notifications/event-subscribers/user-locked-out-events-sub
 
 export class TestApp extends App implements ITestApp {
   private _mockSendMail: jest.SpyInstance | null = null;
-  private readonly _userHelpers: UserHelpers = new UserHelpers(this);
-  private readonly _userProfileHelpers: UserProfileHelpers = new UserProfileHelpers(this);
-  private readonly _userDetailsHelpers: UserDetailsHelpers = new UserDetailsHelpers(this);
-  private readonly _userListHelpers: UserListHelpers = new UserListHelpers(this);
-  private readonly _authHelpers: AuthHelpers = new AuthHelpers(this);
-  private readonly _permissionsHelpers: PermissionsHelpers = new PermissionsHelpers(this);
-  private readonly _newsHelpers: NewsHelpers = new NewsHelpers(this);
+  private readonly _userHelpers = new UserHelpers(this);
+  private readonly _userProfileHelpers = new UserProfileHelpers(this);
+  private readonly _userDetailsHelpers = new UserDetailsHelpers(this);
+  private readonly _userListHelpers = new UserListHelpers(this);
+  private readonly _authHelpers = new AuthHelpers(this);
+  private readonly _permissionsHelpers = new PermissionsHelpers(this);
+  private readonly _newsHelpers = new NewsHelpers(this);
+  private readonly _logListHelpers = new LogListHelpers(this);
+  private readonly _communityHelpers = new CommunityHelpers(this);
 
   public get user(): UserHelpers {
     return this._userHelpers;
@@ -56,8 +60,16 @@ export class TestApp extends App implements ITestApp {
     return this._permissionsHelpers;
   }
 
+  public get logList(): LogListHelpers {
+    return this._logListHelpers;
+  }
+
   public get news(): NewsHelpers {
     return this._newsHelpers;
+  }
+
+  public get community(): CommunityHelpers {
+    return this._communityHelpers;
   }
 
   constructor() {
