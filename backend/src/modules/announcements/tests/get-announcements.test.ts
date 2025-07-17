@@ -32,10 +32,7 @@ describe('GET /announcements', () => {
   describe('GET should respond with a status code of 200 when data are valid and user has permission', () => {
     test('get unpublished announcement', async () => {
       const requestData = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       let body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
@@ -106,10 +103,7 @@ describe('GET /announcements', () => {
 
     test('get published announcement', async () => {
       const requestData = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       let body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');

@@ -1,4 +1,5 @@
 import { IAccountTryingToLogInModel, ILoginModel, TLoginResult } from '@core';
+import { ActivateAccountDto } from '@modules/auth/dtos/activate-account.dto';
 import { AuthRoute } from '@modules/auth/routes/auth.routes';
 import request, { Response } from 'supertest';
 import { ITestApp } from './test-helpers.interface';
@@ -32,5 +33,17 @@ export class AuthHelpers {
 
   public async requestResetPasscode(model: IAccountTryingToLogInModel): Promise<Response> {
     return await request(this.app.getServer()).post(AuthRoute.requestResetPasscodePath).send(model);
+  }
+
+  public async unlockAccount(userId: string): Promise<Response> {
+    return await request(this.app.getServer())
+      .post(AuthRoute.unlockAccountPath + '/' + userId)
+      .send();
+  }
+
+  public async activateAccount(userId: string, model: ActivateAccountDto): Promise<Response> {
+    return await request(this.app.getServer())
+      .post(AuthRoute.activateAccountPath + '/' + userId)
+      .send(model);
   }
 }

@@ -11,7 +11,6 @@ import {
   getAdminLoginData,
 } from '@utils';
 import { Guid } from 'guid-typescript';
-import request from 'supertest';
 import { TestApp } from '../../../helpers/test-helpers/test.app';
 import {
   ActivateAccountDto,
@@ -23,7 +22,6 @@ import {
   GetAccountBeforeLogInResponseDto,
   IGetAccountBeforeLogInResultDto,
 } from '../dtos/get-account-before-log-in.dto';
-import { AuthRoute } from '../routes/auth.routes';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 
 describe('POST /auth/activate-account/', () => {
@@ -49,9 +47,7 @@ describe('POST /auth/activate-account/', () => {
         passcode: generateRandomPassword(),
         joiningDate: generateRandomDate(),
       } satisfies ActivateAccountDto;
-      const response = await request(app!.getServer())
-        .post(AuthRoute.activateAccountPath + '/' + Guid.EMPTY)
-        .send(model);
+      const response = await app!.auth.activateAccount(Guid.EMPTY, model);
       expect(response.statusCode).toBe(200);
       const body = response.body as ActivateAccountResponseDto;
       expect(typeof body).toBe('object');
@@ -67,9 +63,7 @@ describe('POST /auth/activate-account/', () => {
 
     it('when user with given id is active', async () => {
       const { uuid, email } = getAdminLoginData();
-      let response = await request(app!.getServer())
-        .post(AuthRoute.activateAccountPath + '/' + uuid)
-        .send({} satisfies ActivateAccountDto);
+      let response = await app!.auth.activateAccount(uuid, {} satisfies ActivateAccountDto);
       expect(response.statusCode).toBe(200);
       let body = response.body;
       expect(typeof body).toBe('object');
@@ -109,11 +103,9 @@ describe('POST /auth/activate-account/', () => {
       const { data: user }: CreateUserResponseDto = body;
       expect(user?.id).toBeDefined();
 
-      const activateResponse = await request(app!.getServer())
-        .post(AuthRoute.activateAccountPath + '/' + user.id)
-        .send({
-          passcode: null as any,
-        } satisfies ActivateAccountDto);
+      const activateResponse = await app!.auth.activateAccount(user.id, {
+        passcode: null as any,
+      } satisfies ActivateAccountDto);
       expect(activateResponse.statusCode).toBe(200);
       body = activateResponse.body;
       expect(typeof body).toBe('object');
@@ -175,11 +167,9 @@ describe('POST /auth/activate-account/', () => {
       const { data: user }: CreateUserResponseDto = body;
       expect(user?.id).toBeDefined();
 
-      const activateResponse = await request(app!.getServer())
-        .post(AuthRoute.activateAccountPath + '/' + user.id)
-        .send({
-          passcode: undefined as any,
-        } satisfies ActivateAccountDto);
+      const activateResponse = await app!.auth.activateAccount(user.id, {
+        passcode: undefined as any,
+      } satisfies ActivateAccountDto);
       expect(activateResponse.statusCode).toBe(200);
       body = activateResponse.body;
       expect(typeof body).toBe('object');
@@ -241,11 +231,9 @@ describe('POST /auth/activate-account/', () => {
       const { data: user }: CreateUserResponseDto = body;
       expect(user?.id).toBeDefined();
 
-      const activateResponse = await request(app!.getServer())
-        .post(AuthRoute.activateAccountPath + '/' + user.id)
-        .send({
-          passcode: '',
-        } satisfies ActivateAccountDto);
+      const activateResponse = await app!.auth.activateAccount(user.id, {
+        passcode: '',
+      } satisfies ActivateAccountDto);
       expect(activateResponse.statusCode).toBe(200);
       body = activateResponse.body;
       expect(typeof body).toBe('object');
@@ -308,11 +296,9 @@ describe('POST /auth/activate-account/', () => {
       expect(user?.id).toBeDefined();
 
       const password = generateRandomPassword();
-      const activateResponse = await request(app!.getServer())
-        .post(AuthRoute.activateAccountPath + '/' + user.id)
-        .send({
-          passcode: password,
-        } satisfies ActivateAccountDto);
+      const activateResponse = await app!.auth.activateAccount(user.id, {
+        passcode: password,
+      } satisfies ActivateAccountDto);
       expect(activateResponse.statusCode).toBe(200);
       body = activateResponse.body;
       expect(typeof body).toBe('object');
@@ -377,11 +363,9 @@ describe('POST /auth/activate-account/', () => {
       expect(user?.id).toBeDefined();
 
       const pin = generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH);
-      const activateResponse = await request(app!.getServer())
-        .post(AuthRoute.activateAccountPath + '/' + user.id)
-        .send({
-          passcode: pin,
-        } satisfies ActivateAccountDto);
+      const activateResponse = await app!.auth.activateAccount(user.id, {
+        passcode: pin,
+      } satisfies ActivateAccountDto);
       expect(activateResponse.statusCode).toBe(200);
       body = activateResponse.body;
       expect(typeof body).toBe('object');
@@ -447,12 +431,10 @@ describe('POST /auth/activate-account/', () => {
 
       const firstName = generateRandomString();
       const lastName = generateRandomString();
-      const activateResponse = await request(app!.getServer())
-        .post(AuthRoute.activateAccountPath + '/' + user.id)
-        .send({
-          firstName,
-          lastName,
-        } satisfies ActivateAccountDto);
+      const activateResponse = await app!.auth.activateAccount(user.id, {
+        firstName,
+        lastName,
+      } satisfies ActivateAccountDto);
       expect(activateResponse.statusCode).toBe(200);
       body = activateResponse.body;
       expect(typeof body).toBe('object');
@@ -524,11 +506,9 @@ describe('POST /auth/activate-account/', () => {
       expect(body.data).toEqual({ isActive: false } satisfies IGetAccountBeforeLogInResultDto);
 
       const password = generateRandomPassword();
-      const activateResponse = await request(app!.getServer())
-        .post(AuthRoute.activateAccountPath + '/' + user.id)
-        .send({
-          passcode: password,
-        } satisfies ActivateAccountDto);
+      const activateResponse = await app!.auth.activateAccount(user.id, {
+        passcode: password,
+      } satisfies ActivateAccountDto);
       expect(activateResponse.statusCode).toBe(200);
       body = activateResponse.body;
       expect(typeof body).toBe('object');
@@ -596,11 +576,9 @@ describe('POST /auth/activate-account/', () => {
       expect(body.data).toEqual({ isActive: false } satisfies IGetAccountBeforeLogInResultDto);
 
       const pin = generateRandomNumber(VALIDATOR_SETTINGS.PIN_LENGTH);
-      const activateResponse = await request(app!.getServer())
-        .post(AuthRoute.activateAccountPath + '/' + user.id)
-        .send({
-          passcode: pin,
-        } satisfies ActivateAccountDto);
+      const activateResponse = await app!.auth.activateAccount(user.id, {
+        passcode: pin,
+      } satisfies ActivateAccountDto);
       expect(activateResponse.statusCode).toBe(200);
       body = activateResponse.body;
       expect(typeof body).toBe('object');
@@ -671,9 +649,7 @@ describe('POST /auth/activate-account/', () => {
       ];
 
       for (const body of bodyData) {
-        const response = await request(app!.getServer())
-          .post(AuthRoute.activateAccountPath + '/' + Guid.EMPTY)
-          .send(body);
+        const response = await app!.auth.activateAccount(Guid.EMPTY, body);
         expect(response.statusCode).toBe(400);
         const data = response.body.data as BadRequestException;
         const errors = data.message.split(',');
@@ -700,9 +676,7 @@ describe('POST /auth/activate-account/', () => {
       ];
 
       for (const body of bodyData) {
-        const response = await request(app!.getServer())
-          .post(AuthRoute.activateAccountPath + '/' + Guid.EMPTY)
-          .send(body);
+        const response = await app!.auth.activateAccount(Guid.EMPTY, body);
         expect(response.statusCode).toBe(400);
         const data = response.body.data as BadRequestException;
         const errors = data.message.split(',');
@@ -729,9 +703,7 @@ describe('POST /auth/activate-account/', () => {
       ];
 
       for (const body of bodyData) {
-        const response = await request(app!.getServer())
-          .post(AuthRoute.activateAccountPath + '/' + Guid.EMPTY)
-          .send(body);
+        const response = await app!.auth.activateAccount(Guid.EMPTY, body);
         expect(response.statusCode).toBe(400);
         const data = response.body.data as BadRequestException;
         const errors = data.message.split(',');
@@ -757,9 +729,7 @@ describe('POST /auth/activate-account/', () => {
       ];
 
       for (const body of bodyData) {
-        const response = await request(app!.getServer())
-          .post(AuthRoute.activateAccountPath + '/' + Guid.EMPTY)
-          .send(body);
+        const response = await app!.auth.activateAccount(Guid.EMPTY, body);
         expect(response.statusCode).toBe(400);
         const data = response.body.data as BadRequestException;
         const errors = data.message.split(',');
@@ -789,9 +759,7 @@ describe('POST /auth/activate-account/', () => {
       expect(body.data).toStrictEqual({ isActive: false } satisfies IGetAccountBeforeLogInResultDto);
       expect(body.data).toEqual({ isActive: false } satisfies IGetAccountBeforeLogInResultDto);
 
-      const activateResponse = await request(app!.getServer())
-        .post(AuthRoute.activateAccountPath + '/' + user.id)
-        .send({} satisfies ActivateAccountDto);
+      const activateResponse = await app!.auth.activateAccount(user.id, {} satisfies ActivateAccountDto);
       expect(activateResponse.statusCode).toBe(400);
       const data = activateResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
@@ -814,9 +782,7 @@ describe('POST /auth/activate-account/', () => {
 
   describe('request should end with status code of 404', () => {
     it('when user id is invalid', async () => {
-      const response = await request(app!.getServer())
-        .post(AuthRoute.activateAccountPath + '/invalidUserId')
-        .send();
+      const response = await app!.auth.activateAccount('invalidUserId', {} satisfies ActivateAccountDto);
       expect(response.statusCode).toBe(404);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = response.body as BadRequestException;

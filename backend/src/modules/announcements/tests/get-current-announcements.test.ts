@@ -50,10 +50,7 @@ describe('GET /announcements/current', () => {
     it('when there are announcements but they have no validFromDate and they are not published', async () => {
       const requestData = generateValidAnnouncements();
       requestData.validFromDate = undefined;
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       const { data: announcementsId }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
 
@@ -94,10 +91,7 @@ describe('GET /announcements/current', () => {
     it('when there are announcements and they have today`s validFromDate but they are not published', async () => {
       const requestData = generateValidAnnouncements();
       requestData.validFromDate = getDateNow();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       const { data: announcementsId }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
 
@@ -138,10 +132,7 @@ describe('GET /announcements/current', () => {
     it('when there are published announcements but they valid since tomorrow', async () => {
       const requestData = generateValidAnnouncements();
       requestData.validFromDate = getDateNow().addDays(1);
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       const { data: announcementsId }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
 
@@ -196,10 +187,7 @@ describe('GET /announcements/current', () => {
       const requestData1 = generateValidAnnouncements();
       // 6 days ago
       requestData1.validFromDate = getDateNow().addDays(-6);
-      const createAnnouncements1Response = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData1)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncements1Response = await app!.announcements.create(requestData1, adminAccessToken);
       expect(createAnnouncements1Response.statusCode).toBe(201);
       const { data: createdAnnouncements1Id }: CreateAnnouncementsResponseDto = createAnnouncements1Response.body;
 
@@ -214,10 +202,7 @@ describe('GET /announcements/current', () => {
       const requestData2 = generateValidAnnouncements();
       // today
       requestData2.validFromDate = getDateNow();
-      const createAnnouncements2Response = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData2)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncements2Response = await app!.announcements.create(requestData2, adminAccessToken);
       expect(createAnnouncements2Response.statusCode).toBe(201);
       const { data: createdAnnouncements2Id }: CreateAnnouncementsResponseDto = createAnnouncements2Response.body;
 
@@ -293,10 +278,7 @@ describe('GET /announcements/current', () => {
     it('when there are one published announcements with today date', async () => {
       const requestData = generateValidAnnouncements();
       requestData.validFromDate = getDateNow();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       const { data: createdAnnouncementsId }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
 

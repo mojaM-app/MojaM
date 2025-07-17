@@ -32,10 +32,7 @@ describe('GET/announcements-list', () => {
   describe('GET should respond with a status code of 200', () => {
     test('when data are valid and user has permission', async () => {
       const newAnnouncements = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(newAnnouncements)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(newAnnouncements, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       let body = createAnnouncementsResponse.body;
       const { data: announcementsId, message: createMessage }: CreateAnnouncementsResponseDto = body;

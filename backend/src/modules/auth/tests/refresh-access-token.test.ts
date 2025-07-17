@@ -293,9 +293,7 @@ describe('POST /auth/refresh-token', () => {
       const { data: newUserDto }: CreateUserResponseDto = body;
       expect(newUserDto?.id).toBeDefined();
 
-      const activateResponse = await request(app!.getServer())
-        .post(AuthRoute.activateAccountPath + '/' + newUserDto.id)
-        .send({} satisfies ActivateAccountDto);
+      const activateResponse = await app!.auth.activateAccount(newUserDto.id, {} satisfies ActivateAccountDto);
       expect(activateResponse.statusCode).toBe(200);
       body = activateResponse.body;
       expect(typeof body).toBe('object');

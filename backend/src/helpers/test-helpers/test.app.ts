@@ -2,6 +2,7 @@ import { EventDispatcherService } from '@core';
 import { ModulesRegistry } from '@modules/modules-registry';
 import { EventDispatcher } from 'event-dispatch';
 import nodemailer from 'nodemailer';
+import { AnnouncementsHelpers } from './announcements.test-helpers';
 import { type ITestApp } from './test-helpers.interface';
 import { App } from '../../app';
 import { registerTestEventHandlers } from '../event-handler-tests.helper';
@@ -35,6 +36,7 @@ export class TestApp extends App implements ITestApp {
   private readonly _newsHelpers = new NewsHelpers(this);
   private readonly _logListHelpers = new LogListHelpers(this);
   private readonly _communityHelpers = new CommunityHelpers(this);
+  private readonly _announcementsHelpers = new AnnouncementsHelpers(this);
 
   public get user(): UserHelpers {
     return this._userHelpers;
@@ -70,6 +72,10 @@ export class TestApp extends App implements ITestApp {
 
   public get community(): CommunityHelpers {
     return this._communityHelpers;
+  }
+
+  public get announcements(): AnnouncementsHelpers {
+    return this._announcementsHelpers;
   }
 
   constructor() {

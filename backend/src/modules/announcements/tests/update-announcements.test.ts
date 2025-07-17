@@ -34,10 +34,7 @@ describe('PUT /announcements', () => {
   describe('PUT should respond with a status code of 200 when data are valid and user has permission', () => {
     test('update should add new item', async () => {
       const requestData = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
@@ -154,10 +151,7 @@ describe('PUT /announcements', () => {
 
     test('update should delete one item', async () => {
       const requestData = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
@@ -274,10 +268,7 @@ describe('PUT /announcements', () => {
 
     test('update should change items content', async () => {
       const requestData = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
@@ -391,10 +382,7 @@ describe('PUT /announcements', () => {
 
     test('update should change only title', async () => {
       const requestData = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
@@ -501,10 +489,7 @@ describe('PUT /announcements', () => {
 
     test('update with title=null should set title=undefined', async () => {
       const requestData = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
@@ -610,10 +595,7 @@ describe('PUT /announcements', () => {
 
     test('update should change only validFromDate', async () => {
       const requestData = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
@@ -720,10 +702,7 @@ describe('PUT /announcements', () => {
 
     test('update with validFromDate=null should set validFromDate=null', async () => {
       const requestData = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
@@ -828,10 +807,7 @@ describe('PUT /announcements', () => {
 
     test('update with no data should make no changes', async () => {
       const requestData = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
@@ -936,10 +912,7 @@ describe('PUT /announcements', () => {
 
     test('update with all data set to undefined should make no changes', async () => {
       const requestData = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
@@ -1050,10 +1023,7 @@ describe('PUT /announcements', () => {
   describe('PUT should respond with a status code of 400', () => {
     test('when title is too long', async () => {
       const requestData = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsResponse.body;
@@ -1097,10 +1067,7 @@ describe('PUT /announcements', () => {
 
     test('when item content is too long', async () => {
       const requestData = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsResponse.body;
@@ -1149,10 +1116,7 @@ describe('PUT /announcements', () => {
 
     test('when item content is empty', async () => {
       const requestData = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsResponse.body;
@@ -1201,10 +1165,7 @@ describe('PUT /announcements', () => {
 
     test('when item content is null', async () => {
       const requestData = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsResponse.body;
@@ -1253,10 +1214,7 @@ describe('PUT /announcements', () => {
 
     test('when item content is undefined', async () => {
       const requestData = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsResponse.body;
@@ -1306,10 +1264,7 @@ describe('PUT /announcements', () => {
     test('when validFromDate is the same as another announcements validFromDate', async () => {
       let requestData = generateValidAnnouncements();
       const d1 = requestData.validFromDate;
-      let createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      let createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
@@ -1318,13 +1273,13 @@ describe('PUT /announcements', () => {
       expect(announcements1Id).toBeDefined();
 
       requestData = generateValidAnnouncements();
-      createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send({
+      createAnnouncementsResponse = await app!.announcements.create(
+        {
           ...requestData,
           validFromDate: d1!.addDays(1),
-        })
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+        },
+        adminAccessToken,
+      );
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = createAnnouncementsResponse.body;
@@ -1379,10 +1334,7 @@ describe('PUT /announcements', () => {
 
     test('when update announcements that not exists', async () => {
       const requestData = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsResponse.body;
@@ -1426,10 +1378,7 @@ describe('PUT /announcements', () => {
 
     test('when try to remove validFromDate at published announcements', async () => {
       const requestData = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsResponse.body;

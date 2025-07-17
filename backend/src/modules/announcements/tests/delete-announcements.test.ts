@@ -29,10 +29,7 @@ describe('DELETE /announcements', () => {
   describe('DELETE should respond with a status code of 200 when data are valid and user has permission', () => {
     test('create announcement', async () => {
       const requestData = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsResponse.body;
@@ -272,10 +269,10 @@ describe('DELETE /announcements', () => {
       const deleteBobResponse = await app!.user.delete(bobDto.id, adminAccessToken);
       expect(deleteBobResponse.statusCode).toBe(200);
 
-      const createAnnouncementsUsingBobAccessTokenResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(generateValidAnnouncements())
-        .set('Authorization', `Bearer ${bobAccessToken}`);
+      const createAnnouncementsUsingBobAccessTokenResponse = await app!.announcements.create(
+        generateValidAnnouncements(),
+        bobAccessToken,
+      );
       expect(createAnnouncementsUsingBobAccessTokenResponse.statusCode).toBe(401);
       expect(createAnnouncementsUsingBobAccessTokenResponse.headers['content-type']).toEqual(
         expect.stringContaining('json'),

@@ -35,10 +35,7 @@ describe('POST /announcements', () => {
       requestData.title = 'a'.repeat(VALIDATOR_SETTINGS.ANNOUNCEMENTS_TITLE_MAX_LENGTH);
       requestData.items![0].content = 'a'.repeat(VALIDATOR_SETTINGS.ANNOUNCEMENT_ITEM_CONTENT_MAX_LENGTH);
 
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
@@ -114,10 +111,7 @@ describe('POST /announcements', () => {
       requestData.title = undefined;
       requestData.validFromDate = undefined;
 
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
@@ -193,10 +187,7 @@ describe('POST /announcements', () => {
       requestData.title = null as any;
       requestData.validFromDate = null as any;
 
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
@@ -271,10 +262,7 @@ describe('POST /announcements', () => {
       const requestData = generateValidAnnouncements();
       requestData.title = 'Title';
 
-      let createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      let createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
@@ -283,10 +271,7 @@ describe('POST /announcements', () => {
       expect(announcements1Id).toBeDefined();
 
       requestData.validFromDate = generateRandomDate();
-      createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = createAnnouncementsResponse.body;
@@ -328,10 +313,7 @@ describe('POST /announcements', () => {
       const requestData = generateValidAnnouncements();
       requestData.items = undefined;
 
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
@@ -399,10 +381,7 @@ describe('POST /announcements', () => {
       const requestData = generateValidAnnouncements();
       requestData.title = 'a'.repeat(VALIDATOR_SETTINGS.ANNOUNCEMENTS_TITLE_MAX_LENGTH + 1);
 
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(400);
       const data = createAnnouncementsResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
@@ -418,10 +397,7 @@ describe('POST /announcements', () => {
       const requestData = generateValidAnnouncements();
       requestData.items![0].content = 'a'.repeat(VALIDATOR_SETTINGS.ANNOUNCEMENT_ITEM_CONTENT_MAX_LENGTH + 1);
 
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(400);
       const data = createAnnouncementsResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
@@ -437,10 +413,7 @@ describe('POST /announcements', () => {
       const requestData = generateValidAnnouncements();
       requestData.items![0].content = '';
 
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(400);
       const data = createAnnouncementsResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
@@ -456,10 +429,7 @@ describe('POST /announcements', () => {
       const requestData = generateValidAnnouncements();
       requestData.items![0].content = null as any;
 
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(400);
       const data = createAnnouncementsResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
@@ -475,10 +445,7 @@ describe('POST /announcements', () => {
       const requestData = generateValidAnnouncements();
       requestData.items![0].content = undefined as any;
 
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(400);
       const data = createAnnouncementsResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
@@ -508,10 +475,7 @@ describe('POST /announcements', () => {
       const requestData = generateValidAnnouncements();
       requestData.validFromDate = date;
 
-      let createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      let createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsResponse.body;
@@ -519,10 +483,7 @@ describe('POST /announcements', () => {
       const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
       expect(announcementsId).toBeDefined();
 
-      createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(400);
       const data = createAnnouncementsResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
@@ -556,7 +517,7 @@ describe('POST /announcements', () => {
   describe('POST should respond with a status code of 403', () => {
     test('when token is not set', async () => {
       const data = generateValidAnnouncements();
-      const createAnnouncementsResponse = await request(app!.getServer()).post(AnnouncementsRout.path).send(data);
+      const createAnnouncementsResponse = await app!.announcements.create(data);
       expect(createAnnouncementsResponse.statusCode).toBe(401);
       const body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
@@ -586,10 +547,10 @@ describe('POST /announcements', () => {
         await app!.auth.loginAs({ email: userData.email, passcode: userData.passcode } satisfies ILoginModel)
       )?.accessToken;
 
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(generateValidAnnouncements())
-        .set('Authorization', `Bearer ${newUserAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(
+        generateValidAnnouncements(),
+        newUserAccessToken,
+      );
       expect(createAnnouncementsResponse.statusCode).toBe(403);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = createAnnouncementsResponse.body;
@@ -642,10 +603,10 @@ describe('POST /announcements', () => {
         await app!.auth.loginAs({ email: userData.email, passcode: userData.passcode } satisfies ILoginModel)
       )?.accessToken;
 
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(generateValidAnnouncements())
-        .set('Authorization', `Bearer ${newUserAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(
+        generateValidAnnouncements(),
+        newUserAccessToken,
+      );
       expect(createAnnouncementsResponse.statusCode).toBe(403);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = createAnnouncementsResponse.body;
@@ -681,10 +642,7 @@ describe('POST /announcements', () => {
   describe('POST should respond with a status code of 401', () => {
     test('when token is invalid', async () => {
       const requestData = generateValidAnnouncements();
-      const response = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(requestData)
-        .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
+      const response = await app!.announcements.create(requestData, `invalid_token_${adminAccessToken}`);
       expect(response.statusCode).toBe(401);
       const body = response.body;
       expect(typeof body).toBe('object');
@@ -714,10 +672,10 @@ describe('POST /announcements', () => {
       const deleteBobResponse = await app!.user.delete(bobDto.id, adminAccessToken);
       expect(deleteBobResponse.statusCode).toBe(200);
 
-      const createAnnouncementsUsingBobAccessTokenResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path)
-        .send(generateValidAnnouncements())
-        .set('Authorization', `Bearer ${bobAccessToken}`);
+      const createAnnouncementsUsingBobAccessTokenResponse = await app!.announcements.create(
+        generateValidAnnouncements(),
+        bobAccessToken,
+      );
       expect(createAnnouncementsUsingBobAccessTokenResponse.statusCode).toBe(401);
       expect(createAnnouncementsUsingBobAccessTokenResponse.headers['content-type']).toEqual(
         expect.stringContaining('json'),

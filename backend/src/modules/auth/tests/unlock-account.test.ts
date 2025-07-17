@@ -5,11 +5,9 @@ import { testHelpers } from '@helpers';
 import { userTestHelpers } from '@modules/users';
 import { getAdminLoginData } from '@utils';
 import { Guid } from 'guid-typescript';
-import request from 'supertest';
 import Container from 'typedi';
 import { TestApp } from '../../../helpers/test-helpers/test.app';
 import { IUnlockAccountResultDto, UnlockAccountResponseDto } from '../dtos/unlock-account.dto';
-import { AuthRoute } from '../routes/auth.routes';
 import { AccountService } from '../services/account.service';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 
@@ -30,9 +28,7 @@ describe('POST /auth/unlock-account/', () => {
 
   describe('request should end with status code of 200', () => {
     it('when user with given id not exist', async () => {
-      const response = await request(app!.getServer())
-        .post(AuthRoute.unlockAccountPath + '/' + Guid.EMPTY)
-        .send();
+      const response = await app!.auth.unlockAccount(Guid.EMPTY);
       expect(response.statusCode).toBe(200);
       const body = response.body as UnlockAccountResponseDto;
       expect(typeof body).toBe('object');
@@ -59,9 +55,7 @@ describe('POST /auth/unlock-account/', () => {
       expect(activateResponse.statusCode).toBe(200);
 
       // Try to unlock the user who is not locked
-      const response = await request(app!.getServer())
-        .post(AuthRoute.unlockAccountPath + '/' + newUserDto.id)
-        .send();
+      const response = await app!.auth.unlockAccount(newUserDto.id);
       expect(response.statusCode).toBe(200);
 
       // Verify response
@@ -121,9 +115,7 @@ describe('POST /auth/unlock-account/', () => {
       expect(verifyLockedResponse.body.data.message).toBe(errorKeys.login.Account_Is_Locked_Out);
 
       // Now unlock the account
-      const response = await request(app!.getServer())
-        .post(AuthRoute.unlockAccountPath + '/' + newUserDto.id)
-        .send();
+      const response = await app!.auth.unlockAccount(newUserDto.id);
       expect(response.statusCode).toBe(200);
 
       // Verify response
@@ -200,9 +192,7 @@ describe('POST /auth/unlock-account/', () => {
       expect(verifyLockedResponse.body.data.message).toBe(errorKeys.login.Account_Is_Locked_Out);
 
       // Unlock the account
-      const unlockResponse = await request(app!.getServer())
-        .post(AuthRoute.unlockAccountPath + '/' + newUserDto.id)
-        .send();
+      const unlockResponse = await app!.auth.unlockAccount(newUserDto.id);
       expect(unlockResponse.statusCode).toBe(200);
 
       // Verify successful login after unlock (this proves the failed login attempts counter was reset)
@@ -261,9 +251,7 @@ describe('POST /auth/unlock-account/', () => {
 
   describe('request should end with status code of 404', () => {
     it('when user id is invalid', async () => {
-      const response = await request(app!.getServer())
-        .post(AuthRoute.unlockAccountPath + '/invalidUserId')
-        .send();
+      const response = await app!.auth.unlockAccount('invalidUserId');
       expect(response.statusCode).toBe(404);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = response.body as BadRequestException;
@@ -282,9 +270,7 @@ describe('POST /auth/unlock-account/', () => {
     it('when service throws an error', async () => {
       const accountService = Container.get(AccountService);
       const mockGet = jest.spyOn(accountService, 'unlockAccount').mockRejectedValue(new Error('Service error'));
-      const response = await request(app!.getServer())
-        .post(AuthRoute.unlockAccountPath + '/' + Guid.EMPTY)
-        .send();
+      const response = await app!.auth.unlockAccount(Guid.EMPTY);
       expect(response.statusCode).toBe(500);
       expect(mockGet).toHaveBeenCalled();
     });
