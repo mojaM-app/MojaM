@@ -39,9 +39,10 @@ describe('POST /auth/refresh-token', () => {
   describe('new access token should be generated', () => {
     it('when current access token is expired', async () => {
       const { email, passcode } = getAdminLoginData();
-      const loginResponse = await request(app!.getServer())
-        .post(AuthRoute.loginPath)
-        .send({ email, passcode } satisfies ILoginModel);
+      const loginResponse = await app!.auth.login({
+        email,
+        passcode,
+      } satisfies ILoginModel);
       const body: LoginResponseDto = loginResponse.body;
       expect(typeof body).toBe('object');
       expect(loginResponse.statusCode).toBe(200);
@@ -145,9 +146,10 @@ describe('POST /auth/refresh-token', () => {
   describe('new access token should NOT be generated', () => {
     it('when current: refresh and access token are expired', async () => {
       const { email, passcode } = getAdminLoginData();
-      const loginResponse = await request(app!.getServer())
-        .post(AuthRoute.loginPath)
-        .send({ email, passcode } satisfies ILoginModel);
+      const loginResponse = await app!.auth.login({
+        email,
+        passcode,
+      } satisfies ILoginModel);
       const body: LoginResponseDto = loginResponse.body;
       expect(typeof body).toBe('object');
       expect(loginResponse.statusCode).toBe(200);
@@ -227,9 +229,10 @@ describe('POST /auth/refresh-token', () => {
 
     it('when refresh token is empty', async () => {
       const { email, passcode } = getAdminLoginData();
-      const loginResponse = await request(app!.getServer())
-        .post(AuthRoute.loginPath)
-        .send({ email, passcode } satisfies ILoginModel);
+      const loginResponse = await app!.auth.login({
+        email,
+        passcode,
+      } satisfies ILoginModel);
       const body: LoginResponseDto = loginResponse.body;
       expect(typeof body).toBe('object');
       expect(loginResponse.statusCode).toBe(200);

@@ -322,11 +322,11 @@ describe('POST /auth/activate-account/', () => {
       } satisfies IActivateAccountResultDto);
 
       const loginData: ILoginModel = { email: requestData.email, passcode: requestData.passcode };
-      let loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      let loginResponse = await app!.auth.login(loginData);
       expect(loginResponse.statusCode).toBe(400);
 
       loginData.passcode = password;
-      loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      loginResponse = await app!.auth.login(loginData);
       expect(loginResponse.statusCode).toBe(200);
 
       const getAccountBeforeLogInResponse = await app!.auth.getAccountBeforeLogIn({
@@ -391,11 +391,11 @@ describe('POST /auth/activate-account/', () => {
       } satisfies IActivateAccountResultDto);
 
       const loginData: ILoginModel = { email: requestData.email, passcode: requestData.passcode };
-      let loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      let loginResponse = await app!.auth.login(loginData);
       expect(loginResponse.statusCode).toBe(400);
 
       loginData.passcode = pin;
-      loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      loginResponse = await app!.auth.login(loginData);
       expect(loginResponse.statusCode).toBe(200);
 
       const getAccountBeforeLogInResponse = await app!.auth.getAccountBeforeLogIn({
@@ -538,7 +538,7 @@ describe('POST /auth/activate-account/', () => {
       } satisfies IActivateAccountResultDto);
 
       const loginData: ILoginModel = { email: requestData.email, passcode: password };
-      const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      const loginResponse = await app!.auth.login(loginData);
       expect(loginResponse.statusCode).toBe(200);
 
       getAccountBeforeLogInResponse = await app!.auth.getAccountBeforeLogIn({
@@ -610,7 +610,7 @@ describe('POST /auth/activate-account/', () => {
       } satisfies IActivateAccountResultDto);
 
       const loginData: ILoginModel = { email: requestData.email, passcode: pin };
-      const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      const loginResponse = await app!.auth.login(loginData);
       expect(loginResponse.statusCode).toBe(200);
 
       getAccountBeforeLogInResponse = await app!.auth.getAccountBeforeLogIn({

@@ -79,7 +79,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
       const loginData: ILoginModel = { email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' };
 
       for (let index = 1; index < USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
-        const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+        const loginResponse = await app!.auth.login(loginData);
         expect(loginResponse.statusCode).toBe(400);
         expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
         const body = loginResponse.body;
@@ -89,9 +89,10 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
         expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Passcode);
         expect(loginArgs).toBeUndefined();
       }
-      const loginResponse = await request(app!.getServer())
-        .post(AuthRoute.loginPath)
-        .send({ email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' } satisfies ILoginModel);
+      const loginResponse = await app!.auth.login({
+        email: newUserDto.email,
+        passcode: user.passcode + 'invalid_passcode',
+      } satisfies ILoginModel);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const data = loginResponse.body.data as BadRequestException;
@@ -144,7 +145,7 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
       const loginData: ILoginModel = { email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' };
 
       for (let index = 1; index < USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
-        const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+        const loginResponse = await app!.auth.login(loginData);
         expect(loginResponse.statusCode).toBe(400);
         expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
         const body = loginResponse.body;
@@ -154,9 +155,10 @@ describe('POST /auth/get-account-to-activate/:userId/', () => {
         expect(loginMessage).toBe(errorKeys.login.Invalid_Login_Or_Passcode);
         expect(loginArgs).toBeUndefined();
       }
-      const loginResponse = await request(app!.getServer())
-        .post(AuthRoute.loginPath)
-        .send({ email: newUserDto.email, passcode: user.passcode + 'invalid_passcode' } satisfies ILoginModel);
+      const loginResponse = await app!.auth.login({
+        email: newUserDto.email,
+        passcode: user.passcode + 'invalid_passcode',
+      } satisfies ILoginModel);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const data = loginResponse.body.data as BadRequestException;

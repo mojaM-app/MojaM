@@ -252,7 +252,7 @@ describe('POST /auth/reset-passcode', () => {
         passcode: user.passcode + 'invalid_password',
       };
       for (let index = 1; index < USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
-        const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+        const loginResponse = await app!.auth.login(loginData);
         expect(loginResponse.statusCode).toBe(400);
         expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
         expect(typeof loginResponse.body).toBe('object');
@@ -262,7 +262,7 @@ describe('POST /auth/reset-passcode', () => {
         expect(loginArgs).toBeUndefined();
       }
 
-      let loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      let loginResponse = await app!.auth.login(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       expect(typeof loginResponse.body).toBe('object');

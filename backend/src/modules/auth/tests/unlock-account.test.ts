@@ -108,7 +108,7 @@ describe('POST /auth/unlock-account/', () => {
       // Lock out the user by making multiple failed login attempts
       const loginData = { email: newUserDto.email, passcode: user.passcode + 'invalid_password' };
       for (let i = 1; i <= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; i++) {
-        const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+        const loginResponse = await app!.auth.login(loginData);
         expect(loginResponse.statusCode).toBe(400);
       }
 
@@ -187,7 +187,7 @@ describe('POST /auth/unlock-account/', () => {
       // Lock out the user by making multiple failed login attempts
       const loginData = { email: newUserDto.email, passcode: user.passcode + 'invalid_password' };
       for (let i = 1; i <= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; i++) {
-        const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+        const loginResponse = await app!.auth.login(loginData);
         expect(loginResponse.statusCode).toBe(400);
       }
 

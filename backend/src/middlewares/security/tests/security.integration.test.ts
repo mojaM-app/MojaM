@@ -1,6 +1,5 @@
-import { RouteConstants } from '@core';
+import { ILoginModel, RouteConstants } from '@core';
 import { testHelpers } from '@helpers';
-import { AuthRoute } from '@modules/auth/routes/auth.routes';
 import { getAdminLoginData } from '@utils';
 import { Guid } from 'guid-typescript';
 import request from 'supertest';
@@ -84,10 +83,10 @@ describe('Security Integration Tests', () => {
     });
 
     it('should log failed authentication attempts', async () => {
-      const response = await request(app!.getServer()).post(AuthRoute.loginPath).send({
+      const response = await app!.auth.login({
         email: 'test@example.com',
         passcode: 'wrongpassword',
-      });
+      } satisfies ILoginModel);
 
       // Should either fail with validation error (400)
       expect(400).toEqual(response.status);
@@ -158,10 +157,10 @@ describe('Security Integration Tests', () => {
     });
 
     it('should sanitize SQL injection attempts', async () => {
-      const response = await request(app!.getServer()).post(AuthRoute.loginPath).send({
+      const response = await app!.auth.login({
         email: "admin@example.com'; DROP TABLE users; --",
         passcode: 'password',
-      });
+      } satisfies ILoginModel);
 
       // Should either fail with validation error (400)
       expect(400).toEqual(response.status);
@@ -187,10 +186,10 @@ describe('Security Integration Tests', () => {
       const attempts = [];
       for (let i = 0; i < 5; i++) {
         attempts.push(
-          request(app!.getServer()).post(AuthRoute.loginPath).send({
+          app!.auth.login({
             email: 'test@example.com',
             passcode: 'wrongpassword',
-          }),
+          } satisfies ILoginModel),
         );
       }
 

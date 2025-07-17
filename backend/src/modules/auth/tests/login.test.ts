@@ -8,9 +8,7 @@ import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
 import { generateRandomEmail, generateRandomPassword, getAdminLoginData } from '@utils';
 import { NextFunction } from 'express';
 import { decode } from 'jsonwebtoken';
-import request from 'supertest';
 import { TestApp } from '../../../helpers/test-helpers/test.app';
-import { AuthRoute } from '../routes/auth.routes';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 
 describe('POST /login', () => {
@@ -31,9 +29,10 @@ describe('POST /login', () => {
   describe('when login data are valid', () => {
     it('(login via email and passcode) response should have set the Authorization token when login data are correct', async () => {
       const { email, passcode } = getAdminLoginData();
-      const loginResponse = await request(app!.getServer())
-        .post(AuthRoute.loginPath)
-        .send({ email, passcode } satisfies ILoginModel);
+      const loginResponse = await app!.auth.login({
+        email,
+        passcode,
+      } satisfies ILoginModel);
       const body: LoginResponseDto = loginResponse.body;
       expect(typeof body).toBe('object');
       expect(loginResponse.statusCode).toBe(200);
@@ -77,9 +76,11 @@ describe('POST /login', () => {
 
     it('(login via email, phone and passcode) response should have set the Authorization token when login data are correct', async () => {
       const { email, phone, passcode } = getAdminLoginData();
-      const loginResponse = await request(app!.getServer())
-        .post(AuthRoute.loginPath)
-        .send({ email, phone, passcode } satisfies ILoginModel);
+      const loginResponse = await app!.auth.login({
+        email,
+        phone,
+        passcode,
+      } satisfies ILoginModel);
       const body: LoginResponseDto = loginResponse.body;
       expect(typeof body).toBe('object');
       expect(loginResponse.statusCode).toBe(200);
@@ -154,7 +155,7 @@ describe('POST /login', () => {
       expect(newUser1Dto.email).not.toBe(newUser2Dto.email);
 
       const loginData: ILoginModel = { email: user1.email, passcode: user1.passcode };
-      const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      const loginResponse = await app!.auth.login(loginData);
       const body: LoginResponseDto = loginResponse.body;
       expect(typeof body).toBe('object');
       expect(loginResponse.statusCode).toBe(200);
@@ -223,7 +224,7 @@ describe('POST /login', () => {
       expect(newUser1Dto.email).not.toBe(newUser2Dto.email);
 
       const loginData: ILoginModel = { email: user1.email, phone: user1.phone, passcode: user1.passcode };
-      const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      const loginResponse = await app!.auth.login(loginData);
       const body: LoginResponseDto = loginResponse.body;
       expect(typeof body).toBe('object');
       expect(loginResponse.statusCode).toBe(200);
@@ -292,7 +293,7 @@ describe('POST /login', () => {
       expect(newUser1Dto.phone).not.toBe(newUser2Dto.phone);
 
       const loginData: ILoginModel = { email, phone: user1.phone, passcode: user1.passcode };
-      const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      const loginResponse = await app!.auth.login(loginData);
       expect(loginResponse.statusCode).toBe(200);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body: LoginResponseDto = loginResponse.body;
@@ -363,7 +364,7 @@ describe('POST /login', () => {
       expect(newUser1Dto.phone).not.toBe(newUser2Dto.phone);
 
       const loginData: ILoginModel = { email, passcode: user1.passcode };
-      const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      const loginResponse = await app!.auth.login(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
@@ -412,7 +413,7 @@ describe('POST /login', () => {
       ];
 
       for (const body of bodyData) {
-        const response = await request(app!.getServer()).post(AuthRoute.loginPath).send(body);
+        const response = await app!.auth.login(body);
         expect(response.statusCode).toBe(400);
         const data = response.body.data as BadRequestException;
         const errors = data.message.split(',');
@@ -447,7 +448,7 @@ describe('POST /login', () => {
       ];
 
       for (const body of bodyData) {
-        const response = await request(app!.getServer()).post(AuthRoute.loginPath).send(body);
+        const response = await app!.auth.login(body);
         expect(response.statusCode).toBe(400);
         const data = response.body.data as BadRequestException;
         const errors = data.message.split(',');
@@ -473,7 +474,7 @@ describe('POST /login', () => {
     it('should respond with a status code of 400 when user with given email not exist', async () => {
       const user = userTestHelpers.generateValidUserWithPassword();
       const loginData: ILoginModel = { email: user.email, passcode: user.passcode };
-      const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      const loginResponse = await app!.auth.login(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
@@ -492,7 +493,7 @@ describe('POST /login', () => {
     it('should respond with a status code of 400 when user with given phone not exist', async () => {
       const user = userTestHelpers.generateValidUserWithPassword();
       const loginData: ILoginModel = { email: user.phone, passcode: user.passcode };
-      const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      const loginResponse = await app!.auth.login(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
@@ -520,7 +521,7 @@ describe('POST /login', () => {
       expect(activateUserResponse.statusCode).toBe(200);
 
       const loginData: ILoginModel = { email: newUserDto.email, passcode: user.passcode + 'invalid_password' };
-      const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      const loginResponse = await app!.auth.login(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
@@ -569,7 +570,7 @@ describe('POST /login', () => {
         phone: newUserDto.phone,
         passcode: user.passcode + 'invalid_password',
       };
-      const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      const loginResponse = await app!.auth.login(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
@@ -616,7 +617,7 @@ describe('POST /login', () => {
       const loginData: ILoginModel = { email: newUserDto.email, passcode: user.passcode + 'invalid_password' };
 
       for (let index = 1; index < USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
-        const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+        const loginResponse = await app!.auth.login(loginData);
         expect(loginResponse.statusCode).toBe(400);
         expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
         const body = loginResponse.body;
@@ -627,7 +628,7 @@ describe('POST /login', () => {
         expect(loginArgs).toBeUndefined();
       }
 
-      const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      const loginResponse = await app!.auth.login(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
@@ -682,7 +683,7 @@ describe('POST /login', () => {
       };
 
       for (let index = 1; index < USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
-        const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+        const loginResponse = await app!.auth.login(loginData);
         expect(loginResponse.statusCode).toBe(400);
         expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
         const body = loginResponse.body;
@@ -693,7 +694,7 @@ describe('POST /login', () => {
         expect(loginArgs).toBeUndefined();
       }
 
-      const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      const loginResponse = await app!.auth.login(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
@@ -744,7 +745,7 @@ describe('POST /login', () => {
       expect(createMessage).toBe(events.users.userCreated);
 
       const loginData: ILoginModel = { email: user.email, passcode: 'some_StrongP@ssword!' };
-      const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      const loginResponse = await app!.auth.login(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = loginResponse.body;
@@ -788,11 +789,15 @@ describe('POST /login', () => {
       };
 
       for (let index = 1; index <= USER_ACCOUNT_LOCKOUT_SETTINGS.FAILED_LOGIN_ATTEMPTS; index++) {
-        const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+        const loginResponse = await app!.auth.login({
+          email: loginData.email,
+          phone: loginData.phone,
+          passcode: loginData.passcode,
+        });
         expect(loginResponse.statusCode).toBe(400);
       }
 
-      const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      const loginResponse = await app!.auth.login(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
@@ -846,7 +851,7 @@ describe('POST /login', () => {
       expect(deactivateResponse.statusCode).toBe(200);
 
       const loginData: ILoginModel = { email: newUserDto.email, passcode: user.passcode };
-      const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      const loginResponse = await app!.auth.login(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
@@ -891,7 +896,7 @@ describe('POST /login', () => {
       expect(deactivateResponse.statusCode).toBe(200);
 
       const loginData: ILoginModel = { email: newUserDto.email, passcode: user.passcode + 'invalid-passcode' };
-      const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      const loginResponse = await app!.auth.login(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
@@ -938,7 +943,7 @@ describe('POST /login', () => {
       expect(deleteUserResponse.statusCode).toBe(200);
 
       const loginData: ILoginModel = { email: newUserDto.email, passcode: user.passcode };
-      const loginResponse = await request(app!.getServer()).post(AuthRoute.loginPath).send(loginData);
+      const loginResponse = await app!.auth.login(loginData);
       expect(loginResponse.statusCode).toBe(400);
       expect(loginResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = loginResponse.body;
