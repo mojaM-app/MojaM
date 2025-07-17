@@ -6,8 +6,10 @@ import { AnnouncementsHelpers } from './announcements.test-helpers';
 import { type ITestApp } from './test-helpers.interface';
 import { App } from '../../app';
 import { registerTestEventHandlers } from '../event-handler-tests.helper';
+import { AnnouncementsListHelpers } from './announcements-list.test-helpers';
 import { AuthHelpers } from './auth.test-helpers';
 import { CommunityHelpers } from './community.test-helpers';
+import { CurrentAnnouncementsHelpers } from './current-announcements.test-helpers';
 import { LogListHelpers } from './log-list.test-helpers';
 import { NewsHelpers } from './news.test-helpers';
 import { PermissionsHelpers } from './permission.test-helpers';
@@ -37,6 +39,8 @@ export class TestApp extends App implements ITestApp {
   private readonly _logListHelpers = new LogListHelpers(this);
   private readonly _communityHelpers = new CommunityHelpers(this);
   private readonly _announcementsHelpers = new AnnouncementsHelpers(this);
+  private readonly _announcementsListHelpers = new AnnouncementsListHelpers(this);
+  private readonly _currentAnnouncementsHelpers = new CurrentAnnouncementsHelpers(this);
 
   public get user(): UserHelpers {
     return this._userHelpers;
@@ -76,6 +80,14 @@ export class TestApp extends App implements ITestApp {
 
   public get announcements(): AnnouncementsHelpers {
     return this._announcementsHelpers;
+  }
+
+  public get announcementsList(): AnnouncementsListHelpers {
+    return this._announcementsListHelpers;
+  }
+
+  public get currentAnnouncements(): CurrentAnnouncementsHelpers {
+    return this._currentAnnouncementsHelpers;
   }
 
   constructor() {

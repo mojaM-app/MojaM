@@ -29,7 +29,7 @@ describe('GET /announcements/current', () => {
 
   describe('result should be null', () => {
     it('when there is no announcements', async () => {
-      const response = await request(app!.getServer()).get(AnnouncementsRout.currentAnnouncementsPath).send();
+      const response = await app!.currentAnnouncements.get();
       expect(response.statusCode).toBe(200);
       const body = response.body;
       expect(typeof body).toBe('object');
@@ -54,7 +54,7 @@ describe('GET /announcements/current', () => {
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       const { data: announcementsId }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
 
-      const response = await request(app!.getServer()).get(AnnouncementsRout.currentAnnouncementsPath).send();
+      const response = await app!.currentAnnouncements.get();
       expect(response.statusCode).toBe(200);
       const body = response.body;
       expect(typeof body).toBe('object');
@@ -95,7 +95,7 @@ describe('GET /announcements/current', () => {
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       const { data: announcementsId }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
 
-      const response = await request(app!.getServer()).get(AnnouncementsRout.currentAnnouncementsPath).send();
+      const response = await app!.currentAnnouncements.get();
       expect(response.statusCode).toBe(200);
       const body = response.body;
       expect(typeof body).toBe('object');
@@ -144,7 +144,7 @@ describe('GET /announcements/current', () => {
       const { data: publishResult }: PublishAnnouncementsResponseDto = publishAnnouncementsResponse.body;
       expect(publishResult).toBe(true);
 
-      const response = await request(app!.getServer()).get(AnnouncementsRout.currentAnnouncementsPath).send();
+      const response = await app!.currentAnnouncements.get();
       expect(response.statusCode).toBe(200);
       const body = response.body;
       expect(typeof body).toBe('object');
@@ -206,7 +206,7 @@ describe('GET /announcements/current', () => {
       expect(createAnnouncements2Response.statusCode).toBe(201);
       const { data: createdAnnouncements2Id }: CreateAnnouncementsResponseDto = createAnnouncements2Response.body;
 
-      const response = await request(app!.getServer()).get(AnnouncementsRout.currentAnnouncementsPath).send();
+      const response = await app!.currentAnnouncements.get();
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = response.body;
@@ -290,7 +290,7 @@ describe('GET /announcements/current', () => {
       const { data: publishResult }: PublishAnnouncementsResponseDto = publishAnnouncementsResponse.body;
       expect(publishResult).toBe(true);
 
-      const response = await request(app!.getServer()).get(AnnouncementsRout.currentAnnouncementsPath).send();
+      const response = await app!.currentAnnouncements.get();
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = response.body;
@@ -363,9 +363,7 @@ describe('GET /announcements/current', () => {
           throw new Error('Test error');
         });
 
-      const getAnnouncementsListResponse = await request(app!.getServer())
-        .get(AnnouncementsRout.currentAnnouncementsPath)
-        .send();
+      const getAnnouncementsListResponse = await app!.currentAnnouncements.get();
       expect(getAnnouncementsListResponse.statusCode).toBe(500);
       const body = getAnnouncementsListResponse.body;
       expect(typeof body).toBe('object');
