@@ -5,13 +5,11 @@ import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
 import { getAdminLoginData, isGuid } from '@utils';
 import { isDateString } from 'class-validator';
 import { Guid } from 'guid-typescript';
-import request from 'supertest';
 import { generateValidAnnouncements } from './test.helpers';
 import { TestApp } from '../../../helpers/test-helpers/test.app';
 import { CreateAnnouncementsResponseDto } from '../dtos/create-announcements.dto';
 import { GetAnnouncementsResponseDto } from '../dtos/get-announcements.dto';
 import { AnnouncementStateValue } from '../enums/announcement-state.enum';
-import { AnnouncementsRout } from '../routes/announcements.routes';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 
 describe('GET /announcements', () => {
@@ -39,10 +37,7 @@ describe('GET /announcements', () => {
       const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
       expect(announcementsId).toBeDefined();
 
-      const getAnnouncementsResponse = await request(app!.getServer())
-        .get(AnnouncementsRout.path + '/' + announcementsId)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getAnnouncementsResponse.body;
@@ -77,10 +72,7 @@ describe('GET /announcements', () => {
       });
 
       // cleanup
-      const deleteAnnouncementsResponse = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + announcementsId)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -110,16 +102,10 @@ describe('GET /announcements', () => {
       const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
       expect(announcementsId).toBeDefined();
 
-      const publishAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path + '/' + announcementsId + '/' + AnnouncementsRout.publishPath)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const publishAnnouncementsResponse = await app!.announcements.publish(announcementsId, adminAccessToken);
       expect(publishAnnouncementsResponse.statusCode).toBe(200);
 
-      const getAnnouncementsResponse = await request(app!.getServer())
-        .get(AnnouncementsRout.path + '/' + announcementsId)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getAnnouncementsResponse.body;
@@ -154,10 +140,7 @@ describe('GET /announcements', () => {
       });
 
       // cleanup
-      const deleteAnnouncementsResponse = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + announcementsId)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -184,10 +167,7 @@ describe('GET /announcements', () => {
   describe('GET should respond with a status code of 400', () => {
     test('GET should respond with a status code of 400 when user not exist', async () => {
       const userId: string = Guid.EMPTY;
-      const getAnnouncementsResponse = await request(app!.getServer())
-        .get(AnnouncementsRout.path + '/' + userId)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const getAnnouncementsResponse = await app!.announcements.get(userId, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(400);
       expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = getAnnouncementsResponse.body;
@@ -206,10 +186,7 @@ describe('GET /announcements', () => {
 
   describe('GET should respond with a status code of 404', () => {
     test('GET should respond with a status code of 404 when user Id is not GUID', async () => {
-      const getAnnouncementsResponse = await request(app!.getServer())
-        .get(AnnouncementsRout.path + '/invalid-guid')
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const getAnnouncementsResponse = await app!.announcements.get('invalid-guid');
       expect(getAnnouncementsResponse.statusCode).toBe(404);
       expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = getAnnouncementsResponse.body;
@@ -227,9 +204,7 @@ describe('GET /announcements', () => {
   describe('GET should respond with a status code of 403', () => {
     test('when token is not set', async () => {
       const id: string = Guid.EMPTY;
-      const getAnnouncementsResponse = await request(app!.getServer())
-        .get(AnnouncementsRout.path + '/' + id)
-        .send();
+      const getAnnouncementsResponse = await app!.announcements.get(id);
       expect(getAnnouncementsResponse.statusCode).toBe(401);
       const body = getAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
@@ -260,10 +235,7 @@ describe('GET /announcements', () => {
       )?.accessToken;
 
       const id: string = Guid.EMPTY;
-      const getAnnouncementsResponse = await request(app!.getServer())
-        .get(AnnouncementsRout.path + '/' + id)
-        .send()
-        .set('Authorization', `Bearer ${newUserAccessToken}`);
+      const getAnnouncementsResponse = await app!.announcements.get(id, newUserAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(403);
       expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getAnnouncementsResponse.body;
@@ -317,10 +289,7 @@ describe('GET /announcements', () => {
       )?.accessToken;
 
       const id: string = Guid.EMPTY;
-      const getAnnouncementsResponse = await request(app!.getServer())
-        .get(AnnouncementsRout.path + '/' + id)
-        .send()
-        .set('Authorization', `Bearer ${newUserAccessToken}`);
+      const getAnnouncementsResponse = await app!.announcements.get(id, newUserAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(403);
       expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getAnnouncementsResponse.body;
@@ -356,10 +325,7 @@ describe('GET /announcements', () => {
   describe('GET should respond with a status code of 401', () => {
     test('when token is invalid', async () => {
       const id: string = Guid.EMPTY;
-      const response = await request(app!.getServer())
-        .get(AnnouncementsRout.path + '/' + id)
-        .send()
-        .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
+      const response = await app!.announcements.get(id, `invalid_token_${adminAccessToken}`);
       expect(response.statusCode).toBe(401);
       const body = response.body;
       expect(typeof body).toBe('object');
@@ -389,11 +355,7 @@ describe('GET /announcements', () => {
       const deleteBobResponse = await app!.user.delete(bobDto.id, adminAccessToken);
       expect(deleteBobResponse.statusCode).toBe(200);
 
-      const id: string = Guid.EMPTY;
-      const getAnnouncementsUsingBobAccessTokenResponse = await request(app!.getServer())
-        .get(AnnouncementsRout.path + '/' + id)
-        .send()
-        .set('Authorization', `Bearer ${bobAccessToken}`);
+      const getAnnouncementsUsingBobAccessTokenResponse = await app!.announcements.get(Guid.EMPTY, bobAccessToken);
       expect(getAnnouncementsUsingBobAccessTokenResponse.statusCode).toBe(401);
       expect(getAnnouncementsUsingBobAccessTokenResponse.headers['content-type']).toEqual(
         expect.stringContaining('json'),

@@ -4,11 +4,9 @@ import { testHelpers } from '@helpers';
 import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
 import { getAdminLoginData } from '@utils';
 import { Guid } from 'guid-typescript';
-import request from 'supertest';
 import { generateValidAnnouncements } from './test.helpers';
 import { TestApp } from '../../../helpers/test-helpers/test.app';
 import { CreateAnnouncementsResponseDto } from '../dtos/create-announcements.dto';
-import { AnnouncementsRout } from '../routes/announcements.routes';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 
 describe('DELETE /announcements', () => {
@@ -39,10 +37,7 @@ describe('DELETE /announcements', () => {
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
       // cleanup
-      const deleteAnnouncementsResponse = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + announcementsId)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -64,10 +59,7 @@ describe('DELETE /announcements', () => {
   describe('DELETE should respond with a status code of 400', () => {
     test('when announcements not exist', async () => {
       const userId: string = Guid.EMPTY;
-      const deleteResponse = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + userId)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteResponse = await app!.announcements.delete(userId, adminAccessToken);
       expect(deleteResponse.statusCode).toBe(400);
       expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = deleteResponse.body;
@@ -86,10 +78,7 @@ describe('DELETE /announcements', () => {
 
   describe('DELETE should respond with a status code of 404', () => {
     test('DELETE should respond with a status code of 404 when Id is not GUID', async () => {
-      const deleteResponse = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/invalid-guid')
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteResponse = await app!.announcements.delete('invalid-guid', adminAccessToken);
       expect(deleteResponse.statusCode).toBe(404);
       expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = deleteResponse.body;
@@ -107,9 +96,7 @@ describe('DELETE /announcements', () => {
   describe('DELETE should respond with a status code of 403', () => {
     test('when token is not set', async () => {
       const id: string = Guid.EMPTY;
-      const deleteResponse = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + id)
-        .send();
+      const deleteResponse = await app!.announcements.delete(id);
       expect(deleteResponse.statusCode).toBe(401);
       const body = deleteResponse.body;
       expect(typeof body).toBe('object');
@@ -140,10 +127,7 @@ describe('DELETE /announcements', () => {
       )?.accessToken;
 
       const id: string = Guid.EMPTY;
-      const deleteResponse = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + id)
-        .send()
-        .set('Authorization', `Bearer ${newUserAccessToken}`);
+      const deleteResponse = await app!.announcements.delete(id, newUserAccessToken);
       expect(deleteResponse.statusCode).toBe(403);
       expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = deleteResponse.body;
@@ -197,10 +181,7 @@ describe('DELETE /announcements', () => {
       )?.accessToken;
 
       const id: string = Guid.EMPTY;
-      const deleteResponse = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + id)
-        .send()
-        .set('Authorization', `Bearer ${newUserAccessToken}`);
+      const deleteResponse = await app!.announcements.delete(id, newUserAccessToken);
       expect(deleteResponse.statusCode).toBe(403);
       expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = deleteResponse.body;
@@ -235,11 +216,7 @@ describe('DELETE /announcements', () => {
 
   describe('DELETE should respond with a status code of 401', () => {
     test('when token is invalid', async () => {
-      const id: string = Guid.EMPTY;
-      const deleteResponse = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + id)
-        .send()
-        .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
+      const deleteResponse = await app!.announcements.delete(Guid.EMPTY, `invalid_token_${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(401);
       const body = deleteResponse.body;
       expect(typeof body).toBe('object');

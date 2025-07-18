@@ -5,14 +5,12 @@ import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
 import { getAdminLoginData, isGuid } from '@utils';
 import { isDateString } from 'class-validator';
 import { Guid } from 'guid-typescript';
-import request from 'supertest';
 import { generateValidAnnouncements } from './test.helpers';
 import { TestApp } from '../../../helpers/test-helpers/test.app';
 import { CreateAnnouncementsResponseDto } from '../dtos/create-announcements.dto';
 import { GetAnnouncementsResponseDto } from '../dtos/get-announcements.dto';
 import { PublishAnnouncementsResponseDto } from '../dtos/publish-announcements.dto';
 import { AnnouncementStateValue } from '../enums/announcement-state.enum';
-import { AnnouncementsRout } from '../routes/announcements.routes';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 
 describe('POST /announcements/publish', () => {
@@ -42,10 +40,7 @@ describe('POST /announcements/publish', () => {
       expect(announcementsId).toBeDefined();
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
-      const publishAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path + '/' + announcementsId + '/' + AnnouncementsRout.publishPath)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const publishAnnouncementsResponse = await app!.announcements.publish(announcementsId, adminAccessToken);
       expect(publishAnnouncementsResponse.statusCode).toBe(200);
       body = publishAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
@@ -53,10 +48,7 @@ describe('POST /announcements/publish', () => {
       expect(publishAnnouncementsResult).toBe(true);
       expect(publishMessage).toBe(events.announcements.announcementsPublished);
 
-      const getAnnouncementsResponse = await request(app!.getServer())
-        .get(AnnouncementsRout.path + '/' + announcementsId)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getAnnouncementsResponse.body;
@@ -87,10 +79,7 @@ describe('POST /announcements/publish', () => {
       expect(announcements.items.every(item => item.updatedBy === undefined)).toBe(true);
 
       // cleanup
-      const deleteAnnouncementsResponse = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + announcementsId)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -124,10 +113,7 @@ describe('POST /announcements/publish', () => {
       expect(announcementsId).toBeDefined();
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
-      let publishAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path + '/' + announcementsId + '/' + AnnouncementsRout.publishPath)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      let publishAnnouncementsResponse = await app!.announcements.publish(announcementsId, adminAccessToken);
       expect(publishAnnouncementsResponse.statusCode).toBe(200);
       body = publishAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
@@ -135,10 +121,7 @@ describe('POST /announcements/publish', () => {
       expect(publish1AnnouncementsResult).toBe(true);
       expect(publish1Message).toBe(events.announcements.announcementsPublished);
 
-      publishAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path + '/' + announcementsId + '/' + AnnouncementsRout.publishPath)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      publishAnnouncementsResponse = await app!.announcements.publish(announcementsId, adminAccessToken);
       expect(publishAnnouncementsResponse.statusCode).toBe(200);
       body = publishAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
@@ -147,10 +130,7 @@ describe('POST /announcements/publish', () => {
       expect(publish2Message).toBe(events.announcements.announcementsPublished);
 
       // cleanup
-      const deleteAnnouncementsResponse = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + announcementsId)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -186,10 +166,7 @@ describe('POST /announcements/publish', () => {
       expect(announcementsId).toBeDefined();
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
-      const publishAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path + '/' + announcementsId + '/' + AnnouncementsRout.publishPath)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const publishAnnouncementsResponse = await app!.announcements.publish(announcementsId, adminAccessToken);
       expect(publishAnnouncementsResponse.statusCode).toBe(400);
       const data = publishAnnouncementsResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
@@ -199,10 +176,7 @@ describe('POST /announcements/publish', () => {
       ).toBe(0);
 
       // cleanup
-      const deleteAnnouncementsResponse = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + announcementsId)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -232,10 +206,7 @@ describe('POST /announcements/publish', () => {
       expect(announcementsId).toBeDefined();
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
-      const publishAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path + '/' + announcementsId + '/' + AnnouncementsRout.publishPath)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const publishAnnouncementsResponse = await app!.announcements.publish(announcementsId, adminAccessToken);
       expect(publishAnnouncementsResponse.statusCode).toBe(400);
       const data = publishAnnouncementsResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
@@ -245,10 +216,7 @@ describe('POST /announcements/publish', () => {
       ).toBe(0);
 
       // cleanup
-      const deleteAnnouncementsResponse = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + announcementsId)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -276,16 +244,10 @@ describe('POST /announcements/publish', () => {
       const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
       expect(announcementsId).toBeDefined();
 
-      const deleteAnnouncementsResponse = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + announcementsId)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
-      const publishAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path + '/' + announcementsId + '/' + AnnouncementsRout.publishPath)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const publishAnnouncementsResponse = await app!.announcements.publish(announcementsId, adminAccessToken);
       expect(publishAnnouncementsResponse.statusCode).toBe(400);
       const data = publishAnnouncementsResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
@@ -310,9 +272,7 @@ describe('POST /announcements/publish', () => {
   describe('POST should respond with a status code of 403', () => {
     test('when token is not set', async () => {
       const id: string = Guid.EMPTY;
-      const publishAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path + '/' + id + '/' + AnnouncementsRout.publishPath)
-        .send();
+      const publishAnnouncementsResponse = await app!.announcements.publish(id);
       expect(publishAnnouncementsResponse.statusCode).toBe(401);
       const body = publishAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
@@ -342,10 +302,7 @@ describe('POST /announcements/publish', () => {
         await app!.auth.loginAs({ email: userData.email, passcode: userData.passcode } satisfies ILoginModel)
       )?.accessToken;
 
-      const publishAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path + '/' + user.id + '/' + AnnouncementsRout.publishPath)
-        .send()
-        .set('Authorization', `Bearer ${newUserAccessToken}`);
+      const publishAnnouncementsResponse = await app!.announcements.publish(user.id, newUserAccessToken);
       expect(publishAnnouncementsResponse.statusCode).toBe(403);
       expect(publishAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = publishAnnouncementsResponse.body;
@@ -398,10 +355,7 @@ describe('POST /announcements/publish', () => {
         await app!.auth.loginAs({ email: userData.email, passcode: userData.passcode } satisfies ILoginModel)
       )?.accessToken;
 
-      const publishAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path + '/' + user.id + '/' + AnnouncementsRout.publishPath)
-        .send()
-        .set('Authorization', `Bearer ${newUserAccessToken}`);
+      const publishAnnouncementsResponse = await app!.announcements.publish(user.id, newUserAccessToken);
       expect(publishAnnouncementsResponse.statusCode).toBe(403);
       expect(publishAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = publishAnnouncementsResponse.body;
@@ -437,10 +391,7 @@ describe('POST /announcements/publish', () => {
   describe('POST should respond with a status code of 401', () => {
     test('when token is invalid', async () => {
       const id: string = Guid.EMPTY;
-      const response = await request(app!.getServer())
-        .post(AnnouncementsRout.path + '/' + id + '/' + AnnouncementsRout.publishPath)
-        .send()
-        .set('Authorization', `Bearer invalid_token_${adminAccessToken}`);
+      const response = await app!.announcements.publish(id, `invalid_token_${adminAccessToken}`);
       expect(response.statusCode).toBe(401);
       const body = response.body;
       expect(typeof body).toBe('object');
@@ -481,10 +432,10 @@ describe('POST /announcements/publish', () => {
       expect(announcementsId).toBeDefined();
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
-      const publishAnnouncementsUsingBobAccessTokenResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path + '/' + announcementsId + '/' + AnnouncementsRout.publishPath)
-        .send()
-        .set('Authorization', `Bearer ${bobAccessToken}`);
+      const publishAnnouncementsUsingBobAccessTokenResponse = await app!.announcements.publish(
+        announcementsId,
+        bobAccessToken,
+      );
       expect(publishAnnouncementsUsingBobAccessTokenResponse.statusCode).toBe(401);
       expect(publishAnnouncementsUsingBobAccessTokenResponse.headers['content-type']).toEqual(
         expect.stringContaining('json'),
@@ -497,10 +448,7 @@ describe('POST /announcements/publish', () => {
       expect(loginArgs).toBeUndefined();
 
       // cleanup
-      const deleteAnnouncementsResponse = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + announcementsId)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher

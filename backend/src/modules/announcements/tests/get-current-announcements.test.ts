@@ -2,13 +2,11 @@ import { events, ILoginModel } from '@core';
 import { testHelpers } from '@helpers';
 import { getAdminLoginData, getDateNow, isGuid } from '@utils';
 import { isDateString } from 'class-validator';
-import request from 'supertest';
 import { generateValidAnnouncements } from './test.helpers';
 import { TestApp } from '../../../helpers/test-helpers/test.app';
 import { CreateAnnouncementsResponseDto } from '../dtos/create-announcements.dto';
 import { GetCurrentAnnouncementsResponseDto, IGetCurrentAnnouncementsDto } from '../dtos/get-current-announcements.dto';
 import { PublishAnnouncementsResponseDto } from '../dtos/publish-announcements.dto';
-import { AnnouncementsRout } from '../routes/announcements.routes';
 import { CurrentAnnouncementsService } from '../services/current-announcements.service';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 
@@ -65,10 +63,7 @@ describe('GET /announcements/current', () => {
       expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
 
       // cleanup
-      const deleteAnnouncementsResponse = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + announcementsId)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -106,10 +101,7 @@ describe('GET /announcements/current', () => {
       expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
 
       // cleanup
-      const deleteAnnouncementsResponse = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + announcementsId)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -136,10 +128,7 @@ describe('GET /announcements/current', () => {
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       const { data: announcementsId }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
 
-      const publishAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path + '/' + announcementsId + '/' + AnnouncementsRout.publishPath)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const publishAnnouncementsResponse = await app!.announcements.publish(announcementsId, adminAccessToken);
       expect(publishAnnouncementsResponse.statusCode).toBe(200);
       const { data: publishResult }: PublishAnnouncementsResponseDto = publishAnnouncementsResponse.body;
       expect(publishResult).toBe(true);
@@ -155,10 +144,7 @@ describe('GET /announcements/current', () => {
       expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
 
       // cleanup
-      const deleteAnnouncementsResponse = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + announcementsId)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -191,10 +177,7 @@ describe('GET /announcements/current', () => {
       expect(createAnnouncements1Response.statusCode).toBe(201);
       const { data: createdAnnouncements1Id }: CreateAnnouncementsResponseDto = createAnnouncements1Response.body;
 
-      const publishAnnouncements1Response = await request(app!.getServer())
-        .post(AnnouncementsRout.path + '/' + createdAnnouncements1Id + '/' + AnnouncementsRout.publishPath)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const publishAnnouncements1Response = await app!.announcements.publish(createdAnnouncements1Id, adminAccessToken);
       expect(publishAnnouncements1Response.statusCode).toBe(200);
       const { data: publishResult }: PublishAnnouncementsResponseDto = publishAnnouncements1Response.body;
       expect(publishResult).toBe(true);
@@ -243,16 +226,10 @@ describe('GET /announcements/current', () => {
         expect(currentAnnouncements!.items[index].content).toBe(item.content);
       });
       // cleanup
-      const deleteAnnouncements1Response = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + createdAnnouncements1Id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteAnnouncements1Response = await app!.announcements.delete(createdAnnouncements1Id, adminAccessToken);
       expect(deleteAnnouncements1Response.statusCode).toBe(200);
 
-      const deleteAnnouncements2Response = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + createdAnnouncements2Id)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteAnnouncements2Response = await app!.announcements.delete(createdAnnouncements2Id, adminAccessToken);
       expect(deleteAnnouncements2Response.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -282,10 +259,7 @@ describe('GET /announcements/current', () => {
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       const { data: createdAnnouncementsId }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
 
-      const publishAnnouncementsResponse = await request(app!.getServer())
-        .post(AnnouncementsRout.path + '/' + createdAnnouncementsId + '/' + AnnouncementsRout.publishPath)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const publishAnnouncementsResponse = await app!.announcements.publish(createdAnnouncementsId, adminAccessToken);
       expect(publishAnnouncementsResponse.statusCode).toBe(200);
       const { data: publishResult }: PublishAnnouncementsResponseDto = publishAnnouncementsResponse.body;
       expect(publishResult).toBe(true);
@@ -328,10 +302,7 @@ describe('GET /announcements/current', () => {
       expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
 
       // cleanup
-      const deleteAnnouncementsResponse = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + createdAnnouncementsId)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(createdAnnouncementsId, adminAccessToken);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher

@@ -12,7 +12,6 @@ import { AnnouncementsListRoute } from '../routes/announcements-list.routes';
 import { AnnouncementsListService } from '../services/announcements-list.service';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 import { generateValidAnnouncements } from './test.helpers';
-import { AnnouncementsRout } from '../routes/announcements.routes';
 
 describe('GET/announcements-list', () => {
   let app: TestApp | undefined;
@@ -65,10 +64,7 @@ describe('GET/announcements-list', () => {
       expect(announcements.itemsCount).toBeDefined();
       expect(announcements.itemsCount).toBe(newAnnouncements.items!.length);
 
-      const deleteResponse = await request(app!.getServer())
-        .delete(AnnouncementsRout.path + '/' + announcementsId)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
       expect(deleteResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
