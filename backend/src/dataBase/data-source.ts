@@ -14,6 +14,13 @@ import {
 import { AnnouncementItem } from './entities/announcements/announcement-item.entity';
 import { Announcement } from './entities/announcements/announcement.entity';
 import { vAnnouncement } from './entities/announcements/vAnnouncement.entity';
+import { BulletinDayTask } from './entities/bulletin/bulletin-day-task.entity';
+import { BulletinDay } from './entities/bulletin/bulletin-day.entity';
+import { BulletinQuestionAnswer } from './entities/bulletin/bulletin-question-answer.entity';
+import { BulletinQuestion } from './entities/bulletin/bulletin-question.entity';
+import { Bulletin } from './entities/bulletin/bulletin.entity';
+import { UserBulletinProgress } from './entities/bulletin/user-bulletin-progress.entity';
+import { UserTaskProgress } from './entities/bulletin/user-task-progress.entity';
 import { Log } from './entities/logs/log.entity';
 import { vLog } from './entities/logs/vLog.entity';
 import { SystemPermission } from './entities/permissions/system-permission.entity';
@@ -40,6 +47,13 @@ export const AppDataSource = new DbContext({
     Announcement,
     AnnouncementItem,
     vAnnouncement,
+    Bulletin,
+    BulletinDay,
+    BulletinDayTask,
+    BulletinQuestion,
+    BulletinQuestionAnswer,
+    UserBulletinProgress,
+    UserTaskProgress,
     Log,
     vLog,
   ],

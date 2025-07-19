@@ -92,6 +92,35 @@ export class Identity {
     return this.hasPermission(SystemPermissions.PreviewLogList);
   }
 
+  public canAddBulletin(): boolean {
+    return this.hasPermission(SystemPermissions.AddBulletin);
+  }
+
+  public canEditBulletin(): boolean {
+    return this.hasPermission(SystemPermissions.EditBulletin);
+  }
+
+  public canDeleteBulletin(): boolean {
+    return this.hasPermission(SystemPermissions.DeleteBulletin);
+  }
+
+  public canPublishBulletin(): boolean {
+    return this.hasPermission(SystemPermissions.PublishBulletin);
+  }
+
+  public canGetBulletin(): boolean {
+    return this.hasAnyPermission([
+      SystemPermissions.AddBulletin,
+      SystemPermissions.EditBulletin,
+      SystemPermissions.DeleteBulletin,
+      SystemPermissions.PublishBulletin,
+    ]);
+  }
+
+  public canAnswerBulletinQuestion(): boolean {
+    return this.hasPermission(SystemPermissions.AnswerBulletinQuestion);
+  }
+
   protected hasPermission(permission: SystemPermissions): boolean {
     return this.hasAnyPermission([permission]);
   }
