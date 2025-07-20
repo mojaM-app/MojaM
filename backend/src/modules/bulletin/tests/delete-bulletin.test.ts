@@ -1,7 +1,8 @@
-import { ILoginModel } from '@core';
+import { ILoginModel, SystemPermissions } from '@core';
 import { testHelpers } from '@helpers';
 import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
 import { getAdminLoginData } from '@utils';
+import { Guid } from 'guid-typescript';
 import { generateValidBulletin } from './test.helpers';
 import type { TestApp } from '../../../helpers/test-helpers/test.app';
 
@@ -43,6 +44,24 @@ describe('DELETE /bulletin', () => {
 
       // Verify it's in draft state
       expect(body.state).toBe(1); // Draft state
+
+      // Delete the bulletin
+      const deleteResponse = await app!.bulletin.delete(body.id, adminAccessToken!);
+      expect(deleteResponse.statusCode).toBe(200);
+      expect(deleteResponse.body).toEqual({ success: true });
+    });
+
+    test('delete published bulletin', async () => {
+      // Create a published bulletin
+      const bulletinData = generateValidBulletin();
+      const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
+      expect(createResponse.statusCode).toBe(201);
+      const body = createResponse.body as any;
+
+      // Publish the bulletin
+      const publishDto = { bulletinId: body.id };
+      const publishResponse = await app!.bulletin.publish(body.id, publishDto, adminAccessToken!);
+      expect(publishResponse.statusCode).toBe(200);
 
       // Delete the bulletin
       const deleteResponse = await app!.bulletin.delete(body.id, adminAccessToken!);
@@ -96,48 +115,29 @@ describe('DELETE /bulletin', () => {
 
   describe('DELETE should respond with a status code of 403', () => {
     test('when user has no DeleteBulletin permission', async () => {
-      // Create bulletin first
-      const bulletinData = generateValidBulletin(520);
-      const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
-      expect(createResponse.statusCode).toBe(201);
-      const body = createResponse.body as any;
-
       // Create user without permissions
       const userDto = userTestHelpers.generateValidUserWithPassword();
       const createUserResponse = await app!.user.create(userDto, adminAccessToken!);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUser }: CreateUserResponseDto = createUserResponse.body;
 
-      await app!.user.activate(newUser.id, adminAccessToken!);
-      const userToken = await app!.auth.loginAs({ email: newUser.email, passcode: userDto.passcode });
+      const activateNewUserResponse = await app!.user.activate(newUser.id, adminAccessToken);
+      expect(activateNewUserResponse.statusCode).toBe(200);
 
-      const deleteResponse = await app!.bulletin.delete(body.id, userToken?.accessToken || '');
-      expect(deleteResponse.statusCode).toBe(403);
+      const addPermissionsResponse = await app!.permissions.addAllPermissionsToUser(newUser.id, adminAccessToken, [
+        SystemPermissions.DeleteBulletin,
+      ]);
+      expect(addPermissionsResponse!.statusCode).toBe(201);
+
+      const newUserAccessToken = (
+        await app!.auth.loginAs({ email: newUser.email, passcode: userDto.passcode } satisfies ILoginModel)
+      )?.accessToken;
+
+      const deleteBulletinResponse = await app!.bulletin.delete(0, newUserAccessToken);
+      expect(deleteBulletinResponse.statusCode).toBe(403);
 
       // Cleanup
-      await app!.bulletin.delete(body.id, adminAccessToken!);
       await app!.user.delete(newUser.id, adminAccessToken!);
-    });
-  });
-
-  describe('DELETE should respond with a status code of 409', () => {
-    test('when bulletin is already published', async () => {
-      // Create bulletin
-      const bulletinData = generateValidBulletin(530);
-      const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
-      expect(createResponse.statusCode).toBe(201);
-      const body = createResponse.body as any;
-
-      // Publish the bulletin
-      const publishResponse = await app!.bulletin.publish(body.id, {}, adminAccessToken!);
-      expect(publishResponse.statusCode).toBe(200);
-
-      // Try to delete published bulletin
-      const deleteResponse = await app!.bulletin.delete(body.id, adminAccessToken!);
-      expect(deleteResponse.statusCode).toBe(409);
-
-      // Let's be more flexible with the error check for now
-      expect(deleteResponse.body).toBeDefined();
     });
   });
 

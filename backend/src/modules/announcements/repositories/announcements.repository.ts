@@ -9,7 +9,11 @@ import { BaseAnnouncementsRepository } from './base.announcements.repository';
 import { CreateAnnouncementsReqDto } from '../dtos/create-announcements.dto';
 import { DeleteAnnouncementsReqDto } from '../dtos/delete-announcements.dto';
 import { PublishAnnouncementsReqDto } from '../dtos/publish-announcements.dto';
-import { UpdateAnnouncementItemDto, UpdateAnnouncementsDto, UpdateAnnouncementsReqDto } from '../dtos/update-announcements.dto';
+import {
+  UpdateAnnouncementItemDto,
+  UpdateAnnouncementsDto,
+  UpdateAnnouncementsReqDto,
+} from '../dtos/update-announcements.dto';
 import { AnnouncementStateValue } from '../enums/announcement-state.enum';
 import { Announcement } from './../../../dataBase/entities/announcements/announcement.entity';
 
@@ -17,6 +21,29 @@ import { Announcement } from './../../../dataBase/entities/announcements/announc
 export class AnnouncementsRepository extends BaseAnnouncementsRepository {
   constructor() {
     super();
+  }
+
+  public async getByUuid(uuid: string | null | undefined): Promise<Announcement | null> {
+    const id = await this.getIdByUuid(uuid);
+
+    if (isNullOrUndefined(id)) {
+      return null;
+    }
+
+    return await this.get(id!);
+  }
+
+  public async get(announcementsId: number): Promise<Announcement | null> {
+    return await this._dbContext.announcements
+      .createQueryBuilder('announcement')
+      .leftJoinAndSelect('announcement.createdBy', 'createdBy')
+      .leftJoinAndSelect('announcement.publishedBy', 'publishedBy')
+      .leftJoinAndSelect('announcement.items', 'items')
+      .leftJoinAndSelect('items.createdBy', 'itemsCreatedBy')
+      .leftJoinAndSelect('items.updatedBy', 'itemsUpdatedBy')
+      .where('announcement.id = :announcementsId', { announcementsId })
+      .orderBy('items.order', 'ASC')
+      .getOne();
   }
 
   public async create(reqDto: CreateAnnouncementsReqDto): Promise<Announcement> {
@@ -76,8 +103,13 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
         });
       }
 
-      if (announcements!.state === AnnouncementStateValue.PUBLISHED && isNullOrUndefined(reqDto.announcements.validFromDate)) {
-        throw new BadRequestException(errorKeys.announcements.Cannot_Save_Published_Announcements_Without_ValidFromDate);
+      if (
+        announcements!.state === AnnouncementStateValue.PUBLISHED &&
+        isNullOrUndefined(reqDto.announcements.validFromDate)
+      ) {
+        throw new BadRequestException(
+          errorKeys.announcements.Cannot_Save_Published_Announcements_Without_ValidFromDate,
+        );
       }
 
       const updateAnnouncementModel = this.getUpdateAnnouncementModel(announcements!, reqDto.announcements);
@@ -164,7 +196,10 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
     return id!;
   }
 
-  public async checkIfExistWithDate(validFromDate: Date | null | undefined, skippedAnnouncementUuid?: string): Promise<boolean> {
+  public async checkIfExistWithDate(
+    validFromDate: Date | null | undefined,
+    skippedAnnouncementUuid?: string,
+  ): Promise<boolean> {
     if (!isDate(validFromDate)) {
       return false;
     }
@@ -178,31 +213,12 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
     return count > 0;
   }
 
-  public async getByUuid(uuid: string | null | undefined): Promise<Announcement | null> {
-    const id = await this.getIdByUuid(uuid);
-
-    if (isNullOrUndefined(id)) {
-      return null;
-    }
-
-    return await this.get(id!);
-  }
-
-  public async get(announcementsId: number): Promise<Announcement | null> {
-    return await this._dbContext.announcements
-      .createQueryBuilder('announcement')
-      .leftJoinAndSelect('announcement.createdBy', 'createdBy')
-      .leftJoinAndSelect('announcement.publishedBy', 'publishedBy')
-      .leftJoinAndSelect('announcement.items', 'items')
-      .leftJoinAndSelect('items.createdBy', 'itemsCreatedBy')
-      .leftJoinAndSelect('items.updatedBy', 'itemsUpdatedBy')
-      .where('announcement.id = :announcementsId', { announcementsId })
-      .orderBy('items.order', 'ASC')
-      .getOne();
-  }
-
   public async delete(announcementId: number, reqDto: DeleteAnnouncementsReqDto): Promise<boolean> {
-    await this._dbContext.announcementItems.createQueryBuilder().delete().where('AnnouncementId = :announcementId', { announcementId }).execute();
+    await this._dbContext.announcementItems
+      .createQueryBuilder()
+      .delete()
+      .where('AnnouncementId = :announcementId', { announcementId })
+      .execute();
 
     await this._dbContext.announcements.delete({ id: announcementId });
 
@@ -247,7 +263,10 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
     return await this._dbContext.announcements.count();
   }
 
-  private getUpdateAnnouncementModel(announcementFromDb: Announcement, dto: UpdateAnnouncementsDto): QueryDeepPartialEntity<Announcement> | null {
+  private getUpdateAnnouncementModel(
+    announcementFromDb: Announcement,
+    dto: UpdateAnnouncementsDto,
+  ): QueryDeepPartialEntity<Announcement> | null {
     const result: QueryDeepPartialEntity<Announcement> = {};
 
     let wasChanged = false;
@@ -264,7 +283,14 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
     return wasChanged ? result : null;
   }
 
-  private checkIfUpdateAnnouncementItem(announcementItemFromDb: AnnouncementItem, dto: UpdateAnnouncementItemDto, order: number): boolean {
-    return (announcementItemFromDb.content ?? null) !== (dto.content ?? null) || (announcementItemFromDb.order ?? null) !== order;
+  private checkIfUpdateAnnouncementItem(
+    announcementItemFromDb: AnnouncementItem,
+    dto: UpdateAnnouncementItemDto,
+    order: number,
+  ): boolean {
+    return (
+      (announcementItemFromDb.content ?? null) !== (dto.content ?? null) ||
+      (announcementItemFromDb.order ?? null) !== order
+    );
   }
 }

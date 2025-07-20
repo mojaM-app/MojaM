@@ -18,7 +18,7 @@ export class BulletinPdfService extends BaseRepository {
       throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
     }
 
-    const bulletin = await this._bulletinRepository.getById(bulletinId);
+    const bulletin = await this._bulletinRepository.get(bulletinId);
     if (!bulletin) {
       throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
     }
@@ -86,7 +86,7 @@ export class BulletinPdfService extends BaseRepository {
 
   public async downloadPdf(bulletinId: number): Promise<{ success: boolean; data?: Buffer; message?: string }> {
     try {
-      const bulletin = await this._bulletinRepository.getById(bulletinId);
+      const bulletin = await this._bulletinRepository.get(bulletinId);
       if (!bulletin) {
         return { success: false, message: 'Bulletin not found' };
       }

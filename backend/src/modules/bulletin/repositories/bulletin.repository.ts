@@ -19,6 +19,26 @@ export class BulletinRepository extends BaseBulletinRepository {
     super();
   }
 
+  public async get(id: number | null | undefined): Promise<Bulletin | null> {
+    if (!isPositiveNumber(id)) {
+      return null;
+    }
+
+    return await this._dbContext.bulletins.findOne({
+      where: { id: id! },
+    });
+  }
+
+  public async getByUuid(uuid: string | null | undefined): Promise<Bulletin | null> {
+    const id = await this.getIdByUuid(uuid);
+
+    if (isNullOrUndefined(id)) {
+      return null;
+    }
+
+    return await this.get(id!);
+  }
+
   public async create(dto: CreateBulletinDto, userId: number): Promise<Bulletin> {
     // Validate required fields
     if (isNullOrUndefined(dto.title) || !dto.title.trim()) {
@@ -81,7 +101,7 @@ export class BulletinRepository extends BaseBulletinRepository {
   }
 
   public async update(bulletinId: number, dto: UpdateBulletinDto, userId: number): Promise<boolean> {
-    const bulletin = await this.getById(bulletinId);
+    const bulletin = await this.get(bulletinId);
     if (!bulletin) {
       throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
     }
@@ -136,13 +156,13 @@ export class BulletinRepository extends BaseBulletinRepository {
   }
 
   public async publish(bulletinId: number, userId: number): Promise<boolean> {
-    const bulletin = await this.getById(bulletinId);
+    const bulletin = await this.get(bulletinId);
     if (!bulletin) {
       throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
     }
 
     if (bulletin.isPublished) {
-      throw new ConflictException(errorKeys.bulletin.BulletinAlreadyPublished);
+      return true;
     }
 
     const updateResult = await this._dbContext.bulletins.update(bulletinId, {
@@ -154,33 +174,10 @@ export class BulletinRepository extends BaseBulletinRepository {
     return updateResult.affected! > 0;
   }
 
-  public async delete(bulletinId: number): Promise<void> {
-    // Use simple delete to let the database handle cascading
-    const deleteResult = await this._dbContext.bulletins.delete({ id: bulletinId });
-    
-    if (deleteResult.affected === 0) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-  }
+  public async delete(bulletinId: number): Promise<true> {
+    await this._dbContext.bulletins.delete({ id: bulletinId });
 
-  public async getById(id: number): Promise<Bulletin | null> {
-    if (!isPositiveNumber(id)) {
-      return null;
-    }
-
-    return await this._dbContext.bulletins.findOne({
-      where: { id },
-    });
-  }
-
-  public async getByUuid(uuid: string): Promise<Bulletin | null> {
-    if (isNullOrUndefined(uuid)) {
-      return null;
-    }
-
-    return await this._dbContext.bulletins.findOne({
-      where: { uuid },
-    });
+    return true;
   }
 
   public async getByTitle(title: string): Promise<Bulletin | null> {
@@ -277,10 +274,6 @@ export class BulletinRepository extends BaseBulletinRepository {
       skip,
       take,
     });
-  }
-
-  public async count(): Promise<number> {
-    return await this._dbContext.bulletins.count();
   }
 
   public async getPublishedBulletins(): Promise<Bulletin[]> {

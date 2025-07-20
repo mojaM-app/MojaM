@@ -3,7 +3,7 @@ import { CreateBulletinQuestionDto } from '../dtos/create-bulletin-question.dto'
 import { CreateBulletinDayDto, CreateBulletinDayTaskDto, CreateBulletinDto } from '../dtos/create-bulletin.dto';
 import { BulletinQuestionTypeValue } from '../enums/bulletin-question-type.enum';
 
-export function generateValidBulletin(daysOffset: number = 365): CreateBulletinDto {
+export function generateValidBulletin(daysOffset: number = 0): CreateBulletinDto {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() + daysOffset);
 

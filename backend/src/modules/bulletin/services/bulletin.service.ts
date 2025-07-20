@@ -1,7 +1,7 @@
 import { BaseService } from '@core';
 import { BadRequestException, ConflictException, errorKeys } from '@exceptions';
 import { isNullOrUndefined } from '@utils';
-import { Container, Service } from 'typedi';
+import { Service } from 'typedi';
 import { CreateBulletinQuestionAnswerDto } from '../dtos/create-bulletin-question-answer.dto';
 import { CreateBulletinQuestionDto } from '../dtos/create-bulletin-question.dto';
 import { CreateBulletinDto } from '../dtos/create-bulletin.dto';
@@ -11,11 +11,21 @@ import { BulletinRepository } from '../repositories/bulletin.repository';
 
 @Service()
 export class BulletinService extends BaseService {
-  private readonly _bulletinRepository: BulletinRepository;
-
-  constructor() {
+  constructor(private readonly _bulletinRepository: BulletinRepository) {
     super();
-    this._bulletinRepository = Container.get(BulletinRepository);
+  }
+
+  public async get(bulletinId: number): Promise<any> {
+    if (isNullOrUndefined(bulletinId)) {
+      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
+    }
+
+    const bulletin = await this._bulletinRepository.get(bulletinId);
+    if (!bulletin) {
+      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
+    }
+
+    return bulletin;
   }
 
   public async create(reqDto: CreateBulletinDto): Promise<any> {
@@ -42,7 +52,7 @@ export class BulletinService extends BaseService {
     const bulletinId = reqDto.bulletinId!;
     const currentUserId = reqDto.currentUserId!;
 
-    const bulletin = await this._bulletinRepository.getById(bulletinId);
+    const bulletin = await this._bulletinRepository.get(bulletinId);
     if (!bulletin) {
       throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
     }
@@ -60,26 +70,23 @@ export class BulletinService extends BaseService {
     }
 
     await this._bulletinRepository.update(bulletinId, reqDto, currentUserId);
-    const updatedBulletin = await this._bulletinRepository.getById(bulletinId);
+    const updatedBulletin = await this._bulletinRepository.get(bulletinId);
 
     return updatedBulletin;
   }
 
-  public async publish(reqDto: PublishBulletinDto): Promise<any> {
-    if (isNullOrUndefined(reqDto.bulletinId) || isNullOrUndefined(reqDto.currentUserId)) {
+  public async publish(reqDto: PublishBulletinDto): Promise<boolean> {
+    if (isNullOrUndefined(reqDto.bulletinId)) {
       throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
     }
 
-    const bulletinId = reqDto.bulletinId!;
-    const currentUserId = reqDto.currentUserId!;
-
-    const bulletin = await this._bulletinRepository.getById(bulletinId);
+    const bulletin = await this._bulletinRepository.get(reqDto.bulletinId);
     if (!bulletin) {
       throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
     }
 
     if (bulletin.isPublished) {
-      throw new ConflictException(errorKeys.bulletin.BulletinAlreadyPublished);
+      return true;
     }
 
     // Check if bulletin has valid content
@@ -87,7 +94,7 @@ export class BulletinService extends BaseService {
       throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
     }
 
-    const result = await this._bulletinRepository.publish(bulletinId, currentUserId);
+    const result = await this._bulletinRepository.publish(reqDto.bulletinId!, reqDto.currentUserId!);
 
     // Send notification about new published bulletin
     this.sendNewBulletinNotification(bulletin);
@@ -110,19 +117,6 @@ export class BulletinService extends BaseService {
     }
   }
 
-  public async get(bulletinId: number): Promise<any> {
-    if (isNullOrUndefined(bulletinId)) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    const bulletin = await this._bulletinRepository.getById(bulletinId);
-    if (!bulletin) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    return bulletin;
-  }
-
   public async getAll(): Promise<any[]> {
     return await this._bulletinRepository.getAll();
   }
@@ -136,13 +130,9 @@ export class BulletinService extends BaseService {
       throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
     }
 
-    const bulletin = await this._bulletinRepository.getById(bulletinId);
+    const bulletin = await this._bulletinRepository.get(bulletinId);
     if (!bulletin) {
       throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    if (bulletin.isPublished) {
-      throw new ConflictException(errorKeys.bulletin.BulletinAlreadyPublished);
     }
 
     await this._bulletinRepository.delete(bulletinId);
@@ -153,7 +143,7 @@ export class BulletinService extends BaseService {
       throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
     }
 
-    const bulletin = await this._bulletinRepository.getById(bulletinId);
+    const bulletin = await this._bulletinRepository.get(bulletinId);
     if (!bulletin) {
       throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
     }
@@ -204,7 +194,7 @@ export class BulletinService extends BaseService {
       throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
     }
 
-    const bulletin = await this._bulletinRepository.getById(bulletinId);
+    const bulletin = await this._bulletinRepository.get(bulletinId);
     if (!bulletin) {
       throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
     }
