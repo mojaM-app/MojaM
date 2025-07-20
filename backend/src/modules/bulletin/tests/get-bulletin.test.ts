@@ -15,10 +15,10 @@ describe('GET /bulletin', () => {
     const adminLogin = getAdminLoginData();
     const adminLoginResponse = await app.auth.loginAs(adminLogin);
     adminAccessToken = adminLoginResponse?.accessToken;
-  }, 30000);
+  });
 
-  afterAll(async () => {
-    await testHelpers.closeTestApp();
+  beforeEach(async () => {
+    jest.clearAllMocks();
   });
 
   describe('GET should respond with a status code of 200 when data are valid and user has permission', () => {
@@ -55,7 +55,7 @@ describe('GET /bulletin', () => {
 
       // Get all bulletins - the API might return 500, so let's handle both cases
       const getAllResponse = await app!.bulletin.getAll(undefined, undefined, adminAccessToken!);
-      
+
       // API might not be fully implemented - accept 500 or 200
       if (getAllResponse.statusCode === 200) {
         expect(Array.isArray(getAllResponse.body)).toBe(true);
@@ -138,7 +138,7 @@ describe('GET /bulletin', () => {
       const createUserResponse = await app!.user.create(userDto, adminAccessToken!);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUser }: CreateUserResponseDto = createUserResponse.body;
-      
+
       await app!.user.activate(newUser.id, adminAccessToken!);
       const userToken = await app!.auth.loginAs({ email: newUser.email, passcode: userDto.passcode });
 
@@ -156,7 +156,7 @@ describe('GET /bulletin', () => {
       const createUserResponse = await app!.user.create(userDto, adminAccessToken!);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUser }: CreateUserResponseDto = createUserResponse.body;
-      
+
       await app!.user.activate(newUser.id, adminAccessToken!);
       const userToken = await app!.auth.loginAs({ email: newUser.email, passcode: userDto.passcode });
 
@@ -166,5 +166,10 @@ describe('GET /bulletin', () => {
       // Cleanup
       await app!.user.delete(newUser.id, adminAccessToken!);
     });
+  });
+
+  afterAll(async () => {
+    await testHelpers.closeTestApp();
+    jest.resetAllMocks();
   });
 });

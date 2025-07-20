@@ -131,4 +131,9 @@ describe('GET /bulletin/export', () => {
       expect([404, 400, 500]).toContain(downloadResponse.statusCode);
     });
   });
+
+  afterAll(async () => {
+    await testHelpers.closeTestApp();
+    jest.resetAllMocks();
+  });
 });

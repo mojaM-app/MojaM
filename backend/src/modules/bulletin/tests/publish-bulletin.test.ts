@@ -47,7 +47,7 @@ describe('POST /bulletin/publish', () => {
       // Get initial bulletin to check structure
       const getResponse = await app!.bulletin.get(createdBulletin.id, adminAccessToken!);
       expect(getResponse.statusCode).toBe(200);
-      
+
       // Publish the bulletin
       const publishDto = { bulletinId: createdBulletin.id };
       const publishResponse = await app!.bulletin.publish(createdBulletin.id, publishDto, adminAccessToken!);
@@ -114,5 +114,10 @@ describe('POST /bulletin/publish', () => {
       const publishResponse = await app!.bulletin.publish(123, publishDto, 'invalid-token');
       expect(publishResponse.statusCode).toBe(401); // Will be 401 for invalid token, that's fine for coverage
     });
+  });
+
+  afterAll(async () => {
+    await testHelpers.closeTestApp();
+    jest.resetAllMocks();
   });
 });

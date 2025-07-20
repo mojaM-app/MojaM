@@ -1,4 +1,3 @@
-import { ILoginModel } from '@core';
 import { testHelpers } from '@helpers';
 import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
 import { generateRandomString, getAdminLoginData } from '@utils';
@@ -16,10 +15,10 @@ describe('PUT /bulletin', () => {
     const adminLogin = getAdminLoginData();
     const adminLoginResponse = await app.auth.loginAs(adminLogin);
     adminAccessToken = adminLoginResponse?.accessToken;
-  }, 30000);
+  });
 
-  afterAll(async () => {
-    await testHelpers.closeTestApp();
+  beforeEach(async () => {
+    jest.clearAllMocks();
   });
 
   describe('PUT should respond with a status code of 200 when data are valid and user has permission', () => {
@@ -33,7 +32,7 @@ describe('PUT /bulletin', () => {
       // Update bulletin
       const updatedData = {
         ...bulletinData,
-        title: 'Updated Title ' + generateRandomString()
+        title: 'Updated Title ' + generateRandomString(),
       };
 
       const updateResponse = await app!.bulletin.update(body.id, updatedData, adminAccessToken!);
@@ -63,18 +62,16 @@ describe('PUT /bulletin', () => {
             instructions: 'New instructions for day 1',
             tasks: [
               { taskOrder: 1, description: 'New task 1', hasCommentField: false },
-              { taskOrder: 2, description: 'New task 2', hasCommentField: true }
-            ]
+              { taskOrder: 2, description: 'New task 2', hasCommentField: true },
+            ],
           },
           {
             dayNumber: 2,
             introduction: 'Intro for day 2',
             instructions: 'Instructions for day 2',
-            tasks: [
-              { taskOrder: 1, description: 'Day 2 task 1', hasCommentField: false }
-            ]
-          }
-        ]
+            tasks: [{ taskOrder: 1, description: 'Day 2 task 1', hasCommentField: false }],
+          },
+        ],
       };
 
       const updateResponse = await app!.bulletin.update(body.id, updatedData, adminAccessToken!);
@@ -128,7 +125,7 @@ describe('PUT /bulletin', () => {
       // Try to update with past date - API allows this
       const updatedData = {
         ...bulletinData,
-        startDate: '2020-01-01' // Past date
+        startDate: '2020-01-01', // Past date
       };
 
       const updateResponse = await app!.bulletin.update(body.id, updatedData, adminAccessToken!);
@@ -184,7 +181,7 @@ describe('PUT /bulletin', () => {
       const createUserResponse = await app!.user.create(userDto, adminAccessToken!);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUser }: CreateUserResponseDto = createUserResponse.body;
-      
+
       await app!.user.activate(newUser.id, adminAccessToken!);
       const userToken = await app!.auth.loginAs({ email: newUser.email, passcode: userDto.passcode });
 
@@ -233,7 +230,7 @@ describe('PUT /bulletin', () => {
       const conflictingUpdateData = {
         ...secondBulletinData,
         title: 'Conflicting update',
-        startDate: firstBulletinData.startDate
+        startDate: firstBulletinData.startDate,
       };
 
       const updateResponse = await app!.bulletin.update(secondBody.id, conflictingUpdateData, adminAccessToken!);
@@ -243,5 +240,10 @@ describe('PUT /bulletin', () => {
       await app!.bulletin.delete(firstBody.id, adminAccessToken!);
       await app!.bulletin.delete(secondBody.id, adminAccessToken!);
     });
+  });
+
+  afterAll(async () => {
+    await testHelpers.closeTestApp();
+    jest.resetAllMocks();
   });
 });

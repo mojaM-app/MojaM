@@ -16,8 +16,8 @@ describe('DELETE /bulletin', () => {
     adminAccessToken = (await app.auth.loginAs({ email, passcode } satisfies ILoginModel))?.accessToken;
   });
 
-  afterAll(async () => {
-    await testHelpers.closeTestApp();
+  beforeEach(async () => {
+    jest.clearAllMocks();
   });
 
   describe('DELETE should respond with a status code of 200 when data are valid and user has permission', () => {
@@ -107,7 +107,7 @@ describe('DELETE /bulletin', () => {
       const createUserResponse = await app!.user.create(userDto, adminAccessToken!);
       expect(createUserResponse.statusCode).toBe(201);
       const { data: newUser }: CreateUserResponseDto = createUserResponse.body;
-      
+
       await app!.user.activate(newUser.id, adminAccessToken!);
       const userToken = await app!.auth.loginAs({ email: newUser.email, passcode: userDto.passcode });
 
@@ -139,5 +139,10 @@ describe('DELETE /bulletin', () => {
       // Let's be more flexible with the error check for now
       expect(deleteResponse.body).toBeDefined();
     });
+  });
+
+  afterAll(async () => {
+    await testHelpers.closeTestApp();
+    jest.resetAllMocks();
   });
 });

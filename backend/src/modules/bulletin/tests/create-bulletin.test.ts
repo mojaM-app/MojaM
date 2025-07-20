@@ -28,18 +28,32 @@ describe('POST /bulletin', () => {
       console.info('Request data startDate:', requestData.startDate);
 
       const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
-      console.info('Response:', JSON.stringify({
-        statusCode: createBulletinResponse.statusCode,
-        body: createBulletinResponse.body
-      }, null, 2));
-      
+      console.info(
+        'Response:',
+        JSON.stringify(
+          {
+            statusCode: createBulletinResponse.statusCode,
+            body: createBulletinResponse.body,
+          },
+          null,
+          2,
+        ),
+      );
+
       if (createBulletinResponse.statusCode !== 201) {
-        console.error('Failed response:', JSON.stringify({
-          statusCode: createBulletinResponse.statusCode,
-          body: createBulletinResponse.body
-        }, null, 2));
+        console.error(
+          'Failed response:',
+          JSON.stringify(
+            {
+              statusCode: createBulletinResponse.statusCode,
+              body: createBulletinResponse.body,
+            },
+            null,
+            2,
+          ),
+        );
       }
-      
+
       expect(createBulletinResponse.statusCode).toBe(201);
       expect(createBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
 
@@ -65,7 +79,7 @@ describe('POST /bulletin', () => {
     test('create bulletin with minimum required fields', async () => {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() + 400); // Start in 400 days to avoid conflict
-      
+
       const requestData = {
         title: `Minimal Bulletin ${generateRandomString(8)}`,
         startDate: startDate.toISOString().split('T')[0],
@@ -196,7 +210,7 @@ describe('POST /bulletin', () => {
     test('when bulletin title already exists', async () => {
       const baseRequestData = generateValidBulletin(500); // Start far in future to avoid date conflict
       const uniqueTitle = `Duplicate Test ${Date.now()}`;
-      
+
       const requestData1 = { ...baseRequestData, title: uniqueTitle };
       const requestData2 = { ...generateValidBulletin(510), title: uniqueTitle }; // Different date but same title
 
