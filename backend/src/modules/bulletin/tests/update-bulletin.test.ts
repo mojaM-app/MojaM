@@ -204,7 +204,7 @@ describe('PUT /bulletin', () => {
       const body = createResponse.body as any;
 
       // Publish the bulletin
-      const publishResponse = await app!.bulletin.publish(body.id, {}, adminAccessToken!);
+      const publishResponse = await app!.bulletin.publish(body.id, adminAccessToken!);
       expect(publishResponse.statusCode).toBe(200);
 
       // Try to update published bulletin

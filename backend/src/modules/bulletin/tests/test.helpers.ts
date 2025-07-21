@@ -1,31 +1,31 @@
 import { generateRandomString } from '@utils';
 import { CreateBulletinQuestionDto } from '../dtos/create-bulletin-question.dto';
-import { CreateBulletinDayDto, CreateBulletinDayTaskDto, CreateBulletinDto } from '../dtos/create-bulletin.dto';
+import { CreateBulletinDayDto, CreateBulletinDto, CreateBulletinTaskDto } from '../dtos/create-bulletin.dto';
 import { BulletinQuestionTypeValue } from '../enums/bulletin-question-type.enum';
 
 export function generateValidBulletin(daysOffset: number = 0): CreateBulletinDto {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() + daysOffset);
 
-  return {
-    title: `Test Bulletin ${generateRandomString(8)}`,
-    startDate: startDate.toISOString().split('T')[0], // YYYY-MM-DD format
-    daysCount: 7,
-    days: [
-      {
-        dayNumber: 1,
-        introduction: `Introduction for day 1`,
-        instructions: `Instructions for day 1`,
-        tasks: [
-          {
-            taskOrder: 1,
-            description: `Task 1 for day 1`,
-            hasCommentField: false,
-          },
-        ],
-      },
-    ],
-  };
+  const bulletin = new CreateBulletinDto();
+  bulletin.title = `Test Bulletin ${generateRandomString(8)}`;
+  bulletin.startDate = startDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+  bulletin.daysCount = 7;
+
+  const day = new CreateBulletinDayDto();
+  day.dayNumber = 1;
+  day.introduction = `Introduction for day 1`;
+  day.instructions = `Instructions for day 1`;
+
+  const task = new CreateBulletinTaskDto();
+  task.taskOrder = 1;
+  task.description = `Task 1 for day 1`;
+  task.hasCommentField = false;
+
+  day.tasks = [task];
+  bulletin.days = [day];
+
+  return bulletin;
 }
 
 export const generateValidBulletinQuestion = (bulletinDayId: number): CreateBulletinQuestionDto => {

@@ -59,8 +59,7 @@ describe('DELETE /bulletin', () => {
       const body = createResponse.body as any;
 
       // Publish the bulletin
-      const publishDto = { bulletinId: body.id };
-      const publishResponse = await app!.bulletin.publish(body.id, publishDto, adminAccessToken!);
+      const publishResponse = await app!.bulletin.publish(body.id, adminAccessToken!);
       expect(publishResponse.statusCode).toBe(200);
 
       // Delete the bulletin

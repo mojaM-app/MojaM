@@ -1,217 +1,161 @@
-import { BaseService } from '@core';
-import { BadRequestException, ConflictException, errorKeys } from '@exceptions';
+import { BaseService, events } from '@core';
+import { BadRequestException, errorKeys } from '@exceptions';
 import { isNullOrUndefined } from '@utils';
-import { Service } from 'typedi';
-import { CreateBulletinQuestionAnswerDto } from '../dtos/create-bulletin-question-answer.dto';
-import { CreateBulletinQuestionDto } from '../dtos/create-bulletin-question.dto';
-import { CreateBulletinDto } from '../dtos/create-bulletin.dto';
-import { PublishBulletinDto } from '../dtos/publish-bulletin.dto';
-import { UpdateBulletinDto } from '../dtos/update-bulletin.dto';
+import { Container, Service } from 'typedi';
+import { Bulletin } from '../../../dataBase/entities/bulletin/bulletin.entity';
+import { CreateBulletinReqDto } from '../dtos/create-bulletin.dto';
+import { DeleteBulletinReqDto } from '../dtos/delete-bulletin.dto';
+import { GetBulletinListReqDto, GetBulletinReqDto, IBulletinDto, IBulletinListItemDto } from '../dtos/get-bulletin.dto';
+import { PublishBulletinReqDto } from '../dtos/publish-bulletin.dto';
+import { UpdateBulletinReqDto } from '../dtos/update-bulletin.dto';
 import { BulletinRepository } from '../repositories/bulletin.repository';
 
 @Service()
 export class BulletinService extends BaseService {
-  constructor(private readonly _bulletinRepository: BulletinRepository) {
+  private readonly _bulletinRepository: BulletinRepository;
+
+  constructor() {
     super();
+    this._bulletinRepository = Container.get(BulletinRepository);
   }
 
-  public async get(bulletinId: number): Promise<any> {
-    if (isNullOrUndefined(bulletinId)) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
+  public async get(reqDto: GetBulletinReqDto): Promise<IBulletinDto | null> {
+    const bulletin = await this._bulletinRepository.getByUuid(reqDto.bulletinUuid);
+
+    if (isNullOrUndefined(bulletin)) {
+      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound, {
+        id: reqDto.bulletinUuid,
+      });
     }
 
-    const bulletin = await this._bulletinRepository.get(bulletinId);
-    if (!bulletin) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
+    const dto = this.bulletinToIBulletin(bulletin!);
 
-    return bulletin;
+    this._eventDispatcher.dispatch(events.bulletin.bulletinRetrieved, dto);
+
+    return dto;
   }
 
-  public async create(reqDto: CreateBulletinDto): Promise<any> {
-    if (isNullOrUndefined(reqDto.title) || !reqDto.title.trim() || isNullOrUndefined(reqDto.currentUserId)) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
+  public async getList(reqDto: GetBulletinListReqDto): Promise<IBulletinListItemDto[]> {
+    const bulletins = await this._bulletinRepository.getAll();
+
+    let filteredBulletins = bulletins;
+    if (reqDto.state) {
+      filteredBulletins = bulletins.filter(b => b.state === reqDto.state);
     }
 
-    // Check if bulletin with this title already exists
-    const existingBulletin = await this._bulletinRepository.getByTitle(reqDto.title);
-    if (existingBulletin) {
-      throw new ConflictException(errorKeys.bulletin.DateRangeConflict);
-    }
+    const dtos = filteredBulletins.map(bulletin => this.bulletinToIBulletinListItem(bulletin));
 
-    const bulletin = await this._bulletinRepository.create(reqDto, reqDto.currentUserId!);
+    this._eventDispatcher.dispatch(events.bulletin.bulletinListRetrieved, dtos);
 
-    return bulletin;
+    return dtos;
   }
 
-  public async update(reqDto: UpdateBulletinDto): Promise<any> {
-    if (isNullOrUndefined(reqDto.bulletinId) || isNullOrUndefined(reqDto.currentUserId)) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
+  public async create(reqDto: CreateBulletinReqDto): Promise<IBulletinDto | null> {
+    if (isNullOrUndefined(reqDto.bulletin)) {
+      return null;
     }
 
-    const bulletinId = reqDto.bulletinId!;
-    const currentUserId = reqDto.currentUserId!;
+    const bulletin = await this._bulletinRepository.create(reqDto.bulletin, reqDto.currentUserId!);
+    const dto = this.bulletinToIBulletin(bulletin);
 
-    const bulletin = await this._bulletinRepository.get(bulletinId);
-    if (!bulletin) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
+    this._eventDispatcher.dispatch(events.bulletin.bulletinCreated, dto);
 
-    if (bulletin.isPublished) {
-      throw new ConflictException(errorKeys.bulletin.BulletinAlreadyPublished);
-    }
-
-    // Check title uniqueness if title is being updated
-    if (reqDto.title && reqDto.title !== bulletin.title) {
-      const existingBulletin = await this._bulletinRepository.getByTitle(reqDto.title);
-      if (existingBulletin && existingBulletin.id !== bulletinId) {
-        throw new ConflictException(errorKeys.bulletin.DateRangeConflict);
-      }
-    }
-
-    await this._bulletinRepository.update(bulletinId, reqDto, currentUserId);
-    const updatedBulletin = await this._bulletinRepository.get(bulletinId);
-
-    return updatedBulletin;
+    return dto;
   }
 
-  public async publish(reqDto: PublishBulletinDto): Promise<boolean> {
-    if (isNullOrUndefined(reqDto.bulletinId)) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
+  public async update(reqDto: UpdateBulletinReqDto): Promise<IBulletinDto | null> {
+    const bulletin = await this._bulletinRepository.getByUuid(reqDto.bulletinUuid);
+
+    if (isNullOrUndefined(bulletin)) {
+      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound, {
+        id: reqDto.bulletinUuid,
+      });
     }
 
-    const bulletin = await this._bulletinRepository.get(reqDto.bulletinId);
-    if (!bulletin) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
+    await this._bulletinRepository.update(bulletin!.id, reqDto.bulletin, reqDto.currentUserId!);
+    const updatedBulletin = await this._bulletinRepository.get(bulletin!.id);
+    const dto = this.bulletinToIBulletin(updatedBulletin!);
 
-    if (bulletin.isPublished) {
-      return true;
-    }
+    this._eventDispatcher.dispatch(events.bulletin.bulletinUpdated, dto);
 
-    // Check if bulletin has valid content
-    if (!bulletin.title || bulletin.daysCount <= 0) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    const result = await this._bulletinRepository.publish(reqDto.bulletinId!, reqDto.currentUserId!);
-
-    // Send notification about new published bulletin
-    this.sendNewBulletinNotification(bulletin);
-
-    return result;
+    return dto;
   }
 
-  private async sendNewBulletinNotification(bulletin: any): Promise<void> {
-    try {
-      // TODO: Implement actual notification logic
-      // This could send emails to subscribers, push notifications, etc.
-      console.info(`Bulletin published: ${bulletin.title} - Start date: ${bulletin.startDate}`);
+  public async delete(reqDto: DeleteBulletinReqDto): Promise<IBulletinDto | null> {
+    const bulletin = await this._bulletinRepository.getByUuid(reqDto.bulletinUuid);
 
-      // Example: Send email to all users subscribed to bulletin notifications
-      // const emailService = Container.get(EmailService);
-      // await emailService.sendBulletinNotification(bulletin);
-    } catch (error) {
-      // Log error but don't fail the publish operation
-      console.error('Failed to send bulletin notification:', error);
+    if (isNullOrUndefined(bulletin)) {
+      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound, {
+        id: reqDto.bulletinUuid,
+      });
     }
+
+    const dto = this.bulletinToIBulletin(bulletin!);
+
+    await this._bulletinRepository.delete(bulletin!.id);
+
+    this._eventDispatcher.dispatch(events.bulletin.bulletinDeleted, dto);
+
+    return dto;
   }
 
-  public async getAll(): Promise<any[]> {
-    return await this._bulletinRepository.getAll();
+  public async publish(reqDto: PublishBulletinReqDto): Promise<IBulletinDto | null> {
+    const bulletin = await this._bulletinRepository.getByUuid(reqDto.bulletinId);
+
+    if (isNullOrUndefined(bulletin)) {
+      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound, {
+        id: reqDto.bulletinId,
+      });
+    }
+
+    if (bulletin!.isPublished) {
+      return this.bulletinToIBulletin(bulletin!);
+    }
+
+    await this._bulletinRepository.publish(bulletin!.id, reqDto.currentUserId!);
+    const publishedBulletin = await this._bulletinRepository.get(bulletin!.id);
+    const dto = this.bulletinToIBulletin(publishedBulletin!);
+
+    this._eventDispatcher.dispatch(events.bulletin.bulletinPublished, dto);
+
+    return dto;
   }
 
-  public async getPublished(): Promise<any[]> {
-    return await this._bulletinRepository.getPublishedBulletins();
+  private bulletinToIBulletin(bulletin: Bulletin): IBulletinDto {
+    return {
+      id: bulletin.uuid,
+      title: bulletin.title,
+      startDate: bulletin.startDate,
+      daysCount: bulletin.daysCount,
+      state: bulletin.state,
+      createdAt: bulletin.createdAt,
+      createdBy: this.getUserFullName(bulletin.createdBy),
+      modifiedAt: bulletin.modifiedAt,
+      modifiedBy: bulletin.modifiedBy ? this.getUserFullName(bulletin.modifiedBy) : null,
+      publishedAt: bulletin.publishedAt,
+      publishedBy: bulletin.publishedBy ? this.getUserFullName(bulletin.publishedBy) : null,
+      days: [], // Will be populated from related entities
+      questions: [], // Will be populated from related entities
+    } satisfies IBulletinDto;
   }
 
-  public async delete(bulletinId: number, currentUserId: number): Promise<void> {
-    if (isNullOrUndefined(bulletinId) || isNullOrUndefined(currentUserId)) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    const bulletin = await this._bulletinRepository.get(bulletinId);
-    if (!bulletin) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    await this._bulletinRepository.delete(bulletinId);
+  private bulletinToIBulletinListItem(bulletin: Bulletin): IBulletinListItemDto {
+    return {
+      id: bulletin.uuid,
+      title: bulletin.title,
+      startDate: bulletin.startDate,
+      daysCount: bulletin.daysCount,
+      state: bulletin.state,
+      createdAt: bulletin.createdAt,
+      createdBy: this.getUserFullName(bulletin.createdBy),
+      publishedAt: bulletin.publishedAt,
+      publishedBy: bulletin.publishedBy ? this.getUserFullName(bulletin.publishedBy) : null,
+    } satisfies IBulletinListItemDto;
   }
 
-  public async getUserProgress(bulletinId: number, userId: number): Promise<any> {
-    if (isNullOrUndefined(bulletinId) || isNullOrUndefined(userId)) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    const bulletin = await this._bulletinRepository.get(bulletinId);
-    if (!bulletin) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    if (!bulletin.isPublished) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    return await this._bulletinRepository.getUserProgress(bulletinId, userId);
-  }
-
-  public async createQuestion(reqDto: CreateBulletinQuestionDto, currentUserId: number): Promise<any> {
-    if (
-      isNullOrUndefined(reqDto.bulletinDayId) ||
-      isNullOrUndefined(reqDto.content) ||
-      isNullOrUndefined(currentUserId)
-    ) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    // Check if the bulletin day exists and user has permission
-    const bulletinDay = await this._bulletinRepository.getBulletinDayById(reqDto.bulletinDayId);
-    if (!bulletinDay) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    const question = await this._bulletinRepository.createQuestion(reqDto, currentUserId);
-    return question;
-  }
-
-  public async answerQuestion(reqDto: CreateBulletinQuestionAnswerDto, currentUserId: number): Promise<any> {
-    if (isNullOrUndefined(reqDto.questionId) || isNullOrUndefined(reqDto.content) || isNullOrUndefined(currentUserId)) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    // Check if the question exists
-    const question = await this._bulletinRepository.getQuestionById(reqDto.questionId);
-    if (!question) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    const answer = await this._bulletinRepository.createQuestionAnswer(reqDto, currentUserId);
-    return answer;
-  }
-
-  public async getBulletinQuestions(bulletinId: number): Promise<any[]> {
-    if (isNullOrUndefined(bulletinId)) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    const bulletin = await this._bulletinRepository.get(bulletinId);
-    if (!bulletin) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    return await this._bulletinRepository.getBulletinQuestions(bulletinId);
-  }
-
-  public async getQuestionAnswers(questionId: number): Promise<any[]> {
-    if (isNullOrUndefined(questionId)) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    const question = await this._bulletinRepository.getQuestionById(questionId);
-    if (!question) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    return await this._bulletinRepository.getQuestionAnswers(questionId);
+  private getUserFullName(userId: number): string {
+    // TODO: This should be resolved through proper relations or a user service
+    // For now returning a placeholder
+    return `User${userId}`;
   }
 }

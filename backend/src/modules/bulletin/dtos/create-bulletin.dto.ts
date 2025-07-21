@@ -1,3 +1,4 @@
+import { BaseReqDto, events, type IResponse } from '@core';
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -11,7 +12,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-export class CreateBulletinDayTaskDto {
+export class CreateBulletinTaskDto {
   @IsInt()
   @Min(1)
   public taskOrder: number;
@@ -21,7 +22,12 @@ export class CreateBulletinDayTaskDto {
   public description: string;
 
   @IsOptional()
-  public hasCommentField?: boolean;
+  public hasCommentField?: boolean = false;
+
+  constructor() {
+    this.taskOrder = 1;
+    this.description = '';
+  }
 }
 
 export class CreateBulletinDayDto {
@@ -39,8 +45,14 @@ export class CreateBulletinDayDto {
 
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CreateBulletinDayTaskDto)
-  public tasks: CreateBulletinDayTaskDto[];
+  @Type(() => CreateBulletinTaskDto)
+  public tasks: CreateBulletinTaskDto[];
+
+  constructor() {
+    this.dayNumber = 1;
+    this.instructions = '';
+    this.tasks = [];
+  }
 }
 
 export class CreateBulletinDto {
@@ -55,14 +67,35 @@ export class CreateBulletinDto {
   @IsInt()
   @Min(1)
   @Max(90)
-  public daysCount?: number;
+  public daysCount?: number = 7;
 
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateBulletinDayDto)
   public days: CreateBulletinDayDto[];
 
-  @IsOptional()
-  @IsInt()
-  public currentUserId?: number;
+  constructor() {
+    this.title = '';
+    this.startDate = '';
+    this.days = [];
+  }
+}
+
+export class CreateBulletinReqDto extends BaseReqDto {
+  public readonly bulletin: CreateBulletinDto;
+
+  constructor(bulletin: CreateBulletinDto, currentUserId: number | undefined) {
+    super(currentUserId);
+    this.bulletin = bulletin;
+  }
+}
+
+export class CreateBulletinResponseDto implements IResponse<string> {
+  public readonly data: string;
+  public readonly message: string;
+
+  constructor(data: string) {
+    this.data = data;
+    this.message = events.bulletin.bulletinCreated;
+  }
 }

@@ -14,6 +14,14 @@ export const events = {
     announcementsPublished: 'onAnnouncementsPublished',
     announcementsUpdated: 'onAnnouncementsUpdated',
   },
+  bulletin: {
+    bulletinListRetrieved: 'onBulletinListRetrieved',
+    bulletinCreated: 'onBulletinCreated',
+    bulletinRetrieved: 'onBulletinRetrieved',
+    bulletinDeleted: 'onBulletinDeleted',
+    bulletinPublished: 'onBulletinPublished',
+    bulletinUpdated: 'onBulletinUpdated',
+  },
   community: {
     communityRetrieved: 'onCommunityRetrieved',
   },

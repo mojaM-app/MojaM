@@ -1,11 +1,18 @@
+import { BaseReqDto, events, type IResponse } from '@core';
 import { Type } from 'class-transformer';
-import { IsArray, IsDateString, IsInt, IsNotEmpty, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsDateString,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 
-export class UpdateBulletinDayTaskDto {
-  @IsOptional()
-  @IsInt()
-  public id?: number;
-
+export class UpdateBulletinTaskDto {
   @IsInt()
   @Min(1)
   public taskOrder: number;
@@ -15,14 +22,15 @@ export class UpdateBulletinDayTaskDto {
   public description: string;
 
   @IsOptional()
-  public hasCommentField?: boolean;
+  public hasCommentField?: boolean = false;
+
+  constructor() {
+    this.taskOrder = 1;
+    this.description = '';
+  }
 }
 
 export class UpdateBulletinDayDto {
-  @IsOptional()
-  @IsInt()
-  public id?: number;
-
   @IsInt()
   @Min(1)
   public dayNumber: number;
@@ -37,15 +45,17 @@ export class UpdateBulletinDayDto {
 
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => UpdateBulletinDayTaskDto)
-  public tasks: UpdateBulletinDayTaskDto[];
+  @Type(() => UpdateBulletinTaskDto)
+  public tasks: UpdateBulletinTaskDto[];
+
+  constructor() {
+    this.dayNumber = 1;
+    this.instructions = '';
+    this.tasks = [];
+  }
 }
 
 export class UpdateBulletinDto {
-  @IsOptional()
-  @IsInt()
-  public bulletinId?: number;
-
   @IsOptional()
   @IsString()
   @IsNotEmpty()
@@ -56,12 +66,39 @@ export class UpdateBulletinDto {
   public startDate?: string;
 
   @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(90)
+  public daysCount?: number;
+
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => UpdateBulletinDayDto)
   public days?: UpdateBulletinDayDto[];
 
-  @IsOptional()
-  @IsInt()
-  public currentUserId?: number;
+  constructor() {
+    // Optional fields don't need initialization
+  }
+}
+
+export class UpdateBulletinReqDto extends BaseReqDto {
+  public readonly bulletinUuid: string;
+  public readonly bulletin: UpdateBulletinDto;
+
+  constructor(bulletinUuid: string, bulletin: UpdateBulletinDto, currentUserId: number | undefined) {
+    super(currentUserId);
+    this.bulletinUuid = bulletinUuid;
+    this.bulletin = bulletin;
+  }
+}
+
+export class UpdateBulletinResponseDto implements IResponse<string> {
+  public readonly data: string;
+  public readonly message: string;
+
+  constructor(data: string) {
+    this.data = data;
+    this.message = events.bulletin.bulletinUpdated;
+  }
 }

@@ -1,19 +1,20 @@
-import { IsDateString, IsInt, IsOptional } from 'class-validator';
+import { BaseReqDto, events, type IResponse } from '@core';
 
-export class PublishBulletinDto {
-  @IsOptional()
-  @IsInt()
-  public bulletinId?: number;
+export class PublishBulletinReqDto extends BaseReqDto {
+  public readonly bulletinId: string;
 
-  @IsOptional()
-  @IsDateString()
-  public startDate?: Date;
+  constructor(bulletinId: string, currentUserId: number) {
+    super(currentUserId);
+    this.bulletinId = bulletinId;
+  }
+}
 
-  @IsOptional()
-  @IsDateString()
-  public endDate?: Date;
+export class PublishBulletinResponseDto implements IResponse<string> {
+  public readonly data: string;
+  public readonly message: string;
 
-  @IsOptional()
-  @IsInt()
-  public currentUserId?: number;
+  constructor(data: string) {
+    this.data = data;
+    this.message = events.bulletin.bulletinPublished;
+  }
 }

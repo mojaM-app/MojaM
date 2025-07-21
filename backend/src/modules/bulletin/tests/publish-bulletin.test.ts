@@ -28,8 +28,7 @@ describe('POST /bulletin/publish', () => {
       const createdBulletin = createResponse.body as any;
 
       // Publish the bulletin
-      const publishDto = { bulletinId: createdBulletin.id };
-      const publishResponse = await app!.bulletin.publish(createdBulletin.id, publishDto, adminAccessToken!);
+      const publishResponse = await app!.bulletin.publish(createdBulletin.id, adminAccessToken!);
       expect(publishResponse.statusCode).toBe(200);
 
       // Cleanup - may fail for published bulletins
@@ -49,8 +48,7 @@ describe('POST /bulletin/publish', () => {
       expect(getResponse.statusCode).toBe(200);
 
       // Publish the bulletin
-      const publishDto = { bulletinId: createdBulletin.id };
-      const publishResponse = await app!.bulletin.publish(createdBulletin.id, publishDto, adminAccessToken!);
+      const publishResponse = await app!.bulletin.publish(createdBulletin.id, adminAccessToken!);
       expect(publishResponse.statusCode).toBe(200);
 
       // Verify bulletin can still be retrieved after publish
@@ -66,8 +64,7 @@ describe('POST /bulletin/publish', () => {
 
   describe('POST should respond with a status code of 400', () => {
     test('when bulletin does not exist', async () => {
-      const publishDto = { bulletinId: 99999 };
-      const publishResponse = await app!.bulletin.publish(99999, publishDto, adminAccessToken!);
+      const publishResponse = await app!.bulletin.publish(99999, adminAccessToken!);
       expect(publishResponse.statusCode).toBe(400);
     });
 
@@ -79,12 +76,11 @@ describe('POST /bulletin/publish', () => {
       const createdBulletin = createResponse.body as any;
 
       // Publish the bulletin first time
-      const publishDto = { bulletinId: createdBulletin.id };
-      const firstPublishResponse = await app!.bulletin.publish(createdBulletin.id, publishDto, adminAccessToken!);
+      const firstPublishResponse = await app!.bulletin.publish(createdBulletin.id, adminAccessToken!);
       expect(firstPublishResponse.statusCode).toBe(200);
 
       // Try to publish again - should fail with 409 conflict
-      const secondPublishResponse = await app!.bulletin.publish(createdBulletin.id, publishDto, adminAccessToken!);
+      const secondPublishResponse = await app!.bulletin.publish(createdBulletin.id, adminAccessToken!);
       expect(secondPublishResponse.statusCode).toBe(200);
 
       // Cleanup - might not work for published bulletins
@@ -95,23 +91,20 @@ describe('POST /bulletin/publish', () => {
 
   describe('POST should respond with a status code of 401', () => {
     test('when token is not provided', async () => {
-      const publishDto = { bulletinId: 123 };
-      const publishResponse = await app!.bulletin.publish(123, publishDto, '');
+      const publishResponse = await app!.bulletin.publish(123);
       expect(publishResponse.statusCode).toBe(401);
     });
 
     test('when token is invalid', async () => {
-      const publishDto = { bulletinId: 123 };
-      const publishResponse = await app!.bulletin.publish(123, publishDto, 'invalid-token');
+      const publishResponse = await app!.bulletin.publish(123, 'invalid-token');
       expect(publishResponse.statusCode).toBe(401);
     });
   });
 
   describe('POST should respond with a status code of 403', () => {
-    test('when user has no AddBulletin permission', async () => {
+    test('when user has no PublishBulletin permission', async () => {
       // Create basic DTO for testing
-      const publishDto = { bulletinId: 123 };
-      const publishResponse = await app!.bulletin.publish(123, publishDto, 'invalid-token');
+      const publishResponse = await app!.bulletin.publish(123, 'invalid-token');
       expect(publishResponse.statusCode).toBe(401); // Will be 401 for invalid token, that's fine for coverage
     });
   });

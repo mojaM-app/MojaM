@@ -1,12 +1,19 @@
 import { BaseController, type IRequestWithIdentity } from '@core';
-import { NextFunction, Request, Response } from 'express';
+import { isGuid } from '@utils';
+import type { NextFunction, Request, Response } from 'express';
 import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
-import { CreateBulletinQuestionAnswerDto } from '../dtos/create-bulletin-question-answer.dto';
-import { CreateBulletinQuestionDto } from '../dtos/create-bulletin-question.dto';
-import { CreateBulletinDto } from '../dtos/create-bulletin.dto';
-import { PublishBulletinDto } from '../dtos/publish-bulletin.dto';
-import { UpdateBulletinDto } from '../dtos/update-bulletin.dto';
+import { CreateBulletinDto, CreateBulletinReqDto, CreateBulletinResponseDto } from '../dtos/create-bulletin.dto';
+import { DeleteBulletinReqDto, DeleteBulletinResponseDto } from '../dtos/delete-bulletin.dto';
+import {
+  GetBulletinListReqDto,
+  GetBulletinListResponseDto,
+  GetBulletinReqDto,
+  GetBulletinResponseDto,
+} from '../dtos/get-bulletin.dto';
+import { PublishBulletinReqDto, PublishBulletinResponseDto } from '../dtos/publish-bulletin.dto';
+import { UpdateBulletinDto, UpdateBulletinReqDto, UpdateBulletinResponseDto } from '../dtos/update-bulletin.dto';
+import { BulletinState } from '../enums/bulletin-state.enum';
 import { BulletinPdfService } from '../services/bulletin-pdf.service';
 import { BulletinService } from '../services/bulletin.service';
 
@@ -22,10 +29,20 @@ export class BulletinController extends BaseController {
 
   public get = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const bulletinId = parseInt(req.params.id);
-      const result = await this._bulletinService.get(bulletinId);
+      const reqDto = new GetBulletinReqDto(this.getBulletinGuid(req), this.getCurrentUserId(req)!);
+      const result = await this._bulletinService.get(reqDto);
+      res.status(StatusCode.SuccessOK).json(new GetBulletinResponseDto(result!));
+    } catch (error) {
+      next(error);
+    }
+  };
 
-      res.status(StatusCode.SuccessOK).json(result);
+  public getList = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const state = req.query.state ? (parseInt(req.query.state as string) as BulletinState) : undefined;
+      const reqDto = new GetBulletinListReqDto(state, this.getCurrentUserId(req)!);
+      const result = await this._bulletinService.getList(reqDto);
+      res.status(StatusCode.SuccessOK).json(new GetBulletinListResponseDto(result));
     } catch (error) {
       next(error);
     }
@@ -33,13 +50,9 @@ export class BulletinController extends BaseController {
 
   public create = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const currentUserId = this.getCurrentUserId(req)!;
-      const createDto: CreateBulletinDto = req.body;
-      createDto.currentUserId = currentUserId;
-
-      const result = await this._bulletinService.create(createDto);
-
-      res.status(StatusCode.SuccessCreated).json(result);
+      const model: CreateBulletinDto = req.body;
+      const result = await this._bulletinService.create(new CreateBulletinReqDto(model, this.getCurrentUserId(req)));
+      res.status(StatusCode.SuccessCreated).json(new CreateBulletinResponseDto(result!.id));
     } catch (error) {
       next(error);
     }
@@ -47,31 +60,10 @@ export class BulletinController extends BaseController {
 
   public update = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const bulletinId = parseInt(req.params.id);
-      const currentUserId = this.getCurrentUserId(req)!;
-      const updateDto: UpdateBulletinDto = req.body;
-      updateDto.bulletinId = bulletinId;
-      updateDto.currentUserId = currentUserId;
-
-      const result = await this._bulletinService.update(updateDto);
-
-      res.status(StatusCode.SuccessOK).json(result);
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  public publish = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const bulletinId = parseInt(req.params.id);
-      const currentUserId = this.getCurrentUserId(req)!;
-      const publishDto: PublishBulletinDto = req.body;
-      publishDto.bulletinId = bulletinId;
-      publishDto.currentUserId = currentUserId;
-
-      const result = await this._bulletinService.publish(publishDto);
-
-      res.status(StatusCode.SuccessOK).json(result);
+      const model: UpdateBulletinDto = req.body;
+      const reqDto = new UpdateBulletinReqDto(this.getBulletinGuid(req)!, model, this.getCurrentUserId(req));
+      const result = await this._bulletinService.update(reqDto);
+      res.status(StatusCode.SuccessOK).json(new UpdateBulletinResponseDto(result!.id));
     } catch (error) {
       next(error);
     }
@@ -79,150 +71,25 @@ export class BulletinController extends BaseController {
 
   public delete = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const bulletinId = parseInt(req.params.id);
-      const currentUserId = this.getCurrentUserId(req)!;
-
-      await this._bulletinService.delete(bulletinId, currentUserId);
-
-      res.status(StatusCode.SuccessOK).json({ success: true });
+      const reqDto = new DeleteBulletinReqDto(this.getBulletinGuid(req)!, this.getCurrentUserId(req)!);
+      const result = await this._bulletinService.delete(reqDto);
+      res.status(StatusCode.SuccessOK).json(new DeleteBulletinResponseDto(result!.id));
     } catch (error) {
       next(error);
     }
   };
 
-  public exportToPdf = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+  public publish = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const bulletinId = parseInt(req.params.id);
-      const currentUserId = this.getCurrentUserId(req)!;
-
-      const pdfBuffer = await this._bulletinPdfService.generatePdf(bulletinId, currentUserId);
-
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="bulletin_${bulletinId}.pdf"`);
-      res.send(pdfBuffer);
+      const reqDto = new PublishBulletinReqDto(this.getBulletinGuid(req)!, this.getCurrentUserId(req)!);
+      const result = await this._bulletinService.publish(reqDto);
+      res.status(StatusCode.SuccessOK).json(new PublishBulletinResponseDto(result!.id));
     } catch (error) {
       next(error);
     }
   };
 
-  public downloadPdf = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const bulletinId = parseInt(req.params.id);
-
-      const result = await this._bulletinPdfService.downloadPdf(bulletinId);
-
-      if (result.success && result.data) {
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename="bulletin_${bulletinId}.pdf"`);
-        res.send(result.data);
-      } else {
-        res.status(StatusCode.ClientErrorBadRequest).json(result);
-      }
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  public getAll = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      // Support pagination through query parameters
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 50;
-
-      // For now, get all and handle pagination in memory
-      // TODO: Implement pagination in repository for better performance
-      const allBulletins = await this._bulletinService.getAll();
-
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + limit;
-      const paginatedBulletins = allBulletins.slice(startIndex, endIndex);
-
-      const result = {
-        data: paginatedBulletins,
-        pagination: {
-          page,
-          limit,
-          total: allBulletins.length,
-          totalPages: Math.ceil(allBulletins.length / limit),
-        },
-      };
-
-      res.status(StatusCode.SuccessOK).json(result);
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  public getPublished = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const result = await this._bulletinService.getPublished();
-
-      res.status(StatusCode.SuccessOK).json(result);
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  public getUserProgress = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const bulletinId = parseInt(req.params.id);
-      const userId = parseInt(req.params.userId);
-
-      const result = await this._bulletinService.getUserProgress(bulletinId, userId);
-
-      res.status(StatusCode.SuccessOK).json(result);
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  public createQuestion = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const currentUserId = this.getCurrentUserId(req)!;
-      const createDto: CreateBulletinQuestionDto = req.body;
-
-      const result = await this._bulletinService.createQuestion(createDto, currentUserId);
-
-      res.status(StatusCode.SuccessCreated).json(result);
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  public answerQuestion = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const currentUserId = this.getCurrentUserId(req)!;
-      const answerDto: CreateBulletinQuestionAnswerDto = req.body;
-
-      const result = await this._bulletinService.answerQuestion(answerDto, currentUserId);
-
-      res.status(StatusCode.SuccessCreated).json(result);
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  public getBulletinQuestions = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const bulletinId = parseInt(req.params.id);
-
-      const result = await this._bulletinService.getBulletinQuestions(bulletinId);
-
-      res.status(StatusCode.SuccessOK).json(result);
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  public getQuestionAnswers = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const questionId = parseInt(req.params.questionId);
-
-      const result = await this._bulletinService.getQuestionAnswers(questionId);
-
-      res.status(StatusCode.SuccessOK).json(result);
-    } catch (error) {
-      next(error);
-    }
-  };
+  private getBulletinGuid(req: Request): string | undefined {
+    return isGuid(req.params.id) ? req.params.id : undefined;
+  }
 }
