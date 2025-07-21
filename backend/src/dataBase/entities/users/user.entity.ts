@@ -44,7 +44,7 @@ export class User implements IHasGuidId, ICreateUser, IUpdateUser, IUserEntity {
 
   @Column({
     name: 'Email',
-    type: 'nvarchar',
+    type: 'varchar',
     length: 320,
     nullable: false,
   })
@@ -60,7 +60,7 @@ export class User implements IHasGuidId, ICreateUser, IUpdateUser, IUserEntity {
 
   @Column({
     name: 'Phone',
-    type: 'nvarchar',
+    type: 'varchar',
     length: 30,
     nullable: false,
   })
@@ -76,7 +76,7 @@ export class User implements IHasGuidId, ICreateUser, IUpdateUser, IUserEntity {
 
   @Column({
     name: 'Passcode',
-    type: 'nvarchar',
+    type: 'varchar',
     length: 256,
     nullable: true,
   })
@@ -84,7 +84,7 @@ export class User implements IHasGuidId, ICreateUser, IUpdateUser, IUserEntity {
 
   @Column({
     name: 'Salt',
-    type: 'nvarchar',
+    type: 'varchar',
     length: 64,
     nullable: false,
   })
@@ -92,7 +92,7 @@ export class User implements IHasGuidId, ICreateUser, IUpdateUser, IUserEntity {
 
   @Column({
     name: 'RefreshTokenKey',
-    type: 'nvarchar',
+    type: 'varchar',
     length: 128,
     nullable: false,
   })
@@ -100,7 +100,7 @@ export class User implements IHasGuidId, ICreateUser, IUpdateUser, IUserEntity {
 
   @Column({
     name: 'FirstName',
-    type: 'nvarchar',
+    type: 'varchar',
     length: 255,
     nullable: true,
   })
@@ -108,7 +108,7 @@ export class User implements IHasGuidId, ICreateUser, IUpdateUser, IUserEntity {
 
   @Column({
     name: 'LastName',
-    type: 'nvarchar',
+    type: 'varchar',
     length: 255,
     nullable: true,
   })

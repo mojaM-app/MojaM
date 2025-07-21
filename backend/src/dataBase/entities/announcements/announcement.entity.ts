@@ -40,7 +40,7 @@ export class Announcement implements IAnnouncementEntity, ICreateAnnouncement, I
 
   @Column({
     name: 'Title',
-    type: 'nvarchar',
+    type: 'varchar',
     length: 255,
     nullable: true,
   })
