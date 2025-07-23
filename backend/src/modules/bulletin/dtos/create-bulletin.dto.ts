@@ -1,13 +1,15 @@
+import { VALIDATOR_SETTINGS } from '@config';
 import { BaseReqDto, events, type IResponse } from '@core';
+import { errorKeys } from '@exceptions';
 import { Type } from 'class-transformer';
 import {
   IsArray,
-  IsDateString,
+  IsDate,
   IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
-  Max,
+  MaxLength,
   Min,
   ValidateNested,
 } from 'class-validator';
@@ -56,29 +58,14 @@ export class CreateBulletinDayDto {
 }
 
 export class CreateBulletinDto {
-  @IsString()
-  @IsNotEmpty()
-  public title: string;
-
-  @IsDateString()
-  public startDate: string;
+  @IsOptional()
+  @MaxLength(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH, { message: errorKeys.bulletin.Title_Too_Long })
+  public title?: string | undefined;
 
   @IsOptional()
-  @IsInt()
-  @Min(1)
-  @Max(90)
-  public daysCount?: number = 7;
-
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreateBulletinDayDto)
-  public days: CreateBulletinDayDto[];
-
-  constructor() {
-    this.title = '';
-    this.startDate = '';
-    this.days = [];
-  }
+  @Type(() => Date)
+  @IsDate()
+  public startDate?: Date | null;
 }
 
 export class CreateBulletinReqDto extends BaseReqDto {

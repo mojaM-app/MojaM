@@ -1,9 +1,9 @@
 import { BaseReqDto, events, type IResponse } from '@core';
 
 export class PublishBulletinReqDto extends BaseReqDto {
-  public readonly bulletinId: string;
+  public readonly bulletinId: string | undefined;
 
-  constructor(bulletinId: string, currentUserId: number) {
+  constructor(bulletinId: string | undefined, currentUserId: number | undefined) {
     super(currentUserId);
     this.bulletinId = bulletinId;
   }

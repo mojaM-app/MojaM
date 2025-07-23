@@ -48,10 +48,12 @@ export const errorKeys = {
     Invalid_End_Date: 'Invalid_End_Date',
   },
   bulletin: {
+    Title_Too_Long: 'Bulletin_Title_Too_Long',
+    Invalid_Start_Date: 'Bulletin_Invalid_Start_Date',
+    Date_Range_Conflict: 'Bulletin_Date_Range_Conflict',
+
     BulletinNotFound: 'Bulletin_Not_Found',
     BulletinAlreadyPublished: 'Bulletin_Already_Published',
-    DateRangeConflict: 'Bulletin_Date_Range_Conflict',
-    TitleTooLong: 'Bulletin_Title_Too_Long',
     InvalidDaysCount: 'Bulletin_Invalid_Days_Count',
     CannotModifyPublishedBulletin: 'Cannot_Modify_Published_Bulletin',
     DayNumberOutOfRange: 'Bulletin_Day_Number_Out_Of_Range',

@@ -9,11 +9,7 @@ import { BaseAnnouncementsRepository } from './base.announcements.repository';
 import { CreateAnnouncementsReqDto } from '../dtos/create-announcements.dto';
 import { DeleteAnnouncementsReqDto } from '../dtos/delete-announcements.dto';
 import { PublishAnnouncementsReqDto } from '../dtos/publish-announcements.dto';
-import {
-  UpdateAnnouncementItemDto,
-  UpdateAnnouncementsDto,
-  UpdateAnnouncementsReqDto,
-} from '../dtos/update-announcements.dto';
+import { UpdateAnnouncementsDto, UpdateAnnouncementsReqDto } from '../dtos/update-announcements.dto';
 import { AnnouncementStateValue } from '../enums/announcement-state.enum';
 import { Announcement } from './../../../dataBase/entities/announcements/announcement.entity';
 
@@ -51,12 +47,12 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
       const announcementsRepository = transactionalEntityManager.getRepository(Announcement);
 
       const announcement = await announcementsRepository.save({
+        validFromDate: reqDto.announcements.validFromDate ?? null,
+        title: reqDto.announcements.title ?? null,
         createdBy: {
           id: reqDto.currentUserId!,
         } satisfies IUserId,
         state: AnnouncementStateValue.DRAFT,
-        validFromDate: reqDto.announcements.validFromDate ?? null,
-        title: reqDto.announcements.title ?? null,
       } satisfies ICreateAnnouncement);
 
       if (isNullOrUndefined(announcement.items)) {
@@ -88,8 +84,8 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
   public async update(reqDto: UpdateAnnouncementsReqDto): Promise<number> {
     const id = await this.getIdByUuid(reqDto.announcementsId);
 
-    await this._dbContext.transaction(async transactionalEntityManager => {
-      const announcementsRepository = transactionalEntityManager.getRepository(Announcement);
+    await this._dbContext.transaction(async entityManager => {
+      const announcementsRepository = entityManager.getRepository(Announcement);
 
       const announcements = await announcementsRepository
         .createQueryBuilder('announcement')
@@ -124,7 +120,7 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
       }
 
       if ((reqDto.announcements.items?.length ?? 0) > 0) {
-        const announcementItemsRepository = transactionalEntityManager.getRepository(AnnouncementItem);
+        const announcementItemsRepository = entityManager.getRepository(AnnouncementItem);
 
         const existingItems = announcements!.items || [];
         const existingItemsMap = new Map(existingItems.map(item => [item.id, item]));
@@ -147,14 +143,14 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
           } else {
             processedItemIds.add(existingItem.id);
 
-            if (this.checkIfUpdateAnnouncementItem(existingItem, itemDto, order)) {
+            if (existingItem.shouldBeUpdated(itemDto.content, order)) {
               itemsToUpdate.push({
                 id: existingItem.id,
                 content: itemDto.content,
+                order,
                 updatedBy: {
                   id: reqDto.currentUserId!,
                 } satisfies IUserId,
-                order,
               } satisfies IUpdateAnnouncementItem);
             }
           }
@@ -281,16 +277,5 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
     }
 
     return wasChanged ? result : null;
-  }
-
-  private checkIfUpdateAnnouncementItem(
-    announcementItemFromDb: AnnouncementItem,
-    dto: UpdateAnnouncementItemDto,
-    order: number,
-  ): boolean {
-    return (
-      (announcementItemFromDb.content ?? null) !== (dto.content ?? null) ||
-      (announcementItemFromDb.order ?? null) !== order
-    );
   }
 }

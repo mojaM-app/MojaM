@@ -24,7 +24,7 @@ describe('DELETE /bulletin', () => {
   describe('DELETE should respond with a status code of 200 when data are valid and user has permission', () => {
     test('delete bulletin successfully', async () => {
       // Create a bulletin first
-      const bulletinData = generateValidBulletin(400); // Far future to avoid conflicts
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const body = createResponse.body as any;
@@ -37,7 +37,7 @@ describe('DELETE /bulletin', () => {
 
     test('delete bulletin in draft state', async () => {
       // Create a draft bulletin
-      const bulletinData = generateValidBulletin(450);
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const body = createResponse.body as any;
@@ -85,7 +85,7 @@ describe('DELETE /bulletin', () => {
 
   describe('DELETE should respond with a status code of 401', () => {
     test('when token is not provided', async () => {
-      const bulletinData = generateValidBulletin(500);
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const body = createResponse.body as any;
@@ -98,7 +98,7 @@ describe('DELETE /bulletin', () => {
     });
 
     test('when token is invalid', async () => {
-      const bulletinData = generateValidBulletin(510);
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const body = createResponse.body as any;

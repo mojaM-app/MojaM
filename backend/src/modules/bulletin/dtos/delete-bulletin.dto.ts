@@ -1,11 +1,11 @@
 import { BaseReqDto, events, type IResponse } from '@core';
 
 export class DeleteBulletinReqDto extends BaseReqDto {
-  public readonly bulletinUuid: string;
+  public readonly bulletinId: string | undefined;
 
-  constructor(bulletinUuid: string, currentUserId: number) {
+  constructor(bulletinId: string | undefined, currentUserId: number | undefined) {
     super(currentUserId);
-    this.bulletinUuid = bulletinUuid;
+    this.bulletinId = bulletinId;
   }
 }
 

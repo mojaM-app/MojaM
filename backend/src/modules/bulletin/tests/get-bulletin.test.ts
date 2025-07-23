@@ -1,6 +1,7 @@
 import { testHelpers } from '@helpers';
 import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
 import { getAdminLoginData } from '@utils';
+import { Guid } from 'guid-typescript';
 import { generateValidBulletin } from './test.helpers';
 import { TestApp } from '../../../helpers/test-helpers/test.app';
 
@@ -24,7 +25,7 @@ describe('GET /bulletin', () => {
   describe('GET should respond with a status code of 200 when data are valid and user has permission', () => {
     test('get bulletin by id successfully', async () => {
       // Create bulletin first
-      const bulletinData = generateValidBulletin(1100);
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const body = createResponse.body as any;
@@ -42,8 +43,8 @@ describe('GET /bulletin', () => {
 
     test('get all bulletins successfully', async () => {
       // Create bulletins with far future dates to avoid conflicts
-      const bulletin1Data = generateValidBulletin(1500);
-      const bulletin2Data = generateValidBulletin(1550);
+      const bulletin1Data = generateValidBulletin();
+      const bulletin2Data = generateValidBulletin();
 
       const create1Response = await app!.bulletin.create(bulletin1Data, adminAccessToken!);
       expect(create1Response.statusCode).toBe(201);
@@ -79,8 +80,7 @@ describe('GET /bulletin', () => {
     });
 
     test('when bulletin does not exist', async () => {
-      const nonExistentId = 99999;
-      const getResponse = await app!.bulletin.get(nonExistentId, adminAccessToken!);
+      const getResponse = await app!.bulletin.get(Guid.EMPTY, adminAccessToken!);
       expect(getResponse.statusCode).toBe(400);
     });
   });
@@ -88,7 +88,7 @@ describe('GET /bulletin', () => {
   describe('GET should respond with a status code of 401', () => {
     test('when token is not provided for get', async () => {
       // Create bulletin first
-      const bulletinData = generateValidBulletin(1250);
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const body = createResponse.body as any;
@@ -102,7 +102,7 @@ describe('GET /bulletin', () => {
 
     test('when token is invalid for get', async () => {
       // Create bulletin first
-      const bulletinData = generateValidBulletin(1300);
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const body = createResponse.body as any;
@@ -128,7 +128,7 @@ describe('GET /bulletin', () => {
   describe('GET should respond with a status code of 403', () => {
     test('when user has no GetBulletin permission for get', async () => {
       // Create bulletin as admin
-      const bulletinData = generateValidBulletin(1350);
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const body = createResponse.body as any;

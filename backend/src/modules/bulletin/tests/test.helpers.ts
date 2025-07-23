@@ -3,10 +3,8 @@ import { CreateBulletinQuestionDto } from '../dtos/create-bulletin-question.dto'
 import { CreateBulletinDayDto, CreateBulletinDto, CreateBulletinTaskDto } from '../dtos/create-bulletin.dto';
 import { BulletinQuestionTypeValue } from '../enums/bulletin-question-type.enum';
 
-export function generateValidBulletin(daysOffset: number = 0): CreateBulletinDto {
+export function generateValidBulletin(): CreateBulletinDto {
   const startDate = new Date();
-  startDate.setDate(startDate.getDate() + daysOffset);
-
   const bulletin = new CreateBulletinDto();
   bulletin.title = `Test Bulletin ${generateRandomString(8)}`;
   bulletin.startDate = startDate.toISOString().split('T')[0]; // YYYY-MM-DD format

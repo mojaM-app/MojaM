@@ -26,8 +26,8 @@ export interface IBulletinQuestionDto {
 
 export interface IBulletinDto {
   id: string; // uuid, not database id
-  title: string;
-  startDate: Date;
+  title: string | null;
+  startDate: Date | null;
   daysCount: number;
   state: BulletinStateType;
   createdAt: Date;
@@ -40,22 +40,10 @@ export interface IBulletinDto {
   questions: IBulletinQuestionDto[];
 }
 
-export interface IBulletinListItemDto {
-  id: string; // uuid
-  title: string;
-  startDate: Date;
-  daysCount: number;
-  state: BulletinStateType;
-  createdAt: Date;
-  createdBy: string;
-  publishedAt: Date | null;
-  publishedBy: string | null;
-}
-
 export class GetBulletinReqDto extends BaseReqDto {
   public readonly bulletinUuid: string | undefined;
 
-  constructor(bulletinUuid: string | undefined, currentUserId: number) {
+  constructor(bulletinUuid: string | undefined, currentUserId: number | undefined) {
     super(currentUserId);
     this.bulletinUuid = bulletinUuid;
   }
@@ -68,24 +56,5 @@ export class GetBulletinResponseDto implements IResponse<IBulletinDto> {
   constructor(data: IBulletinDto) {
     this.data = data;
     this.message = events.bulletin.bulletinRetrieved;
-  }
-}
-
-export class GetBulletinListReqDto extends BaseReqDto {
-  public readonly state?: BulletinStateType;
-
-  constructor(state: BulletinStateType | undefined, currentUserId: number) {
-    super(currentUserId);
-    this.state = state;
-  }
-}
-
-export class GetBulletinListResponseDto implements IResponse<IBulletinListItemDto[]> {
-  public readonly data: IBulletinListItemDto[];
-  public readonly message: string;
-
-  constructor(data: IBulletinListItemDto[]) {
-    this.data = data;
-    this.message = events.bulletin.bulletinListRetrieved;
   }
 }

@@ -1,3 +1,4 @@
+import { ICreateBulletin, IUserId } from '@core';
 import { BadRequestException, ConflictException, errorKeys } from '@exceptions';
 import { isNullOrUndefined, isPositiveNumber } from '@utils';
 import { Service } from 'typedi';
@@ -39,62 +40,51 @@ export class BulletinRepository extends BaseBulletinRepository {
     return await this.get(id!);
   }
 
-  public async create(dto: CreateBulletinDto, userId: number): Promise<Bulletin> {
-    // Validate required fields
-    if (isNullOrUndefined(dto.title) || !dto.title.trim()) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    if (isNullOrUndefined(dto.startDate)) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    if (!dto.days || dto.days.length === 0) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    const startDate = new Date(dto.startDate!);
-    if (isNaN(startDate.getTime())) {
-      throw new BadRequestException(errorKeys.bulletin.BulletinNotFound);
-    }
-
-    const daysCount = dto.daysCount || 7;
-
-    // Check for date conflicts
-    await this.validateDateRange(startDate, daysCount);
-
-    return await this._dbContext.transaction(async manager => {
-      // Create bulletin
-      const bulletin = new Bulletin();
-      bulletin.title = dto.title;
-      bulletin.startDate = startDate;
-      bulletin.daysCount = dto.daysCount || 7;
-      bulletin.state = BulletinState.Draft;
-      bulletin.createdBy = userId;
-
-      const savedBulletin = await manager.save(Bulletin, bulletin);
-
-      // Create days and tasks
-      for (const dayDto of dto.days!) {
-        const bulletinDay = new BulletinDay();
-        bulletinDay.bulletinId = savedBulletin.id;
-        bulletinDay.dayNumber = dayDto.dayNumber;
-        bulletinDay.introduction = dayDto.introduction || null;
-        bulletinDay.instructions = dayDto.instructions;
-
-        const savedDay = await manager.save(BulletinDay, bulletinDay);
-
-        // Create tasks for this day
-        for (const taskDto of dayDto.tasks) {
-          const bulletinDayTask = new BulletinDayTask();
-          bulletinDayTask.bulletinDayId = savedDay.id;
-          bulletinDayTask.taskOrder = taskDto.taskOrder;
-          bulletinDayTask.description = taskDto.description;
-          bulletinDayTask.hasCommentField = taskDto.hasCommentField || false;
-
-          await manager.save(BulletinDayTask, bulletinDayTask);
-        }
+  public async create(reqDto: CreateBulletinDto, userId: number): Promise<Bulletin> {
+    if (!isNullOrUndefined(reqDto.startDate)) {
+      const startDate = new Date(reqDto.startDate!);
+      if (isNaN(startDate.getTime())) {
+        throw new BadRequestException(errorKeys.bulletin.Invalid_Start_Date);
       }
+
+      const daysCount = reqDto.daysCount || 7;
+
+      await this.validateDateRange(startDate, daysCount);
+    }
+
+    return await this._dbContext.transaction(async entityManager => {
+      const bulletinRepository = entityManager.getRepository(Bulletin);
+
+      const savedBulletin = await bulletinRepository.save({
+        title: reqDto.title ?? null,
+        startDate: reqDto.startDate ?? null,
+        daysCount: reqDto.daysCount || 7,
+        createdBy: {
+          id: userId,
+        } satisfies IUserId,
+      } satisfies ICreateBulletin);
+
+      // // Create days and tasks
+      // for (const dayDto of reqDto.days!) {
+      //   const bulletinDay = new BulletinDay();
+      //   bulletinDay.bulletinId = savedBulletin.id;
+      //   bulletinDay.dayNumber = dayDto.dayNumber;
+      //   bulletinDay.introduction = dayDto.introduction || null;
+      //   bulletinDay.instructions = dayDto.instructions;
+
+      //   const savedDay = await entityManager.save(BulletinDay, bulletinDay);
+
+      //   // Create tasks for this day
+      //   for (const taskDto of dayDto.tasks) {
+      //     const bulletinDayTask = new BulletinDayTask();
+      //     bulletinDayTask.bulletinDayId = savedDay.id;
+      //     bulletinDayTask.taskOrder = taskDto.taskOrder;
+      //     bulletinDayTask.description = taskDto.description;
+      //     bulletinDayTask.hasCommentField = taskDto.hasCommentField || false;
+
+      //     await entityManager.save(BulletinDayTask, bulletinDayTask);
+      //   }
+      // }
 
       return savedBulletin;
     });
@@ -112,11 +102,13 @@ export class BulletinRepository extends BaseBulletinRepository {
     await this.validateDateRange(startDate, bulletin.daysCount, bulletin.uuid);
 
     return await this._dbContext.transaction(async manager => {
-      // Update bulletin
+      //TODO przepisać update z announcements
       await manager.update(Bulletin, bulletinId, {
         title: dto.title,
         startDate: startDate,
-        modifiedBy: userId,
+        modifiedBy: {
+          id: userId,
+        } satisfies IUserId,
       });
 
       // Delete existing days and tasks
@@ -180,23 +172,6 @@ export class BulletinRepository extends BaseBulletinRepository {
     return true;
   }
 
-  public async getByTitle(title: string): Promise<Bulletin | null> {
-    if (!title) {
-      return null;
-    }
-
-    return await this._dbContext.bulletins.findOne({
-      where: { title },
-    });
-  }
-
-  public async getAll(): Promise<Bulletin[]> {
-    return await this._dbContext.bulletins.find({
-      relations: ['days', 'days.tasks', 'questions'],
-      order: { createdAt: 'DESC' },
-    });
-  }
-
   public async hasValidContent(bulletinId: number): Promise<boolean> {
     const bulletin = await this._dbContext.bulletins.findOne({
       where: { id: bulletinId },
@@ -237,52 +212,6 @@ export class BulletinRepository extends BaseBulletinRepository {
     };
   }
 
-  public async getWithDaysAndTasks(id: number): Promise<Bulletin | null> {
-    if (!isPositiveNumber(id)) {
-      return null;
-    }
-
-    const bulletin = await this._dbContext.bulletins.findOne({
-      where: { id },
-    });
-
-    if (!bulletin) {
-      return null;
-    }
-
-    // Load days and tasks separately to avoid circular dependencies
-    const days = await this._dbContext.bulletinDays.find({
-      where: { bulletinId: id },
-      order: { dayNumber: 'ASC' },
-    });
-
-    for (const day of days) {
-      const tasks = await this._dbContext.bulletinDayTasks.find({
-        where: { bulletinDayId: day.id },
-        order: { taskOrder: 'ASC' },
-      });
-      (day as any).tasks = tasks;
-    }
-
-    (bulletin as any).days = days;
-    return bulletin;
-  }
-
-  public async getList(skip: number = 0, take: number = 50): Promise<Bulletin[]> {
-    return await this._dbContext.bulletins.find({
-      order: { createdAt: 'DESC' },
-      skip,
-      take,
-    });
-  }
-
-  public async getPublishedBulletins(): Promise<Bulletin[]> {
-    return await this._dbContext.bulletins.find({
-      where: { state: BulletinState.Published },
-      order: { startDate: 'DESC' },
-    });
-  }
-
   public async getBulletinsForDate(date: Date): Promise<Bulletin[]> {
     const dateStr = date.toISOString().split('T')[0];
 
@@ -294,8 +223,12 @@ export class BulletinRepository extends BaseBulletinRepository {
       .getMany();
   }
 
-  private async validateDateRange(startDate: Date, daysCount: number, excludeUuid?: string): Promise<void> {
-    const endDate = new Date(startDate);
+  private async validateDateRange(startDate: Date | null, daysCount: number, excludeUuid?: string): Promise<void> {
+    if (isNullOrUndefined(startDate)) {
+      return;
+    }
+
+    const endDate = new Date(startDate!);
     endDate.setDate(endDate.getDate() + daysCount - 1);
 
     let query = this._dbContext.bulletins
@@ -303,7 +236,7 @@ export class BulletinRepository extends BaseBulletinRepository {
       .where(
         '(DATE(bulletin.startDate) <= :endDate AND DATE_ADD(bulletin.startDate, INTERVAL (bulletin.daysCount - 1) DAY) >= :startDate)',
         {
-          startDate: startDate.toISOString().split('T')[0],
+          startDate: startDate!.toISOString().split('T')[0],
           endDate: endDate.toISOString().split('T')[0],
         },
       );
@@ -315,7 +248,7 @@ export class BulletinRepository extends BaseBulletinRepository {
     const conflictingBulletin = await query.getOne();
 
     if (conflictingBulletin) {
-      throw new ConflictException(errorKeys.bulletin.DateRangeConflict);
+      throw new ConflictException(errorKeys.bulletin.Date_Range_Conflict);
     }
   }
 
@@ -346,13 +279,6 @@ export class BulletinRepository extends BaseBulletinRepository {
       isValid: startDateOnly.getTime() === expectedDateOnly.getTime(),
       lastBulletinEndDate: lastEndDate,
     };
-  }
-
-  public async getBulletinDayById(bulletinDayId: number): Promise<BulletinDay | null> {
-    return await this._dbContext.bulletinDays.findOne({
-      where: { id: bulletinDayId },
-      relations: ['bulletin'],
-    });
   }
 
   public async createQuestion(dto: CreateBulletinQuestionDto, userId: number): Promise<BulletinQuestion> {

@@ -22,7 +22,7 @@ describe('POST /bulletin/publish', () => {
   describe('POST should respond with a status code of 200 when data are valid and user has permission', () => {
     test('publish bulletin successfully', async () => {
       // Create bulletin first
-      const bulletinData = generateValidBulletin(2000);
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const createdBulletin = createResponse.body as any;
@@ -38,7 +38,7 @@ describe('POST /bulletin/publish', () => {
 
     test('publish bulletin changes state from draft to published', async () => {
       // Create bulletin
-      const bulletinData = generateValidBulletin(2050);
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const createdBulletin = createResponse.body as any;
@@ -70,7 +70,7 @@ describe('POST /bulletin/publish', () => {
 
     test('when bulletin is already published', async () => {
       // Create and publish bulletin
-      const bulletinData = generateValidBulletin(2100);
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const createdBulletin = createResponse.body as any;

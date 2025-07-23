@@ -96,4 +96,8 @@ export class AnnouncementItem implements ICreateAnnouncementItem, IUpdateAnnounc
     nullable: false,
   })
   public announcement: Relation<Announcement>;
+
+  public shouldBeUpdated(content: string, order: number): boolean {
+    return (this.content ?? null) !== (content ?? null) || (this.order ?? null) !== (order ?? null);
+  }
 }

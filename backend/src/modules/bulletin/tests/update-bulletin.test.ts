@@ -3,6 +3,7 @@ import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
 import { generateRandomString, getAdminLoginData } from '@utils';
 import { generateValidBulletin } from './test.helpers';
 import { TestApp } from '../../../helpers/test-helpers/test.app';
+import { CreateBulletinResponseDto } from '../dtos/create-bulletin.dto';
 
 describe('PUT /bulletin', () => {
   let app: TestApp | undefined;
@@ -24,7 +25,7 @@ describe('PUT /bulletin', () => {
   describe('PUT should respond with a status code of 200 when data are valid and user has permission', () => {
     test('update bulletin successfully', async () => {
       // Create bulletin
-      const bulletinData = generateValidBulletin(600); // Much further in future
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const body = createResponse.body as any;
@@ -45,7 +46,7 @@ describe('PUT /bulletin', () => {
 
     test('update bulletin with new days and tasks', async () => {
       // Create bulletin
-      const bulletinData = generateValidBulletin(650); // Much further in future
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const body = createResponse.body as any;
@@ -86,21 +87,21 @@ describe('PUT /bulletin', () => {
   describe('PUT should respond with a status code of 400', () => {
     test('when bulletin ID is invalid', async () => {
       const invalidId = 'invalid-id';
-      const updateData = generateValidBulletin(375);
+      const updateData = generateValidBulletin();
       const updateResponse = await app!.bulletin.update(invalidId as any, updateData, adminAccessToken!);
       expect(updateResponse.statusCode).toBe(404); // Route not found
     });
 
     test('when bulletin does not exist', async () => {
       const nonExistentId = 99999;
-      const updateData = generateValidBulletin(380);
+      const updateData = generateValidBulletin();
       const updateResponse = await app!.bulletin.update(nonExistentId, updateData, adminAccessToken!);
       expect(updateResponse.statusCode).toBe(400);
     });
 
     test('when required fields are missing', async () => {
       // Create bulletin first
-      const bulletinData = generateValidBulletin(700);
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const body = createResponse.body as any;
@@ -117,7 +118,7 @@ describe('PUT /bulletin', () => {
 
     test('when date is updated successfully to past date', async () => {
       // Create bulletin first
-      const bulletinData = generateValidBulletin(750);
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const body = createResponse.body as any;
@@ -139,7 +140,7 @@ describe('PUT /bulletin', () => {
   describe('PUT should respond with a status code of 401', () => {
     test('when token is not provided', async () => {
       // Create bulletin first
-      const bulletinData = generateValidBulletin(800);
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const body = createResponse.body as any;
@@ -154,7 +155,7 @@ describe('PUT /bulletin', () => {
 
     test('when token is invalid', async () => {
       // Create bulletin first
-      const bulletinData = generateValidBulletin(850);
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const body = createResponse.body as any;
@@ -171,7 +172,7 @@ describe('PUT /bulletin', () => {
   describe('PUT should respond with a status code of 403', () => {
     test('when user has no UpdateBulletin permission', async () => {
       // Create bulletin as admin
-      const bulletinData = generateValidBulletin(900);
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const body = createResponse.body as any;
@@ -198,7 +199,7 @@ describe('PUT /bulletin', () => {
   describe('PUT should respond with a status code of 409', () => {
     test('when bulletin is already published', async () => {
       // Create bulletin
-      const bulletinData = generateValidBulletin(950);
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const body = createResponse.body as any;
@@ -214,17 +215,18 @@ describe('PUT /bulletin', () => {
     });
 
     test('when date range conflicts with another bulletin', async () => {
-      // Create first bulletin with very far future date
-      const firstBulletinData = generateValidBulletin(1000);
+      const firstBulletinData = generateValidBulletin();
       const firstCreateResponse = await app!.bulletin.create(firstBulletinData, adminAccessToken!);
       expect(firstCreateResponse.statusCode).toBe(201);
-      const firstBody = firstCreateResponse.body as any;
+      const firstBody = firstCreateResponse.body as CreateBulletinResponseDto;
+      const { data: firstBulletin } = firstBody;
 
       // Create second bulletin with different far future date
-      const secondBulletinData = generateValidBulletin(1050);
+      const secondBulletinData = generateValidBulletin();
       const secondCreateResponse = await app!.bulletin.create(secondBulletinData, adminAccessToken!);
       expect(secondCreateResponse.statusCode).toBe(201);
-      const secondBody = secondCreateResponse.body as any;
+      const secondBody = secondCreateResponse.body as CreateBulletinResponseDto;
+      const { data: secondBulletin } = secondBody;
 
       // Try to update second bulletin to conflict with first
       const conflictingUpdateData = {
@@ -233,12 +235,12 @@ describe('PUT /bulletin', () => {
         startDate: firstBulletinData.startDate,
       };
 
-      const updateResponse = await app!.bulletin.update(secondBody.id, conflictingUpdateData, adminAccessToken!);
+      const updateResponse = await app!.bulletin.update(secondBulletin.id, conflictingUpdateData, adminAccessToken!);
       expect(updateResponse.statusCode).toBe(409);
 
       // Cleanup
-      await app!.bulletin.delete(firstBody.id, adminAccessToken!);
-      await app!.bulletin.delete(secondBody.id, adminAccessToken!);
+      await app!.bulletin.delete(firstBulletin.id, adminAccessToken!);
+      await app!.bulletin.delete(secondBulletin.id, adminAccessToken!);
     });
   });
 

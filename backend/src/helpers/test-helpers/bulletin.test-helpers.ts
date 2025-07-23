@@ -9,7 +9,7 @@ import { ITestApp } from './test-helpers.interface';
 export class BulletinHelpers {
   constructor(private app: ITestApp) {}
 
-  public async get(id: number, accessToken?: string): Promise<Response> {
+  public async get(id: string, accessToken?: string): Promise<Response> {
     return await request(this.app.getServer())
       .get(`${BulletinRoutes.path}/${id}`)
       .set('Authorization', `Bearer ${accessToken}`)

@@ -5,15 +5,9 @@ import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
 import { CreateBulletinDto, CreateBulletinReqDto, CreateBulletinResponseDto } from '../dtos/create-bulletin.dto';
 import { DeleteBulletinReqDto, DeleteBulletinResponseDto } from '../dtos/delete-bulletin.dto';
-import {
-  GetBulletinListReqDto,
-  GetBulletinListResponseDto,
-  GetBulletinReqDto,
-  GetBulletinResponseDto,
-} from '../dtos/get-bulletin.dto';
+import { GetBulletinReqDto, GetBulletinResponseDto } from '../dtos/get-bulletin.dto';
 import { PublishBulletinReqDto, PublishBulletinResponseDto } from '../dtos/publish-bulletin.dto';
 import { UpdateBulletinDto, UpdateBulletinReqDto, UpdateBulletinResponseDto } from '../dtos/update-bulletin.dto';
-import { BulletinState } from '../enums/bulletin-state.enum';
 import { BulletinPdfService } from '../services/bulletin-pdf.service';
 import { BulletinService } from '../services/bulletin.service';
 
@@ -29,20 +23,9 @@ export class BulletinController extends BaseController {
 
   public get = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const reqDto = new GetBulletinReqDto(this.getBulletinGuid(req), this.getCurrentUserId(req)!);
+      const reqDto = new GetBulletinReqDto(this.getBulletinGuid(req), this.getCurrentUserId(req));
       const result = await this._bulletinService.get(reqDto);
       res.status(StatusCode.SuccessOK).json(new GetBulletinResponseDto(result!));
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  public getList = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const state = req.query.state ? (parseInt(req.query.state as string) as BulletinState) : undefined;
-      const reqDto = new GetBulletinListReqDto(state, this.getCurrentUserId(req)!);
-      const result = await this._bulletinService.getList(reqDto);
-      res.status(StatusCode.SuccessOK).json(new GetBulletinListResponseDto(result));
     } catch (error) {
       next(error);
     }
@@ -51,7 +34,8 @@ export class BulletinController extends BaseController {
   public create = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const model: CreateBulletinDto = req.body;
-      const result = await this._bulletinService.create(new CreateBulletinReqDto(model, this.getCurrentUserId(req)));
+      const reqDto = new CreateBulletinReqDto(model, this.getCurrentUserId(req));
+      const result = await this._bulletinService.create(reqDto);
       res.status(StatusCode.SuccessCreated).json(new CreateBulletinResponseDto(result!.id));
     } catch (error) {
       next(error);
@@ -61,7 +45,7 @@ export class BulletinController extends BaseController {
   public update = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const model: UpdateBulletinDto = req.body;
-      const reqDto = new UpdateBulletinReqDto(this.getBulletinGuid(req)!, model, this.getCurrentUserId(req));
+      const reqDto = new UpdateBulletinReqDto(this.getBulletinGuid(req), model, this.getCurrentUserId(req));
       const result = await this._bulletinService.update(reqDto);
       res.status(StatusCode.SuccessOK).json(new UpdateBulletinResponseDto(result!.id));
     } catch (error) {
@@ -71,7 +55,7 @@ export class BulletinController extends BaseController {
 
   public delete = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const reqDto = new DeleteBulletinReqDto(this.getBulletinGuid(req)!, this.getCurrentUserId(req)!);
+      const reqDto = new DeleteBulletinReqDto(this.getBulletinGuid(req), this.getCurrentUserId(req));
       const result = await this._bulletinService.delete(reqDto);
       res.status(StatusCode.SuccessOK).json(new DeleteBulletinResponseDto(result!.id));
     } catch (error) {
@@ -81,7 +65,7 @@ export class BulletinController extends BaseController {
 
   public publish = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const reqDto = new PublishBulletinReqDto(this.getBulletinGuid(req)!, this.getCurrentUserId(req)!);
+      const reqDto = new PublishBulletinReqDto(this.getBulletinGuid(req), this.getCurrentUserId(req));
       const result = await this._bulletinService.publish(reqDto);
       res.status(StatusCode.SuccessOK).json(new PublishBulletinResponseDto(result!.id));
     } catch (error) {

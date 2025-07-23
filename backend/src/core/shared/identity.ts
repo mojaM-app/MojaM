@@ -92,6 +92,10 @@ export class Identity {
     return this.hasPermission(SystemPermissions.PreviewLogList);
   }
 
+  public canGetBulletin(): boolean {
+    return this.canAddBulletin() || this.canEditBulletin() || this.canDeleteBulletin() || this.canPublishBulletin();
+  }
+
   public canAddBulletin(): boolean {
     return this.hasPermission(SystemPermissions.AddBulletin);
   }
@@ -108,13 +112,8 @@ export class Identity {
     return this.hasPermission(SystemPermissions.PublishBulletin);
   }
 
-  public canGetBulletin(): boolean {
-    return this.hasAnyPermission([
-      SystemPermissions.AddBulletin,
-      SystemPermissions.EditBulletin,
-      SystemPermissions.DeleteBulletin,
-      SystemPermissions.PublishBulletin,
-    ]);
+  public canGetBulletinList(): boolean {
+    return this.canAddBulletin() || this.canEditBulletin() || this.canDeleteBulletin() || this.canPublishBulletin();
   }
 
   public canAnswerBulletinQuestion(): boolean {

@@ -1,3 +1,4 @@
+import { REGEX_PATTERNS } from '@config';
 import { type IRoutes } from '@core';
 import { requirePermission, setIdentity, validateData } from '@middlewares';
 import { default as express } from 'express';
@@ -18,44 +19,32 @@ export class BulletinRoutes implements IRoutes {
   }
 
   public initializeRoutes(): void {
-    // Create new bulletin
+    this.router.get(
+      `${BulletinRoutes.path}/:id(${REGEX_PATTERNS.GUID})`,
+      [setIdentity, requirePermission(user => user.canGetBulletin())],
+      this._bulletinController.get,
+    );
+
     this.router.post(
       BulletinRoutes.path,
       [setIdentity, requirePermission(user => user.canAddBulletin()), validateData(CreateBulletinDto)],
       this._bulletinController.create,
     );
 
-    // Get all bulletins
-    this.router.get(
-      BulletinRoutes.path,
-      [setIdentity, requirePermission(user => user.canGetBulletin())],
-      this._bulletinController.getList,
-    );
-
-    // Get specific bulletin
-    this.router.get(
-      `${BulletinRoutes.path}/:id(\\d+)`,
-      [setIdentity, requirePermission(user => user.canGetBulletin())],
-      this._bulletinController.get,
-    );
-
-    // Update bulletin
     this.router.put(
-      `${BulletinRoutes.path}/:id(\\d+)`,
+      `${BulletinRoutes.path}/:id(${REGEX_PATTERNS.GUID})`,
       [setIdentity, requirePermission(user => user.canEditBulletin()), validateData(UpdateBulletinDto)],
       this._bulletinController.update,
     );
 
-    // Publish bulletin
     this.router.post(
-      `${BulletinRoutes.path}/:id(\\d+)/publish`,
+      `${BulletinRoutes.path}/:id(${REGEX_PATTERNS.GUID})/publish`,
       [setIdentity, requirePermission(user => user.canPublishBulletin())],
       this._bulletinController.publish,
     );
 
-    // Delete bulletin
     this.router.delete(
-      `${BulletinRoutes.path}/:id(\\d+)`,
+      `${BulletinRoutes.path}/:id(${REGEX_PATTERNS.GUID})`,
       [setIdentity, requirePermission(user => user.canDeleteBulletin())],
       this._bulletinController.delete,
     );

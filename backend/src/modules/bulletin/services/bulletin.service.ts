@@ -5,7 +5,7 @@ import { Container, Service } from 'typedi';
 import { Bulletin } from '../../../dataBase/entities/bulletin/bulletin.entity';
 import { CreateBulletinReqDto } from '../dtos/create-bulletin.dto';
 import { DeleteBulletinReqDto } from '../dtos/delete-bulletin.dto';
-import { GetBulletinListReqDto, GetBulletinReqDto, IBulletinDto, IBulletinListItemDto } from '../dtos/get-bulletin.dto';
+import { GetBulletinReqDto, IBulletinDto } from '../dtos/get-bulletin.dto';
 import { PublishBulletinReqDto } from '../dtos/publish-bulletin.dto';
 import { UpdateBulletinReqDto } from '../dtos/update-bulletin.dto';
 import { BulletinRepository } from '../repositories/bulletin.repository';
@@ -35,21 +35,6 @@ export class BulletinService extends BaseService {
     return dto;
   }
 
-  public async getList(reqDto: GetBulletinListReqDto): Promise<IBulletinListItemDto[]> {
-    const bulletins = await this._bulletinRepository.getAll();
-
-    let filteredBulletins = bulletins;
-    if (reqDto.state) {
-      filteredBulletins = bulletins.filter(b => b.state === reqDto.state);
-    }
-
-    const dtos = filteredBulletins.map(bulletin => this.bulletinToIBulletinListItem(bulletin));
-
-    this._eventDispatcher.dispatch(events.bulletin.bulletinListRetrieved, dtos);
-
-    return dtos;
-  }
-
   public async create(reqDto: CreateBulletinReqDto): Promise<IBulletinDto | null> {
     if (isNullOrUndefined(reqDto.bulletin)) {
       return null;
@@ -64,11 +49,11 @@ export class BulletinService extends BaseService {
   }
 
   public async update(reqDto: UpdateBulletinReqDto): Promise<IBulletinDto | null> {
-    const bulletin = await this._bulletinRepository.getByUuid(reqDto.bulletinUuid);
+    const bulletin = await this._bulletinRepository.getByUuid(reqDto.bulletinId);
 
     if (isNullOrUndefined(bulletin)) {
       throw new BadRequestException(errorKeys.bulletin.BulletinNotFound, {
-        id: reqDto.bulletinUuid,
+        id: reqDto.bulletinId,
       });
     }
 
@@ -82,11 +67,11 @@ export class BulletinService extends BaseService {
   }
 
   public async delete(reqDto: DeleteBulletinReqDto): Promise<IBulletinDto | null> {
-    const bulletin = await this._bulletinRepository.getByUuid(reqDto.bulletinUuid);
+    const bulletin = await this._bulletinRepository.getByUuid(reqDto.bulletinId);
 
     if (isNullOrUndefined(bulletin)) {
       throw new BadRequestException(errorKeys.bulletin.BulletinNotFound, {
-        id: reqDto.bulletinUuid,
+        id: reqDto.bulletinId,
       });
     }
 
@@ -129,33 +114,13 @@ export class BulletinService extends BaseService {
       daysCount: bulletin.daysCount,
       state: bulletin.state,
       createdAt: bulletin.createdAt,
-      createdBy: this.getUserFullName(bulletin.createdBy),
+      createdBy: bulletin.createdBy.getFirstLastName()!,
       modifiedAt: bulletin.modifiedAt,
-      modifiedBy: bulletin.modifiedBy ? this.getUserFullName(bulletin.modifiedBy) : null,
+      modifiedBy: bulletin.modifiedBy?.getFirstLastName() ?? bulletin.createdBy.getFirstLastName(),
       publishedAt: bulletin.publishedAt,
-      publishedBy: bulletin.publishedBy ? this.getUserFullName(bulletin.publishedBy) : null,
+      publishedBy: bulletin.publishedBy ? bulletin.publishedBy.getFirstLastName() : null,
       days: [], // Will be populated from related entities
       questions: [], // Will be populated from related entities
     } satisfies IBulletinDto;
-  }
-
-  private bulletinToIBulletinListItem(bulletin: Bulletin): IBulletinListItemDto {
-    return {
-      id: bulletin.uuid,
-      title: bulletin.title,
-      startDate: bulletin.startDate,
-      daysCount: bulletin.daysCount,
-      state: bulletin.state,
-      createdAt: bulletin.createdAt,
-      createdBy: this.getUserFullName(bulletin.createdBy),
-      publishedAt: bulletin.publishedAt,
-      publishedBy: bulletin.publishedBy ? this.getUserFullName(bulletin.publishedBy) : null,
-    } satisfies IBulletinListItemDto;
-  }
-
-  private getUserFullName(userId: number): string {
-    // TODO: This should be resolved through proper relations or a user service
-    // For now returning a placeholder
-    return `User${userId}`;
   }
 }

@@ -76,19 +76,15 @@ export class UpdateBulletinDto {
   @ValidateNested({ each: true })
   @Type(() => UpdateBulletinDayDto)
   public days?: UpdateBulletinDayDto[];
-
-  constructor() {
-    // Optional fields don't need initialization
-  }
 }
 
 export class UpdateBulletinReqDto extends BaseReqDto {
-  public readonly bulletinUuid: string;
+  public readonly bulletinId: string | undefined;
   public readonly bulletin: UpdateBulletinDto;
 
-  constructor(bulletinUuid: string, bulletin: UpdateBulletinDto, currentUserId: number | undefined) {
+  constructor(bulletinId: string | undefined, bulletin: UpdateBulletinDto, currentUserId: number | undefined) {
     super(currentUserId);
-    this.bulletinUuid = bulletinUuid;
+    this.bulletinId = bulletinId;
     this.bulletin = bulletin;
   }
 }

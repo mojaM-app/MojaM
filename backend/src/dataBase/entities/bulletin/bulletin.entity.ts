@@ -1,10 +1,23 @@
-import { Column, CreateDateColumn, Entity, Generated, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Generated,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Relation,
+  Unique,
+  UpdateDateColumn,
+} from 'typeorm';
 import { BulletinState, BulletinStateType } from '../../../modules/bulletin/enums/bulletin-state.enum';
+import { User } from '../users/user.entity';
+import { IBulletinEntity, ICreateBulletin, IUpdateBulletin } from './../../../core/interfaces';
 
 @Entity({
   name: 'bulletins',
 })
-export class Bulletin {
+export class Bulletin implements IBulletinEntity, ICreateBulletin, IUpdateBulletin {
   @PrimaryGeneratedColumn({
     name: 'Id',
     type: 'int',
@@ -24,18 +37,18 @@ export class Bulletin {
 
   @Column({
     name: 'Title',
-    type: 'nvarchar',
+    type: 'varchar',
     length: 500,
-    nullable: false,
+    nullable: true,
   })
-  public title: string;
+  public title: string | null;
 
   @Column({
     name: 'StartDate',
     type: 'date',
-    nullable: false,
+    nullable: true,
   })
-  public startDate: Date;
+  public startDate: Date | null;
 
   @Column({
     name: 'DaysCount',
@@ -53,26 +66,44 @@ export class Bulletin {
   })
   public state: BulletinStateType;
 
+  @ManyToOne(() => User, (user: User) => user.createdAnnouncements, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
+  @JoinColumn({
+    name: 'CreatedById',
+    referencedColumnName: 'id',
+    foreignKeyConstraintName: 'FK_Bulletin_CreatedById_To_User',
+  })
   @Column({
-    name: 'CreatedBy',
+    name: 'CreatedById',
     type: 'int',
     nullable: false,
   })
-  public createdBy: number;
+  public createdBy: Relation<User>;
 
+  @ManyToOne(() => User, (user: User) => user.publishedAnnouncements, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
+  @JoinColumn({
+    name: 'ModifiedById',
+    referencedColumnName: 'id',
+    foreignKeyConstraintName: 'FK_Bulletin_ModifiedById_To_User',
+  })
   @Column({
-    name: 'ModifiedBy',
+    name: 'ModifiedById',
     type: 'int',
     nullable: true,
   })
-  public modifiedBy: number | null;
+  public modifiedBy: Relation<User> | null;
 
+  @ManyToOne(() => User, (user: User) => user.publishedAnnouncements, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
+  @JoinColumn({
+    name: 'PublishedById',
+    referencedColumnName: 'id',
+    foreignKeyConstraintName: 'FK_Bulletin_PublishedById_To_User',
+  })
   @Column({
-    name: 'PublishedBy',
+    name: 'PublishedById',
     type: 'int',
     nullable: true,
   })
-  public publishedBy: number | null;
+  public publishedBy: Relation<User> | null;
 
   @CreateDateColumn({
     name: 'CreatedAt',

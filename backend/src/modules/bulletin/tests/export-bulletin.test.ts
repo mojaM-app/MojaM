@@ -22,7 +22,7 @@ describe('GET /bulletin/export', () => {
   describe('GET should respond with status codes for PDF export functionality', () => {
     test('export bulletin to PDF successfully', async () => {
       // Create bulletin first
-      const bulletinData = generateValidBulletin(2200);
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const createdBulletin = createResponse.body as any;
@@ -38,7 +38,7 @@ describe('GET /bulletin/export', () => {
 
     test('download bulletin PDF', async () => {
       // Create bulletin first
-      const bulletinData = generateValidBulletin(2250);
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const createdBulletin = createResponse.body as any;
@@ -61,7 +61,7 @@ describe('GET /bulletin/export', () => {
 
     test('get user progress for bulletin', async () => {
       // Create bulletin first
-      const bulletinData = generateValidBulletin(2300);
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const createdBulletin = createResponse.body as any;
@@ -112,7 +112,7 @@ describe('GET /bulletin/export', () => {
 
     test('get user progress with invalid user ID', async () => {
       // Create bulletin first
-      const bulletinData = generateValidBulletin(2350);
+      const bulletinData = generateValidBulletin();
       const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
       expect(createResponse.statusCode).toBe(201);
       const createdBulletin = createResponse.body as any;

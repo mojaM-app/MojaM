@@ -19,6 +19,11 @@ export { type ICreateAnnouncement } from './announcements/create-announcement.in
 export { type IUpdateAnnouncementItem } from './announcements/update-announcement.interfaces';
 export { type IUpdateAnnouncement } from './announcements/update-announcement.interfaces';
 
+export { type ICreateBulletin } from './bulletin/create-bulletin.interfaces';
+export { type IUpdateBulletin } from './bulletin/update-bulletin.interfaces';
+export { type IBulletinEntity } from './bulletin/IBulletinEntity';
+export { type IBulletinId } from './bulletin/IBulletin.Id';
+
 export { type ICreateResetPasscodeToken } from './auth/create-reset-passcode-token.interfaces';
 export { type ILoginModel, type IAccountTryingToLogInModel } from './auth/login.interfaces';
 
