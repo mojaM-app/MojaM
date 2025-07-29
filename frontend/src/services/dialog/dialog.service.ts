@@ -26,7 +26,7 @@ export class DialogService {
     return this._dialog.open(component, config);
   }
 
-  public openLoginComponent(options?: ILoginDialogOptions): MatDialogRef<LoginDialogComponent> {
+  public openLoginDialog(options?: ILoginDialogOptions): MatDialogRef<LoginDialogComponent> {
     return this.open(LoginDialogComponent, {
       restoreFocus: false,
       width: '90%',

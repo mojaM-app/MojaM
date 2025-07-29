@@ -51,7 +51,6 @@ const routes: Routes = [
       hideFooter: true,
     } satisfies IPermissionRouteData,
   },
-
   {
     path: PreviewAnnouncementsMenu.Route + '/:id',
     loadComponent: () =>
@@ -65,7 +64,6 @@ const routes: Routes = [
       hideFooter: true,
     } satisfies IPermissionRouteData,
   },
-
   {
     path: AnnouncementsListMenu.Route,
     loadComponent: () =>

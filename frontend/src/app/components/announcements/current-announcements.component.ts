@@ -32,11 +32,11 @@ export class CurrentAnnouncementsComponent
   extends BasePreviewAnnouncementComponent
   implements OnInit
 {
-  public readonly AddAnnouncementsMenu = AddAnnouncementsMenu;
-  public readonly AnnouncementsListMenu = AnnouncementsListMenu;
+  protected readonly AddAnnouncementsMenu = AddAnnouncementsMenu;
+  protected readonly AnnouncementsListMenu = AnnouncementsListMenu;
 
-  public showButtonAddAnnouncement: WritableSignal<boolean> = signal(false);
-  public showButtonGoToAnnouncementList: WritableSignal<boolean> = signal(false);
+  protected showButtonAddAnnouncement: WritableSignal<boolean> = signal(false);
+  protected showButtonGoToAnnouncementList: WritableSignal<boolean> = signal(false);
 
   public constructor(
     @Inject(IS_MOBILE) isMobile: boolean,

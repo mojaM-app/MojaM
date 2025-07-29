@@ -49,7 +49,7 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
   public readonly announcements = input.required<AnnouncementsDto>();
 
   public constructor(
-    @Inject(IS_MOBILE) public isMobile: boolean,
+    @Inject(IS_MOBILE) protected isMobile: boolean,
     formBuilder: FormBuilder,
     private _snackBarService: SnackBarService
   ) {

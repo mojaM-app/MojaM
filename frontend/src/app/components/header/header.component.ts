@@ -97,7 +97,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   }
 
   protected showLoginDialog(options?: ILoginDialogOptions): void {
-    const dialogRef = this._dialogService.openLoginComponent(options);
+    const dialogRef = this._dialogService.openLoginDialog(options);
 
     dialogRef.afterClosed().subscribe(() => this._menuTrigger().focus());
   }

@@ -59,7 +59,7 @@ export abstract class AnnouncementItemBase {
         noBtnText: 'Shared/BtnCancel',
         yesBtnText: 'Shared/BtnDelete',
       } satisfies IDialogSettings)
-      .then(result => {
+      .then((result: boolean) => {
         if (result === true) {
           this.deleteItem.emit(this.index());
         }

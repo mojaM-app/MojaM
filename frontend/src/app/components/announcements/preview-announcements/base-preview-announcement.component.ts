@@ -1,6 +1,5 @@
-import { Inject, signal, WritableSignal } from '@angular/core';
+import { signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
-import { IS_MOBILE } from 'src/app/app.config';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { GdatePipe } from 'src/pipes/gdate.pipe';
 import { CultureService } from 'src/services/translate/culture.service';
@@ -15,7 +14,7 @@ export abstract class BasePreviewAnnouncementComponent extends WithUnsubscribe()
     signal(null);
 
   public constructor(
-    @Inject(IS_MOBILE) public isMobile: boolean,
+    protected isMobile: boolean,
     protected _translationService: TranslationService,
     protected _cultureService: CultureService,
     protected _router: Router
