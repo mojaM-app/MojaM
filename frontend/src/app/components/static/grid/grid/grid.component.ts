@@ -100,35 +100,30 @@ export class GridComponent<TGridItemDto, TGridData extends IGridData<TGridItemDt
     this.sortActiveColumnName = signal(_gridService.getSortActiveColumnName());
     this.columns = signal(_gridService.getDisplayedColumns());
 
-    effect(
-      () => {
-        if (this._sort()) {
-          this.addSubscription(
-            this._sort().sortChange.subscribe(() => (this._paginator().pageIndex = 0))
-          );
-        }
+    effect(() => {
+      if (this._sort()) {
+        this.addSubscription(
+          this._sort().sortChange.subscribe(() => (this._paginator().pageIndex = 0))
+        );
+      }
 
-        if (this.columns()) {
-          this.addSubscription(
-            browserService.onResize$.subscribe(() => {
-              this.refreshVisibleColumns();
-            })
-          );
-        }
+      if (this.columns()) {
+        this.addSubscription(
+          browserService.onResize$.subscribe(() => {
+            this.refreshVisibleColumns();
+          })
+        );
+      }
 
-        if (this.visibleColumns()) {
-          this.showExpandableColumn.set(this.visibleColumns().some(column => column.isExpandable));
-          this.visibleColumnNames.set(this.visibleColumns().map(column => column.propertyName));
-        }
+      if (this.visibleColumns()) {
+        this.showExpandableColumn.set(this.visibleColumns().some(column => column.isExpandable));
+        this.visibleColumnNames.set(this.visibleColumns().map(column => column.propertyName));
+      }
 
-        if (this.items()) {
-          this.dataSource.data = this.items();
-        }
-      },
-      {
-        allowSignalWrites: true,
-      } satisfies CreateEffectOptions
-    );
+      if (this.items()) {
+        this.dataSource.data = this.items();
+      }
+    });
   }
 
   public ngAfterViewInit(): void {
