@@ -24,18 +24,13 @@ export abstract class AnnouncementItemBase {
   public moveItem = output<{ index: number; direction: 'up' | 'down' }>();
 
   protected constructor(protected _dialogService: DialogService) {
-    effect(
-      () => {
-        const formGroup = this.itemFormGroup() as FormGroup<IAnnouncementsItemForm>;
-        if ((formGroup?.value?.content?.length ?? 0) > 0) {
-          this.content.set(formGroup.value.content!);
-        }
-        this.controls.set(formGroup.controls);
-      },
-      {
-        allowSignalWrites: true,
-      } satisfies CreateEffectOptions
-    );
+    effect(() => {
+      const formGroup = this.itemFormGroup() as FormGroup<IAnnouncementsItemForm>;
+      if ((formGroup?.value?.content?.length ?? 0) > 0) {
+        this.content.set(formGroup.value.content!);
+      }
+      this.controls.set(formGroup.controls);
+    });
   }
 
   public editItem(): void {

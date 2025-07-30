@@ -1,14 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, effect, Inject, input } from '@angular/core';
-import {
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -23,7 +15,11 @@ import { PipesModule } from 'src/pipes/pipes.module';
 import { AnnouncementsDto } from '../models/announcements.model';
 import { AnnouncementItemDesktopComponent } from './announcement-item/announcement-item-desktop/announcement-item-desktop.component';
 import { AnnouncementItemMobileComponent } from './announcement-item/announcement-item-mobile/announcement-item-mobile.component';
-import { IAnnouncementsForm, IAnnouncementsItemForm } from './announcements.form';
+import {
+  AnnouncementsFormBuilder,
+  IAnnouncementsForm,
+  IAnnouncementsItemForm,
+} from './announcements.form';
 
 @Component({
   selector: 'app-announcements-form',
@@ -41,6 +37,7 @@ import { IAnnouncementsForm, IAnnouncementsItemForm } from './announcements.form
     DirectivesModule,
     FormsModule,
   ],
+  providers: [AnnouncementsFormBuilder],
   templateUrl: './announcements-form.component.html',
   styleUrl: './announcements-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,29 +47,14 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
 
   public constructor(
     @Inject(IS_MOBILE) protected isMobile: boolean,
-    formBuilder: FormBuilder,
+    private readonly _formBuilder: AnnouncementsFormBuilder,
     private _snackBarService: SnackBarService
   ) {
-    super(
-      formBuilder.group<IAnnouncementsForm>({
-        validFromDate: new FormControl<Date | null>(null, {
-          nonNullable: true,
-        }),
-        items: new FormArray<FormGroup<IAnnouncementsItemForm>>([]),
-      } satisfies IAnnouncementsForm)
-    );
+    super(_formBuilder.form);
 
     effect(() => {
       const model = this.announcements();
-      if (model) {
-        this.formGroup.patchValue({
-          validFromDate: model.validFromDate ?? null,
-        } satisfies AnnouncementsDto);
-
-        (model.items ?? []).forEach(item => {
-          this.addItem(item.id, item.content);
-        });
-      }
+      this._formBuilder.setFormValues(model);
     });
   }
 
@@ -111,23 +93,11 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
       }
     }
 
-    return this.isReadyToSubmit();
+    return this._formBuilder.isValid() && this.isReadyToSubmit();
   }
 
   protected addItem(id?: string, content?: string): void {
-    this.formGroup.controls.items.push(
-      new FormGroup<IAnnouncementsItemForm>({
-        id: new FormControl<string | undefined>(id, {
-          nonNullable: true,
-        }),
-        content: new FormControl<string | null>(content ?? null, {
-          validators: [
-            Validators.required,
-            Validators.maxLength(VALIDATOR_SETTINGS.ANNOUNCEMENT_ITEM_CONTENT_MAX_LENGTH),
-          ],
-        }),
-      } satisfies IAnnouncementsItemForm)
-    );
+    this._formBuilder.addNewItem(id, content);
   }
 
   protected removeItem(index: number): void {
