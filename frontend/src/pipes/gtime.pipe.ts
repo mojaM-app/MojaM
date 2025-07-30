@@ -16,7 +16,7 @@ export class GtimePipe implements PipeTransform {
 
   public transform(value: Date | moment.Moment | null | undefined, style?: string): string | null {
     if (moment.isMoment(value)) {
-      return this.transform(value.toDate());
+      return this.transform(value.toDate(), style);
     }
 
     if (value instanceof Date) {
