@@ -18,7 +18,7 @@ export class AddAnnouncementsDto extends AnnouncementsDto {
       const items = formControls.items as FormArray<FormGroup<IAnnouncementsItemForm>>;
       items?.controls?.forEach((item: FormGroup<IAnnouncementsItemForm>) => {
         this.items!.push({
-          content: item.controls.content?.value ?? undefined,
+          content: item.controls.content?.value ?? null,
         } satisfies AnnouncementItemDto);
       });
     }
