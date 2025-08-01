@@ -25,12 +25,9 @@ import { BrowserWindowService } from 'src/services/browser/browser-window.servic
 import { SpinnerService } from 'src/services/spinner/spinner.service';
 import { FontSizeService } from 'src/services/theme/font-size.service';
 import { ThemeService } from 'src/services/theme/theme.service';
-import { PwaUpdateService } from 'src/services/pwa/pwa-update.service';
 import { IS_MOBILE } from './app.config';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
-import { PwaInstallPromptComponent } from './components/pwa-install-prompt/pwa-install-prompt.component';
-import { PwaUpdatePromptComponent } from './components/pwa-update-prompt/pwa-update-prompt.component';
 import { SideMenuComponent } from './components/side-menu/side-menu.component';
 
 @Component({
@@ -41,8 +38,6 @@ import { SideMenuComponent } from './components/side-menu/side-menu.component';
     HeaderComponent,
     FooterComponent,
     SideMenuComponent,
-    PwaInstallPromptComponent,
-    PwaUpdatePromptComponent,
     MatSidenavModule,
     MatToolbarModule,
     MatButtonModule,
@@ -66,7 +61,6 @@ export class AppComponent extends WithUnsubscribe() implements OnInit {
     @Inject(IS_MOBILE) public isMobile: boolean,
     private _spinnerService: SpinnerService,
     private _browserService: BrowserWindowService,
-    private _pwaUpdateService: PwaUpdateService,
     router: Router,
     activatedRoute: ActivatedRoute,
     themeService: ThemeService,
@@ -138,9 +132,6 @@ export class AppComponent extends WithUnsubscribe() implements OnInit {
         document.documentElement.style.setProperty('--is-mobile', this.isMobile ? '1' : '0');
       })
     );
-
-    // Initialize PWA update checking
-    this._pwaUpdateService.checkForUpdate();
   }
 
   public closeSidenav(): void {
