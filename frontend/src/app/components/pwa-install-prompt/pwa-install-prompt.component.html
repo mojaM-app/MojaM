@@ -1,0 +1,59 @@
+<!-- Android/Chrome install prompt -->
+@if (showAndroidPrompt) {
+  <div class="install-prompt android-prompt">
+    <mat-card class="install-card">
+      <mat-card-content>
+        <div class="install-content">
+          <div class="install-icon">
+            <mat-icon>get_app</mat-icon>
+          </div>
+          <div class="install-text">
+            <h3>Zainstaluj aplikację</h3>
+            <p>
+              Dodaj aplikację Wspólnoty Miriam do ekranu głównego telefonu, aby mieć szybki dostęp
+              do wszystkich funkcji.
+            </p>
+          </div>
+        </div>
+        <div class="install-actions">
+          <button mat-button (click)="onDismiss()" class="dismiss-button">Nie teraz</button>
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="onInstallClick()"
+            class="install-button">
+            <mat-icon>add_to_home_screen</mat-icon>
+            Zainstaluj
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+}
+
+<!-- iOS Safari instructions -->
+@if (showIOSInstructions) {
+  <div class="install-prompt ios-prompt">
+    <mat-card class="install-card">
+      <mat-card-content>
+        <div class="install-content">
+          <div class="install-icon">
+            <mat-icon>smartphone</mat-icon>
+          </div>
+          <div class="install-text">
+            <h3>Dodaj do ekranu głównego</h3>
+            <p>Aby zainstalować aplikację na iPhone:</p>
+            <ol class="ios-instructions">
+              <li>Dotknij ikonę <mat-icon inline>share</mat-icon> na dolnym pasku</li>
+              <li>Przewiń w dół i wybierz "Dodaj do ekranu głównego"</li>
+              <li>Dotknij "Dodaj" w prawym górnym rogu</li>
+            </ol>
+          </div>
+        </div>
+        <div class="install-actions">
+          <button mat-button (click)="onDismiss()" class="dismiss-button">Rozumiem</button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+}

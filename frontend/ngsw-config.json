@@ -33,11 +33,24 @@
       }
     },
     {
+      "name": "icons",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/icons/**"
+        ]
+      }
+    },
+    {
       "name": "assetsAlwaysNeeded",
       "installMode": "prefetch",
       "updateMode": "prefetch",
       "resources": {
-        "files": ["/assets/cldr-data/**", "/i18n/**"]
+        "files": [
+          "/assets/cldr-data/**",
+          "/i18n/**"
+        ]
       }
     }
   ],
