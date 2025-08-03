@@ -86,6 +86,8 @@ export class ThemeService {
 
     const themeName = theme ?? ThemeService.LightThemeName;
     this._renderer.addClass(document.body, colorSchemePrefix + themeName);
+    const themeColorMetaTag = document.querySelector('meta[name="theme-color"]');
+    themeColorMetaTag?.setAttribute('content', this.isDarkMode() ? '#000000' : '#ffffff');
     this._themChanged.next(themeName);
   }
 
