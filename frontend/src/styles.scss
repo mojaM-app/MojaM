@@ -4,25 +4,17 @@
 @include mat.elevation-classes();
 @include mat.app-background();
 
-:root {
-  --sat: env(safe-area-inset-top, 0);
-  --sar: env(safe-area-inset-right, 0);
-  --sab: env(safe-area-inset-bottom, 0);
-  --sal: env(safe-area-inset-left, 0);
-}
-
-html {
-  height: 100vh;
-  height: -webkit-fill-available;
-  width: 100vw;
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 body {
-  min-height: 100vh;
-  /* mobile viewport bug fix */
-  min-height: -webkit-fill-available;
-  width: 100vw;
-  padding: 0 var(--sar) 0 var(--sal);
+  background: var(--mat-toolbar-container-background-color, var(--mat-sys-surface));
   --mat-toolbar-standard-height: 3rem;
   --mat-toolbar-mobile-height: 56px;
   --mat-paginator-container-size: 56px;
@@ -169,6 +161,7 @@ body {
     grid-area: main;
     height: 100%;
     overflow: auto;
+    -webkit-overflow-scrolling: touch;
 
     height: calc(
       var(--main-container-height) - var(--mat-toolbar-standard-height) - var(
@@ -242,6 +235,7 @@ body {
     grid-area: main;
     height: 100%;
     overflow: auto;
+    -webkit-overflow-scrolling: touch;
     height: calc(
       var(--main-container-height) - var(--mat-toolbar-standard-height) - var(
           --mat-toolbar-standard-height
