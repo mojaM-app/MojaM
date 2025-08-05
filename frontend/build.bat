@@ -9,8 +9,8 @@ if exist "%WORKING_DIR%" (
 )
 
 echo ^>^>^>^>^>^>^>^>^>^> Updating version in ngsw-config.json
-REM Get current date in YYYY.MM.DD format
-for /f %%i in ('powershell -command "Get-Date -Format yyyy.MM.dd"') do set CURRENT_DATE=%%i
+REM Get current date and time in YYYY.MM.DD.HHmm format
+for /f %%i in ('powershell -command "Get-Date -Format yyyy.MM.dd.HHmm"') do set CURRENT_DATE=%%i
 
 echo Setting version to: %CURRENT_DATE%
 
