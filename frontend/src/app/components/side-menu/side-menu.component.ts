@@ -112,6 +112,12 @@ export class SideMenuComponent {
         },
       ],
     },
+    {
+      name: 'Display Info',
+      icon: 'info',
+      route: 'display-info',
+      isVisible: (): boolean => true,
+    },
   ];
 
   public constructor(

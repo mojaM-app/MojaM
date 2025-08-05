@@ -83,6 +83,13 @@ export const routes: Routes = [
       ),
     data: { closeSideNav: true, hideFooter: true } satisfies IRouteData,
   },
-
+  {
+    path: 'display-info',
+    loadComponent: () =>
+      import('./components/static/display-info/display-info.component').then(
+        m => m.DisplayInfoComponent
+      ),
+    data: { closeSideNav: true, hideFooter: true } satisfies IRouteData,
+  },
   { path: '**', redirectTo: '/' + PATHS.NotFound },
 ];
