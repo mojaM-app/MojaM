@@ -26,6 +26,8 @@ import { CultureService } from 'src/services/translate/culture.service';
 import { CustomDateFormatter } from './date-formatters/custom.date.formatter';
 import { CustomEventTitleFormatter } from './event-formatters/custom.event-title.formatter';
 import { EventPreviewComponent } from './event-preview/event-preview.component';
+import { PullToRefreshService } from 'src/services/pull-to-refresh/pull-to-refresh.service';
+import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 
 //https://mattlewis92.github.io/angular-calendar/#/kitchen-sink
 @Component({
@@ -45,7 +47,7 @@ import { EventPreviewComponent } from './event-preview/event-preview.component';
   ],
   standalone: false,
 })
-export class CalendarComponent {
+export class CalendarComponent extends WithUnsubscribe() {
   public readonly weekStartsOn: number = DAYS_OF_WEEK.MONDAY;
   public readonly weekendDays: number[] = [DAYS_OF_WEEK.SATURDAY, DAYS_OF_WEEK.SUNDAY];
 
@@ -64,8 +66,10 @@ export class CalendarComponent {
     cultureService: CultureService,
     private _dateAdapter: DateAdapter,
     private _calendarService: CalendarService,
-    private _dialogService: DialogService
+    private _dialogService: DialogService,
+    pullToRefreshService: PullToRefreshService
   ) {
+    super();
     this.locale.set(cultureService.currentCulture);
 
     effect(() => {
@@ -77,6 +81,12 @@ export class CalendarComponent {
         setTimeout(() => this.onViewChanged(), 100);
       }
     });
+
+    this.addSubscription(
+      pullToRefreshService.refresh$.subscribe(() => {
+        this.onViewChanged();
+      })
+    );
   }
 
   public viewDateChange(date: Date): void {
