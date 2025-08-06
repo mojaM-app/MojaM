@@ -20,6 +20,7 @@ import { CultureService } from 'src/services/translate/culture.service';
 import { TranslationService } from 'src/services/translate/translation.service';
 import { AddAnnouncementsMenu, AnnouncementsListMenu } from './announcements.menu';
 import { BasePreviewAnnouncementComponent } from './preview-announcements/base-preview-announcement.component';
+import { PullToRefreshService } from 'src/services/pull-to-refresh/pull-to-refresh.service';
 
 @Component({
   selector: 'app-current-announcements',
@@ -45,12 +46,19 @@ export class CurrentAnnouncementsComponent
     translationService: TranslationService,
     cultureService: CultureService,
     router: Router,
-    authService: AuthService
+    authService: AuthService,
+    pullToRefreshService: PullToRefreshService
   ) {
     super(isMobile, translationService, cultureService, router);
 
     this.addSubscription(
       authService.onAuthStateChanged.subscribe(() => {
+        this.ngOnInit();
+      })
+    );
+
+    this.addSubscription(
+      pullToRefreshService.refresh$.subscribe(() => {
         this.ngOnInit();
       })
     );

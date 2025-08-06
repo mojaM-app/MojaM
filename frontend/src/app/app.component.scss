@@ -1,31 +1,28 @@
 :host {
-  display: block;
-  height: calc(100dvh - var(--sat) - var(--sab));
-  width: calc(100dvw - var(--sar) - var(--sal));
-  position: relative;
-  height: -webkit-fill-available;
-  border: none;
-  padding: var(--sat) var(--sar) var(--sab) var(--sal);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
   overflow: hidden;
+  border: none;
+  background: var(--mat-toolbar-container-background-color, var(--mat-sys-surface));
 }
 
 .app-container {
   background: #565656;
-  height: calc(100dvh - var(--sat) - var(--sab));
-  width: calc(100dvw - var(--sar) - var(--sal));
   padding: 0;
   margin: 0;
   border: none;
   overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 
   .mat-drawer-container {
-    padding: 0;
-    margin: 0;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    height: 100%;
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    background: var(--mat-toolbar-container-background-color, var(--mat-sys-surface));
 
     .menu-title {
       width: 100%;
@@ -61,19 +58,22 @@
       }
     }
 
-    .layout {
-      height: var(--main-container-height);
+    mat-sidenav-content {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
 
-      display: grid;
-      grid:
-        'header' auto
-        'main' 1fr
-        'footer' auto
-        / 1fr;
+    section.layout {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: var(--mat-toolbar-container-background-color, var(--mat-sys-surface));
     }
 
     .header {
-      grid-area: header;
+      flex: 0 0 auto;
+      padding-top: env(safe-area-inset-top);
       height: var(--mat-toolbar-standard-height);
       @media (max-width: 599px) {
         height: var(--mat-toolbar-mobile-height);
@@ -81,16 +81,16 @@
     }
 
     .main {
-      grid-area: main;
+      flex: 1 1 auto;
       overflow: hidden;
     }
 
     .footer {
-      grid-area: footer;
-      height: var(--mat-toolbar-standard-height);
-      max-width: calc(var(--main-container-width) - var(--sar) - var(--sal));
+      flex: 0 0 auto;
+      padding-bottom: env(safe-area-inset-bottom);
+      height: calc(var(--mat-toolbar-standard-height) + env(safe-area-inset-bottom));
       @media (max-width: 599px) {
-        height: var(--mat-toolbar-mobile-height);
+        height: calc(var(--mat-toolbar-mobile-height) + env(safe-area-inset-bottom));
       }
     }
   }

@@ -9,55 +9,58 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { DeviceDetectorService } from 'ngx-device-detector';
 
 @Component({
-  selector: 'app-web-app-info',
+  selector: 'app-display-info',
   imports: [MatExpansionModule],
-  templateUrl: './web-app-info.component.html',
-  styleUrl: './web-app-info.component.scss',
+  templateUrl: './display-info.component.html',
+  styleUrl: './display-info.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WebAppInfoComponent {
-  public readonly screenInfo: WritableSignal<string[]> = signal([]);
+export class DisplayInfoComponent {
+  public readonly screenInfo: WritableSignal<string[] | undefined> = signal(undefined);
 
   public constructor(
     private _deviceDetectorService: DeviceDetectorService,
     el: ElementRef
   ) {
-    this.screenInfo().push(`window inner size: ${window.innerWidth}x${window.innerHeight}`);
-    this.screenInfo().push(`window outer size: ${window.outerWidth}x${window.outerHeight}`);
-    this.screenInfo().push(`screen size: ${screen.width}x${screen.height}`);
-    this.screenInfo().push(`screen avail size: ${screen.availWidth}x${screen.availHeight}`);
-    this.screenInfo().push(
-      `document element client size: ${document.documentElement.clientWidth}x${document.documentElement.clientHeight}`
-    );
-    this.screenInfo().push(
-      `document element offset size: ${document.documentElement.offsetWidth}x${document.documentElement.offsetHeight}`
-    );
-    this.screenInfo().push(`device pixel ratio: ${window.devicePixelRatio}`);
-    this.screenInfo().push(
-      `UserAgent: ${navigator.userAgent} (is mobile: ${/Mobi/.test(navigator.userAgent)})`
-    );
-    this.screenInfo().push(
-      `safe-area-inset-top: ${getComputedStyle(document.documentElement).getPropertyValue('--sat')}`
-    );
-    this.screenInfo().push(
-      `safe-area-inset-right: ${getComputedStyle(document.documentElement).getPropertyValue('--sar')}`
-    );
-    this.screenInfo().push(
-      `safe-area-inset-bottom: ${getComputedStyle(document.documentElement).getPropertyValue('--sab')}`
-    );
-    this.screenInfo().push(
-      `safe-area-inset-left: ${getComputedStyle(document.documentElement).getPropertyValue('--sal')}`
-    );
-    this.screenInfo().push(
-      `--main-container-width: ${getComputedStyle(document.documentElement).getPropertyValue('--main-container-width')}`
-    );
-    this.screenInfo().push(
-      `--main-container-height: ${getComputedStyle(document.documentElement).getPropertyValue('--main-container-height')}`
-    );
     setTimeout(() => {
-      this.screenInfo().push('main-content-width' + el.nativeElement.offsetWidth);
-      this.screenInfo().push('main-content-height' + el.nativeElement.offsetHeight);
-    }, 100);
+      const info: string[] = [];
+      info.push(`window inner size: ${window.innerWidth}x${window.innerHeight}`);
+      info.push(`window outer size: ${window.outerWidth}x${window.outerHeight}`);
+      info.push(`screen size: ${screen.width}x${screen.height}`);
+      info.push(`screen avail size: ${screen.availWidth}x${screen.availHeight}`);
+      info.push(
+        `document element client size: ${document.documentElement.clientWidth}x${document.documentElement.clientHeight}`
+      );
+      info.push(
+        `document element offset size: ${document.documentElement.offsetWidth}x${document.documentElement.offsetHeight}`
+      );
+      info.push(`device pixel ratio: ${window.devicePixelRatio}`);
+      info.push(
+        `UserAgent: ${navigator.userAgent} (is mobile: ${/Mobi/.test(navigator.userAgent)})`
+      );
+      info.push(
+        `safe-area-inset-top: ${getComputedStyle(document.documentElement).getPropertyValue('--sat')}`
+      );
+      info.push(
+        `safe-area-inset-right: ${getComputedStyle(document.documentElement).getPropertyValue('--sar')}`
+      );
+      info.push(
+        `safe-area-inset-bottom: ${getComputedStyle(document.documentElement).getPropertyValue('--sab')}`
+      );
+      info.push(
+        `safe-area-inset-left: ${getComputedStyle(document.documentElement).getPropertyValue('--sal')}`
+      );
+      info.push(
+        `--main-container-width: ${getComputedStyle(document.documentElement).getPropertyValue('--main-container-width')}`
+      );
+      info.push(
+        `--main-container-height: ${getComputedStyle(document.documentElement).getPropertyValue('--main-container-height')}`
+      );
+
+      info.push('main-content-width:' + el.nativeElement.offsetWidth);
+      info.push('main-content-height:' + el.nativeElement.offsetHeight);
+      this.screenInfo.set(info);
+    }, 500);
   }
 
   public deviceInfo1(): string[] {

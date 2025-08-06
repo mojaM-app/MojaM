@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { SystemPermissionValue } from 'src/core/system-permission.enum';
-import { IPermissionRouteData } from 'src/interfaces/common/route.data';
+import { IPermissionRouteData, IRouteData } from 'src/interfaces/common/route.data';
 import { PermissionGuard } from 'src/services/auth/permission.guard';
 import {
   AddAnnouncementsMenu,
@@ -82,7 +82,11 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   { path: '**', redirectTo: '', pathMatch: 'full' },
-  { path: '', component: CurrentAnnouncementsComponent },
+  {
+    path: '',
+    component: CurrentAnnouncementsComponent,
+    data: { pullToRefresh: true } satisfies IRouteData,
+  },
 ];
 
 @NgModule({
