@@ -1,6 +1,6 @@
-import { DatabaseLoggerService, events } from '@core';
 import { EventSubscriber, On } from 'event-dispatch';
 import { Container } from 'typedi';
+import { DatabaseLoggerService, events } from '@core';
 import { PermissionAddedEvent } from '../events/permission-added-event';
 import { PermissionDeletedEvent } from '../events/permission-deleted-event';
 import { PermissionsRetrievedEvent } from '../events/permissions-retrieved-event';

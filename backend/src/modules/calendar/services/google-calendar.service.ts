@@ -1,9 +1,9 @@
-import { GOOGLE_API_CLIENT_ID, GOOGLE_API_CLIENT_SECRET, GOOGLE_API_REFRESH_TOKEN, GOOGLE_CALENDAR_ID } from '@config';
-import { DatabaseLoggerService } from '@core';
-import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { type Credentials } from 'google-auth-library';
 import { calendar_v3 as CalendarV3, google } from 'googleapis';
 import { Container, Service } from 'typedi';
+import { GOOGLE_API_CLIENT_ID, GOOGLE_API_CLIENT_SECRET, GOOGLE_API_REFRESH_TOKEN, GOOGLE_CALENDAR_ID } from '@config';
+import { DatabaseLoggerService } from '@core';
+import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
 import { ICalendarEventDto } from '../dtos/calendar.dto';
 import Calendar = CalendarV3.Calendar;
 import Schema$Event = CalendarV3.Schema$Event;
@@ -45,7 +45,7 @@ export class GoogleCalendarService {
       timeMax: endDate.toISOString(),
     });
 
-    const data = calendarResponse.data;
+    const { data } = calendarResponse;
     return this.processEvents(isNullOrUndefined(data) ? undefined : data.items);
   }
 

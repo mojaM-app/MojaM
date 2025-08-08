@@ -1,6 +1,6 @@
-import { IRoutes } from '@core';
+import { default as express } from 'express';
+import type { IRoutes } from '@core';
 import { requirePermission, setIdentity } from '@middlewares';
-import express from 'express';
 import { LogListController } from '../controllers/log-list.controller';
 
 export class LogListRoutes implements IRoutes {

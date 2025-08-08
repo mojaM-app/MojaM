@@ -1,6 +1,6 @@
-import { DatabaseLoggerService, events } from '@core';
 import { EventSubscriber, On } from 'event-dispatch';
 import { Container } from 'typedi';
+import { DatabaseLoggerService, events } from '@core';
 import { UserActivatedEvent } from '../events/user-activated-event';
 import { UserCreatedEvent } from '../events/user-created-event';
 import { UserDeactivatedEvent } from '../events/user-deactivated-event';

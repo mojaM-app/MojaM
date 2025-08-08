@@ -1,6 +1,6 @@
+import { default as express } from 'express';
 import { type IRoutes } from '@core';
 import { setIdentity } from '@middlewares';
-import { default as express } from 'express';
 import { CalendarController } from '../controllers/calendar.controller';
 
 export class CalendarRoutes implements IRoutes {

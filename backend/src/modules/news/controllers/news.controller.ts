@@ -1,7 +1,7 @@
-import { BaseController, type IRequestWithIdentity } from '@core';
 import type { NextFunction, Response } from 'express';
 import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
+import { BaseController, type IRequestWithIdentity } from '@core';
 import { GetNewsResponseDto, type IGetNewsDto } from '../dtos/news.dto';
 import { NewsService } from '../services/news.service';
 

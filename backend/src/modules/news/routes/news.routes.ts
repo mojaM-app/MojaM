@@ -1,6 +1,6 @@
+import { default as express } from 'express';
 import { type IRoutes } from '@core';
 import { setIdentity } from '@middlewares';
-import { default as express } from 'express';
 import { NewsController } from '../controllers/news.controller';
 
 export class NewsRoutes implements IRoutes {

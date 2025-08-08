@@ -1,7 +1,7 @@
+import { Container, Service } from 'typedi';
 import { IAddUserSystemPermission, IUserEntity, IUserService, SystemPermissions } from '@core';
 import { BaseRepository } from '@db';
 import { getDateTimeNow, isArrayEmpty, isEnumValue, isNullOrUndefined, isPositiveNumber } from '@utils';
-import { Container, Service } from 'typedi';
 import { AddPermissionReqDto } from '../dtos/add-permission.dto';
 import { DeletePermissionsReqDto } from '../dtos/delete-permissions.dto';
 import { PermissionsCacheService } from '../services/permissions-cache.service';

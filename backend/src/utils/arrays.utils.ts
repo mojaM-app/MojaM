@@ -1,4 +1,3 @@
-/* eslint-disable no-use-before-define */
 import { isNullOrUndefined } from './object.utils';
 
 interface IObjectLike {

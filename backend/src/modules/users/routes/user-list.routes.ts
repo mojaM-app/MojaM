@@ -1,6 +1,6 @@
+import { default as express } from 'express';
 import { type IRoutes } from '@core';
 import { requirePermission, setIdentity } from '@middlewares';
-import { default as express } from 'express';
 import { UserListController } from '../controllers/user-list.controller';
 
 export class UserListRoute implements IRoutes {

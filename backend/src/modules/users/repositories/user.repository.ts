@@ -1,3 +1,5 @@
+import { Container, Service } from 'typedi';
+import { Not } from 'typeorm';
 import {
   ICreateUser,
   ICryptoService,
@@ -9,8 +11,6 @@ import {
 import { relatedDataNames } from '@db';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { getDateTimeNow, isNullOrEmptyString, toNumber } from '@utils';
-import { Container, Service } from 'typedi';
-import { Not } from 'typeorm';
 import { BaseUserRepository } from './base.user.repository';
 import { User } from '../../../dataBase/entities/users/user.entity';
 import { CreateUserReqDto } from '../dtos/create-user.dto';

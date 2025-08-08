@@ -1,9 +1,9 @@
+import { Transform, Type } from 'class-transformer';
+import { IsDate, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MaxLength } from 'class-validator';
 import { VALIDATOR_SETTINGS } from '@config';
 import { BaseReqDto, DtoTransformFunctions, events, type IResponse, IUserDto } from '@core';
 import { errorKeys } from '@exceptions';
 import { IsPasswordOrPinValid } from '@validators';
-import { Transform, Type } from 'class-transformer';
-import { IsDate, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MaxLength } from 'class-validator';
 
 export class CreateUserDto {
   @IsString({

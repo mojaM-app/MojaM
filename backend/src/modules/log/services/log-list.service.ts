@@ -1,8 +1,8 @@
-import { BaseService } from '@core';
 import { Service } from 'typedi';
+import { BaseService } from '@core';
 import { vLog } from '../../../dataBase/entities/logs/vLog.entity';
-import { GetLogListReqDto, ILogGridItemDto, LogsGridPageDto } from '../dtos/get-log-list.dto';
-import { LogFilters, LogListRepository } from '../repositories/log-list.repository';
+import { GetLogListReqDto, ILogGridItemDto, TLogsGridPageDto } from '../dtos/get-log-list.dto';
+import { ILogFilters, LogListRepository } from '../repositories/log-list.repository';
 
 @Service()
 export class LogListService extends BaseService {
@@ -10,8 +10,8 @@ export class LogListService extends BaseService {
     super();
   }
 
-  public async get(reqDto: GetLogListReqDto): Promise<LogsGridPageDto> {
-    const filters: LogFilters = {
+  public async get(reqDto: GetLogListReqDto): Promise<TLogsGridPageDto> {
+    const filters: ILogFilters = {
       level: reqDto.level,
       isSecurityEvent: reqDto.isSecurityEvent,
       startDate: reqDto.startDate,
@@ -25,7 +25,7 @@ export class LogListService extends BaseService {
     return {
       items: mappedData,
       totalCount: recordsWithTotal.totalCount,
-    } satisfies LogsGridPageDto;
+    } satisfies TLogsGridPageDto;
   }
 
   private vLogToILogGridItemDto(log: vLog): ILogGridItemDto {

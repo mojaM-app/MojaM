@@ -1,5 +1,5 @@
-import type { IModule, IPermissionsService, IRoutes, IUserEntity } from '@core';
 import { Container } from 'typedi';
+import type { IModule, IPermissionsService, IRoutes, IUserEntity } from '@core';
 import { UserPermissionsRepository } from './repositories/user-permissions.repository';
 import { PermissionsRoute } from './routes/permissions.routes';
 import './event-subscribers/logger-events-subscriber';

@@ -1,7 +1,7 @@
-import { DatabaseLoggerService, events, IWelcomeEmailSettings, LinkHelper } from '@core';
-import { UserCreatedEvent } from '@modules/users';
 import { EventSubscriber, On } from 'event-dispatch';
 import { Container } from 'typedi';
+import { DatabaseLoggerService, events, IWelcomeEmailSettings, LinkHelper } from '@core';
+import { UserCreatedEvent } from '@modules/users';
 import { EmailService } from '../services/email.service';
 
 @EventSubscriber()

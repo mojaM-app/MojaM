@@ -1,5 +1,5 @@
-import { type IModule, type INotificationsService, type IResetPasscodeEmailSettings, type IRoutes } from '@core';
 import { Container } from 'typedi';
+import { type IModule, type INotificationsService, type IResetPasscodeEmailSettings, type IRoutes } from '@core';
 import { EmailService } from './services/email.service';
 import './event-subscribers/user-created-events-subscriber';
 import './event-subscribers/user-locked-out-events-subscriber';

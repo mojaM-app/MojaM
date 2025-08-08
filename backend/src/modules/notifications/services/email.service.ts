@@ -1,3 +1,11 @@
+import { PathOrFileDescriptor, readFileSync } from 'fs';
+import { compile } from 'handlebars';
+import { default as nodemailer } from 'nodemailer';
+import Mail from 'nodemailer/lib/mailer';
+import SMTPConnection from 'nodemailer/lib/smtp-connection';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import { join } from 'path';
+import { Container, Service } from 'typedi';
 import {
   NOTIFICATIONS_EMAIL,
   SMTP_SERVICE_HOST,
@@ -18,14 +26,6 @@ import {
   IWelcomeEmailSettings,
 } from '@core';
 import { toNumber } from '@utils';
-import { PathOrFileDescriptor, readFileSync } from 'fs';
-import { compile } from 'handlebars';
-import { default as nodemailer } from 'nodemailer';
-import Mail from 'nodemailer/lib/mailer';
-import SMTPConnection from 'nodemailer/lib/smtp-connection';
-import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { join } from 'path';
-import { Container, Service } from 'typedi';
 import { TemplateVariablesHelper } from './template-variables.helper';
 
 @Service()

@@ -1,7 +1,7 @@
+import { default as express } from 'express';
 import { REGEX_PATTERNS } from '@config';
 import { type IRoutes } from '@core';
 import { requirePermission, setIdentity } from '@middlewares';
-import { default as express } from 'express';
 import { PermissionsController } from '../controllers/permissions.controller';
 
 export class PermissionsRoute implements IRoutes {

@@ -1,4 +1,4 @@
-import { ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_UUID, NODE_ENV } from './../config';
+import { ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_UUID, NODE_ENV } from '../config';
 
 export const getAdminLoginData = (): {
   uuid: string;

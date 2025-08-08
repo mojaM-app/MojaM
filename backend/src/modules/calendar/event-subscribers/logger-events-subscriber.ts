@@ -1,6 +1,6 @@
-import { DatabaseLoggerService, events } from '@core';
 import { EventSubscriber, On } from 'event-dispatch';
 import { Container } from 'typedi';
+import { DatabaseLoggerService, events } from '@core';
 import { CalendarEventsRetrievedEvent } from '../events/calendar-events-retrieved-event';
 
 @EventSubscriber()

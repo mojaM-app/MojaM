@@ -1,7 +1,7 @@
-import { BaseController, type IRequestWithIdentity } from '@core';
 import { type NextFunction, type Response } from 'express';
 import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
+import { BaseController, type IRequestWithIdentity } from '@core';
 import { GetCommunityResponseDto, type IGetCommunityDto } from '../dtos/community.dto';
 import { CommunityService } from '../services/community.service';
 

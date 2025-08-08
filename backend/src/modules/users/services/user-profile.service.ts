@@ -1,5 +1,5 @@
-import { BaseService, events, IUpdateUser } from '@core';
 import { Service } from 'typedi';
+import { BaseService, events, IUpdateUser } from '@core';
 import { User } from '../../../dataBase/entities/users/user.entity';
 import { GetUserProfileReqDto, IGetUserProfileDto } from '../dtos/get-user-profile.dto';
 import { UpdateUserProfileReqDto } from '../dtos/update-user-profile.dto';

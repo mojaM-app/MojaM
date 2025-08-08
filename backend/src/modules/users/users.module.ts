@@ -1,5 +1,5 @@
-import { type IModule, type IRoutes, type IUpdateUser, type IUserEntity, type IUserService } from '@core';
 import { Container } from 'typedi';
+import { type IModule, type IRoutes, type IUpdateUser, type IUserEntity, type IUserService } from '@core';
 import { UpdateUserModel } from './models/update-user.model';
 import { UserRepository } from './repositories/user.repository';
 import { UserDetailsRoute } from './routes/user-details.routes';

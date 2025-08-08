@@ -1,36 +1,36 @@
+import { request, type Response } from 'supertest';
 import { SystemPermissions } from '@core/enums/system-permissions.enum';
 import { PermissionsRoute } from '@modules/permissions/routes/permissions.routes';
 import { isNumber } from '@utils';
-import request, { Response } from 'supertest';
-import { ITestApp } from './test-helpers.interface';
+import { type ITestApp } from './test-helpers.interface';
 
 export class PermissionsHelpers {
-  constructor(private app: ITestApp) {}
+  constructor(private readonly _app: ITestApp) {}
 
   public async get(accessToken?: string): Promise<Response> {
-    return await request(this.app.getServer())
+    return await request(this._app.getServer())
       .get(PermissionsRoute.path)
       .set('Authorization', `Bearer ${accessToken}`)
       .send();
   }
 
   public async add(userId: string, permission: SystemPermissions | string, accessToken?: string): Promise<Response> {
-    return await request(this.app.getServer())
-      .post(PermissionsRoute.path + '/' + userId + '/' + permission.toString())
+    return await request(this._app.getServer())
+      .post(`${PermissionsRoute.path}/${userId}/${permission.toString()}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send();
   }
 
   public async delete(userId: string, permission: SystemPermissions | string, accessToken?: string): Promise<Response> {
-    return await request(this.app.getServer())
-      .delete(PermissionsRoute.path + '/' + userId + '/' + permission.toString())
+    return await request(this._app.getServer())
+      .delete(`${PermissionsRoute.path}/${userId}/${permission.toString()}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send();
   }
 
   public async removeAllUserPermissions(userId: string, accessToken?: string): Promise<Response> {
-    return await request(this.app.getServer())
-      .delete(PermissionsRoute.path + '/' + userId)
+    return await request(this._app.getServer())
+      .delete(`${PermissionsRoute.path}/${userId}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send();
   }
@@ -45,12 +45,12 @@ export class PermissionsHelpers {
     for (const permission of Object.values(SystemPermissions)) {
       if (isNumber(permission)) {
         const value = permission as number;
-        if (permissionsToSkip && permissionsToSkip.includes(value)) {
+        if (permissionsToSkip?.includes(value)) {
           continue;
         }
 
-        addPermissionResponse = await request(this.app.getServer())
-          .post(PermissionsRoute.path + '/' + userId + '/' + permission.toString())
+        addPermissionResponse = await request(this._app.getServer())
+          .post(`${PermissionsRoute.path}/${userId}/${permission.toString()}`)
           .set('Authorization', `Bearer ${accessToken}`)
           .send();
 

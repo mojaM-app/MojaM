@@ -1,6 +1,6 @@
+import { default as express } from 'express';
 import { type IRoutes } from '@core';
 import { setIdentity } from '@middlewares';
-import { default as express } from 'express';
 import { CommunityController } from '../controllers/community.controller';
 
 export class CommunityRoutes implements IRoutes {

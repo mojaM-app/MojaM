@@ -1,10 +1,10 @@
-import { IGridPageResponseDto, IPageData, ISortData } from '@core';
-import { BaseRepository } from '@db';
 import { Service } from 'typedi';
 import { And, FindManyOptions, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
+import { IGridPageResponseDto, IPageData, ISortData } from '@core';
+import { BaseRepository } from '@db';
 import { vLog } from '../../../dataBase/entities/logs/vLog.entity';
 
-export interface LogFilters {
+export interface ILogFilters {
   level: string | undefined;
   isSecurityEvent: boolean | undefined;
   startDate: Date | undefined;
@@ -17,7 +17,7 @@ export class LogListRepository extends BaseRepository {
     super();
   }
 
-  public async get(paginator: IPageData, sort: ISortData, filters?: LogFilters): Promise<IGridPageResponseDto<vLog>> {
+  public async get(paginator: IPageData, sort: ISortData, filters?: ILogFilters): Promise<IGridPageResponseDto<vLog>> {
     const whereConditions: any = {};
 
     if (filters?.level) {

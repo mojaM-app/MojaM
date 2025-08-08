@@ -1,4 +1,4 @@
-import { IModule, IRoutes } from '@core';
+import { type IModule, type IRoutes } from '@core';
 import { LogListRoutes } from './routes/log-list.routes';
 
 export class LogModule implements IModule {

@@ -16,7 +16,7 @@ export interface ILogGridItemDto {
   createdAt: Date;
 }
 
-export type LogsGridPageDto = IGridPageResponseDto<ILogGridItemDto>;
+export type TLogsGridPageDto = IGridPageResponseDto<ILogGridItemDto>;
 
 export class GetLogListReqDto extends BaseReqDto {
   public readonly page: IPageData;
@@ -48,11 +48,11 @@ export class GetLogListReqDto extends BaseReqDto {
   }
 }
 
-export class GetLogListResponseDto implements IResponse<LogsGridPageDto> {
-  public readonly data: LogsGridPageDto;
+export class GetLogListResponseDto implements IResponse<TLogsGridPageDto> {
+  public readonly data: TLogsGridPageDto;
   public readonly message: string;
 
-  constructor(data: LogsGridPageDto) {
+  constructor(data: TLogsGridPageDto) {
     this.data = data;
     this.message = events.log.logListRetrieved;
   }

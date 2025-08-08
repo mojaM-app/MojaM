@@ -1,5 +1,5 @@
-import { BaseService, events, IGridPageResponseDto, IUserGridItemDto } from '@core';
 import { Service } from 'typedi';
+import { BaseService, events, IGridPageResponseDto, IUserGridItemDto } from '@core';
 import { vUser } from '../../../dataBase/entities/users/vUser.entity';
 import { GetUserListReqDto, TUsersGridPageDto } from '../dtos/get-user-list.dto';
 import { UserListRetrievedEvent } from '../events/user-list-retrieved-event';
