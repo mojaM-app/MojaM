@@ -1,11 +1,10 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'app-edit-bulletin',
   imports: [],
   templateUrl: './edit-bulletin.component.html',
-  styleUrl: './edit-bulletin.component.scss'
+  styleUrl: './edit-bulletin.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EditBulletinComponent {
-
-}
+export class EditBulletinComponent {}

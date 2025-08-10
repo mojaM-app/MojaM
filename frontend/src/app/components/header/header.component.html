@@ -1,7 +1,7 @@
 <mat-toolbar class="border-bottom">
   <mat-toolbar-row>
     @if (this.isMobile || this.sidenav?.opened !== true) {
-      <button mat-icon-button class="header-button me-2" (click)="openSidenav()">
+      <button mat-icon-button class="header-button me-2" (click)="openSidenav()" type="button">
         <mat-icon class="icon">menu</mat-icon>
       </button>
     }
@@ -18,34 +18,39 @@
     <span class="spacer"></span>
     @if (userName()) {
       @if (initials()) {
-        <button mat-button class="menu-button" [matMenuTriggerFor]="menu" (click)="refreshMenu()">
+        <button
+          mat-button
+          class="menu-button"
+          [matMenuTriggerFor]="menu"
+          (click)="refreshMenu()"
+          type="button">
           {{ initials() }}
         </button>
       } @else {
-        <button mat-icon-button [matMenuTriggerFor]="menu" (click)="refreshMenu()">
+        <button mat-icon-button [matMenuTriggerFor]="menu" (click)="refreshMenu()" type="button">
           <mat-icon>account_circle</mat-icon>
         </button>
       }
 
       <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="showUserProfile()">
+        <button mat-menu-item (click)="showUserProfile()" type="button">
           <mat-icon>person</mat-icon>{{ 'Management/UserProfile/Title' | gmessage }}
         </button>
         @if (!isSessionValid()) {
-          <button mat-menu-item (click)="refreshSession()">
+          <button mat-menu-item (click)="refreshSession()" type="button">
             <mat-icon>lock_reset</mat-icon>{{ 'Header/Menu/RefreshSession' | gmessage }}
           </button>
         }
-        <button mat-menu-item (click)="logOut()">
+        <button mat-menu-item (click)="logOut()" type="button">
           <mat-icon>logout</mat-icon>{{ 'Header/Menu/Logout' | gmessage }}
         </button>
       </mat-menu>
     } @else {
-      <button mat-icon-button [matMenuTriggerFor]="menu">
+      <button mat-icon-button [matMenuTriggerFor]="menu" type="button">
         <mat-icon>account_circle</mat-icon>
       </button>
       <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="showLoginDialog()">
+        <button mat-menu-item (click)="showLoginDialog()" type="button">
           <mat-icon>login</mat-icon>{{ 'Header/Menu/Login' | gmessage }}
         </button>
       </mat-menu>
