@@ -6,6 +6,7 @@
     <button
       mat-button
       matSnackBarAction
+      type="button"
       (click)="snackBarRef.dismiss()"
       class="on-error col-auto me-auto">
       {{ 'Shared/BtnClose' | gmessage }}
@@ -13,6 +14,7 @@
     <button
       mat-button
       matSnackBarAction
+      type="button"
       (click)="snackBarRef.dismissWithAction()"
       class="on-error col-auto">
       <mat-icon>lock_reset</mat-icon>{{ 'Header/Menu/RefreshSession' | gmessage }}
