@@ -414,6 +414,28 @@ body {
   }
 }
 
+.responsive-button {
+  &.mdc-button {
+    padding: 0;
+    min-width: var(--mdc-filled-button-container-height);
+
+    .mat-icon {
+      margin: 0;
+    }
+  }
+
+  @media (min-width: 576px) {
+    &.mdc-button {
+      padding: 0 var(--mat-filled-button-horizontal-padding, 16px);
+
+      .mat-icon {
+        margin-right: var(--mat-filled-button-icon-spacing, 8px);
+        margin-left: var(--mat-filled-button-icon-offset, -4px);
+      }
+    }
+  }
+}
+
 .cdk-drag {
   padding: 1rem;
   border-bottom: solid 1px var(--mdc-list-list-item-label-text-color, var(--mat-sys-on-surface));
