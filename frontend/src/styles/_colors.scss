@@ -129,6 +129,10 @@ body {
     background-color: mat.get-theme-color($light-theme, secondary-container);
   }
 
+  .error-color {
+    color: #{mat.get-theme-color($light-theme, error)};
+  }
+
   .error-container {
     background-color: #{mat.get-theme-color($light-theme, error)};
     color: #{mat.get-theme-color($light-theme, on-error)};
@@ -273,6 +277,10 @@ body {
       background-color: mat.get-theme-color($dark-theme, secondary-container);
     }
 
+    .error-color {
+      color: #{mat.get-theme-color($dark-theme, error)};
+    }
+
     .error-container {
       background-color: #{mat.get-theme-color($dark-theme, error)};
       color: #{mat.get-theme-color($dark-theme, on-error)};
@@ -295,8 +303,9 @@ body {
     }
 
     .mat-mdc-raised-button {
-      --mdc-protected-button-container-elevation-shadow: 0px 2px 1px -1px rgba(128, 128, 128, 0.2),
-        0px 1px 1px 0px rgba(128, 128, 128, 0.14), 0px 1px 3px 0px rgba(128, 128, 128, 0.12);
+      --mdc-protected-button-container-elevation-shadow:
+        0px 2px 1px -1px rgba(128, 128, 128, 0.2), 0px 1px 1px 0px rgba(128, 128, 128, 0.14),
+        0px 1px 3px 0px rgba(128, 128, 128, 0.12);
     }
 
     .mat-mdc-table {
