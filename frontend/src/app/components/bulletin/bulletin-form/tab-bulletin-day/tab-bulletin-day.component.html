@@ -1,0 +1,48 @@
+<div class="container mt-3">
+  <div class="row">
+    <div class="col-12 col-lg-6 mb-3">
+      <mat-form-field class="w-100">
+        <mat-label>{{ 'Bulletin/Form/TabBulletinDay/Date' | gmessage }}</mat-label>
+        <input
+          [matDatepicker]="picker"
+          matInput
+          [placeholder]="'Bulletin/Form/TabBulletinDay/DatePlaceholder' | gmessage"
+          [formControl]="formGroup().controls.date"
+          (click)="picker.open()" />
+        <mat-hint>{{ 'Bulletin/Form/TabBulletinDay/DateHint' | gmessage }}</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        @if (getControlErrors(formGroup().controls.date)[errorNames.required]) {
+          <mat-error>{{ 'Bulletin/Form/TabBulletinDay/DateRequiredError' | gmessage }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="col-12 col-lg-6 mb-3">
+      <mat-form-field class="w-100">
+        <mat-label>{{ 'Bulletin/Form/TabBulletinDay/Title' | gmessage }}</mat-label>
+        <input
+          matInput
+          [placeholder]="'Bulletin/Form/TabBulletinDay/TitlePlaceholder' | gmessage"
+          [formControl]="formGroup().controls.title" />
+        <mat-hint>{{ 'Bulletin/Form/TabBulletinDay/TitleHint' | gmessage }}</mat-hint>
+        @if (getControlErrors(formGroup().controls.title)[errorNames.required]) {
+          <mat-error>{{ 'Bulletin/Form/TabBulletinDay/TitleRequiredError' | gmessage }}</mat-error>
+        } @else if (getControlErrors(formGroup().controls.title)[errorNames.maxLength]) {
+          <mat-error>{{
+            'Bulletin/Form/TabBulletinDay/TitleMaxLengthError'
+              | gmessage: { maxLength: maxLengths.BULLETIN_TITLE_MAX_LENGTH }
+          }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+  </div>
+
+  <hr />
+
+  <div class="row">
+    <app-day-sections
+      [sections]="formGroup().controls.sections"
+      [bulletinProperties]="bulletinProperties()"></app-day-sections>
+  </div>
+</div>

@@ -20,6 +20,15 @@ export enum SystemPermissionValue {
   EditAnnouncements = 302,
   DeleteAnnouncements = 303,
   PublishAnnouncements = 304,
+
+  PreviewLogList = 400,
+
+  PreviewBulletinList = 500,
+  AddBulletin = 501,
+  EditBulletin = 502,
+  DeleteBulletin = 503,
+  PublishBulletin = 504,
+  AnswerBulletinQuestion = 505,
 }
 
 /**

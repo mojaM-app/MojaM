@@ -1,0 +1,45 @@
+<form [formGroup]="formGroup">
+  <mat-tab-group [(selectedIndex)]="selectedTabIndex">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        @if (controlHasErrors(formGroup.controls.properties)) {
+          <mat-icon class="error-color me-1">error</mat-icon>
+        }
+        {{ 'Bulletin/Form/TabBulletinProperties/Label' | gmessage }}
+      </ng-template>
+      <app-tab-bulletin-properties
+        [formGroup]="formGroup.controls.properties"></app-tab-bulletin-properties>
+    </mat-tab>
+    @for (day of formGroup.controls.days.controls; track day; let i = $index) {
+      <mat-tab>
+        <ng-template mat-tab-label>
+          @if (controlHasErrors(day)) {
+            <mat-icon class="error-color me-1">error</mat-icon>
+          }
+
+          <span>{{ getDayTitle(day, i) }}</span>
+
+          @if (i + 1 === selectedTabIndex()) {
+            <button
+              mat-icon-button
+              type="button"
+              (click)="confirmAndRemoveTab(i)"
+              tabindex="-1"
+              class="mx-2"
+              [attr.aria-label]="
+                'Bulletin/Form/BtnDeleteTabAriaLabel' | gmessage: { dayIndex: i + 1 | gnumber }
+              ">
+              <mat-icon fontSize="16px">close</mat-icon>
+            </button>
+          }
+        </ng-template>
+
+        <div class="tab-content">
+          <app-tab-bulletin-day
+            [formGroup]="day"
+            [bulletinProperties]="formGroup.controls.properties"></app-tab-bulletin-day>
+        </div>
+      </mat-tab>
+    }
+  </mat-tab-group>
+</form>

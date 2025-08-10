@@ -1,0 +1,67 @@
+@if (formGroup()) {
+  @if (isContentReadOnly()) {
+    <div class="row mb-3">
+      <div class="col-12">
+        <mat-label>{{ formGroup()!.controls.title.value }}</mat-label>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-12">
+        <app-wysiwyg-preview [content]="getSectionContent()"></app-wysiwyg-preview>
+      </div>
+    </div>
+  } @else {
+    <div class="row mb-3">
+      <div class="col-12">
+        <mat-form-field class="w-100">
+          <mat-label>{{ 'Bulletin/Form/TabBulletinDay/Section/Title' | gmessage }}</mat-label>
+          <input
+            matInput
+            [placeholder]="'Bulletin/Form/TabBulletinDay/Section/TitlePlaceholder' | gmessage"
+            [formControl]="formGroup()!.controls.title"
+            [readonly]="isTitleReadOnly()" />
+          <mat-hint>{{ 'Bulletin/Form/TabBulletinDay/Section/TitleHint' | gmessage }}</mat-hint>
+          @if (getControlErrors(formGroup()!.controls.title)[errorNames.required]) {
+            <mat-error>{{
+              'Bulletin/Form/TabBulletinDay/Section/TitleRequiredError' | gmessage
+            }}</mat-error>
+          } @else if (getControlErrors(formGroup()!.controls.title)[errorNames.maxLength]) {
+            <mat-error>{{
+              'Bulletin/Form/TabBulletinDay/Section/TitleMaxLengthError'
+                | gmessage: { maxLength: maxLengths.BULLETIN_TITLE_MAX_LENGTH }
+            }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-12">
+        <mat-form-field class="w-100">
+          <mat-label>{{ 'Bulletin/Form/TabBulletinDay/Section/Content' | gmessage }}</mat-label>
+          <app-wysiwyg-form-field
+            [formControl]="formGroup()!.controls.content"
+            [placeholder]="'Bulletin/Form/TabBulletinDay/Section/ContentPlaceholder' | gmessage"
+            [aria-describedby]="'Bulletin/Form/TabBulletinDay/Section/ContentHint' | gmessage"
+            [maxLength]="maxLengths.BULLETIN_DAY_SECTION_CONTENT_MAX_LENGTH"
+            [showHelpBtn]="false"
+            [readonly]="isContentReadOnly()">
+          </app-wysiwyg-form-field>
+          <mat-hint>{{ 'Bulletin/Form/TabBulletinDay/Section/ContentHint' | gmessage }}</mat-hint>
+          @if (getControlErrors(formGroup()!.controls.content)[errorNames.required]) {
+            <mat-error>{{
+              'Bulletin/Form/TabBulletinDay/Section/ContentRequiredError' | gmessage
+            }}</mat-error>
+          } @else if (getControlErrors(formGroup()!.controls.content)[errorNames.maxLength]) {
+            <mat-error>{{
+              'Bulletin/Form/TabBulletinDay/Section/ContentMaxLengthError'
+                | gmessage: { maxLength: maxLengths.BULLETIN_DAY_SECTION_CONTENT_MAX_LENGTH }
+            }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+  }
+} @else {
+  <p>{{ 'Bulletin/Form/TabBulletinDay/NoSectionSelected' | gmessage }}</p>
+}

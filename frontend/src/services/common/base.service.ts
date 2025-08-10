@@ -25,6 +25,16 @@ export class BaseService {
       path: 'announcements-list',
       get: (): string => `${environment.backendUrl}/${this.API_ROUTES.announcementsList.path}`,
     },
+    bulletin: {
+      path: 'bulletin',
+      get: (uuid: string): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.bulletin.path}/${uuid}`,
+      create: (): string => `${environment.backendUrl}/${this.API_ROUTES.bulletin.path}`,
+      update: (uuid: string): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.bulletin.path}/${uuid}`,
+      delete: (uuid: string): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.bulletin.path}/${uuid}`,
+    },
     calendar: {
       path: 'calendar',
       getEvents: (): string => `${environment.backendUrl}/${this.API_ROUTES.calendar.path}/events`,

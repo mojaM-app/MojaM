@@ -1,0 +1,10 @@
+@if (showButtonAdd()) {
+  <div class="row mb-3">
+    <div class="col text-end">
+      <button mat-raised-button [routerLink]="['./' + AddBulletinMenu.Route]">
+        <mat-icon>{{ AddBulletinMenu.Icon }}</mat-icon>
+        <span>{{ AddBulletinMenu.Label | gmessage }}</span>
+      </button>
+    </div>
+  </div>
+}

@@ -1,0 +1,130 @@
+<div class="container mt-3">
+  <div class="row">
+    <div class="col mb-3">
+      <mat-form-field class="w-100">
+        <mat-label>{{ 'Bulletin/Form/TabBulletinProperties/Date' | gmessage }}</mat-label>
+        <input
+          [matDatepicker]="picker"
+          matInput
+          [placeholder]="'Bulletin/Form/TabBulletinProperties/DatePlaceholder' | gmessage"
+          [formControl]="formGroup().controls.date"
+          (click)="picker.open()" />
+        <mat-hint>{{ 'Bulletin/Form/TabBulletinProperties/DateHint' | gmessage }}</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        @if (getControlErrors(formGroup().controls.date)[errorNames.required]) {
+          <mat-error>{{
+            'Bulletin/Form/TabBulletinProperties/DateRequiredError' | gmessage
+          }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="col mb-3">
+      <mat-form-field class="w-100">
+        <mat-label>{{ 'Bulletin/Form/TabBulletinProperties/Number' | gmessage }}</mat-label>
+        <input
+          matInput
+          type="number"
+          [placeholder]="'Bulletin/Form/TabBulletinProperties/NumberPlaceholder' | gmessage"
+          [formControl]="formGroup().controls.number" />
+        <mat-hint>{{ 'Bulletin/Form/TabBulletinProperties/NumberHint' | gmessage }}</mat-hint>
+        @if (getControlErrors(formGroup().controls.number)[errorNames.required]) {
+          <mat-error>{{
+            'Bulletin/Form/TabBulletinProperties/NumberRequiredError' | gmessage
+          }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col mb-3">
+      <mat-form-field class="w-100">
+        <mat-label>{{ 'Bulletin/Form/TabBulletinProperties/Title' | gmessage }}</mat-label>
+        <input
+          matInput
+          [placeholder]="'Bulletin/Form/TabBulletinProperties/TitlePlaceholder' | gmessage"
+          [formControl]="formGroup().controls.title" />
+        <mat-hint>{{ 'Bulletin/Form/TabBulletinProperties/TitleHint' | gmessage }}</mat-hint>
+        @if (getControlErrors(formGroup().controls.title)[errorNames.required]) {
+          <mat-error>{{
+            'Bulletin/Form/TabBulletinProperties/TitleRequiredError' | gmessage
+          }}</mat-error>
+        } @else if (getControlErrors(formGroup().controls.title)[errorNames.maxLength]) {
+          <mat-error>{{
+            'Bulletin/Form/TabBulletinProperties/TitleMaxLengthError'
+              | gmessage: { maxLength: maxLengths.BULLETIN_TITLE_MAX_LENGTH }
+          }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col mb-3">
+      <mat-form-field class="w-100">
+        <mat-label>{{ 'Bulletin/Form/TabBulletinProperties/Introduction' | gmessage }}</mat-label>
+        <app-wysiwyg-form-field
+          [formControl]="formGroup().controls.introduction"
+          [placeholder]="'Bulletin/Form/TabBulletinProperties/IntroductionPlaceholder' | gmessage"
+          [aria-describedby]="'Bulletin/Form/TabBulletinProperties/IntroductionHint' | gmessage"
+          (helpClicked)="openIntroductionHelpDialog()"
+          [maxLength]="maxLengths.BULLETIN_INTRODUCTION_MAX_LENGTH"
+          [showHelpBtn]="true">
+        </app-wysiwyg-form-field>
+        <mat-hint>{{ 'Bulletin/Form/TabBulletinProperties/IntroductionHint' | gmessage }}</mat-hint>
+        @if (getControlErrors(formGroup().controls.introduction)[errorNames.maxLength]) {
+          <mat-error>{{
+            'Bulletin/Form/TabBulletinProperties/IntroductionMaxLengthError'
+              | gmessage: { maxLength: maxLengths.BULLETIN_INTRODUCTION_MAX_LENGTH }
+          }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12 col-lg-6 mb-3">
+      <mat-form-field class="w-100">
+        <mat-label>{{ 'Bulletin/Form/TabBulletinProperties/TipsForWork' | gmessage }}</mat-label>
+        <app-wysiwyg-form-field
+          [formControl]="formGroup().controls.tipsForWork"
+          [placeholder]="'Bulletin/Form/TabBulletinProperties/TipsForWorkPlaceholder' | gmessage"
+          [aria-describedby]="'Bulletin/Form/TabBulletinProperties/TipsForWorkHint' | gmessage"
+          (helpClicked)="openTipsForWorkHelpDialog()"
+          [showHelpBtn]="true"
+          [maxLength]="maxLengths.BULLETIN_INTRODUCTION_MAX_LENGTH">
+        </app-wysiwyg-form-field>
+        <mat-hint>{{ 'Bulletin/Form/TabBulletinProperties/TipsForWorkHint' | gmessage }}</mat-hint>
+        @if (getControlErrors(formGroup().controls.tipsForWork)[errorNames.maxLength]) {
+          <mat-error>{{
+            'Bulletin/Form/TabBulletinProperties/TipsForWorkMaxLengthError'
+              | gmessage: { maxLength: maxLengths.BULLETIN_INTRODUCTION_MAX_LENGTH }
+          }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="col-12 col-lg-6 mb-3">
+      <mat-form-field class="w-100">
+        <mat-label>{{ 'Bulletin/Form/TabBulletinProperties/DailyPrayer' | gmessage }}</mat-label>
+        <app-wysiwyg-form-field
+          [formControl]="formGroup().controls.dailyPrayer"
+          [placeholder]="'Bulletin/Form/TabBulletinProperties/DailyPrayerPlaceholder' | gmessage"
+          [aria-describedby]="'Bulletin/Form/TabBulletinProperties/DailyPrayerHint' | gmessage"
+          (helpClicked)="openDailyPrayerHelpDialog()"
+          [showHelpBtn]="true"
+          [maxLength]="maxLengths.BULLETIN_INTRODUCTION_MAX_LENGTH">
+        </app-wysiwyg-form-field>
+        <mat-hint>{{ 'Bulletin/Form/TabBulletinProperties/DailyPrayerHint' | gmessage }}</mat-hint>
+        @if (getControlErrors(formGroup().controls.dailyPrayer)[errorNames.maxLength]) {
+          <mat-error>{{
+            'Bulletin/Form/TabBulletinProperties/DailyPrayerMaxLengthError'
+              | gmessage: { maxLength: maxLengths.BULLETIN_INTRODUCTION_MAX_LENGTH }
+          }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+  </div>
+</div>
