@@ -69,7 +69,18 @@ export class App {
     this.app.use(hpp());
 
     this.app.use(compression());
-    this.app.use(express.json({ limit: '10mb' }));
+    this.app.use(
+      express.json({
+        limit: '10mb',
+        verify: (req: any, res, buf) => {
+          // Add request size monitoring
+          if (buf.length > 5 * 1024 * 1024) {
+            // 5MB warning
+            logger.warn(`Large request body: ${buf.length} bytes from ${req.ip}`);
+          }
+        },
+      }),
+    );
     this.app.use(express.urlencoded({ extended: true, limit: '10mb' }));
     this.app.use(cookieParser());
   }
