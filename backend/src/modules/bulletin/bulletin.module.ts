@@ -1,9 +1,10 @@
 import { type IModule, type IRoutes } from '@core';
+import { BulletinListRoutes } from './routes/bulletin-list.routes';
 import { BulletinRoutes } from './routes/bulletin.routes';
 
 export class BulletinModule implements IModule {
   public getRoutes(): IRoutes[] {
-    return [new BulletinRoutes()];
+    return [new BulletinRoutes(), new BulletinListRoutes()];
   }
 
   public register(): void {

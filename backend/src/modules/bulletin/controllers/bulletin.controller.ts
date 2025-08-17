@@ -8,17 +8,14 @@ import { DeleteBulletinReqDto, DeleteBulletinResponseDto } from '../dtos/delete-
 import { GetBulletinReqDto, GetBulletinResponseDto } from '../dtos/get-bulletin.dto';
 import { PublishBulletinReqDto, PublishBulletinResponseDto } from '../dtos/publish-bulletin.dto';
 import { UpdateBulletinDto, UpdateBulletinReqDto, UpdateBulletinResponseDto } from '../dtos/update-bulletin.dto';
-import { BulletinPdfService } from '../services/bulletin-pdf.service';
 import { BulletinService } from '../services/bulletin.service';
 
 export class BulletinController extends BaseController {
   private readonly _bulletinService: BulletinService;
-  private readonly _bulletinPdfService: BulletinPdfService;
 
   constructor() {
     super();
     this._bulletinService = Container.get(BulletinService);
-    this._bulletinPdfService = Container.get(BulletinPdfService);
   }
 
   public get = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
@@ -45,9 +42,9 @@ export class BulletinController extends BaseController {
   public update = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
       const model: UpdateBulletinDto = req.body;
-      const reqDto = new UpdateBulletinReqDto(this.getBulletinGuid(req), model, this.getCurrentUserId(req));
+      const reqDto = new UpdateBulletinReqDto(this.getBulletinGuid(req), model, this.getCurrentUserId(req)!);
       const result = await this._bulletinService.update(reqDto);
-      res.status(StatusCode.SuccessOK).json(new UpdateBulletinResponseDto(result!.id));
+      res.status(StatusCode.SuccessOK).json(new UpdateBulletinResponseDto(!!result));
     } catch (error) {
       next(error);
     }
@@ -55,9 +52,9 @@ export class BulletinController extends BaseController {
 
   public delete = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const reqDto = new DeleteBulletinReqDto(this.getBulletinGuid(req), this.getCurrentUserId(req));
+      const reqDto = new DeleteBulletinReqDto(this.getBulletinGuid(req), this.getCurrentUserId(req)!);
       const result = await this._bulletinService.delete(reqDto);
-      res.status(StatusCode.SuccessOK).json(new DeleteBulletinResponseDto(result!.id));
+      res.status(StatusCode.SuccessOK).json(new DeleteBulletinResponseDto(result));
     } catch (error) {
       next(error);
     }
@@ -65,9 +62,9 @@ export class BulletinController extends BaseController {
 
   public publish = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const reqDto = new PublishBulletinReqDto(this.getBulletinGuid(req), this.getCurrentUserId(req));
+      const reqDto = new PublishBulletinReqDto(this.getBulletinGuid(req), this.getCurrentUserId(req)!);
       const result = await this._bulletinService.publish(reqDto);
-      res.status(StatusCode.SuccessOK).json(new PublishBulletinResponseDto(result!.id));
+      res.status(StatusCode.SuccessOK).json(new PublishBulletinResponseDto(result));
     } catch (error) {
       next(error);
     }

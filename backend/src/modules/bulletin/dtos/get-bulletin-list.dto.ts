@@ -1,32 +1,31 @@
-import { BaseReqDto, events, type IResponse } from '@core';
-import { BulletinStateType } from '../enums/bulletin-state.enum';
+import {
+  BaseReqDto,
+  events,
+  type IBulletinGridItemDto,
+  type IGridPageResponseDto,
+  type IPageData,
+  type IResponse,
+  type ISortData,
+} from '@core';
 
-export interface IBulletinListItemDto {
-  id: string;
-  title: string;
-  startDate: Date;
-  daysCount: number;
-  state: BulletinStateType;
-  createdAt: Date;
-  createdBy: string;
-  publishedAt: Date | null;
-  publishedBy: string | null;
-}
+export type BulletinsGridPageDto = IGridPageResponseDto<IBulletinGridItemDto>;
 
 export class GetBulletinListReqDto extends BaseReqDto {
-  public readonly state?: BulletinStateType;
+  public readonly page: IPageData;
+  public readonly sort: ISortData;
 
-  constructor(state: BulletinStateType | undefined, currentUserId: number) {
+  constructor(page: IPageData, sort: ISortData, currentUserId: number | undefined) {
     super(currentUserId);
-    this.state = state;
+    this.page = page;
+    this.sort = sort;
   }
 }
 
-export class GetBulletinListResponseDto implements IResponse<IBulletinListItemDto[]> {
-  public readonly data: IBulletinListItemDto[];
+export class GetBulletinListResponseDto implements IResponse<BulletinsGridPageDto> {
+  public readonly data: BulletinsGridPageDto;
   public readonly message: string;
 
-  constructor(data: IBulletinListItemDto[]) {
+  constructor(data: BulletinsGridPageDto) {
     this.data = data;
     this.message = events.bulletin.bulletinListRetrieved;
   }

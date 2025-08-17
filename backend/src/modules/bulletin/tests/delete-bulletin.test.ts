@@ -1,12 +1,17 @@
-import { ILoginModel, SystemPermissions } from '@core';
+import { events, ILoginModel, SystemPermissions } from '@core';
+import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
 import { testHelpers } from '@helpers';
-import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
+import { CreateUserResponseDto } from '@modules/users';
+import { generateValidUserWithPassword } from '@modules/users/tests/test.helpers';
 import { getAdminLoginData } from '@utils';
 import { Guid } from 'guid-typescript';
 import { generateValidBulletin } from './test.helpers';
-import type { TestApp } from '../../../helpers/test-helpers/test.app';
+import { TestApp } from '../../../helpers/test-helpers/test.app';
+import { CreateBulletinResponseDto } from '../dtos/create-bulletin.dto';
+import { DeleteBulletinResponseDto } from '../dtos/delete-bulletin.dto';
+import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 
-describe('DELETE /bulletin', () => {
+describe('DELETE /bulletins/:id', () => {
   let app: TestApp | undefined;
   let adminAccessToken: string | undefined;
 
@@ -22,121 +27,141 @@ describe('DELETE /bulletin', () => {
   });
 
   describe('DELETE should respond with a status code of 200 when data are valid and user has permission', () => {
-    test('delete bulletin successfully', async () => {
-      // Create a bulletin first
-      const bulletinData = generateValidBulletin();
-      const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
-      expect(createResponse.statusCode).toBe(201);
-      const body = createResponse.body as any;
+    test('delete existing bulletin', async () => {
+      const requestData = generateValidBulletin();
 
-      // Delete the bulletin
-      const deleteResponse = await app!.bulletin.delete(body.id, adminAccessToken!);
-      expect(deleteResponse.statusCode).toBe(200);
-      expect(deleteResponse.body).toEqual({ success: true });
-    });
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createBulletinResponse.body;
 
-    test('delete bulletin in draft state', async () => {
-      // Create a draft bulletin
-      const bulletinData = generateValidBulletin();
-      const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
-      expect(createResponse.statusCode).toBe(201);
-      const body = createResponse.body as any;
+      const deleteBulletinResponse = await app!.bulletin.delete(bulletinId, adminAccessToken);
+      expect(deleteBulletinResponse.statusCode).toBe(200);
+      expect(deleteBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = deleteBulletinResponse.body;
+      expect(typeof body).toBe('object');
 
-      // Verify it's in draft state
-      expect(body.state).toBe(1); // Draft state
+      const { message }: DeleteBulletinResponseDto = body;
+      expect(message).toBe(events.bulletin.bulletinDeleted);
 
-      // Delete the bulletin
-      const deleteResponse = await app!.bulletin.delete(body.id, adminAccessToken!);
-      expect(deleteResponse.statusCode).toBe(200);
-      expect(deleteResponse.body).toEqual({ success: true });
-    });
-
-    test('delete published bulletin', async () => {
-      // Create a published bulletin
-      const bulletinData = generateValidBulletin();
-      const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
-      expect(createResponse.statusCode).toBe(201);
-      const body = createResponse.body as any;
-
-      // Publish the bulletin
-      const publishResponse = await app!.bulletin.publish(body.id, adminAccessToken!);
-      expect(publishResponse.statusCode).toBe(200);
-
-      // Delete the bulletin
-      const deleteResponse = await app!.bulletin.delete(body.id, adminAccessToken!);
-      expect(deleteResponse.statusCode).toBe(200);
-      expect(deleteResponse.body).toEqual({ success: true });
+      // Verify bulletin is actually deleted
+      const getBulletinResponse = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getBulletinResponse.statusCode).toBe(400);
     });
   });
 
   describe('DELETE should respond with a status code of 400', () => {
-    test('when bulletin ID is invalid', async () => {
-      const invalidId = 'invalid-id';
-      const deleteResponse = await app!.bulletin.delete(invalidId as any, adminAccessToken!);
-      expect(deleteResponse.statusCode).toBe(404); // Route not found for invalid ID format
-    });
-
     test('when bulletin does not exist', async () => {
-      const nonExistentId = 99999;
-      const deleteResponse = await app!.bulletin.delete(nonExistentId, adminAccessToken!);
+      const bulletinId: string = Guid.EMPTY;
+      const deleteResponse = await app!.bulletin.delete(bulletinId, adminAccessToken);
       expect(deleteResponse.statusCode).toBe(400);
+      expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = deleteResponse.body;
+      expect(typeof body).toBe('object');
+      const data = body.data as BadRequestException;
+      const { message: deleteMessage, args: deleteArgs } = data;
+      expect(deleteMessage).toBe(errorKeys.bulletin.Bulletin_Does_Not_Exist);
+      expect(deleteArgs).toEqual({ id: bulletinId });
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
     });
   });
 
-  describe('DELETE should respond with a status code of 401', () => {
-    test('when token is not provided', async () => {
-      const bulletinData = generateValidBulletin();
-      const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
-      expect(createResponse.statusCode).toBe(201);
-      const body = createResponse.body as any;
-
-      const deleteResponse = await app!.bulletin.delete(body.id, '');
-      expect(deleteResponse.statusCode).toBe(401);
-
-      // Cleanup
-      await app!.bulletin.delete(body.id, adminAccessToken!);
-    });
-
-    test('when token is invalid', async () => {
-      const bulletinData = generateValidBulletin();
-      const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
-      expect(createResponse.statusCode).toBe(201);
-      const body = createResponse.body as any;
-
-      const invalidToken = 'invalid-token';
-      const deleteResponse = await app!.bulletin.delete(body.id, invalidToken);
-      expect(deleteResponse.statusCode).toBe(401);
-
-      // Cleanup
-      await app!.bulletin.delete(body.id, adminAccessToken!);
+  describe('DELETE should respond with a status code of 404', () => {
+    test('when id is not valid guid', async () => {
+      const deleteBulletinResponse = await app!.bulletin.delete('invalid-id', adminAccessToken);
+      expect(deleteBulletinResponse.statusCode).toBe(404);
+      expect(deleteBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = deleteBulletinResponse.body;
+      expect(typeof body).toBe('object');
     });
   });
 
   describe('DELETE should respond with a status code of 403', () => {
-    test('when user has no DeleteBulletin permission', async () => {
-      // Create user without permissions
-      const userDto = userTestHelpers.generateValidUserWithPassword();
-      const createUserResponse = await app!.user.create(userDto, adminAccessToken!);
+    test('when user has no permission', async () => {
+      const newUser = generateValidUserWithPassword();
+      const createUserResponse = await app!.user.create(newUser, adminAccessToken);
       expect(createUserResponse.statusCode).toBe(201);
-      const { data: newUser }: CreateUserResponseDto = createUserResponse.body;
+      const { data: createdUser }: CreateUserResponseDto = createUserResponse.body;
+      await app!.user.activate(createdUser.id, adminAccessToken);
+      const loginResponse = await app!.auth.loginAs({ email: newUser.email, passcode: newUser.passcode });
+      const userAccessToken = loginResponse?.accessToken;
 
-      const activateNewUserResponse = await app!.user.activate(newUser.id, adminAccessToken);
-      expect(activateNewUserResponse.statusCode).toBe(200);
-
-      const addPermissionsResponse = await app!.permissions.addAllPermissionsToUser(newUser.id, adminAccessToken, [
-        SystemPermissions.DeleteBulletin,
-      ]);
-      expect(addPermissionsResponse!.statusCode).toBe(201);
-
-      const newUserAccessToken = (
-        await app!.auth.loginAs({ email: newUser.email, passcode: userDto.passcode } satisfies ILoginModel)
-      )?.accessToken;
-
-      const deleteBulletinResponse = await app!.bulletin.delete(0, newUserAccessToken);
+      const deleteBulletinResponse = await app!.bulletin.delete(
+        '12345678-1234-1234-1234-123456789012',
+        userAccessToken,
+      );
       expect(deleteBulletinResponse.statusCode).toBe(403);
 
-      // Cleanup
-      await app!.user.delete(newUser.id, adminAccessToken!);
+      await app!.user.delete(createdUser.id, adminAccessToken);
+    });
+
+    test('when user have all permissions expect DeleteBulletin', async () => {
+      const newUser = generateValidUserWithPassword();
+      const createUserResponse = await app!.user.create(newUser, adminAccessToken);
+      expect(createUserResponse.statusCode).toBe(201);
+      const { data: createdUser }: CreateUserResponseDto = createUserResponse.body;
+      await app!.user.activate(createdUser.id, adminAccessToken);
+
+      const allPermissionsExceptDeleteBulletin = Object.values(SystemPermissions).filter(
+        permission => permission !== SystemPermissions.DeleteBulletin,
+      );
+
+      for (const permission of allPermissionsExceptDeleteBulletin) {
+        await app!.permissions.add(createdUser.id, permission, adminAccessToken);
+      }
+
+      const loginResponse = await app!.auth.loginAs({ email: newUser.email, passcode: newUser.passcode });
+      const userAccessToken = loginResponse?.accessToken;
+
+      const deleteBulletinResponse = await app!.bulletin.delete(
+        '12345678-1234-1234-1234-123456789012',
+        userAccessToken,
+      );
+      expect(deleteBulletinResponse.statusCode).toBe(403);
+
+      await app!.user.delete(createdUser.id, adminAccessToken);
+    });
+  });
+
+  describe('DELETE should respond with a status code of 401', () => {
+    test('when token is not set', async () => {
+      const deleteBulletinResponse = await app!.bulletin.delete('12345678-1234-1234-1234-123456789012');
+      expect(deleteBulletinResponse.statusCode).toBe(401);
+    });
+
+    test('when token is invalid', async () => {
+      const deleteBulletinResponse = await app!.bulletin.delete(
+        '12345678-1234-1234-1234-123456789012',
+        'invalid_token',
+      );
+      expect(deleteBulletinResponse.statusCode).toBe(401);
+    });
+
+    test('when try to use token from user that not exists', async () => {
+      const newUser = generateValidUserWithPassword();
+      const createUserResponse = await app!.user.create(newUser, adminAccessToken);
+      expect(createUserResponse.statusCode).toBe(201);
+      const { data: createdUser }: CreateUserResponseDto = createUserResponse.body;
+      await app!.user.activate(createdUser.id, adminAccessToken);
+      const loginResponse = await app!.auth.loginAs({ email: newUser.email, passcode: newUser.passcode });
+      const userAccessToken = loginResponse?.accessToken;
+      await app!.user.delete(createdUser.id, adminAccessToken);
+
+      const deleteBulletinResponse = await app!.bulletin.delete(
+        '12345678-1234-1234-1234-123456789012',
+        userAccessToken,
+      );
+      expect(deleteBulletinResponse.statusCode).toBe(401);
+      expect(deleteBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = deleteBulletinResponse.body;
+      expect(typeof body).toBe('object');
+      const data = body.data as UnauthorizedException;
+      const { message: loginMessage, args: loginArgs } = data;
+      expect(loginMessage).toBe(errorKeys.login.Wrong_Authentication_Token);
+      expect(loginArgs).toBeUndefined();
     });
   });
 

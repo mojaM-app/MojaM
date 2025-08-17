@@ -5,25 +5,31 @@ import {
   Generated,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   Relation,
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { BulletinState, BulletinStateType } from '../../../modules/bulletin/enums/bulletin-state.enum';
+import { BulletinState } from '../../../modules/bulletin/enums/bulletin-state.enum';
+import { EntityDefaultFunctions } from '../../EntityDefaultFunctions';
+import { EntityTransformFunctions } from '../../EntityTransformFunctions';
 import { User } from '../users/user.entity';
 import { IBulletinEntity, ICreateBulletin, IUpdateBulletin } from './../../../core/interfaces';
+import { BulletinDay } from './bulletin-day.entity';
 
 @Entity({
   name: 'bulletins',
 })
 export class Bulletin implements IBulletinEntity, ICreateBulletin, IUpdateBulletin {
+  public static readonly typeName = 'Bulletin' as const;
+
   @PrimaryGeneratedColumn({
     name: 'Id',
     type: 'int',
     primaryKeyConstraintName: 'PK_Bulletin_Id',
   })
-  public id: number;
+  public id!: number;
 
   @Column({
     name: 'Uuid',
@@ -33,30 +39,7 @@ export class Bulletin implements IBulletinEntity, ICreateBulletin, IUpdateBullet
   })
   @Unique('UQ_Bulletin_Uuid', ['uuid'])
   @Generated('uuid')
-  public uuid: string;
-
-  @Column({
-    name: 'Title',
-    type: 'varchar',
-    length: 500,
-    nullable: true,
-  })
-  public title: string | null;
-
-  @Column({
-    name: 'StartDate',
-    type: 'date',
-    nullable: true,
-  })
-  public startDate: Date | null;
-
-  @Column({
-    name: 'DaysCount',
-    type: 'int',
-    nullable: false,
-    default: 7,
-  })
-  public daysCount: number;
+  public uuid!: string;
 
   @Column({
     name: 'State',
@@ -64,9 +47,57 @@ export class Bulletin implements IBulletinEntity, ICreateBulletin, IUpdateBullet
     nullable: false,
     default: BulletinState.Draft,
   })
-  public state: BulletinStateType;
+  public state!: BulletinState;
 
-  @ManyToOne(() => User, (user: User) => user.createdAnnouncements, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
+  @Column({
+    name: 'Title',
+    type: 'varchar',
+    length: 500,
+    nullable: true,
+  })
+  public title: string | null = null;
+
+  @Column({
+    name: 'Date',
+    type: 'date',
+    nullable: true,
+    transformer: {
+      from: EntityTransformFunctions.stringDateToDate,
+      to: EntityTransformFunctions.dateToStringDate,
+    },
+  })
+  @Unique('UQ_Bulletin_Date', ['date'])
+  public date: Date | null = null;
+
+  @Column({
+    name: 'Number',
+    type: 'int',
+    nullable: true,
+  })
+  public number: number | null = null;
+
+  @Column({
+    name: 'Introduction',
+    type: 'text',
+    nullable: true,
+  })
+  public introduction: string | null = null;
+
+  @Column({
+    name: 'TipsForWork',
+    type: 'text',
+    nullable: true,
+  })
+  public tipsForWork: string | null = null;
+
+  @Column({
+    name: 'DailyPrayer',
+    type: 'text',
+    nullable: true,
+  })
+  public dailyPrayer: string | null = null;
+
+  @ManyToOne(() => User, (user: User) => user.createdBulletins, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
   @JoinColumn({
     name: 'CreatedById',
     referencedColumnName: 'id',
@@ -77,22 +108,40 @@ export class Bulletin implements IBulletinEntity, ICreateBulletin, IUpdateBullet
     type: 'int',
     nullable: false,
   })
-  public createdBy: Relation<User>;
+  public createdBy!: Relation<User>;
 
-  @ManyToOne(() => User, (user: User) => user.publishedAnnouncements, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
+  @CreateDateColumn({
+    name: 'CreatedAt',
+    precision: 0,
+    nullable: false,
+    type: 'timestamp',
+    default: EntityDefaultFunctions.defaultCurrentTimestampPrecision0,
+  })
+  public createdAt!: Date;
+
+  @ManyToOne(() => User, (user: User) => user.updatedBulletins, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
   @JoinColumn({
-    name: 'ModifiedById',
+    name: 'UpdatedById',
     referencedColumnName: 'id',
-    foreignKeyConstraintName: 'FK_Bulletin_ModifiedById_To_User',
+    foreignKeyConstraintName: 'FK_Bulletin_UpdatedById_To_User',
   })
   @Column({
-    name: 'ModifiedById',
+    name: 'UpdatedById',
     type: 'int',
     nullable: true,
   })
-  public modifiedBy: Relation<User> | null;
+  public updatedBy: Relation<User> | undefined;
 
-  @ManyToOne(() => User, (user: User) => user.publishedAnnouncements, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
+  @UpdateDateColumn({
+    name: 'UpdatedAt',
+    precision: 0,
+    nullable: false,
+    type: 'timestamp',
+    default: EntityDefaultFunctions.defaultCurrentTimestampPrecision0,
+  })
+  public updatedAt!: Date;
+
+  @ManyToOne(() => User, (user: User) => user.publishedBulletins, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
   @JoinColumn({
     name: 'PublishedById',
     referencedColumnName: 'id',
@@ -103,59 +152,24 @@ export class Bulletin implements IBulletinEntity, ICreateBulletin, IUpdateBullet
     type: 'int',
     nullable: true,
   })
-  public publishedBy: Relation<User> | null;
-
-  @CreateDateColumn({
-    name: 'CreatedAt',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  public createdAt: Date;
-
-  @UpdateDateColumn({
-    name: 'ModifiedAt',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
-  })
-  public modifiedAt: Date;
+  public publishedBy: Relation<User> | null = null;
 
   @Column({
     name: 'PublishedAt',
+    precision: 0,
     type: 'timestamp',
     nullable: true,
   })
-  public publishedAt: Date | null;
+  public publishedAt: Date | null = null;
 
-  // Computed properties
+  @OneToMany(() => BulletinDay, (day: BulletinDay) => day.bulletin, { cascade: true })
+  public days!: Relation<BulletinDay[]>;
+
   public get isPublished(): boolean {
     return this.state === BulletinState.Published;
   }
 
   public get isDraft(): boolean {
     return this.state === BulletinState.Draft;
-  }
-
-  public get endDate(): Date {
-    const endDate = new Date(this.startDate);
-    endDate.setDate(endDate.getDate() + this.daysCount - 1);
-    return endDate;
-  }
-
-  public getDayDate(dayNumber: number): Date {
-    if (dayNumber < 1 || dayNumber > this.daysCount) {
-      throw new Error(`Day number must be between 1 and ${this.daysCount}`);
-    }
-    const dayDate = new Date(this.startDate);
-    dayDate.setDate(dayDate.getDate() + dayNumber - 1);
-    return dayDate;
-  }
-
-  public isDateInRange(date: Date): boolean {
-    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const startDateOnly = new Date(this.startDate.getFullYear(), this.startDate.getMonth(), this.startDate.getDate());
-    const endDateOnly = new Date(this.endDate.getFullYear(), this.endDate.getMonth(), this.endDate.getDate());
-
-    return dateOnly >= startDateOnly && dateOnly <= endDateOnly;
   }
 }

@@ -112,8 +112,8 @@ export class Identity {
     return this.hasPermission(SystemPermissions.PublishBulletin);
   }
 
-  public canGetBulletinList(): boolean {
-    return this.canAddBulletin() || this.canEditBulletin() || this.canDeleteBulletin() || this.canPublishBulletin();
+  public canPreviewBulletinList(): boolean {
+    return this.hasPermission(SystemPermissions.PreviewBulletinList);
   }
 
   public canAnswerBulletinQuestion(): boolean {

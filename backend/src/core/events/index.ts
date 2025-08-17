@@ -16,11 +16,11 @@ export const events = {
   },
   bulletin: {
     bulletinListRetrieved: 'onBulletinListRetrieved',
-    bulletinCreated: 'onBulletinCreated',
     bulletinRetrieved: 'onBulletinRetrieved',
-    bulletinDeleted: 'onBulletinDeleted',
-    bulletinPublished: 'onBulletinPublished',
+    bulletinCreated: 'onBulletinCreated',
     bulletinUpdated: 'onBulletinUpdated',
+    bulletinPublished: 'onBulletinPublished',
+    bulletinDeleted: 'onBulletinDeleted',
   },
   community: {
     communityRetrieved: 'onCommunityRetrieved',

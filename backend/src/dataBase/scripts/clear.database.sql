@@ -15,6 +15,9 @@ user_to_systempermissions,
 system_permissions,
 announcement_items,
 announcements,
+bulletin_day_sections,
+bulletin_days,
+bulletins,
 users;
 
 DROP TABLE IF EXISTS _prisma_migrations,

@@ -7,7 +7,7 @@ import { CreateBulletinDto } from '../dtos/create-bulletin.dto';
 import { UpdateBulletinDto } from '../dtos/update-bulletin.dto';
 
 export class BulletinRoutes implements IRoutes {
-  public static path = '/bulletins';
+  public static path = '/bulletin';
 
   public router = express.Router();
 

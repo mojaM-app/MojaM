@@ -21,6 +21,8 @@ import { User } from '../users/user.entity';
   name: 'announcements',
 })
 export class Announcement implements IAnnouncementEntity, ICreateAnnouncement, IUpdateAnnouncement {
+  public static readonly typeName = 'Announcement' as const;
+
   @PrimaryGeneratedColumn({
     name: 'Id',
     type: 'int',

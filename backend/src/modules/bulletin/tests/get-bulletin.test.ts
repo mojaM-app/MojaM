@@ -1,21 +1,24 @@
+import { events, ILoginModel } from '@core';
+import { BadRequestException, errorKeys } from '@exceptions';
 import { testHelpers } from '@helpers';
-import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
-import { getAdminLoginData } from '@utils';
-import { Guid } from 'guid-typescript';
+import { CreateUserResponseDto } from '@modules/users';
+import { generateValidUserWithPassword } from '@modules/users/tests/test.helpers';
+import { getAdminLoginData, isGuid } from '@utils';
+import { isDateString } from 'class-validator';
 import { generateValidBulletin } from './test.helpers';
 import { TestApp } from '../../../helpers/test-helpers/test.app';
+import { CreateBulletinResponseDto } from '../dtos/create-bulletin.dto';
+import { GetBulletinResponseDto } from '../dtos/get-bulletin.dto';
 
-describe('GET /bulletin', () => {
+describe('GET /bulletins/:id', () => {
   let app: TestApp | undefined;
   let adminAccessToken: string | undefined;
 
   beforeAll(async () => {
     app = await testHelpers.getTestApp();
-
-    // Admin login
-    const adminLogin = getAdminLoginData();
-    const adminLoginResponse = await app.auth.loginAs(adminLogin);
-    adminAccessToken = adminLoginResponse?.accessToken;
+    app.mock_nodemailer_createTransport();
+    const { email, passcode } = getAdminLoginData();
+    adminAccessToken = (await app.auth.loginAs({ email, passcode } satisfies ILoginModel))?.accessToken;
   });
 
   beforeEach(async () => {
@@ -23,148 +26,136 @@ describe('GET /bulletin', () => {
   });
 
   describe('GET should respond with a status code of 200 when data are valid and user has permission', () => {
-    test('get bulletin by id successfully', async () => {
-      // Create bulletin first
-      const bulletinData = generateValidBulletin();
-      const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
-      expect(createResponse.statusCode).toBe(201);
-      const body = createResponse.body as any;
+    test('get existing bulletin', async () => {
+      const requestData = generateValidBulletin();
 
-      // Get bulletin by id
-      const getResponse = await app!.bulletin.get(body.id, adminAccessToken!);
-      expect(getResponse.statusCode).toBe(200);
-      expect(getResponse.body).toHaveProperty('id', body.id);
-      expect(getResponse.body).toHaveProperty('title', bulletinData.title);
-      expect(getResponse.body).toHaveProperty('startDate');
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createBulletinResponse.body;
 
-      // Cleanup
-      await app!.bulletin.delete(body.id, adminAccessToken!);
-    });
+      const getBulletinResponse = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getBulletinResponse.statusCode).toBe(200);
+      expect(getBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = getBulletinResponse.body;
+      expect(typeof body).toBe('object');
 
-    test('get all bulletins successfully', async () => {
-      // Create bulletins with far future dates to avoid conflicts
-      const bulletin1Data = generateValidBulletin();
-      const bulletin2Data = generateValidBulletin();
+      const { data: bulletin, message }: GetBulletinResponseDto = body;
+      expect(message).toBe(events.bulletin.bulletinRetrieved);
+      expect(bulletin).toBeDefined();
+      expect(bulletin.id).toBe(bulletinId);
+      expect(isGuid(bulletin.id)).toBe(true);
+      expect(bulletin.title).toBe(requestData.title);
+      expect(bulletin.number).toBe(requestData.number);
+      expect(bulletin.introduction).toBe(requestData.introduction);
+      expect(bulletin.tipsForWork).toBe(requestData.tipsForWork);
+      expect(bulletin.dailyPrayer).toBe(requestData.dailyPrayer);
+      expect(bulletin.createdBy.length).toBeGreaterThan(0);
+      expect(bulletin.createdAt).toBeDefined();
+      expect(isDateString(bulletin.createdAt)).toBe(true);
+      expect(bulletin.updatedAt).toBeDefined();
+      expect(isDateString(bulletin.updatedAt)).toBe(true);
+      expect(new Date(bulletin.date!).toDateString()).toEqual(new Date(requestData.date!).toDateString());
 
-      const create1Response = await app!.bulletin.create(bulletin1Data, adminAccessToken!);
-      expect(create1Response.statusCode).toBe(201);
-      const body1 = create1Response.body as any;
+      expect(bulletin.days).toBeDefined();
+      expect(Array.isArray(bulletin.days)).toBe(true);
+      expect(bulletin.days.length).toBe(requestData.days?.length || 0);
 
-      const create2Response = await app!.bulletin.create(bulletin2Data, adminAccessToken!);
-      expect(create2Response.statusCode).toBe(201);
-      const body2 = create2Response.body as any;
+      bulletin.days.forEach((day, dayIndex) => {
+        const requestDay = requestData.days![dayIndex];
+        expect(day.id).toBeDefined();
+        expect(isGuid(day.id)).toBe(true);
+        expect(day.title).toBe(requestDay.title);
+        expect(new Date(day.date!).toDateString()).toEqual(new Date(requestDay.date).toDateString());
 
-      // Get all bulletins - the API might return 500, so let's handle both cases
-      const getAllResponse = await app!.bulletin.getAll(undefined, undefined, adminAccessToken!);
+        expect(day.sections).toBeDefined();
+        expect(Array.isArray(day.sections)).toBe(true);
+        expect(day.sections.length).toBe(requestDay.sections.length);
 
-      // API might not be fully implemented - accept 500 or 200
-      if (getAllResponse.statusCode === 200) {
-        expect(Array.isArray(getAllResponse.body)).toBe(true);
-        expect(getAllResponse.body.length).toBeGreaterThanOrEqual(0);
-      } else {
-        // API not fully implemented yet
-        expect(getAllResponse.statusCode).toBe(500);
-      }
+        day.sections.forEach((section, sectionIndex) => {
+          const requestSection = requestDay.sections[sectionIndex];
+          expect(section.id).toBeDefined();
+          expect(isGuid(section.id)).toBe(true);
+          expect(section.order).toBe(requestSection.order);
+          expect(section.type).toBe(requestSection.type);
+          expect(section.title).toBe(requestSection.title);
+          expect(section.content).toBe(requestSection.content);
+        });
+      });
 
-      // Cleanup
-      await app!.bulletin.delete(body1.id, adminAccessToken!);
-      await app!.bulletin.delete(body2.id, adminAccessToken!);
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
     });
   });
 
   describe('GET should respond with a status code of 400', () => {
-    test('when bulletin ID is invalid', async () => {
-      const invalidId = 'invalid-id';
-      const getResponse = await app!.bulletin.get(invalidId as any, adminAccessToken!);
-      expect(getResponse.statusCode).toBe(404); // Route not found for invalid format
-    });
-
     test('when bulletin does not exist', async () => {
-      const getResponse = await app!.bulletin.get(Guid.EMPTY, adminAccessToken!);
-      expect(getResponse.statusCode).toBe(400);
+      const nonExistentId = '12345678-1234-1234-1234-123456789012';
+      const getBulletinResponse = await app!.bulletin.get(nonExistentId, adminAccessToken);
+      expect(getBulletinResponse.statusCode).toBe(400);
+      expect(getBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = getBulletinResponse.body;
+      expect(typeof body).toBe('object');
+      const data = body.data as BadRequestException;
+      const { message } = data;
+      expect(message).toBe(errorKeys.bulletin.Bulletin_Does_Not_Exist);
+    });
+  });
+
+  describe('GET should respond with a status code of 404', () => {
+    test('when id is not valid guid', async () => {
+      const getBulletinResponse = await app!.bulletin.get('invalid-id', adminAccessToken);
+      expect(getBulletinResponse.statusCode).toBe(404);
+      expect(getBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = getBulletinResponse.body;
+      expect(typeof body).toBe('object');
+      expect(body.message).toBe(errorKeys.general.Resource_Does_Not_Exist);
     });
   });
 
   describe('GET should respond with a status code of 401', () => {
-    test('when token is not provided for get', async () => {
-      // Create bulletin first
-      const bulletinData = generateValidBulletin();
-      const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
-      expect(createResponse.statusCode).toBe(201);
-      const body = createResponse.body as any;
-
-      const getResponse = await app!.bulletin.get(body.id, '');
-      expect(getResponse.statusCode).toBe(401);
-
-      // Cleanup
-      await app!.bulletin.delete(body.id, adminAccessToken!);
+    test('when token is not set', async () => {
+      const getBulletinResponse = await app!.bulletin.get('12345678-1234-1234-1234-123456789012');
+      expect(getBulletinResponse.statusCode).toBe(401);
     });
 
-    test('when token is invalid for get', async () => {
-      // Create bulletin first
-      const bulletinData = generateValidBulletin();
-      const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
-      expect(createResponse.statusCode).toBe(201);
-      const body = createResponse.body as any;
-
-      const getResponse = await app!.bulletin.get(body.id, 'invalid-token');
-      expect(getResponse.statusCode).toBe(401);
-
-      // Cleanup
-      await app!.bulletin.delete(body.id, adminAccessToken!);
+    test('when token is invalid', async () => {
+      const getBulletinResponse = await app!.bulletin.get('12345678-1234-1234-1234-123456789012', 'invalid_token');
+      expect(getBulletinResponse.statusCode).toBe(401);
     });
 
-    test('when token is not provided for getAll', async () => {
-      const getAllResponse = await app!.bulletin.getAll(1, 10, '');
-      expect(getAllResponse.statusCode).toBe(401);
-    });
+    test('when try to use token from user that not exists', async () => {
+      const newUser = generateValidUserWithPassword();
+      const createUserResponse = await app!.user.create(newUser, adminAccessToken);
+      expect(createUserResponse.statusCode).toBe(201);
+      const { data: createdUser }: CreateUserResponseDto = createUserResponse.body;
+      await app!.user.activate(createdUser.id, adminAccessToken);
+      const loginResponse = await app!.auth.loginAs({ email: newUser.email, passcode: newUser.passcode });
+      const userAccessToken = loginResponse?.accessToken;
+      await app!.user.delete(createdUser.id, adminAccessToken);
 
-    test('when token is invalid for getAll', async () => {
-      const getAllResponse = await app!.bulletin.getAll(1, 10, 'invalid-token');
-      expect(getAllResponse.statusCode).toBe(401);
+      const getBulletinResponse = await app!.bulletin.get('12345678-1234-1234-1234-123456789012', userAccessToken);
+      expect(getBulletinResponse.statusCode).toBe(401);
+      expect(getBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = getBulletinResponse.body;
+      expect(typeof body).toBe('object');
+      const data = body.data;
+      expect(data.message).toBe(errorKeys.login.Wrong_Authentication_Token);
     });
   });
 
   describe('GET should respond with a status code of 403', () => {
-    test('when user has no GetBulletin permission for get', async () => {
-      // Create bulletin as admin
-      const bulletinData = generateValidBulletin();
-      const createResponse = await app!.bulletin.create(bulletinData, adminAccessToken!);
-      expect(createResponse.statusCode).toBe(201);
-      const body = createResponse.body as any;
-
-      // Create regular user without permissions
-      const userDto = userTestHelpers.generateValidUserWithPassword();
-      const createUserResponse = await app!.user.create(userDto, adminAccessToken!);
+    test('when user has no permission', async () => {
+      const newUser = generateValidUserWithPassword();
+      const createUserResponse = await app!.user.create(newUser, adminAccessToken);
       expect(createUserResponse.statusCode).toBe(201);
-      const { data: newUser }: CreateUserResponseDto = createUserResponse.body;
+      const { data: createdUser }: CreateUserResponseDto = createUserResponse.body;
+      await app!.user.activate(createdUser.id, adminAccessToken);
+      const loginResponse = await app!.auth.loginAs({ email: newUser.email, passcode: newUser.passcode });
+      const userAccessToken = loginResponse?.accessToken;
 
-      await app!.user.activate(newUser.id, adminAccessToken!);
-      const userToken = await app!.auth.loginAs({ email: newUser.email, passcode: userDto.passcode });
+      const getBulletinResponse = await app!.bulletin.get('12345678-1234-1234-1234-123456789012', userAccessToken);
+      expect(getBulletinResponse.statusCode).toBe(403);
 
-      const getResponse = await app!.bulletin.get(body.id, userToken?.accessToken || '');
-      expect(getResponse.statusCode).toBe(403);
-
-      // Cleanup
-      await app!.bulletin.delete(body.id, adminAccessToken!);
-      await app!.user.delete(newUser.id, adminAccessToken!);
-    });
-
-    test('when user has no GetBulletin permission for getAll', async () => {
-      // Create regular user without permissions
-      const userDto = userTestHelpers.generateValidUserWithPassword();
-      const createUserResponse = await app!.user.create(userDto, adminAccessToken!);
-      expect(createUserResponse.statusCode).toBe(201);
-      const { data: newUser }: CreateUserResponseDto = createUserResponse.body;
-
-      await app!.user.activate(newUser.id, adminAccessToken!);
-      const userToken = await app!.auth.loginAs({ email: newUser.email, passcode: userDto.passcode });
-
-      const getAllResponse = await app!.bulletin.getAll(1, 10, userToken?.accessToken || '');
-      expect(getAllResponse.statusCode).toBe(403);
-
-      // Cleanup
-      await app!.user.delete(newUser.id, adminAccessToken!);
+      await app!.user.delete(createdUser.id, adminAccessToken);
     });
   });
 

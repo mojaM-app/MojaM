@@ -1,25 +1,25 @@
 import { type IRoutes } from '@core';
 import { requirePermission, setIdentity } from '@middlewares';
 import { default as express } from 'express';
-import { BulletinController } from '../controllers/bulletin.controller';
+import { BulletinListController } from '../controllers/bulletin-list.controller';
 
-export class BulletinRoutes implements IRoutes {
+export class BulletinListRoutes implements IRoutes {
   public static path = '/bulletin-list';
 
   public router = express.Router();
 
-  private readonly _bulletinController: BulletinController;
+  private readonly _bulletinListController: BulletinListController;
 
   constructor() {
-    this._bulletinController = new BulletinController();
+    this._bulletinListController = new BulletinListController();
     this.initializeRoutes();
   }
 
   public initializeRoutes(): void {
     this.router.get(
-      BulletinRoutes.path,
-      [setIdentity, requirePermission(user => user.canGetBulletinList())],
-      this._bulletinController.get,
+      BulletinListRoutes.path,
+      [setIdentity, requirePermission(user => user.canPreviewBulletinList())],
+      this._bulletinListController.get,
     );
   }
 }

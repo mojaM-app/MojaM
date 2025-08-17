@@ -1,43 +1,38 @@
 import { BaseReqDto, events, type IResponse } from '@core';
-import { BulletinStateType } from '../enums/bulletin-state.enum';
+import { SectionType } from '../enums/bulletin-section-type.enum';
+import { BulletinState } from '../enums/bulletin-state.enum';
 
-export interface IBulletinTaskDto {
+export interface IBulletinDaySectionDto {
   id: string;
-  taskOrder: number;
-  description: string;
-  hasCommentField: boolean;
+  title: string | null;
+  content: string | null;
+  type: SectionType;
+  order: number;
 }
 
 export interface IBulletinDayDto {
   id: string;
-  dayNumber: number;
-  introduction: string | null;
-  instructions: string;
-  tasks: IBulletinTaskDto[];
-}
-
-export interface IBulletinQuestionDto {
-  id: string;
-  questionType: number;
-  content: string;
-  createdAt: Date;
-  updatedAt: Date;
+  date: Date | null;
+  title: string | null;
+  sections: IBulletinDaySectionDto[];
 }
 
 export interface IBulletinDto {
-  id: string; // uuid, not database id
+  id: string;
+  date: Date | null;
   title: string | null;
-  startDate: Date | null;
-  daysCount: number;
-  state: BulletinStateType;
+  state: BulletinState;
+  number: number | null;
+  introduction: string | null;
+  tipsForWork: string | null;
+  dailyPrayer: string | null;
   createdAt: Date;
   createdBy: string;
-  modifiedAt: Date;
-  modifiedBy: string | null;
+  updatedAt: Date;
+  updatedBy: string | null;
   publishedAt: Date | null;
   publishedBy: string | null;
   days: IBulletinDayDto[];
-  questions: IBulletinQuestionDto[];
 }
 
 export class GetBulletinReqDto extends BaseReqDto {

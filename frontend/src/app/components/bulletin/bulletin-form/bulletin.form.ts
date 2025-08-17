@@ -172,7 +172,11 @@ export class BulletinFormBuilder {
         }),
         number: new FormControl<number | null>(null, {
           nonNullable: true,
-          validators: [Validators.required, Validators.min(1), Validators.max(999999)],
+          validators: [
+            Validators.required,
+            Validators.min(1),
+            Validators.max(Number.MAX_SAFE_INTEGER),
+          ],
         }),
         title: new FormControl<string | null>(null, {
           nonNullable: true,

@@ -194,7 +194,7 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
 
   public async checkIfExistWithDate(
     validFromDate: Date | null | undefined,
-    skippedAnnouncementUuid?: string,
+    skippedUuid?: string,
   ): Promise<boolean> {
     if (!isDate(validFromDate)) {
       return false;
@@ -203,7 +203,7 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
     const count = await this._dbContext.announcements
       .createQueryBuilder('announcement')
       .where('ValidFromDate = :date', { date: validFromDate!.toISOString().slice(0, 10) })
-      .andWhere('Uuid != :uuid', { uuid: skippedAnnouncementUuid ?? '' })
+      .andWhere('Uuid != :uuid', { uuid: skippedUuid ?? '' })
       .getCount();
 
     return count > 0;

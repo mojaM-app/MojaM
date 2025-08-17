@@ -45,11 +45,11 @@ export class AnnouncementsService extends BaseService {
   }
 
   public async create(reqDto: CreateAnnouncementsReqDto): Promise<IAnnouncementsDto | null> {
-    if (isNullOrUndefined(reqDto.announcements)) {
+    const announcementsModel = reqDto.announcements;
+
+    if (isNullOrUndefined(announcementsModel)) {
       return null;
     }
-
-    const announcementsModel = reqDto.announcements;
 
     const existAnnouncementWithSameDate = await this._announcementsRepository.checkIfExistWithDate(
       announcementsModel.validFromDate,

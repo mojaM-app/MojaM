@@ -173,20 +173,6 @@ describe('POST /user/:id/unlock', () => {
   });
 
   describe('POST should respond with a status code of 403', () => {
-    test('when token is not set', async () => {
-      const userId: string = Guid.EMPTY;
-      const unlockUserResponse = await app!.user.unlock(userId);
-      expect(unlockUserResponse.statusCode).toBe(401);
-      const body = unlockUserResponse.body;
-      expect(typeof body).toBe('object');
-      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    });
-
     test('when user has no permission', async () => {
       const requestData = userTestHelpers.generateValidUserWithPassword();
 
@@ -337,6 +323,20 @@ describe('POST /user/:id/unlock', () => {
   });
 
   describe('POST should respond with a status code of 401', () => {
+    test('when token is not set', async () => {
+      const userId: string = Guid.EMPTY;
+      const unlockUserResponse = await app!.user.unlock(userId);
+      expect(unlockUserResponse.statusCode).toBe(401);
+      const body = unlockUserResponse.body;
+      expect(typeof body).toBe('object');
+      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
     test('when token is invalid', async () => {
       const userId: string = Guid.EMPTY;
       const unlockResponse = await app!.user.unlock(userId, `invalid_token_${adminAccessToken}`);

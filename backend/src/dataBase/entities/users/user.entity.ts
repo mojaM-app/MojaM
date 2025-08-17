@@ -19,12 +19,17 @@ import { EntityDefaultFunctions } from '../../EntityDefaultFunctions';
 import { EntityTransformFunctions } from '../../EntityTransformFunctions';
 import { AnnouncementItem } from '../announcements/announcement-item.entity';
 import { Announcement } from '../announcements/announcement.entity';
+import { BulletinDaySection } from '../bulletin/bulletin-day-section.entity';
+import { BulletinDay } from '../bulletin/bulletin-day.entity';
+import { Bulletin } from '../bulletin/bulletin.entity';
 
 @Unique('UQ_User_Email_Phone', ['email', 'phone'])
 @Entity({
   name: 'users',
 })
 export class User implements IHasGuidId, ICreateUser, IUpdateUser, IUserEntity {
+  public static readonly typeName = 'User' as const;
+
   @PrimaryGeneratedColumn('increment', {
     name: 'Id',
     type: 'int',
@@ -195,6 +200,27 @@ export class User implements IHasGuidId, ICreateUser, IUpdateUser, IUserEntity {
 
   @OneToMany(() => AnnouncementItem, (announcementItem: AnnouncementItem) => announcementItem.updatedBy)
   public updatedAnnouncementItems: Relation<AnnouncementItem[]>;
+
+  @OneToMany(() => Bulletin, (bulletin: Bulletin) => bulletin.createdBy)
+  public createdBulletins: Relation<Bulletin[]>;
+
+  @OneToMany(() => Bulletin, (bulletin: Bulletin) => bulletin.updatedBy)
+  public updatedBulletins: Relation<Bulletin[]>;
+
+  @OneToMany(() => Bulletin, (bulletin: Bulletin) => bulletin.publishedBy)
+  public publishedBulletins: Relation<Bulletin[]>;
+
+  @OneToMany(() => BulletinDay, (bulletinDay: BulletinDay) => bulletinDay.createdBy)
+  public createdBulletinDays: Relation<BulletinDay[]>;
+
+  @OneToMany(() => BulletinDay, (bulletinDay: BulletinDay) => bulletinDay.updatedBy)
+  public updatedBulletinDays: Relation<BulletinDay[]>;
+
+  @OneToMany(() => BulletinDaySection, (bulletinDaySection: BulletinDaySection) => bulletinDaySection.createdBy)
+  public createdBulletinDaySections: Relation<BulletinDaySection[]>;
+
+  @OneToMany(() => BulletinDaySection, (bulletinDaySection: BulletinDaySection) => bulletinDaySection.updatedBy)
+  public updatedBulletinDaySections: Relation<BulletinDaySection[]>;
 
   public getFirstLastName(): string | null {
     if ((this.firstName?.length ?? 0) > 0 && (this.lastName?.length ?? 0) > 0) {

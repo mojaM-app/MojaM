@@ -2,7 +2,7 @@ import { SectionType } from '../enums/section-type.enum';
 
 export class BulletinDaySectionDto {
   public id?: string;
-  public order: number | null = null;
+  public order: number = 0;
   public type: SectionType = SectionType.CUSTOM_TEXT;
   public title: string | null = null;
   public content: string | null = null;

@@ -1,43 +1,90 @@
-import { generateRandomString } from '@utils';
-import { CreateBulletinQuestionDto } from '../dtos/create-bulletin-question.dto';
-import { CreateBulletinDayDto, CreateBulletinDto, CreateBulletinTaskDto } from '../dtos/create-bulletin.dto';
-import { BulletinQuestionTypeValue } from '../enums/bulletin-question-type.enum';
+import { generateRandomDate, generateRandomString } from '@utils';
+import {
+  type CreateBulletinDayDto,
+  type CreateBulletinDaySectionDto,
+  type CreateBulletinDto,
+} from '../dtos/create-bulletin.dto';
+import {
+  type UpdateBulletinDayDto,
+  type UpdateBulletinDaySectionDto,
+  type UpdateBulletinDto,
+} from '../dtos/update-bulletin.dto';
+import { SectionType } from '../enums/bulletin-section-type.enum';
 
-export function generateValidBulletin(): CreateBulletinDto {
-  const startDate = new Date();
-  const bulletin = new CreateBulletinDto();
-  bulletin.title = `Test Bulletin ${generateRandomString(8)}`;
-  bulletin.startDate = startDate.toISOString().split('T')[0]; // YYYY-MM-DD format
-  bulletin.daysCount = 7;
-
-  const day = new CreateBulletinDayDto();
-  day.dayNumber = 1;
-  day.introduction = `Introduction for day 1`;
-  day.instructions = `Instructions for day 1`;
-
-  const task = new CreateBulletinTaskDto();
-  task.taskOrder = 1;
-  task.description = `Task 1 for day 1`;
-  task.hasCommentField = false;
-
-  day.tasks = [task];
-  bulletin.days = [day];
-
-  return bulletin;
-}
-
-export const generateValidBulletinQuestion = (bulletinDayId: number): CreateBulletinQuestionDto => {
+const generateValidBulletin = (): CreateBulletinDto => {
+  const bulletinDate = generateRandomDate();
   return {
-    bulletinDayId,
-    questionType: BulletinQuestionTypeValue.Private,
-    content: `Test question ${generateRandomString(10)}?`,
+    title: generateRandomString(40),
+    date: bulletinDate,
+    number: Math.floor(Math.random() * 999) + 1,
+    introduction: generateRandomString(500),
+    tipsForWork: generateRandomString(300),
+    dailyPrayer: generateRandomString(200),
+    days: [
+      {
+        date: bulletinDate,
+        title: 'Day1',
+        sections: [
+          {
+            order: 1,
+            type: SectionType.CUSTOM_TEXT,
+            title: 'Day1 Section1',
+            content: generateRandomString(100),
+          } satisfies CreateBulletinDaySectionDto,
+          {
+            order: 2,
+            type: SectionType.CUSTOM_TEXT,
+            title: 'Day1 Section2',
+            content: generateRandomString(80),
+          } satisfies CreateBulletinDaySectionDto,
+        ],
+      } satisfies CreateBulletinDayDto,
+      {
+        date: bulletinDate.addDays(1),
+        title: 'Day2',
+        sections: [
+          {
+            order: 1,
+            type: SectionType.CUSTOM_TEXT,
+            title: 'Day2 Section1',
+            content: generateRandomString(1200),
+          } satisfies CreateBulletinDaySectionDto,
+        ],
+      } satisfies CreateBulletinDayDto,
+    ],
+  } satisfies CreateBulletinDto;
+};
+
+const generateValidUpdateBulletin = (): UpdateBulletinDto => {
+  const bulletinDate = generateRandomDate();
+  return {
+    title: generateRandomString(40),
+    number: Math.floor(Math.random() * 999) + 1,
+    date: bulletinDate,
+    introduction: generateRandomString(500),
+    dailyPrayer: generateRandomString(200),
+    tipsForWork: generateRandomString(300),
+    days: [
+      {
+        title: generateRandomString(30),
+        date: bulletinDate,
+        sections: [
+          {
+            title: generateRandomString(50),
+            content: generateRandomString(100),
+            type: SectionType.CUSTOM_TEXT,
+            order: 1,
+          } satisfies UpdateBulletinDaySectionDto,
+          {
+            title: generateRandomString(40),
+            content: generateRandomString(800),
+            type: SectionType.CUSTOM_TEXT,
+            order: 2,
+          } satisfies UpdateBulletinDaySectionDto,
+        ],
+      } satisfies UpdateBulletinDayDto,
+    ],
   };
 };
 
-export const generateValidBulletinQuestionPublic = (bulletinDayId: number): CreateBulletinQuestionDto => {
-  return {
-    bulletinDayId,
-    questionType: BulletinQuestionTypeValue.Public,
-    content: `Test public question ${generateRandomString(10)}?`,
-  };
-};
+export { generateValidBulletin, generateValidUpdateBulletin };

@@ -1,14 +1,18 @@
-import { ILoginModel } from '@core';
-import { errorKeys } from '@exceptions';
+import { VALIDATOR_SETTINGS } from '@config';
+import { events, ILoginModel, SystemPermissions } from '@core';
+import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
 import { testHelpers } from '@helpers';
-import { CreateUserResponseDto, userTestHelpers } from '@modules/users';
-import { generateRandomString, getAdminLoginData, isNumber } from '@utils';
+import { CreateUserResponseDto } from '@modules/users';
+import { generateValidUserWithPassword } from '@modules/users/tests/test.helpers';
+import { getAdminLoginData, isGuid } from '@utils';
 import { isDateString } from 'class-validator';
 import { generateValidBulletin } from './test.helpers';
 import { TestApp } from '../../../helpers/test-helpers/test.app';
-import { CreateBulletinDto } from '../dtos/create-bulletin.dto';
+import { CreateBulletinResponseDto } from '../dtos/create-bulletin.dto';
+import { GetBulletinResponseDto } from '../dtos/get-bulletin.dto';
+import { BulletinState } from '../enums/bulletin-state.enum';
 
-describe('POST /bulletin', () => {
+describe('POST /bulletins', () => {
   let app: TestApp | undefined;
   let adminAccessToken: string | undefined;
 
@@ -24,207 +28,377 @@ describe('POST /bulletin', () => {
   });
 
   describe('POST should respond with a status code of 201 when data are valid and user has permission', () => {
-    test('create bulletin successfully', async () => {
+    test('create unpublished bulletin', async () => {
       const requestData = generateValidBulletin();
-      console.info('Request data startDate:', requestData.startDate);
+      requestData.title = 'a'.repeat(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH);
 
       const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
-      console.info(
-        'Response:',
-        JSON.stringify(
-          {
-            statusCode: createBulletinResponse.statusCode,
-            body: createBulletinResponse.body,
-          },
-          null,
-          2,
-        ),
-      );
-
-      if (createBulletinResponse.statusCode !== 201) {
-        console.error(
-          'Failed response:',
-          JSON.stringify(
-            {
-              statusCode: createBulletinResponse.statusCode,
-              body: createBulletinResponse.body,
-            },
-            null,
-            2,
-          ),
-        );
-      }
-
       expect(createBulletinResponse.statusCode).toBe(201);
       expect(createBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
-
-      const body = createBulletinResponse.body;
+      let body = createBulletinResponse.body;
       expect(typeof body).toBe('object');
-      expect(body.id).toBeDefined();
-      expect(isNumber(body.id)).toBe(true);
-      expect(body.title).toBe(requestData.title);
-      expect(new Date(body.startDate).toDateString()).toEqual(new Date(requestData.startDate!).toDateString());
-      expect(body.daysCount).toBe(requestData.daysCount);
-      expect(body.state).toBe(1); // Draft state
-      expect(body.createdAt).toBeDefined();
-      expect(isDateString(body.createdAt)).toBe(true);
+      const { data: bulletinId, message: createMessage }: CreateBulletinResponseDto = body;
+      expect(bulletinId).toBeDefined();
+      expect(createMessage).toBe(events.bulletin.bulletinCreated);
 
-      // Log the entire body to see what we actually get
-      console.info('Full body structure:', JSON.stringify(body, null, 2));
+      const getBulletinResponse = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getBulletinResponse.statusCode).toBe(200);
+      expect(getBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = getBulletinResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: bulletin, message: getMessage }: GetBulletinResponseDto = body;
+      expect(getMessage).toBe(events.bulletin.bulletinRetrieved);
+      expect(bulletin).toBeDefined();
+      expect(bulletin.id).toBeDefined();
+      expect(isGuid(bulletin.id)).toBe(true);
+      expect(bulletin.createdBy.length).toBeGreaterThan(0);
+      expect(bulletin.createdAt).toBeDefined();
+      expect(isDateString(bulletin.createdAt)).toBe(true);
+      expect(bulletin.updatedAt).toBeDefined();
+      expect(isDateString(bulletin.updatedAt)).toBe(true);
+      expect(bulletin.createdAt).toBe(bulletin.updatedAt);
+      expect(bulletin.title).toBe(requestData.title);
+      expect(bulletin.state).toBe(BulletinState.Draft);
+      expect(bulletin.number).toBe(requestData.number);
+      expect(bulletin.introduction).toBe(requestData.introduction);
+      expect(bulletin.tipsForWork).toBe(requestData.tipsForWork);
+      expect(bulletin.dailyPrayer).toBe(requestData.dailyPrayer);
+      expect(bulletin.publishedAt).toBeNull();
+      expect(bulletin.publishedBy).toBeNull();
+      expect(new Date(bulletin.date!).toDateString()).toEqual(new Date(requestData.date!).toDateString());
 
-      // Cleanup
-      const deleteBulletinResponse = await app!.bulletin.delete(body.id, adminAccessToken);
-      expect(deleteBulletinResponse.statusCode).toBe(200);
+      expect(bulletin.days).toBeDefined();
+      expect(Array.isArray(bulletin.days)).toBe(true);
+      expect(bulletin.days.length).toBe(requestData.days?.length || 0);
+
+      bulletin.days.forEach((day, dayIndex) => {
+        const requestDay = requestData.days![dayIndex];
+        expect(day.id).toBeDefined();
+        expect(isGuid(day.id)).toBe(true);
+        expect(day.title).toBe(requestDay.title);
+        expect(new Date(day.date!).toDateString()).toEqual(new Date(requestDay.date).toDateString());
+
+        expect(day.sections).toBeDefined();
+        expect(Array.isArray(day.sections)).toBe(true);
+        expect(day.sections.length).toBe(requestDay.sections.length);
+
+        day.sections.forEach((section, sectionIndex) => {
+          const requestSection = requestDay.sections[sectionIndex];
+          expect(section.id).toBeDefined();
+          expect(isGuid(section.id)).toBe(true);
+          expect(section.order).toBe(requestSection.order);
+          expect(section.type).toBe(requestSection.type);
+          expect(section.title).toBe(requestSection.title);
+          expect(section.content).toBe(requestSection.content);
+        });
+      });
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // Bulletin event handler test would go here when implemented
     });
 
-    test('create bulletin with minimum required fields', async () => {
-      const startDate = new Date();
-      const requestData = {
-        title: `Minimal Bulletin ${generateRandomString(8)}`,
-        startDate: startDate,
-        daysCount: 1,
-        days: [
-          {
-            dayNumber: 1,
-            instructions: 'Basic instructions',
-            tasks: [
-              {
-                taskOrder: 1,
-                description: 'Basic task',
-              },
-            ],
-          },
-        ],
-      } satisfies CreateBulletinDto;
-
-      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
-      expect(createBulletinResponse.statusCode).toBe(201);
-      expect(createBulletinResponse.body.title).toBe(requestData.title);
-
-      // Cleanup
-      await app!.bulletin.delete(createBulletinResponse.body.id, adminAccessToken);
-    });
-  });
-
-  describe('POST should respond with a status code of 400 when data are invalid', () => {
-    test('when title is missing', async () => {
-      const requestData = generateValidBulletin();
-      delete (requestData as any).title;
-
-      const response = await app!.bulletin.create(requestData, adminAccessToken);
-
-      expect(response.statusCode).toBe(400);
-      expect(response.body.data.message).toContain('title should not be empty');
-    });
-
-    test('when startDate is invalid', async () => {
-      const requestData = generateValidBulletin(); // Start far in future to avoid conflict
-      requestData.startDate = 'invalid-date';
-
-      const response = await app!.bulletin.create(requestData, adminAccessToken);
-
-      expect(response.statusCode).toBe(400);
-      expect(response.body.data.message).toContain('startDate must be a valid ISO 8601 date string');
-    });
-
-    test('when days array is empty', async () => {
+    test('create bulletin with no days', async () => {
       const requestData = generateValidBulletin();
       requestData.days = [];
 
-      const response = await app!.bulletin.create(requestData, adminAccessToken);
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201);
+      expect(createBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      let body = createBulletinResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: bulletinId, message: createMessage }: CreateBulletinResponseDto = body;
+      expect(bulletinId).toBeDefined();
+      expect(createMessage).toBe(events.bulletin.bulletinCreated);
 
-      expect(response.statusCode).toBe(400);
-    });
+      const getBulletinResponse = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getBulletinResponse.statusCode).toBe(200);
+      expect(getBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = getBulletinResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: bulletin, message: getMessage }: GetBulletinResponseDto = body;
+      expect(getMessage).toBe(events.bulletin.bulletinRetrieved);
+      expect(bulletin).toBeDefined();
+      expect(bulletin.id).toBeDefined();
+      expect(isGuid(bulletin.id)).toBe(true);
+      expect(bulletin.createdBy.length).toBeGreaterThan(0);
+      expect(bulletin.createdAt).toBeDefined();
+      expect(isDateString(bulletin.createdAt)).toBe(true);
+      expect(bulletin.updatedAt).toBeDefined();
+      expect(isDateString(bulletin.updatedAt)).toBe(true);
+      expect(bulletin.createdAt).toBe(bulletin.updatedAt);
+      expect(bulletin.title).toBe(requestData.title);
+      expect(bulletin.state).toBe(BulletinState.Draft);
+      expect(bulletin.number).toBe(requestData.number);
+      expect(bulletin.introduction).toBe(requestData.introduction);
+      expect(bulletin.tipsForWork).toBe(requestData.tipsForWork);
+      expect(bulletin.dailyPrayer).toBe(requestData.dailyPrayer);
+      expect(bulletin.publishedAt).toBeNull();
+      expect(bulletin.publishedBy).toBeNull();
+      expect(new Date(bulletin.date!).toDateString()).toEqual(new Date(requestData.date!).toDateString());
 
-    test('when task description is missing', async () => {
-      const requestData = generateValidBulletin(); // Start far in future to avoid conflict
-      delete (requestData.days[0].tasks[0] as any).description;
+      expect(bulletin.days).toBeDefined();
+      expect(Array.isArray(bulletin.days)).toBe(true);
+      expect(bulletin.days.length).toBe(requestData.days?.length || 0);
 
-      const response = await app!.bulletin.create(requestData, adminAccessToken);
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
 
-      expect(response.statusCode).toBe(400);
-      expect(response.body.data.message).toContain('description should not be empty');
-    });
-
-    test('when daysCount exceeds maximum', async () => {
-      const requestData = generateValidBulletin(); // Start far in future to avoid conflict
-      requestData.daysCount = 100; // Exceeds max of 90
-
-      const response = await app!.bulletin.create(requestData, adminAccessToken);
-
-      expect(response.statusCode).toBe(400);
-      expect(response.body.data.message).toContain('daysCount must not be greater than 90');
+      // Bulletin event handler test would go here when implemented
     });
   });
 
-  describe('POST should respond with a status code of 401', () => {
-    test('when token is not provided', async () => {
-      const requestData = generateValidBulletin(); // Start far in future to avoid conflict
+  describe('POST should respond with a status code of 400', () => {
+    test('when title is too long', async () => {
+      const requestData = generateValidBulletin();
+      requestData.title = 'a'.repeat(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH + 1);
 
-      const response = await app!.bulletin.create(requestData);
-
-      expect(response.statusCode).toBe(401);
-      expect(response.body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+      expect(createBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const data = createBulletinResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
+      expect(errors.filter(x => x !== errorKeys.bulletin.Title_Too_Long).length).toBe(0);
     });
 
-    test('when token is invalid', async () => {
-      const requestData = generateValidBulletin(); // Start far in future to avoid conflict
+    test('when title is not a string', async () => {
+      const requestData = generateValidBulletin();
+      requestData.title = 123 as any;
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+      expect(createBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const data = createBulletinResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
+      expect(errors.filter(x => x === errorKeys.bulletin.Title_Must_Be_A_String).length).toBe(1);
+    });
 
-      const response = await app!.bulletin.create(requestData, 'invalid-token');
+    test('when title is empty', async () => {
+      const requestData = generateValidBulletin();
+      requestData.title = '';
 
-      expect(response.statusCode).toBe(401);
-      expect(response.body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+      expect(createBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const data = createBulletinResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
+      expect(errors.filter(x => x !== errorKeys.bulletin.Title_Is_Required).length).toBe(0);
+    });
+
+    test('when title is null', async () => {
+      const requestData = generateValidBulletin();
+      requestData.title = null;
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+      expect(createBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const data = createBulletinResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
+      expect(errors.filter(x => x === errorKeys.bulletin.Title_Is_Required).length).toBe(1);
+    });
+
+    test('when title is not set', async () => {
+      const requestData = generateValidBulletin();
+      delete requestData.title;
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+      expect(createBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const data = createBulletinResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
+      expect(errors.filter(x => x === errorKeys.bulletin.Title_Is_Required).length).toBe(1);
+    });
+
+    test('when date is null', async () => {
+      const requestData = generateValidBulletin();
+      requestData.date = null;
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+      const data = createBulletinResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
+      expect(errors.filter(x => x !== errorKeys.bulletin.Date_Is_Required).length).toBe(0);
+    });
+
+    test('when date is not set', async () => {
+      const requestData = generateValidBulletin();
+      delete requestData.date;
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+      const data = createBulletinResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
+      expect(errors.filter(x => x !== errorKeys.bulletin.Date_Is_Required).length).toBe(0);
+    });
+
+    test('when number is null', async () => {
+      const requestData = generateValidBulletin();
+      requestData.number = null;
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+      const data = createBulletinResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
+      expect(errors.filter(x => x === errorKeys.bulletin.Number_Is_Required).length).toBe(1);
+    });
+
+    test('when number is not set', async () => {
+      const requestData = generateValidBulletin();
+      delete requestData.number;
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+      const data = createBulletinResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
+      expect(errors.filter(x => x === errorKeys.bulletin.Number_Is_Required).length).toBe(1);
+    });
+
+    test('when number is 0', async () => {
+      const requestData = generateValidBulletin();
+      requestData.number = 0;
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+      const data = createBulletinResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
+      expect(errors.filter(x => x !== errorKeys.bulletin.Min_Number_Greater_Than_Zero).length).toBe(0);
+    });
+
+    test('when number is negative', async () => {
+      const requestData = generateValidBulletin();
+      requestData.number = -1;
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+      const data = createBulletinResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
+      expect(errors.filter(x => x !== errorKeys.bulletin.Min_Number_Greater_Than_Zero).length).toBe(0);
+    });
+
+    test('when number is greater than max', async () => {
+      const requestData = generateValidBulletin();
+      requestData.number = Number.MAX_SAFE_INTEGER + 1;
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+      const data = createBulletinResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
+      expect(errors.filter(x => !x.startsWith('number must not be greater than')).length).toBe(0);
+    });
+
+    test('when section content is too long', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days![0].sections[0].content = 'a'.repeat(
+        VALIDATOR_SETTINGS.BULLETIN_DAY_SECTION_CONTENT_MAX_LENGTH + 1,
+      );
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+      const data = createBulletinResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
+      expect(errors.filter(x => x !== errorKeys.bulletin.Section_Content_Too_Long).length).toBe(0);
+    });
+
+    test('when creating a bulletin with a date that already exists', async () => {
+      const data1 = generateValidBulletin();
+      const res1 = await app!.bulletin.create(data1, adminAccessToken);
+      expect(res1.statusCode).toBe(201);
+      const { data: id1 }: CreateBulletinResponseDto = res1.body;
+
+      const data2 = generateValidBulletin();
+      // Force the same date to trigger duplicate check
+      data2.date = data1.date;
+      const res2 = await app!.bulletin.create(data2, adminAccessToken);
+      expect(res2.statusCode).toBe(400);
+      const body = res2.body;
+      const message = (body.data?.message ?? body.message) as string | string[] | undefined;
+      if (Array.isArray(message)) {
+        expect(message).toContain(errorKeys.bulletin.Bulletin_With_Given_Date_Already_Exists);
+      } else {
+        expect(String(message)).toEqual(
+          expect.stringContaining(errorKeys.bulletin.Bulletin_With_Given_Date_Already_Exists),
+        );
+      }
+
+      // cleanup
+      await app!.bulletin.delete(id1, adminAccessToken);
     });
   });
 
   describe('POST should respond with a status code of 403', () => {
-    test('when user has no AddBulletin permission', async () => {
-      const userData = userTestHelpers.generateValidUserWithPassword();
-      const newUserResponse = await app!.user.create(userData, adminAccessToken!);
-      expect(newUserResponse.statusCode).toBe(201);
-      const { data: user }: CreateUserResponseDto = newUserResponse.body;
+    test('when user has no permission', async () => {
+      const newUser = generateValidUserWithPassword();
+      const createUserResponse = await app!.user.create(newUser, adminAccessToken);
+      expect(createUserResponse.statusCode).toBe(201);
+      const { data: createdUser }: CreateUserResponseDto = createUserResponse.body;
+      await app!.user.activate(createdUser.id, adminAccessToken);
+      const loginResponse = await app!.auth.loginAs({ email: newUser.email, passcode: newUser.passcode });
+      const userAccessToken = loginResponse?.accessToken;
 
-      // Activate user
-      await app!.user.activate(user.id, adminAccessToken!);
+      const requestData = generateValidBulletin();
+      const createBulletinResponse = await app!.bulletin.create(requestData, userAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(403);
 
-      // Login as new user
-      const loginResponse = await app!.auth.loginAs({
-        email: userData.email,
-        passcode: userData.passcode!,
-      } satisfies ILoginModel);
+      await app!.user.delete(createdUser.id, adminAccessToken);
+    });
 
-      const requestData = generateValidBulletin(); // Start far in future to avoid conflict
+    test('when user have all permissions expect AddBulletin', async () => {
+      const newUser = generateValidUserWithPassword();
+      const createUserResponse = await app!.user.create(newUser, adminAccessToken);
+      expect(createUserResponse.statusCode).toBe(201);
+      const { data: createdUser }: CreateUserResponseDto = createUserResponse.body;
+      await app!.user.activate(createdUser.id, adminAccessToken);
 
-      const response = await app!.bulletin.create(requestData, loginResponse?.accessToken);
+      const requestData = generateValidBulletin();
+      const allPermissionsExceptAddBulletin = Object.values(SystemPermissions).filter(
+        permission => permission !== SystemPermissions.AddBulletin,
+      );
 
-      expect(response.statusCode).toBe(403);
-      expect(response.body.data.message).toBe(errorKeys.login.User_Not_Authorized);
+      for (const permission of allPermissionsExceptAddBulletin) {
+        await app!.permissions.add(createdUser.id, permission, adminAccessToken);
+      }
 
-      // Cleanup
-      await app!.user.delete(user.id, adminAccessToken!);
+      const loginResponse = await app!.auth.loginAs({ email: newUser.email, passcode: newUser.passcode });
+      const userAccessToken = loginResponse?.accessToken;
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, userAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(403);
+
+      await app!.user.delete(createdUser.id, adminAccessToken);
     });
   });
 
-  describe('POST should respond with a status code of 409', () => {
-    test('when bulletin title already exists', async () => {
-      const baseRequestData = generateValidBulletin();
-      const uniqueTitle = `Duplicate Test ${Date.now()}`;
+  describe('POST should respond with a status code of 401', () => {
+    test('when token is not set', async () => {
+      const requestData = generateValidBulletin();
+      const createBulletinResponse = await app!.bulletin.create(requestData);
+      expect(createBulletinResponse.statusCode).toBe(401);
+    });
 
-      const requestData1 = { ...baseRequestData, title: uniqueTitle };
-      const requestData2 = { ...generateValidBulletin(), title: uniqueTitle }; // Different date but same title
+    test('when token is invalid', async () => {
+      const requestData = generateValidBulletin();
+      const createBulletinResponse = await app!.bulletin.create(requestData, 'invalid_token');
+      expect(createBulletinResponse.statusCode).toBe(401);
+    });
 
-      // Create first bulletin
-      const firstResponse = await app!.bulletin.create(requestData1, adminAccessToken);
-      expect(firstResponse.statusCode).toBe(201);
+    test('when try to use token from user that not exists', async () => {
+      const newUser = generateValidUserWithPassword();
+      const createUserResponse = await app!.user.create(newUser, adminAccessToken);
+      expect(createUserResponse.statusCode).toBe(201);
+      const { data: createdUser }: CreateUserResponseDto = createUserResponse.body;
+      await app!.user.activate(createdUser.id, adminAccessToken);
+      const loginResponse = await app!.auth.loginAs({ email: newUser.email, passcode: newUser.passcode });
+      const userAccessToken = loginResponse?.accessToken;
+      await app!.user.delete(createdUser.id, adminAccessToken);
 
-      // Try to create second bulletin with same title
-      const secondResponse = await app!.bulletin.create(requestData2, adminAccessToken);
-
-      expect(secondResponse.statusCode).toBe(409);
-      expect(secondResponse.body.data.message).toBeDefined();
-
-      // Cleanup - delete the first bulletin
-      await app!.bulletin.delete(firstResponse.body.id, adminAccessToken);
+      const requestData = generateValidBulletin();
+      const createBulletinResponse = await app!.bulletin.create(requestData, userAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(401);
+      expect(createBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = createBulletinResponse.body;
+      expect(typeof body).toBe('object');
+      const data = body.data as UnauthorizedException;
+      const { message: loginMessage, args: loginArgs } = data;
+      expect(loginMessage).toBe(errorKeys.login.Wrong_Authentication_Token);
+      expect(loginArgs).toBeUndefined();
     });
   });
 

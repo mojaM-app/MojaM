@@ -13,10 +13,10 @@ if (!existsSync(logDir)) {
 }
 
 // Define log format
-const logFormat = winston.format.printf(
-  ({ timestamp, level, message }: { timestamp: any; level: string; message: any }) =>
-    `${timestamp} ${level}: ${message}`,
-);
+const logFormat = winston.format.printf((info: winston.Logform.TransformableInfo) => {
+  const { timestamp, level, message } = info;
+  return `${timestamp} ${level}: ${message}`;
+});
 
 /*
  * Log Level

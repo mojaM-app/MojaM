@@ -26,6 +26,19 @@ describe('GET /permissions', () => {
   });
 
   describe('GET should respond with a status code of 401', () => {
+    it('when token is not set', async () => {
+      const getPermissionsResponse = await app!.permissions.get();
+      expect(getPermissionsResponse.statusCode).toBe(401);
+      const body = getPermissionsResponse.body;
+      expect(typeof body).toBe('object');
+      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
     it('when token is invalid', async () => {
       const getPermissionsResponse = await app!.permissions.get(`invalid_token_${adminAccessToken}`);
       expect(getPermissionsResponse.statusCode).toBe(401);
@@ -41,19 +54,6 @@ describe('GET /permissions', () => {
   });
 
   describe('GET should respond with a status code of 403', () => {
-    it('when token is not set', async () => {
-      const getPermissionsResponse = await app!.permissions.get();
-      expect(getPermissionsResponse.statusCode).toBe(401);
-      const body = getPermissionsResponse.body;
-      expect(typeof body).toBe('object');
-      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    });
-
     it('when user has no permission', async () => {
       const requestData = userTestHelpers.generateValidUserWithPassword();
 

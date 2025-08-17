@@ -34,7 +34,6 @@ import { BaseTabBulletin } from '../base-tab-bulletin';
   ],
   providers: [],
   templateUrl: './tab-bulletin-properties.component.html',
-  styleUrl: './tab-bulletin-properties.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TabBulletinPropertiesComponent extends BaseTabBulletin {

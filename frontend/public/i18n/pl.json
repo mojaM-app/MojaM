@@ -70,7 +70,8 @@
     "Cannot_Activate_Locked_Account": "Twoje konto jest zablokowane, nie można aktywować zablokowanego konta. Skontaktuj się z liderem.",
     "Failed_To_Activate_Account": "Nie udało się aktywować konta. Zgłoś ten problem jednemu z animatorów lub liderowi wspólnoty.",
     "Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted": "Nie można usunąć tego rekordu ponieważ jest on powiązany z innymi rekordami w bazie.",
-    "Activation_Failed_Passcode_Is_Not_Set": "Nie można aktywować konta ponieważ nie ma ono ustawionego sposobu uwierzytelniania (logowania). Gdy użytkownik ten został dodany do aplikacji, został wysłany do niego e-mail z instrukcją jak aktywować konto. Podczas aktywacji wybierany jest sposób uwierzytelniania. Poproś użytkownika aby dokończył aktywację konta lub wyślij do niego ponownie e-mail aktywujący."
+    "Activation_Failed_Passcode_Is_Not_Set": "Nie można aktywować konta ponieważ nie ma ono ustawionego sposobu uwierzytelniania (logowania). Gdy użytkownik ten został dodany do aplikacji, został wysłany do niego e-mail z instrukcją jak aktywować konto. Podczas aktywacji wybierany jest sposób uwierzytelniania. Poproś użytkownika aby dokończył aktywację konta lub wyślij do niego ponownie e-mail aktywujący.",
+    "Bulletin_With_Given_Date_Already_Exists": "Istnieje już biuletyn z wprowadzoną datą utworzenia."
   },
   "Error404": {
     "Message": "Strona nie istnieje"

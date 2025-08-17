@@ -58,8 +58,8 @@ describe('DELETE /announcements', () => {
 
   describe('DELETE should respond with a status code of 400', () => {
     test('when announcements not exist', async () => {
-      const userId: string = Guid.EMPTY;
-      const deleteResponse = await app!.announcements.delete(userId, adminAccessToken);
+      const announcementsId: string = Guid.EMPTY;
+      const deleteResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
       expect(deleteResponse.statusCode).toBe(400);
       expect(deleteResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = deleteResponse.body;
@@ -67,7 +67,7 @@ describe('DELETE /announcements', () => {
       const data = body.data as BadRequestException;
       const { message: deleteMessage, args: deleteArgs } = data;
       expect(deleteMessage).toBe(errorKeys.announcements.Announcements_Does_Not_Exist);
-      expect(deleteArgs).toEqual({ id: userId });
+      expect(deleteArgs).toEqual({ id: announcementsId });
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -94,20 +94,6 @@ describe('DELETE /announcements', () => {
   });
 
   describe('DELETE should respond with a status code of 403', () => {
-    test('when token is not set', async () => {
-      const id: string = Guid.EMPTY;
-      const deleteResponse = await app!.announcements.delete(id);
-      expect(deleteResponse.statusCode).toBe(401);
-      const body = deleteResponse.body;
-      expect(typeof body).toBe('object');
-      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    });
-
     test('when user has no permission', async () => {
       const userData = userTestHelpers.generateValidUserWithPassword();
       const newUserResponse = await app!.user.create(userData, adminAccessToken);
@@ -215,6 +201,20 @@ describe('DELETE /announcements', () => {
   });
 
   describe('DELETE should respond with a status code of 401', () => {
+    test('when token is not set', async () => {
+      const id: string = Guid.EMPTY;
+      const deleteResponse = await app!.announcements.delete(id);
+      expect(deleteResponse.statusCode).toBe(401);
+      const body = deleteResponse.body;
+      expect(typeof body).toBe('object');
+      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
     test('when token is invalid', async () => {
       const deleteResponse = await app!.announcements.delete(Guid.EMPTY, `invalid_token_${adminAccessToken}`);
       expect(deleteResponse.statusCode).toBe(401);

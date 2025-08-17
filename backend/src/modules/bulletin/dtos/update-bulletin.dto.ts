@@ -1,99 +1,144 @@
-import { BaseReqDto, events, type IResponse } from '@core';
-import { Type } from 'class-transformer';
+import { VALIDATOR_SETTINGS } from '@config';
+import { BaseReqDto, DtoTransformFunctions, events, type IResponse } from '@core';
+import { errorKeys } from '@exceptions';
+import { IsBulletinSectionValid } from '@validators';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
-  IsDateString,
+  IsDate,
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsOptional,
+  IsPositive,
   IsString,
   Max,
+  MaxLength,
   Min,
   ValidateNested,
 } from 'class-validator';
+import { SectionType } from '../enums/bulletin-section-type.enum';
 
-export class UpdateBulletinTaskDto {
+export class UpdateBulletinDaySectionDto {
+  public id?: string;
+
+  @IsNotEmpty()
   @IsInt()
   @Min(1)
-  public taskOrder: number;
-
-  @IsString()
-  @IsNotEmpty()
-  public description: string;
+  @Max(Number.MAX_SAFE_INTEGER)
+  public order!: number;
 
   @IsOptional()
-  public hasCommentField?: boolean = false;
+  @MaxLength(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH, { message: errorKeys.bulletin.Section_Title_Too_Long })
+  @Transform(DtoTransformFunctions.returnNullIfEmpty)
+  public title?: string | null;
+
+  @IsOptional()
+  @MaxLength(VALIDATOR_SETTINGS.BULLETIN_DAY_SECTION_CONTENT_MAX_LENGTH, {
+    message: errorKeys.bulletin.Section_Content_Too_Long,
+  })
+  @Transform(DtoTransformFunctions.returnNullIfEmpty)
+  public content?: string | null;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsEnum(SectionType)
+  public type!: SectionType;
+
+  @IsBulletinSectionValid()
+  public validateSection?: boolean = true;
 
   constructor() {
-    this.taskOrder = 1;
-    this.description = '';
+    this.content = null;
   }
 }
 
 export class UpdateBulletinDayDto {
-  @IsInt()
-  @Min(1)
-  public dayNumber: number;
+  public id?: string;
 
   @IsOptional()
   @IsString()
-  public introduction?: string;
+  @MaxLength(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH)
+  @Transform(DtoTransformFunctions.getEmptyStringIfNotSet)
+  public title?: string | null;
 
-  @IsString()
-  @IsNotEmpty()
-  public instructions: string;
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate()
+  public date?: Date | null;
 
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => UpdateBulletinTaskDto)
-  public tasks: UpdateBulletinTaskDto[];
+  @Type(() => UpdateBulletinDaySectionDto)
+  public sections?: UpdateBulletinDaySectionDto[] | null;
 
   constructor() {
-    this.dayNumber = 1;
-    this.instructions = '';
-    this.tasks = [];
+    this.sections = [];
   }
 }
 
 export class UpdateBulletinDto {
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  public title?: string;
+  @MaxLength(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH, { message: errorKeys.bulletin.Title_Too_Long })
+  @Transform(DtoTransformFunctions.getEmptyStringIfNotSet)
+  public title?: string | null;
 
   @IsOptional()
-  @IsDateString()
-  public startDate?: string;
+  @Type(() => Date)
+  @IsDate()
+  public date?: Date | null;
 
   @IsOptional()
-  @IsInt()
-  @Min(1)
-  @Max(90)
-  public daysCount?: number;
+  @IsPositive()
+  public number?: number | null;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH)
+  @Transform(DtoTransformFunctions.getEmptyStringIfNotSet)
+  public introduction?: string | null;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH)
+  @Transform(DtoTransformFunctions.getEmptyStringIfNotSet)
+  public tipsForWork?: string | null;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH)
+  @Transform(DtoTransformFunctions.getEmptyStringIfNotSet)
+  public dailyPrayer?: string | null;
 
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => UpdateBulletinDayDto)
-  public days?: UpdateBulletinDayDto[];
+  public days?: UpdateBulletinDayDto[] | null;
+
+  constructor() {
+    this.days = [];
+  }
 }
 
 export class UpdateBulletinReqDto extends BaseReqDto {
   public readonly bulletinId: string | undefined;
   public readonly bulletin: UpdateBulletinDto;
 
-  constructor(bulletinId: string | undefined, bulletin: UpdateBulletinDto, currentUserId: number | undefined) {
+  constructor(bulletinId: string | undefined, bulletin: UpdateBulletinDto, currentUserId: number) {
     super(currentUserId);
     this.bulletinId = bulletinId;
     this.bulletin = bulletin;
   }
 }
 
-export class UpdateBulletinResponseDto implements IResponse<string> {
-  public readonly data: string;
+export class UpdateBulletinResponseDto implements IResponse<boolean> {
+  public readonly data: boolean;
   public readonly message: string;
 
-  constructor(data: string) {
+  constructor(data: boolean) {
     this.data = data;
     this.message = events.bulletin.bulletinUpdated;
   }

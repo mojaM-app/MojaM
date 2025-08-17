@@ -37,17 +37,21 @@ export abstract class CacheService<TEntity extends IHasGuidId> {
     await this.saveDataInCache(cacheKey, undefined, {});
   }
 
-  protected abstract getEntityType(): string;
+  protected abstract getEntityName(): string;
 
   private getIdCacheKey(guidId: string): string {
-    return `${this.getEntityType().toLowerCase()}_id_${guidId}`;
+    return `${this.getEntityName().toLowerCase()}_id_${guidId}`;
   }
 
   private async getDataFromCache<T>(keyName: string): Promise<T | undefined> {
     return await this.cache.getItem<T | undefined>(keyName);
   }
 
-  private async saveDataInCache(keyName: string, data: any, options: { ttl?: number; isLazy?: boolean; isCachedForever?: boolean }): Promise<void> {
+  private async saveDataInCache(
+    keyName: string,
+    data: any,
+    options: { ttl?: number; isLazy?: boolean; isCachedForever?: boolean },
+  ): Promise<void> {
     await this.cache.setItem(keyName, data, options);
   }
 }

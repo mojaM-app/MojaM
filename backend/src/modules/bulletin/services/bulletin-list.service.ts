@@ -1,44 +1,46 @@
-import { BaseService, events } from '@core';
+import { BaseService, events, IBulletinGridItemDto, IGridPageResponseDto } from '@core';
 import { Container, Service } from 'typedi';
-import { Bulletin } from '../../../dataBase/entities/bulletin/bulletin.entity';
-import { GetBulletinListReqDto, IBulletinListItemDto } from '../dtos/get-bulletin-list.dto';
+import { vBulletin } from '../../../dataBase/entities/bulletin/vBulletin.entity';
+import { BulletinsGridPageDto, GetBulletinListReqDto } from '../dtos/get-bulletin-list.dto';
+import { BulletinListRetrievedEvent } from '../events/bulletin-list-retrieved.event';
 import { BulletinListRepository } from '../repositories/bulletin-list.repository';
 
 @Service()
 export class BulletinListService extends BaseService {
-  private readonly _bulletinListRepository: BulletinListRepository;
+  private readonly _repository: BulletinListRepository;
 
   constructor() {
     super();
-    this._bulletinListRepository = Container.get(BulletinListRepository);
+    this._repository = Container.get(BulletinListRepository);
   }
 
-  public async get(reqDto: GetBulletinListReqDto): Promise<IBulletinListItemDto[]> {
-    const bulletins = await this._bulletinListRepository.get();
+  public async get(reqDto: GetBulletinListReqDto): Promise<BulletinsGridPageDto> {
+    const recordsWithTotal: IGridPageResponseDto<vBulletin> = await this._repository.get(reqDto.page, reqDto.sort);
 
-    let filteredBulletins = bulletins;
-    if (reqDto.state) {
-      filteredBulletins = bulletins.filter(b => b.state === reqDto.state);
-    }
+    this._eventDispatcher.dispatch(
+      events.bulletin.bulletinListRetrieved,
+      new BulletinListRetrievedEvent(reqDto.currentUserId!),
+    );
 
-    const dtos = filteredBulletins.map(bulletin => this.bulletinToIBulletinListItem(bulletin));
-
-    this._eventDispatcher.dispatch(events.bulletin.bulletinListRetrieved, dtos);
-
-    return dtos;
-  }
-
-  private bulletinToIBulletinListItem(bulletin: Bulletin): IBulletinListItemDto {
     return {
-      id: bulletin.uuid,
+      items: recordsWithTotal.items.map(entity => this.vBulletinToIBulletinGridItemDto(entity)),
+      totalCount: recordsWithTotal.totalCount,
+    } satisfies BulletinsGridPageDto;
+  }
+
+  private vBulletinToIBulletinGridItemDto(bulletin: vBulletin): IBulletinGridItemDto {
+    return {
+      id: bulletin.id,
       title: bulletin.title,
-      startDate: bulletin.startDate,
-      daysCount: bulletin.daysCount,
+      number: bulletin.number,
+      date: bulletin.date,
       state: bulletin.state,
       createdAt: bulletin.createdAt,
-      createdBy: '', //TODO zrobić widok
+      createdBy: bulletin.createdBy,
+      updatedAt: bulletin.updatedAt,
+      updatedBy: bulletin.updatedBy,
       publishedAt: bulletin.publishedAt,
-      publishedBy: null,
-    } satisfies IBulletinListItemDto;
+      publishedBy: bulletin.publishedBy,
+    } satisfies IBulletinGridItemDto;
   }
 }

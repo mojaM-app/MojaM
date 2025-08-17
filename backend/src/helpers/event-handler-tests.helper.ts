@@ -16,6 +16,13 @@ import {
   UserPasscodeChangedEvent,
   UserRefreshedTokenEvent,
 } from '@modules/auth';
+import {
+  BulletinCreatedEvent,
+  BulletinDeletedEvent,
+  BulletinPublishedEvent,
+  BulletinRetrievedEvent,
+  BulletinUpdatedEvent,
+} from '@modules/bulletin';
 import { CalendarEventsRetrievedEvent } from '@modules/calendar';
 import { CommunityRetrievedEvent } from '@modules/community';
 import { NewsRetrievedEvent } from '@modules/news';
@@ -67,6 +74,11 @@ export const testEventHandlers: {
   onCalendarEventsRetrieved: (data: any) => void;
   onCommunityRetrieved: (data: any) => void;
   onNewsRetrieved: (data: any) => void;
+  onBulletinCreated: (data: any) => void;
+  onBulletinRetrieved: (data: any) => void;
+  onBulletinUpdated: (data: any) => void;
+  onBulletinDeleted: (data: any) => void;
+  onBulletinPublished: (data: any) => void;
 } = {
   onUserLoggedIn: jest.fn((_: UserLoggedInEvent) => {}),
   onUserRefreshedToken: jest.fn((_: UserRefreshedTokenEvent) => {}),
@@ -99,6 +111,11 @@ export const testEventHandlers: {
   onCalendarEventsRetrieved: jest.fn((_: CalendarEventsRetrievedEvent) => {}),
   onCommunityRetrieved: jest.fn((_: CommunityRetrievedEvent) => {}),
   onNewsRetrieved: jest.fn((_: NewsRetrievedEvent) => {}),
+  onBulletinCreated: jest.fn((_: BulletinCreatedEvent) => {}),
+  onBulletinRetrieved: jest.fn((_: BulletinRetrievedEvent) => {}),
+  onBulletinUpdated: jest.fn((_: BulletinUpdatedEvent) => {}),
+  onBulletinDeleted: jest.fn((_: BulletinDeletedEvent) => {}),
+  onBulletinPublished: jest.fn((_: BulletinPublishedEvent) => {}),
 };
 
 export const registerTestEventHandlers = (eventDispatcher: EventDispatcher): void => {
