@@ -1,7 +1,7 @@
 import { SortDirection } from '@angular/material/sort';
 import { Observable } from 'rxjs';
-import { IGridData } from 'src/interfaces/common/grid.data';
-import { IMenuItem } from 'src/interfaces/menu/menu-item';
+import { IGridData } from 'src/core/interfaces/common/grid.data';
+import { IMenuItem } from 'src/core/interfaces/menu/menu-item';
 
 export const COLUMN_NAMES = {
   EXPAND: 'expand',

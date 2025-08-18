@@ -59,7 +59,7 @@ export class UpdateBulletinDayDto {
   @IsOptional()
   @IsString()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH)
-  @Transform(DtoTransformFunctions.getEmptyStringIfNotSet)
+  @Transform(DtoTransformFunctions.returnNullIfEmpty)
   public title?: string | null;
 
   @IsOptional()
@@ -97,19 +97,19 @@ export class UpdateBulletinDto {
   @IsOptional()
   @IsString()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH)
-  @Transform(DtoTransformFunctions.getEmptyStringIfNotSet)
+  @Transform(DtoTransformFunctions.returnNullIfEmpty)
   public introduction?: string | null;
 
   @IsOptional()
   @IsString()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH)
-  @Transform(DtoTransformFunctions.getEmptyStringIfNotSet)
+  @Transform(DtoTransformFunctions.returnNullIfEmpty)
   public tipsForWork?: string | null;
 
   @IsOptional()
   @IsString()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH)
-  @Transform(DtoTransformFunctions.getEmptyStringIfNotSet)
+  @Transform(DtoTransformFunctions.returnNullIfEmpty)
   public dailyPrayer?: string | null;
 
   @IsOptional()

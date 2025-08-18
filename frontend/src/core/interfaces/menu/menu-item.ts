@@ -1,4 +1,4 @@
-import { MenuItemClickResult } from 'src/interfaces/menu/menu.enum';
+import { MenuItemClickResult } from 'src/core/interfaces/menu/menu.enum';
 
 export interface IMenuItem {
   title?: string;

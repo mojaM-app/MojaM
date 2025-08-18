@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { DeleteResult } from 'src/core/delete-result.enum';
-import { IUser } from 'src/interfaces/users/user.interfaces';
+import { IUser } from 'src/core/interfaces/users/user.interfaces';
 import { BaseService } from 'src/services/common/base.service';
 import { HttpClientService } from 'src/services/common/httpClient.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';

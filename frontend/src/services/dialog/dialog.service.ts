@@ -9,7 +9,7 @@ import { BaseDialogComponent } from 'src/app/components/static/dialog/base-dialo
 import { LoginDialogComponent } from 'src/app/components/static/login/login-dialog/login-dialog.component';
 import { ILoginDialogOptions } from 'src/app/components/static/login/login-dialog/login-dialog.options';
 import { WysiwygEditorPopupComponent } from 'src/app/components/static/wysiwyg-editor/wysiwyg-editor-dialog/wysiwyg-editor-dialog.component';
-import { IDialogSettings } from 'src/interfaces/common/dialog.settings';
+import { IDialogSettings } from 'src/core/interfaces/common/dialog.settings';
 import { GuidUtils } from 'src/utils/guid.utils';
 
 @Injectable({

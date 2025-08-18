@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { BulletinViewsComponent } from './bulletin-views/bulletin-views.component';
 import { PermissionGuard } from 'src/services/auth/permission.guard';
 import { SystemPermissionValue } from 'src/core/system-permission.enum';
-import { IPermissionRouteData } from 'src/interfaces/common/route.data';
+import { IPermissionRouteData } from 'src/core/interfaces/common/route.data';
 import { AddBulletinMenu, EditBulletinMenu } from './bulletin.menu';
 
 const routes: Routes = [

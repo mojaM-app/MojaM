@@ -20,7 +20,7 @@ import { ViewPeriod } from 'calendar-utils';
 import { debounceTime } from 'rxjs';
 import { IS_MOBILE } from 'src/app/app.config';
 import { CalendarService } from 'src/app/components/calendar/services/calendar.service';
-import { CalendarEvent } from 'src/interfaces/calendar/calendar-event';
+import { CalendarEvent } from 'src/app/components/calendar/interfaces/calendar-event';
 import { DialogService } from 'src/services/dialog/dialog.service';
 import { CultureService } from 'src/services/translate/culture.service';
 import { CustomDateFormatter } from './date-formatters/custom.date.formatter';

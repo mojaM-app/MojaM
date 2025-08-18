@@ -4,7 +4,7 @@ import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bott
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
-import { IMenuItem } from 'src/interfaces/menu/menu-item';
+import { IMenuItem } from 'src/core/interfaces/menu/menu-item';
 
 @Component({
   selector: 'app-bottom-sheet',

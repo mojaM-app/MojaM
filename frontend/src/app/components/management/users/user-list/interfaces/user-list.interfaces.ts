@@ -1,4 +1,4 @@
-import { IGridData } from '../../../../../../interfaces/common/grid.data';
+import { IGridData } from '../../../../../../core/interfaces/common/grid.data';
 
 export interface IUserGridItemColumns {
   email: string;

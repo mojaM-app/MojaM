@@ -2,7 +2,7 @@ import { Injectable, signal, WritableSignal } from '@angular/core';
 import { Router, NavigationEnd, ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { IRouteData } from 'src/interfaces/common/route.data';
+import { IRouteData } from 'src/core/interfaces/common/route.data';
 
 @Injectable({ providedIn: 'root' })
 export class PullToRefreshService {

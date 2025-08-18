@@ -24,7 +24,7 @@ import { CommonModule } from '@angular/common';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../static/confirmation-dialog/confirm-dialog.component';
 import { DialogService } from 'src/services/dialog/dialog.service';
-import { IDialogSettings } from 'src/interfaces/common/dialog.settings';
+import { IDialogSettings } from 'src/core/interfaces/common/dialog.settings';
 import { DynamicButtonComponent } from '../../static/dynamic-button/dynamic-button.component';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { TabBulletinPropertiesComponent } from './tab-bulletin-properties/tab-bulletin-properties.component';

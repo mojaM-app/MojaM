@@ -1,8 +1,8 @@
 import { VALIDATOR_SETTINGS } from '@config';
-import { BaseReqDto, events, type IResponse } from '@core';
+import { BaseReqDto, DtoTransformFunctions, events, type IResponse } from '@core';
 import { errorKeys } from '@exceptions';
 import { IsBulletinSectionValid } from '@validators';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsDate,
@@ -32,12 +32,14 @@ export class CreateBulletinDaySectionDto {
 
   @IsOptional()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH, { message: errorKeys.bulletin.Section_Title_Too_Long })
+  @Transform(DtoTransformFunctions.returnNullIfEmpty)
   public title?: string | null;
 
   @IsOptional()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_DAY_SECTION_CONTENT_MAX_LENGTH, {
     message: errorKeys.bulletin.Section_Content_Too_Long,
   })
+  @Transform(DtoTransformFunctions.returnNullIfEmpty)
   public content?: string | null;
 
   @IsBulletinSectionValid()
@@ -52,6 +54,7 @@ export class CreateBulletinDayDto {
 
   @IsOptional()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH, { message: errorKeys.bulletin.Title_Too_Long })
+  @Transform(DtoTransformFunctions.returnNullIfEmpty)
   public title?: string | null;
 
   @IsArray()
@@ -80,16 +83,19 @@ export class CreateBulletinDto {
   @IsOptional()
   @IsString()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH)
+  @Transform(DtoTransformFunctions.returnNullIfEmpty)
   public introduction?: string | null;
 
   @IsOptional()
   @IsString()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH)
+  @Transform(DtoTransformFunctions.returnNullIfEmpty)
   public tipsForWork?: string | null;
 
   @IsOptional()
   @IsString()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH)
+  @Transform(DtoTransformFunctions.returnNullIfEmpty)
   public dailyPrayer?: string | null;
 
   @IsOptional()

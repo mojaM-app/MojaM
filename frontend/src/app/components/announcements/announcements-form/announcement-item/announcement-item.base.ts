@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { MatDialogConfig } from '@angular/material/dialog';
-import { IDialogSettings } from 'src/interfaces/common/dialog.settings';
+import { IDialogSettings } from 'src/core/interfaces/common/dialog.settings';
 import { DialogService } from 'src/services/dialog/dialog.service';
 import { IAnnouncementsItemForm } from '../announcements.form';
 

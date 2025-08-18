@@ -1,4 +1,4 @@
-import { CalendarEvent } from 'src/interfaces/calendar/calendar-event';
+import { CalendarEvent } from 'src/app/components/calendar/interfaces/calendar-event';
 import { CultureService } from 'src/services/translate/culture.service';
 import { TranslationService } from 'src/services/translate/translation.service';
 
