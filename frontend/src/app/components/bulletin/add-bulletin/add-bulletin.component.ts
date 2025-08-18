@@ -12,7 +12,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { CardHeaderComponent } from '../../static/card-header/card-header.component';
 import { BulletinFormComponent } from '../bulletin-form/bulletin-form.component';
-import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { AddBulletinDto } from '../models/add-bulletin.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/services/auth/auth.service';
@@ -34,7 +33,7 @@ import { environment } from 'src/environments/environment';
   styleUrl: './add-bulletin.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddBulletinComponent extends WithUnsubscribe() implements OnInit {
+export class AddBulletinComponent implements OnInit {
   public readonly bulletin = model<AddBulletinDto>();
 
   private readonly _formComponent = viewChild(BulletinFormComponent);
@@ -45,13 +44,11 @@ export class AddBulletinComponent extends WithUnsubscribe() implements OnInit {
     private _route: ActivatedRoute,
     private _bulletinService: BulletinService
   ) {
-    super();
-
-    this.addSubscription(
-      authService.onAuthStateChanged.subscribe(() => {
+    effect(() => {
+      authService.onAuthStateChanged.whenUnauthenticated(() => {
         this.navigateToBulletin();
-      })
-    );
+      });
+    });
 
     effect(() => {
       if (this._formComponent() && environment.production === false) {

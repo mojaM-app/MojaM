@@ -82,11 +82,11 @@ export class CalendarComponent extends WithUnsubscribe() {
       }
     });
 
-    this.addSubscription(
-      pullToRefreshService.refresh$.subscribe(() => {
+    effect(() => {
+      if (pullToRefreshService.refresh()) {
         this.onViewChanged();
-      })
-    );
+      }
+    });
   }
 
   public viewDateChange(date: Date): void {
@@ -161,11 +161,13 @@ export class CalendarComponent extends WithUnsubscribe() {
       return;
     }
 
-    this._calendarService
-      .getEvents(period!.start, period!.end)
-      .pipe(debounceTime(200))
-      .subscribe((events: CalendarEvent[]) => {
-        this.events.set(events);
-      });
+    this.addSubscription(
+      this._calendarService
+        .getEvents(period!.start, period!.end)
+        .pipe(debounceTime(200))
+        .subscribe((events: CalendarEvent[]) => {
+          this.events.set(events);
+        })
+    );
   }
 }

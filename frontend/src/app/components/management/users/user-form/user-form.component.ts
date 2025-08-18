@@ -130,11 +130,11 @@ export class UserFormComponent extends WithUnsubscribe(WithForm<IUserForm>()) im
       }
     });
 
-    this.addSubscription(
-      authService.onAuthStateChanged.subscribe(() => {
+    effect(() => {
+      authService.onAuthStateChanged.whenUnauthenticated(() => {
         this.navigateToHomePage();
-      })
-    );
+      });
+    });
   }
 
   public ngOnInit(): void {

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, OnInit, signal } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -104,11 +104,11 @@ export class UserProfileComponent
 
     this._userId = authTokenService.getUserId();
 
-    this.addSubscription(
-      authService.onAuthStateChanged.subscribe(() => {
+    effect(() => {
+      authService.onAuthStateChanged.whenUnauthenticated(() => {
         this.navigateToHomePage();
-      })
-    );
+      });
+    });
   }
 
   public ngOnInit(): void {

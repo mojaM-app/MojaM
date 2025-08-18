@@ -1,6 +1,12 @@
-import { ChangeDetectionStrategy, Component, OnInit, signal, WritableSignal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  OnInit,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { SystemPermissionValue } from 'src/core/system-permission.enum';
-import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { AuthService } from 'src/services/auth/auth.service';
 import { PermissionService } from 'src/services/auth/permission.service';
 import { AddBulletinMenu } from '../../bulletin.menu';
@@ -16,7 +22,7 @@ import { RouterModule } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [PipesModule, MatIconModule, MatButtonModule, RouterModule],
 })
-export class BulletinViewsHeaderComponent extends WithUnsubscribe() implements OnInit {
+export class BulletinViewsHeaderComponent implements OnInit {
   protected readonly AddBulletinMenu = AddBulletinMenu;
   protected showButtonAdd: WritableSignal<boolean> = signal(false);
 
@@ -24,13 +30,11 @@ export class BulletinViewsHeaderComponent extends WithUnsubscribe() implements O
     authService: AuthService,
     private _permissionService: PermissionService
   ) {
-    super();
-
-    this.addSubscription(
-      authService.onAuthStateChanged.subscribe(() => {
+    effect(() => {
+      authService.onAuthStateChanged.whenUnauthenticated(() => {
         this.ngOnInit();
-      })
-    );
+      });
+    });
   }
 
   public ngOnInit(): void {

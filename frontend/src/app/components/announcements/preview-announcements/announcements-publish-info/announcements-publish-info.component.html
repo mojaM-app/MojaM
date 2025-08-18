@@ -1,0 +1,17 @@
+<div class="row lh-1 published-by opacity-50">
+  <div class="col d-flex justify-content-end flex-wrap">
+    <div>
+      <mat-icon class="align-middle">person</mat-icon>
+      <span
+        >{{ 'Announcements/PublishedBy' | gmessage }}
+        {{ announcements()!.getPublisherName() }}&nbsp;
+      </span>
+    </div>
+    <div class="text-nowrap">
+      <mat-icon class="align-middle">calendar_month</mat-icon>
+      <span>{{ announcements()!.getPublishDateTime() | gdate }} </span>
+      <mat-icon class="align-middle">schedule</mat-icon>
+      <span>{{ announcements()!.getPublishDateTime() | gtime }}</span>
+    </div>
+  </div>
+</div>

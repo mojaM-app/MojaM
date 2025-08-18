@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  effect,
   OnInit,
   signal,
 } from '@angular/core';
@@ -59,11 +60,11 @@ export class PermissionsComponent extends WithUnsubscribe() implements OnInit {
   ) {
     super();
 
-    this.addSubscription(
-      authService.onAuthStateChanged.subscribe(() => {
+    effect(() => {
+      authService.onAuthStateChanged.whenUnauthenticated(() => {
         router.navigateByUrl(NewsMenu.Path);
-      })
-    );
+      });
+    });
   }
 
   public ngOnInit(): void {

@@ -1,16 +1,16 @@
 import { signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
-import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { GdatePipe } from 'src/pipes/gdate.pipe';
 import { CultureService } from 'src/services/translate/culture.service';
 import { TranslationService } from 'src/services/translate/translation.service';
 import { AnnouncementsListMenu, AnnouncementsMenu } from '../announcements.menu';
 import { IAnnouncements } from '../interfaces/announcements';
 import { ICurrentAnnouncements } from '../interfaces/current-announcements';
+import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 
 export abstract class BasePreviewAnnouncementComponent extends WithUnsubscribe() {
-  public title: WritableSignal<string | null> = signal(null);
-  public announcements: WritableSignal<IAnnouncements | ICurrentAnnouncements | null> =
+  public readonly title: WritableSignal<string | null> = signal(null);
+  public readonly announcements: WritableSignal<IAnnouncements | ICurrentAnnouncements | null> =
     signal(null);
 
   public constructor(

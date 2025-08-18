@@ -1,0 +1,6 @@
+<div class="alert alert-light" role="alert">
+  <app-wysiwyg-preview [content]="item().content"></app-wysiwyg-preview>
+  @if (showFooter()) {
+    <app-announcements-item-footer [item]="item()"></app-announcements-item-footer>
+  }
+</div>

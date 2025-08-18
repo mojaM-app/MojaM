@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { IS_MOBILE } from 'src/app/app.config';
-import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 
 @Component({
   selector: 'app-bulletin-views',
@@ -9,8 +8,6 @@ import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false,
 })
-export class BulletinViewsComponent extends WithUnsubscribe() {
-  public constructor(@Inject(IS_MOBILE) protected isMobile: boolean) {
-    super();
-  }
+export class BulletinViewsComponent {
+  public constructor(@Inject(IS_MOBILE) protected isMobile: boolean) {}
 }

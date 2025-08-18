@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   Inject,
   OnInit,
   signal,
@@ -36,8 +37,9 @@ export class CurrentAnnouncementsComponent
   protected readonly AddAnnouncementsMenu = AddAnnouncementsMenu;
   protected readonly AnnouncementsListMenu = AnnouncementsListMenu;
 
-  protected showButtonAddAnnouncement: WritableSignal<boolean> = signal(false);
-  protected showButtonGoToAnnouncementList: WritableSignal<boolean> = signal(false);
+  protected readonly showButtonAddAnnouncement: WritableSignal<boolean> = signal(false);
+  protected readonly showButtonGoToAnnouncementList: WritableSignal<boolean> = signal(false);
+  protected readonly showPublishInfo = signal<boolean>(false);
 
   public constructor(
     @Inject(IS_MOBILE) isMobile: boolean,
@@ -51,17 +53,19 @@ export class CurrentAnnouncementsComponent
   ) {
     super(isMobile, translationService, cultureService, router);
 
-    this.addSubscription(
-      authService.onAuthStateChanged.subscribe(() => {
+    effect(() => {
+      authService.onAuthStateChanged.whenUnauthenticated(() => {
         this.ngOnInit();
-      })
-    );
+      });
+    });
 
-    this.addSubscription(
-      pullToRefreshService.refresh$.subscribe(() => {
-        this.ngOnInit();
-      })
-    );
+    effect(() => {
+      this.showPublishInfo.set(authService.isAuthenticated());
+    });
+
+    if (pullToRefreshService.refresh()) {
+      this.ngOnInit();
+    }
   }
 
   public ngOnInit(): void {

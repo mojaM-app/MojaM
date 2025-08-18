@@ -26,7 +26,6 @@ import { ConfirmDialogComponent } from '../../static/confirmation-dialog/confirm
 import { DialogService } from 'src/services/dialog/dialog.service';
 import { IDialogSettings } from 'src/core/interfaces/common/dialog.settings';
 import { DynamicButtonComponent } from '../../static/dynamic-button/dynamic-button.component';
-import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { TabBulletinPropertiesComponent } from './tab-bulletin-properties/tab-bulletin-properties.component';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { TabBulletinDayComponent } from './tab-bulletin-day/tab-bulletin-day.component';
@@ -55,7 +54,7 @@ import { GdatePipe } from 'src/pipes/gdate.pipe';
   styleUrl: './bulletin-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BulletinFormComponent extends WithUnsubscribe(WithForm<IBulletinForm>()) {
+export class BulletinFormComponent extends WithForm<IBulletinForm>() {
   public readonly bulletin = input.required<BulletinDto>();
   protected readonly selectedTabIndex = signal<number>(0);
   protected readonly dayTabDateFormat = 'raw: EEE dd.MM';

@@ -1,0 +1,7 @@
+<div class="row">
+  @for (item of items(); track item; let i = $index) {
+    <div class="col-12 col-xl-6">
+      <app-announcements-item [item]="item"></app-announcements-item>
+    </div>
+  }
+</div>
