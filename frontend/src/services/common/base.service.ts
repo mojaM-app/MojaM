@@ -35,6 +35,10 @@ export class BaseService {
       delete: (uuid: string): string =>
         `${environment.backendUrl}/${this.API_ROUTES.bulletin.path}/${uuid}`,
     },
+    bulletinList: {
+      path: 'bulletin-list',
+      get: (): string => `${environment.backendUrl}/${this.API_ROUTES.bulletinList.path}`,
+    },
     calendar: {
       path: 'calendar',
       getEvents: (): string => `${environment.backendUrl}/${this.API_ROUTES.calendar.path}/events`,

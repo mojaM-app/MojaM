@@ -1,10 +1,20 @@
-@if (showButtonAdd()) {
+@if (showButton()) {
   <div class="row mb-3">
-    <div class="col text-end">
-      <button mat-raised-button [routerLink]="['./' + AddBulletinMenu.Route]" type="button">
-        <mat-icon>{{ AddBulletinMenu.Icon }}</mat-icon>
-        <span>{{ AddBulletinMenu.Label | gmessage }}</span>
-      </button>
-    </div>
+    @if (showButtonAdd()) {
+      <div class="col-4 col-sm-5 text-center">
+        <button mat-raised-button [routerLink]="['./' + AddBulletinMenu.Route]" type="button">
+          <mat-icon>{{ AddBulletinMenu.Icon }}</mat-icon>
+          <span>{{ AddBulletinMenu.Label | gmessage }}</span>
+        </button>
+      </div>
+    }
+    @if (showButtonList()) {
+      <div class="col-8 col-sm-7 text-center">
+        <button mat-raised-button [routerLink]="['./' + BulletinListMenu.Route]" type="button">
+          <mat-icon>{{ BulletinListMenu.Icon }}</mat-icon>
+          <span>{{ BulletinListMenu.Label | gmessage }}</span>
+        </button>
+      </div>
+    }
   </div>
 }

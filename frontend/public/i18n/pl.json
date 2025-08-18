@@ -183,6 +183,7 @@
     "Title": "Biuletyn",
     "Header": "Biuletyn - teksty do formacji",
     "BtnAdd": "Dodaj biuletyn",
+    "BtnList": "Lista biuletynów",
     "FormAdd": {
       "Title": "Dodaj biuletyn"
     },
@@ -263,6 +264,9 @@
           "ContentMaxLengthError": "Treść sekcji nie może przekraczać {maxLength} znaków"
         }
       }
+    },
+    "List": {
+      "Title": "Lista biuletynów"
     }
   },
   "Settings": {

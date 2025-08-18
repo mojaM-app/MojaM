@@ -1,22 +1,22 @@
 import { ChangeDetectionStrategy, Component, effect, signal } from '@angular/core';
+import { GridModule } from '../../static/grid/grid.module';
 import { Router, RouterModule } from '@angular/router';
+import { BulletinGridService } from './bulletin-grid.service';
+import { AddBulletinMenu, BulletinMenu } from '../bulletin.menu';
 import { SystemPermissionValue } from 'src/core/system-permission.enum';
 import { AuthService } from 'src/services/auth/auth.service';
 import { PermissionService } from 'src/services/auth/permission.service';
-import { GridModule } from '../../static/grid/grid.module';
-import { AddAnnouncementsMenu, AnnouncementsMenu } from '../announcements.menu';
-import { AnnouncementsGridService } from './announcements-grid.service';
 
 @Component({
-  selector: 'app-announcements-list',
+  selector: 'app-bulletin-list',
   imports: [RouterModule, GridModule],
-  templateUrl: './announcements-list.component.html',
-  styleUrl: './announcements-list.component.scss',
+  templateUrl: './bulletin-list.component.html',
+  styleUrl: './bulletin-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [{ provide: 'gridService', useClass: AnnouncementsGridService }],
+  providers: [{ provide: 'gridService', useClass: BulletinGridService }],
 })
-export class AnnouncementsListComponent {
-  protected readonly AddAnnouncementsMenu = AddAnnouncementsMenu;
+export class BulletinListComponent {
+  protected readonly AddBulletinMenu = AddBulletinMenu;
   protected readonly showAddButton = signal<boolean>(false);
 
   public constructor(
@@ -26,10 +26,10 @@ export class AnnouncementsListComponent {
   ) {
     effect(() => {
       authService.onAuthStateChanged.whenUnauthenticated(() => {
-        router.navigateByUrl(AnnouncementsMenu.Path);
+        router.navigateByUrl(BulletinMenu.Path);
       });
     });
 
-    this.showAddButton.set(permissionService.hasPermission(SystemPermissionValue.AddAnnouncements));
+    this.showAddButton.set(permissionService.hasPermission(SystemPermissionValue.AddBulletin));
   }
 }

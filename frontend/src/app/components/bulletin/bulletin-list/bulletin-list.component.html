@@ -1,0 +1,23 @@
+<div class="card card-with-grid border-0">
+  <div class="d-grid-with-header">
+    <header class="mat-toolbar">
+      <app-card-header [title]="'Bulletin/List/Title'">
+        <ng-container slot="buttons">
+          @if (showAddButton()) {
+            <button mat-flat-button type="button" [routerLink]="'/' + AddBulletinMenu.Path">
+              <mat-icon>add</mat-icon>
+              <span class="d-none d-sm-block">{{ 'Shared/BtnAdd' | gmessage }}</span>
+            </button>
+          }
+        </ng-container>
+      </app-card-header>
+    </header>
+    <main>
+      <div class="card-body p-0">
+        <div class="content-container">
+          <app-grid></app-grid>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
