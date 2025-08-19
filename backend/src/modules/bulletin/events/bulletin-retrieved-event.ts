@@ -1,5 +1,5 @@
 import { Event } from '@core';
-import { IBulletinDto } from '../dtos/get-bulletin.dto';
+import { type IBulletinDto } from '../dtos/get-bulletin.dto';
 
 export class BulletinRetrievedEvent extends Event {
   public readonly bulletin: IBulletinDto;

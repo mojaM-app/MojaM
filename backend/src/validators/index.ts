@@ -1,3 +1,3 @@
 export { isNotSetIf as IsNotSetIf } from './isNotSetIf.validator';
 export { isPasswordOrPinValid as IsPasswordOrPinValid } from './passwordAndPin.validator';
-export { IsBulletinSectionValid } from './bulletinSection.validator';
+export { isBulletinSectionValid as IsBulletinSectionValid } from './bulletinSection.validator';

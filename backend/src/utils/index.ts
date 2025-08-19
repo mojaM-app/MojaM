@@ -13,7 +13,7 @@ export { isNumber, isPositiveNumber, toNumber } from './numbers.utils';
 
 export { arraysEquals, isArray, isArrayEmpty } from './arrays.utils';
 
-export { isEmptyString, isNullOrEmptyString, isString } from './strings.utils';
+export { isEmptyString, isNullOrEmptyString, isString, normalizeEmail, normalizePhone } from './strings.utils';
 
 export { isNullOrUndefined } from './object.utils';
 

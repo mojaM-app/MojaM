@@ -1,4 +1,4 @@
-import { type Credentials } from 'google-auth-library';
+import { type Credentials, OAuth2Client } from 'google-auth-library';
 import { calendar_v3 as CalendarV3, google } from 'googleapis';
 import { Container, Service } from 'typedi';
 import { GOOGLE_API_CLIENT_ID, GOOGLE_API_CLIENT_SECRET, GOOGLE_API_REFRESH_TOKEN, GOOGLE_CALENDAR_ID } from '@config';
@@ -11,7 +11,7 @@ import Schema$EventDateTime = CalendarV3.Schema$EventDateTime;
 
 @Service()
 export class GoogleCalendarService {
-  private readonly _googleAuthClient: any | undefined;
+  private readonly _googleAuthClient: OAuth2Client | undefined;
   private readonly _databaseLoggerService: DatabaseLoggerService;
   constructor() {
     this._databaseLoggerService = Container.get(DatabaseLoggerService);
@@ -27,12 +27,12 @@ export class GoogleCalendarService {
 
   public async getEvents(startDate: Date, endDate: Date): Promise<any[] | undefined> {
     if (this._googleAuthClient === undefined) {
-      this._databaseLoggerService.error('Google Calendar API is not configured');
+      await this._databaseLoggerService.error('Google Calendar API is not configured');
       return [];
     }
 
     if (isNullOrEmptyString(GOOGLE_CALENDAR_ID)) {
-      this._databaseLoggerService.error('Google Calendar ID is not configured');
+      await this._databaseLoggerService.error('Google Calendar ID is not configured');
       return [];
     }
 

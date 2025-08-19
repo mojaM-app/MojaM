@@ -1,6 +1,6 @@
+import { Service } from 'typedi';
 import { IGridPageResponseDto, IPageData, ISortData } from '@core';
 import { BaseRepository } from '@db';
-import { Service } from 'typedi';
 import { vBulletin } from '../../../dataBase/entities/bulletin/vBulletin.entity';
 
 @Service()

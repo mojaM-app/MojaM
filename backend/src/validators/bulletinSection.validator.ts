@@ -1,6 +1,3 @@
-import { ICreateBulletinDaySection, IUpdateBulletinDaySection } from '@core';
-import { errorKeys } from '@exceptions';
-import { isNullOrUndefined, isString } from '@utils';
 import {
   registerDecorator,
   ValidationArguments,
@@ -8,66 +5,73 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
+import { ICreateBulletinDaySection, IUpdateBulletinDaySection } from '@core';
+import { errorKeys } from '@exceptions';
+import { isNullOrUndefined, isString } from '@utils';
 import { SectionType } from '../modules/bulletin/enums/bulletin-section-type.enum';
 
 @ValidatorConstraint({ name: 'isBulletinSectionValid', async: false })
 export class IsBulletinSectionValidConstraint implements ValidatorConstraintInterface {
-  public validate(value: any, args: ValidationArguments): boolean {
-    const object = args.object as ICreateBulletinDaySection | IUpdateBulletinDaySection;
+  public validate(value: unknown, args: ValidationArguments): boolean {
+    const section = args.object as ICreateBulletinDaySection | IUpdateBulletinDaySection;
+    const { type } = section;
 
-    if (!object || !object.type) {
+    if (!isString(type)) {
       return false;
     }
 
-    // For CUSTOM_TEXT sections, title and content are required
-    if (object.type === SectionType.CUSTOM_TEXT) {
-      return (object?.title?.length ?? 0) > 0 && (object?.content?.length ?? 0) > 0;
+    if (type === SectionType.CUSTOM_TEXT) {
+      return Boolean(section.title?.length) && Boolean(section.content?.length);
     }
 
-    // For other section types (INTRODUCTION, TIPS_FOR_WORK, DAILY_PRAYER),
+    // For section types (INTRODUCTION, TIPS_FOR_WORK, DAILY_PRAYER),
     // title and content should be null as they will be taken from Bulletin entity
-    if (
-      object.type === SectionType.INTRODUCTION ||
-      object.type === SectionType.TIPS_FOR_WORK ||
-      object.type === SectionType.DAILY_PRAYER
-    ) {
-      return isNullOrUndefined(object.title) && isNullOrUndefined(object.content);
+    if ([SectionType.INTRODUCTION, SectionType.TIPS_FOR_WORK, SectionType.DAILY_PRAYER].includes(type)) {
+      return isNullOrUndefined(section.title) && isNullOrUndefined(section.content);
     }
 
     return false;
   }
 
   public defaultMessage(args: ValidationArguments): string {
-    const object = args.object as ICreateBulletinDaySection | IUpdateBulletinDaySection;
+    const section = args.object as ICreateBulletinDaySection | IUpdateBulletinDaySection;
+    const { type } = section;
 
-    if (!object || !object.type) {
+    if (!isString(type)) {
       return `IsBulletinSectionValidConstraint: Not supported args type ('${typeof args}').`;
     }
 
-    if (object.type === SectionType.CUSTOM_TEXT) {
-      if (isNullOrUndefined(object.title) || !isString(object.title) || object.title!.length === 0) {
+    if (type === SectionType.CUSTOM_TEXT) {
+      if (!this.hasValue(section.title)) {
         return errorKeys.bulletin.Custom_Section_Title_Is_Required;
-      }
-      if (isNullOrUndefined(object.content) || !isString(object.content) || object.content!.length === 0) {
+      } else if (!this.hasValue(section.content)) {
         return errorKeys.bulletin.Custom_Section_Content_Is_Required;
       }
-    } else {
-      if (object.title) {
-        return errorKeys.bulletin.Non_Custom_Section_Should_Not_Have_Title;
-      } else if (object.content) {
-        return errorKeys.bulletin.Non_Custom_Section_Should_Not_Have_Content;
-      }
+
+      return '';
+    }
+
+    if (this.hasValue(section.title)) {
+      return errorKeys.bulletin.Non_Custom_Section_Should_Not_Have_Title;
+    }
+
+    if (this.hasValue(section.content)) {
+      return errorKeys.bulletin.Non_Custom_Section_Should_Not_Have_Content;
     }
 
     return 'IsBulletinSectionValidConstraint: not supported exception.';
   }
+
+  private hasValue(value: unknown): boolean {
+    return typeof value === 'string' && value.trim().length > 0;
+  }
 }
 
-export function IsBulletinSectionValid(validationOptions?: ValidationOptions) {
-  return function (object: any, propertyName: string): void {
+export function isBulletinSectionValid(validationOptions?: ValidationOptions) {
+  return (object: Object, propertyName: string): void => {
     registerDecorator({
       target: object.constructor,
-      propertyName: propertyName,
+      propertyName,
       options: validationOptions,
       constraints: [],
       validator: IsBulletinSectionValidConstraint,

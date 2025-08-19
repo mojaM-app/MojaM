@@ -1,7 +1,7 @@
+import { Container } from 'typedi';
 import { BaseRepository } from '@db';
 import { isGuid, isPositiveNumber } from '@utils';
-import { Container } from 'typedi';
-import { Bulletin } from '../../../dataBase/entities/bulletin/bulletin.entity';
+import { type Bulletin } from '../../../dataBase/entities/bulletin/bulletin.entity';
 import { BulletinCacheService } from '../services/bulletin-cache.service';
 
 export abstract class BaseBulletinRepository extends BaseRepository {
