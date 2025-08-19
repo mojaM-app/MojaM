@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { MatBottomSheet, MatBottomSheetConfig } from '@angular/material/bottom-sheet';
 import { firstValueFrom, map, tap } from 'rxjs';
 import { GuidUtils } from 'src/utils/guid.utils';
-import { MenuItemClickResult } from '../../../../interfaces/menu/menu.enum';
+import { MenuItemClickResult } from '../../../../core/interfaces/menu/menu.enum';
 import { BottomSheetPermissionsComponent } from '../../management/permissions/bottom-sheet-permissions/bottom-sheet-permissions.component';
 import { IUserPermissions } from '../../management/permissions/interfaces/user-permissions.interface';
 import { BottomSheetComponent } from './bottom-sheet.component';

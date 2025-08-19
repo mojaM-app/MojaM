@@ -8,7 +8,7 @@ export class UserCacheService extends CacheService<User> {
     super();
   }
 
-  protected override getEntityType(): string {
-    return User.name;
+  protected override getEntityName(): string {
+    return User.typeName;
   }
 }

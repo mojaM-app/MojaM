@@ -8,7 +8,7 @@ export class AnnouncementsCacheService extends CacheService<Announcement> {
     super();
   }
 
-  protected override getEntityType(): string {
-    return Announcement.name;
+  protected override getEntityName(): string {
+    return Announcement.typeName;
   }
 }

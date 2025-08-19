@@ -35,9 +35,11 @@ export class CommunityComponent extends WithUnsubscribe() implements OnInit {
   }
 
   public ngOnInit(): void {
-    this._service.get().subscribe((result: ICommunity) => {
-      this.model.set(result);
-    });
+    this.addSubscription(
+      this._service.get().subscribe((result: ICommunity) => {
+        this.model.set(result);
+      })
+    );
   }
 
   public selectNextTab(): void {

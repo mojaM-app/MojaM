@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { NewsMenu } from 'src/app/components/news/news.menu';
 import { GridModule } from 'src/app/components/static/grid/grid.module';
 import { SystemPermissionValue } from 'src/core/system-permission.enum';
-import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { AuthService } from 'src/services/auth/auth.service';
 import { PermissionService } from 'src/services/auth/permission.service';
 import { ManagementMenuAddUser } from '../../management.menu';
@@ -18,7 +17,7 @@ import { UserGridService } from './user-grid.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{ provide: 'gridService', useClass: UserGridService }],
 })
-export class UserListComponent extends WithUnsubscribe() {
+export class UserListComponent {
   public readonly ManagementMenuAddUser = ManagementMenuAddUser;
 
   protected readonly showAddButton = signal<boolean>(false);
@@ -28,15 +27,12 @@ export class UserListComponent extends WithUnsubscribe() {
     permissionService: PermissionService,
     private _router: Router
   ) {
-    super();
-
-    this.addSubscription(
-      authService.onAuthStateChanged.subscribe(() => {
+    effect(() => {
+      authService.onAuthStateChanged.whenUnauthenticated(() => {
         this.navigateToHomePage();
-      })
-    );
-
-    this.showAddButton.set(permissionService.hasPermission(SystemPermissionValue.AddUser));
+        this.showAddButton.set(permissionService.hasPermission(SystemPermissionValue.AddUser));
+      });
+    });
   }
 
   private navigateToHomePage(): void {

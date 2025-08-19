@@ -29,7 +29,7 @@ import { VALIDATOR_SETTINGS } from 'src/core/consts';
 import { FormMode } from 'src/core/form-mode.enum';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { environment } from 'src/environments/environment';
-import { IUser } from 'src/interfaces/users/user.interfaces';
+import { IUser } from 'src/core/interfaces/users/user.interfaces';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
@@ -130,11 +130,11 @@ export class UserFormComponent extends WithUnsubscribe(WithForm<IUserForm>()) im
       }
     });
 
-    this.addSubscription(
-      authService.onAuthStateChanged.subscribe(() => {
+    effect(() => {
+      authService.onAuthStateChanged.whenUnauthenticated(() => {
         this.navigateToHomePage();
-      })
-    );
+      });
+    });
   }
 
   public ngOnInit(): void {

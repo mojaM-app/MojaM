@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable, of, skip, tap } from 'rxjs';
+/* eslint-disable @typescript-eslint/member-ordering */
+import { computed, Injectable, signal } from '@angular/core';
+import { map, Observable, of, skip, tap } from 'rxjs';
 import { ILoginResponseDto } from 'src/services/auth/interfaces/ILoginResponseDto';
 import { BaseService } from '../common/base.service';
 import { HttpClientService } from '../common/httpClient.service';
@@ -9,16 +10,24 @@ import { ILoginModelDto } from './interfaces/ILoginModelDto';
 import { AccountBeforeLogIn } from './models/account-before-logIn';
 import { RefreshTokenService } from './refresh-token.service';
 
+export class AuthState {
+  public constructor(private readonly _isAuthenticated: () => boolean) {}
+
+  public whenUnauthenticated(cb: () => void): void {
+    if (!this._isAuthenticated()) {
+      cb();
+    }
+  }
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService extends BaseService {
-  public get isAuthenticated(): Observable<boolean> {
-    return this._isAuthenticated$.asObservable();
-  }
-  public readonly onAuthStateChanged: Observable<boolean>;
+  private readonly _isAuthenticated = signal<boolean>(false);
+  public readonly isAuthenticated = this._isAuthenticated.asReadonly();
 
-  private _isAuthenticated$ = new BehaviorSubject<boolean>(false);
+  public readonly onAuthStateChanged = new AuthState(computed(() => this._isAuthenticated()));
 
   public constructor(
     private _httpClient: HttpClientService,
@@ -27,9 +36,7 @@ export class AuthService extends BaseService {
   ) {
     super();
 
-    this._isAuthenticated$.next(this.isSessionValid());
-
-    this.onAuthStateChanged = this._isAuthenticated$.asObservable().pipe(skip(1));
+    this._isAuthenticated.set(this.isSessionValid());
   }
 
   public getAccountBeforeLogIn(email: string, phone?: string): Observable<AccountBeforeLogIn> {
@@ -65,7 +72,7 @@ export class AuthService extends BaseService {
         tap((response: ILoginResponseDto) => {
           this._authTokenService.saveToken(response?.accessToken);
           this._refreshTokenService.saveToken(response?.refreshToken);
-          this._isAuthenticated$.next(this._authTokenService.isTokenValid());
+          this._isAuthenticated.set(this._authTokenService.isTokenValid());
         })
       );
   }
@@ -73,7 +80,7 @@ export class AuthService extends BaseService {
   public logout(): void {
     this._refreshTokenService.removeToken();
     this._authTokenService.removeToken();
-    this._isAuthenticated$.next(this._authTokenService.isTokenValid());
+    this._isAuthenticated.set(this._authTokenService.isTokenValid());
   }
 
   public refreshAccessToken(): Observable<string | null> {
@@ -92,7 +99,7 @@ export class AuthService extends BaseService {
       .pipe(
         tap((newAccessToken: string | null) => {
           this._authTokenService.saveToken(newAccessToken);
-          this._isAuthenticated$.next(this._authTokenService.isTokenValid());
+          this._isAuthenticated.set(this._authTokenService.isTokenValid());
         })
       );
   }

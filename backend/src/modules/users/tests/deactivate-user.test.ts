@@ -155,20 +155,6 @@ describe('POST /user/:id/deactivate', () => {
   });
 
   describe('POST should respond with a status code of 403', () => {
-    test('when token is not set', async () => {
-      const userId: string = Guid.EMPTY;
-      const deactivateUserResponse = await app!.user.deactivate(userId);
-      expect(deactivateUserResponse.statusCode).toBe(401);
-      const body = deactivateUserResponse.body;
-      expect(typeof body).toBe('object');
-      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    });
-
     test('when user has no permission', async () => {
       const requestData = userTestHelpers.generateValidUserWithPassword();
       const createUserResponse = await app!.user.create(requestData, adminAccessToken);
@@ -316,6 +302,20 @@ describe('POST /user/:id/deactivate', () => {
   });
 
   describe('POST should respond with a status code of 401', () => {
+    test('when token is not set', async () => {
+      const userId: string = Guid.EMPTY;
+      const deactivateUserResponse = await app!.user.deactivate(userId);
+      expect(deactivateUserResponse.statusCode).toBe(401);
+      const body = deactivateUserResponse.body;
+      expect(typeof body).toBe('object');
+      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
     test('when token is invalid', async () => {
       const userId: string = Guid.EMPTY;
       const deactivateResponse = await app!.user.deactivate(userId, `invalid_token_${adminAccessToken}`);

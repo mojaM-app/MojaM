@@ -226,20 +226,6 @@ describe('DELETE /user', () => {
   });
 
   describe('DELETE should respond with a status code of 403', () => {
-    test('when token is not set', async () => {
-      const userId: string = Guid.EMPTY;
-      const deleteUserResponse = await app!.user.delete(userId);
-      expect(deleteUserResponse.statusCode).toBe(401);
-      const body = deleteUserResponse.body;
-      expect(typeof body).toBe('object');
-      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    });
-
     test('when user has no permission', async () => {
       const requestData = userTestHelpers.generateValidUserWithPassword();
       const createUserResponse = await app!.user.create(requestData, adminAccessToken);
@@ -919,6 +905,20 @@ describe('DELETE /user', () => {
   });
 
   describe('DELETE should respond with a status code of 401', () => {
+    test('when token is not set', async () => {
+      const userId: string = Guid.EMPTY;
+      const deleteUserResponse = await app!.user.delete(userId);
+      expect(deleteUserResponse.statusCode).toBe(401);
+      const body = deleteUserResponse.body;
+      expect(typeof body).toBe('object');
+      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
     test('when token is invalid', async () => {
       const userId: string = Guid.EMPTY;
       const deleteUserResponse = await app!.user.delete(userId, `invalid_token_${adminAccessToken}`);

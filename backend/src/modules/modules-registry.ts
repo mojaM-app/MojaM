@@ -1,6 +1,7 @@
 import { type IModule, type IRoutes } from '@core';
 import { AnnouncementsModule } from './announcements/announcements.module';
 import { AuthModule } from './auth/auth.module';
+import { BulletinModule } from './bulletin/bulletin.module';
 import { CalendarModule } from './calendar/calendar.module';
 import { CommunityModule } from './community/community.module';
 import { LogModule } from './log/log.module';
@@ -17,6 +18,7 @@ export class ModulesRegistry {
     new UsersModule(),
     new PermissionsModule(),
     new AnnouncementsModule(),
+    new BulletinModule(),
     new CommunityModule(),
     new NewsModule(),
     new CalendarModule(),

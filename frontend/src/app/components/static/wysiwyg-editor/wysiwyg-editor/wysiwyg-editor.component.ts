@@ -10,6 +10,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { ContentChange, QuillModule } from 'ngx-quill';
 import { PipesModule } from 'src/pipes/pipes.module';
+import { WysiwygUtils } from '../wysiwyg.utils';
 
 @Component({
   selector: 'app-wysiwyg-editor',
@@ -27,7 +28,7 @@ export class WysiwygEditorComponent {
   public constructor() {
     const effectRef = effect(
       () => {
-        this.model = this.transformContent(this.content());
+        this.model = WysiwygUtils.clearContent(this.content());
         effectRef.destroy();
       },
       { manualCleanup: true }
@@ -35,15 +36,6 @@ export class WysiwygEditorComponent {
   }
 
   protected handleContentChange(ev: ContentChange): void {
-    this.content.set(this.transformContent(ev?.html));
-  }
-
-  private transformContent(content: string | null | undefined): string {
-    return (content ?? '')
-      .replace(/(<p><\/p>\s*)+$/, '')
-      .replace(/&nbsp;+/gi, ' ')
-      .trim()
-      .replace(/\s+/gi, ' ')
-      .replace(/^\s/gi, '');
+    this.content.set(WysiwygUtils.clearContent(ev?.html));
   }
 }

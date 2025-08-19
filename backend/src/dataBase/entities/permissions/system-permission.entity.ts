@@ -30,7 +30,7 @@ export class SystemPermission {
 
   @Column({
     name: 'Name',
-    type: 'nvarchar',
+    type: 'varchar',
     length: 50,
     nullable: false,
   })
@@ -38,7 +38,7 @@ export class SystemPermission {
 
   @Column({
     name: 'Description',
-    type: 'nvarchar',
+    type: 'varchar',
     length: 255,
     nullable: false,
   })

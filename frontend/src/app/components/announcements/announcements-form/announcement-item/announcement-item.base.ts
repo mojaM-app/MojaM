@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { MatDialogConfig } from '@angular/material/dialog';
-import { IDialogSettings } from 'src/interfaces/common/dialog.settings';
+import { IDialogSettings } from 'src/core/interfaces/common/dialog.settings';
 import { DialogService } from 'src/services/dialog/dialog.service';
 import { IAnnouncementsItemForm } from '../announcements.form';
 
@@ -24,18 +24,13 @@ export abstract class AnnouncementItemBase {
   public moveItem = output<{ index: number; direction: 'up' | 'down' }>();
 
   protected constructor(protected _dialogService: DialogService) {
-    effect(
-      () => {
-        const formGroup = this.itemFormGroup() as FormGroup<IAnnouncementsItemForm>;
-        if ((formGroup?.value?.content?.length ?? 0) > 0) {
-          this.content.set(formGroup.value.content!);
-        }
-        this.controls.set(formGroup.controls);
-      },
-      {
-        allowSignalWrites: true,
-      } satisfies CreateEffectOptions
-    );
+    effect(() => {
+      const formGroup = this.itemFormGroup() as FormGroup<IAnnouncementsItemForm>;
+      if ((formGroup?.value?.content?.length ?? 0) > 0) {
+        this.content.set(formGroup.value.content!);
+      }
+      this.controls.set(formGroup.controls);
+    });
   }
 
   public editItem(): void {
@@ -59,7 +54,7 @@ export abstract class AnnouncementItemBase {
         noBtnText: 'Shared/BtnCancel',
         yesBtnText: 'Shared/BtnDelete',
       } satisfies IDialogSettings)
-      .then(result => {
+      .then((result: boolean) => {
         if (result === true) {
           this.deleteItem.emit(this.index());
         }

@@ -516,9 +516,7 @@ describe('PUT/user-profile', () => {
         expect(eventHandler).not.toHaveBeenCalled();
       });
     });
-  });
 
-  describe('PUT should respond with a status code of 403', () => {
     test('when token is not set', async () => {
       const updateUserProfileResponse = await app!.userProfile.update({
         firstName: 'John',
@@ -535,6 +533,8 @@ describe('PUT/user-profile', () => {
       });
     });
   });
+
+  //describe('PUT should respond with a status code of 403', () => {});
 
   describe('PUT should respond with a status code of 404', () => {
     test('PUT should respond with a status code of 404 when path is invalid', async () => {

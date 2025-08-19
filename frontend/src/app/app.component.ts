@@ -17,7 +17,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { NgxResizeObserverModule } from 'ngx-resize-observer';
 import { distinctUntilChanged, filter, map, mergeMap } from 'rxjs';
-import { IRouteData } from 'src/interfaces/common/route.data';
+import { IRouteData } from 'src/core/interfaces/common/route.data';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { BrowserWindowSize } from 'src/services/browser/browser-window-size';

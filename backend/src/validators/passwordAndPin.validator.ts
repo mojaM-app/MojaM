@@ -1,6 +1,6 @@
+import { isNullOrUndefined } from '@utils';
 import { registerDecorator, type ValidationDecoratorOptions, type ValidationOptions } from 'class-validator';
 import { Container } from 'typedi';
-import { isNullOrUndefined } from '@utils';
 import { PasswordService } from '../modules/auth/services/password.service';
 import { PinService } from '../modules/auth/services/pin.service';
 

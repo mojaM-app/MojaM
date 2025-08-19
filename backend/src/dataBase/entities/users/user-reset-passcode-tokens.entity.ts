@@ -22,7 +22,7 @@ export class UserResetPasscodeToken implements ICreateResetPasscodeToken {
 
   @Column({
     name: 'Token',
-    type: 'nvarchar',
+    type: 'varchar',
     length: 64,
     nullable: false,
   })

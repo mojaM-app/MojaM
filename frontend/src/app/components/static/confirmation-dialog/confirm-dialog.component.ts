@@ -8,7 +8,7 @@ import {
   MatDialogTitle,
 } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { IDialogSettings } from 'src/interfaces/common/dialog.settings';
+import { IDialogSettings } from 'src/core/interfaces/common/dialog.settings';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { TranslationService } from 'src/services/translate/translation.service';
 

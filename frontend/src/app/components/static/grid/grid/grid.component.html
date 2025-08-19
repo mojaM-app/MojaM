@@ -23,6 +23,7 @@
             [ngClass]="{ 'col-expandable': column.isExpandable, 'col-actions': column.isActions }">
             <button
               mat-icon-button
+              type="button"
               [attr.aria-label]="'Grid/ExpandBtnAriaLabel' | gmessage"
               (click)="
                 expandedElement = isExpanded(element) ? null : element; $event.stopPropagation()
@@ -38,6 +39,7 @@
                 <button
                   mat-icon-button
                   [attr.aria-label]="'Grid/ActionsRowAriaLabel' | gmessage"
+                  type="button"
                   (click)="showBottomSheet(element); $event.stopPropagation()">
                   <mat-icon>more_vert</mat-icon>
                 </button>
@@ -46,6 +48,7 @@
                   mat-icon-button
                   [attr.aria-label]="'Grid/ActionsRowAriaLabel' | gmessage"
                   [matMenuTriggerFor]="rowMenu"
+                  type="button"
                   (click)="refreshMenuItems(element)">
                   <mat-icon>more_vert</mat-icon>
                 </button>
@@ -67,6 +70,7 @@
               <button
                 mat-icon-button
                 [attr.aria-label]="'Grid/ActionsRowAriaLabel' | gmessage"
+                type="button"
                 (click)="showBottomSheet(element); $event.stopPropagation()">
                 <mat-icon>more_vert</mat-icon>
               </button>
@@ -75,6 +79,7 @@
                 mat-icon-button
                 [attr.aria-label]="'Grid/ActionsRowAriaLabel' | gmessage"
                 [matMenuTriggerFor]="rowMenu"
+                type="button"
                 (click)="refreshMenuItems(element)">
                 <mat-icon>more_vert</mat-icon>
               </button>
@@ -177,7 +182,7 @@
 <mat-menu #rowMenu="matMenu">
   <ng-template matMenuContent let-element="element">
     @for (menuItem of menuItems(); track menuItem) {
-      <button mat-menu-item (click)="menuItemClick($event, menuItem)">
+      <button mat-menu-item type="button" (click)="menuItemClick($event, menuItem)">
         @if (menuItem.icon) {
           <mat-icon matListItemIcon>{{ menuItem.icon }}</mat-icon>
         }

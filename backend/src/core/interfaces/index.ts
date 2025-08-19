@@ -12,12 +12,35 @@ export { type IUpdateUser } from './users/update-user.interfaces';
 export { type IUpdateUserPasscode } from './users/update-user.interfaces';
 export { type TUpdateUser } from './users/update-user.interfaces';
 
-export { type IAnnouncementEntity } from './announcements/IAnnouncementEntity';
-export { type IAnnouncementId } from './announcements/IAnnouncement.Id';
-export { type ICreateAnnouncementItem } from './announcements/create-announcement.interfaces';
-export { type ICreateAnnouncement } from './announcements/create-announcement.interfaces';
-export { type IUpdateAnnouncementItem } from './announcements/update-announcement.interfaces';
-export { type IUpdateAnnouncement } from './announcements/update-announcement.interfaces';
+export {
+  type IUpdateAnnouncement,
+  type ICreateAnnouncement,
+  type IAnnouncementEntity,
+  type IAnnouncementId,
+} from './announcements/announcement.interfaces';
+export {
+  type ICreateAnnouncementItem,
+  type IUpdateAnnouncementItem,
+} from './announcements/announcement-item.interfaces';
+
+export {
+  type IBulletinId,
+  type IBulletinEntity,
+  type ICreateBulletin,
+  type IUpdateBulletin,
+} from './bulletin/bulletin.interfaces';
+export {
+  type IBulletinDayEntity,
+  type ICreateBulletinDay,
+  type IUpdateBulletinDay,
+  type IBulletinDayId,
+} from './bulletin/bulletin-day.interfaces';
+export {
+  type IBulletinDaySectionEntity,
+  type ICreateBulletinDaySection,
+  type IUpdateBulletinDaySection,
+  type IBulletinDaySectionId,
+} from './bulletin/bulletin-day-section.interfaces';
 
 export { type ICreateResetPasscodeToken } from './auth/create-reset-passcode-token.interfaces';
 export { type ILoginModel, type IAccountTryingToLogInModel } from './auth/login.interfaces';

@@ -1,17 +1,19 @@
 <div class="content" swipe (swipeNext)="setNextView()" (swipePrev)="setPrevView()">
   <div class="row clearfix calendar-header text-center">
     <div class="col-2 d-sm-none text-start">
-      <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>more_vert</mat-icon></button>
+      <button mat-icon-button [matMenuTriggerFor]="menu" type="button">
+        <mat-icon>more_vert</mat-icon>
+      </button>
       <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="setView(CalendarView.Month)">
+        <button mat-menu-item (click)="setView(CalendarView.Month)" type="button">
           <mat-icon>calendar_view_month</mat-icon>
           {{ 'Calendar/CalendarView/Month' | gmessage }}
         </button>
-        <button mat-menu-item (click)="setView(CalendarView.Week)">
+        <button mat-menu-item (click)="setView(CalendarView.Week)" type="button">
           <mat-icon>calendar_view_week</mat-icon>
           {{ 'Calendar/CalendarView/Week' | gmessage }}
         </button>
-        <button mat-menu-item (click)="setView(CalendarView.Day)">
+        <button mat-menu-item (click)="setView(CalendarView.Day)" type="button">
           <mat-icon>calendar_view_day</mat-icon>
           {{ 'Calendar/CalendarView/Day' | gmessage }}
         </button>
@@ -23,6 +25,7 @@
         <button
           mat-flat-button
           class="button"
+          type="button"
           (click)="setView(CalendarView.Month)"
           [class.active]="view() === CalendarView.Month">
           <mat-icon>calendar_view_month</mat-icon>
@@ -33,6 +36,7 @@
         <button
           mat-flat-button
           class="button"
+          type="button"
           (click)="setView(CalendarView.Week)"
           [class.active]="view() === CalendarView.Week">
           <mat-icon>calendar_view_week</mat-icon>
@@ -43,6 +47,7 @@
         <button
           mat-flat-button
           class="button"
+          type="button"
           (click)="setView(CalendarView.Day)"
           [class.active]="view() === CalendarView.Day">
           <mat-icon>calendar_view_day</mat-icon>
@@ -62,6 +67,7 @@
           mat-flat-button
           class="button d-none d-sm-inline-flex"
           mwlCalendarPreviousView
+          type="button"
           [view]="view()"
           [viewDate]="viewDate()"
           (viewDateChange)="viewDateChange($event)">
@@ -72,6 +78,7 @@
           mat-flat-button
           class="button"
           mwlCalendarToday
+          type="button"
           [viewDate]="viewDate()"
           (viewDateChange)="viewDateChange($event)">
           <mat-icon>today</mat-icon>
@@ -81,6 +88,7 @@
           mat-flat-button
           class="button d-none d-sm-inline-flex"
           mwlCalendarNextView
+          type="button"
           [view]="view()"
           [viewDate]="viewDate()"
           (viewDateChange)="viewDateChange($event)">

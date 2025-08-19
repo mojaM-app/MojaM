@@ -1,0 +1,40 @@
+<div class="dialog-header">
+  <div mat-dialog-title>{{ 'Bulletin/Form/TabBulletinDay/AddSectionDialog/Title' | gmessage }}</div>
+  <button
+    mat-dialog-close
+    mat-icon-button
+    [attr.aria-label]="'Dialog/CloseBtnAriaLabel' | gmessage"
+    type="button">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<mat-dialog-content>
+  <mat-form-field class="w-100">
+    <mat-label>{{
+      'Bulletin/Form/TabBulletinDay/AddSectionDialog/SelectSectionLabel' | gmessage
+    }}</mat-label>
+    <mat-select [(ngModel)]="selectedSectionType">
+      <mat-select-trigger>
+        {{
+          'Bulletin/Form/TabBulletinDay/AddSectionDialog/SectionTypes/' + selectedSectionType()
+            | gmessage
+        }}
+      </mat-select-trigger>
+      <mat-option *ngFor="let sectionType of sectionTypes()" [value]="sectionType.value">
+        <div class="p-2">
+          <span>{{ sectionType.label | gmessage }}</span>
+          <br />
+          <span style="font-size: 80%">{{ sectionType.description | gmessage }}</span>
+        </div>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button type="button" mat-dialog-close>
+    {{ 'Shared/BtnCancel' | gmessage }}
+  </button>
+  <button mat-button type="button" (click)="onAddClick()">
+    {{ 'Shared/BtnAdd' | gmessage }}
+  </button>
+</mat-dialog-actions>

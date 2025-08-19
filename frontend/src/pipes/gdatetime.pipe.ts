@@ -2,6 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import * as Globalize from 'globalize';
 import { TranslationService } from 'src/services/translate/translation.service';
 import { CultureService } from '../services/translate/culture.service';
+import * as moment from 'moment';
 
 @Pipe({
   name: 'gdatetime',
@@ -13,7 +14,11 @@ export class GdatetimePipe implements PipeTransform {
     private _translationService: TranslationService
   ) {}
 
-  public transform(value: Date | null | undefined, style?: string): string | null {
+  public transform(value: Date | moment.Moment | null | undefined, style?: string): string | null {
+    if (moment.isMoment(value)) {
+      return this.transform(value.toDate(), style);
+    }
+
     if (value instanceof Date) {
       const format: Globalize.DateFormatterOptions = {};
       if (style) {

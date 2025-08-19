@@ -68,6 +68,7 @@
           <button
             mat-icon-button
             matSuffix
+            type="button"
             tabindex="-1"
             (click)="togglePasscodeVisibility($event)"
             [attr.aria-label]="'Login/HidePasswordAriaLabel' | gmessage"
@@ -112,6 +113,7 @@
             mat-icon-button
             matSuffix
             tabindex="-1"
+            type="button"
             (click)="togglePasscodeVisibility($event)"
             [attr.aria-label]="'Login/HidePinAriaLabel' | gmessage"
             [attr.aria-pressed]="hidePasscode()">

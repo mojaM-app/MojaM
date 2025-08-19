@@ -1,0 +1,24 @@
+@if (bulletin()) {
+  <div class="card border-0">
+    <div class="d-grid-with-header-and-footer">
+      <header class="mat-toolbar">
+        <app-card-header [title]="'Bulletin/FormAdd/Title'"> </app-card-header>
+      </header>
+      <main>
+        <div class="card-body">
+          <app-bulletin-form [bulletin]="bulletin()!"> </app-bulletin-form>
+        </div>
+      </main>
+      <footer class="sticky-bottom">
+        <div class="card-footer text-body-secondary text-end">
+          <button mat-raised-button type="button" class="me-4" (click)="cancel()">
+            {{ 'Shared/BtnCancel' | gmessage }}
+          </button>
+          <button mat-raised-button type="submit" (click)="save()">
+            {{ 'Shared/BtnSave' | gmessage }}
+          </button>
+        </div>
+      </footer>
+    </div>
+  </div>
+}

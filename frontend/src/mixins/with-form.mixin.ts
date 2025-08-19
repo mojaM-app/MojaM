@@ -49,6 +49,30 @@ export function WithForm<
       this.formGroup.markAllAsTouched();
     }
 
+    public getAllFormErrors(control = this.formGroup as any, path = ''): any[] {
+      const errors: any[] = [];
+
+      if (control instanceof FormGroup) {
+        for (const key of Object.keys(control.controls)) {
+          const childControl = control.get(key);
+          if (childControl) {
+            errors.push(...this.getAllFormErrors(childControl, `${path}${path ? '.' : ''}${key}`));
+          }
+        }
+      } else if (control instanceof FormArray) {
+        control.controls.forEach((childControl, index) => {
+          errors.push(...this.getAllFormErrors(childControl, `${path}[${index}]`));
+        });
+      } else if (control.errors) {
+        errors.push({
+          path,
+          errors: control.errors,
+        });
+      }
+
+      return errors;
+    }
+
     protected isReadyToSubmit(): boolean {
       return this.isValid && !this.hasErrors;
     }
@@ -73,6 +97,10 @@ export function WithForm<
       }
 
       throw new Error('Control must be a child of the parent FormGroup.');
+    }
+
+    protected controlHasErrors(control: AbstractControl): boolean {
+      return control && control.invalid && (control.dirty || control.touched);
     }
 
     private control<K extends keyof TFormType>(name: K | string): FormControl<any> {

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, Inject, OnInit, signal } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -17,8 +17,9 @@ import { GuidUtils } from 'src/utils/guid.utils';
 import { CardHeaderComponent } from '../../static/card-header/card-header.component';
 import { IAnnouncements } from '../interfaces/announcements';
 import { AnnouncementsService } from '../services/announcements.service';
-import { AnnouncementsItemComponent } from './announcement-item/announcements-item.component';
 import { BasePreviewAnnouncementComponent } from './base-preview-announcement.component';
+import { AnnouncementItemListComponent } from './announcement-item-list/announcement-item-list.component';
+import { AnnouncementsPublishInfoComponent } from './announcements-publish-info/announcements-publish-info.component';
 
 @Component({
   selector: 'app-preview-announcements',
@@ -30,7 +31,8 @@ import { BasePreviewAnnouncementComponent } from './base-preview-announcement.co
     MatInputModule,
     MatFormFieldModule,
     MatDatepickerModule,
-    AnnouncementsItemComponent,
+    AnnouncementItemListComponent,
+    AnnouncementsPublishInfoComponent,
     CardHeaderComponent,
     PipesModule,
     DirectivesModule,
@@ -44,6 +46,8 @@ export class PreviewAnnouncementsComponent
   extends BasePreviewAnnouncementComponent
   implements OnInit
 {
+  protected readonly showPublishInfo = signal<boolean>(false);
+
   public constructor(
     @Inject(IS_MOBILE) isMobile: boolean,
     private _announcementsService: AnnouncementsService,
@@ -55,11 +59,15 @@ export class PreviewAnnouncementsComponent
   ) {
     super(isMobile, translationService, cultureService, router);
 
-    this.addSubscription(
-      authService.onAuthStateChanged.subscribe(() => {
+    effect(() => {
+      authService.onAuthStateChanged.whenUnauthenticated(() => {
         this.navigateToAnnouncements();
-      })
-    );
+      });
+    });
+
+    effect(() => {
+      this.showPublishInfo.set(authService.isAuthenticated());
+    });
   }
 
   public ngOnInit(): void {

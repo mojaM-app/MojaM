@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { CalendarEvent, ICalendarEvent } from 'src/interfaces/calendar/calendar-event';
+import {
+  CalendarEvent,
+  ICalendarEvent,
+} from 'src/app/components/calendar/interfaces/calendar-event';
 import { BaseService } from '../../../../services/common/base.service';
 import { HttpClientService } from '../../../../services/common/httpClient.service';
 import { SpinnerService } from '../../../../services/spinner/spinner.service';

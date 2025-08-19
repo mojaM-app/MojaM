@@ -1,6 +1,6 @@
 import { BaseRepository } from '@db';
 import { isGuid, isPositiveNumber } from '@utils';
-import Container from 'typedi';
+import { Container } from 'typedi';
 import { Announcement } from '../../../dataBase/entities/announcements/announcement.entity';
 import { AnnouncementsCacheService } from '../services/announcements-cache.service';
 

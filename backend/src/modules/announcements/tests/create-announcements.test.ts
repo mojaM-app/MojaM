@@ -480,20 +480,6 @@ describe('POST /announcements', () => {
   });
 
   describe('POST should respond with a status code of 403', () => {
-    test('when token is not set', async () => {
-      const data = generateValidAnnouncements();
-      const createAnnouncementsResponse = await app!.announcements.create(data);
-      expect(createAnnouncementsResponse.statusCode).toBe(401);
-      const body = createAnnouncementsResponse.body;
-      expect(typeof body).toBe('object');
-      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    });
-
     test('when user has no permission', async () => {
       const userData = userTestHelpers.generateValidUserWithPassword();
       const newUserResponse = await app!.user.create(userData, adminAccessToken);
@@ -605,6 +591,20 @@ describe('POST /announcements', () => {
   });
 
   describe('POST should respond with a status code of 401', () => {
+    test('when token is not set', async () => {
+      const data = generateValidAnnouncements();
+      const createAnnouncementsResponse = await app!.announcements.create(data);
+      expect(createAnnouncementsResponse.statusCode).toBe(401);
+      const body = createAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
     test('when token is invalid', async () => {
       const requestData = generateValidAnnouncements();
       const response = await app!.announcements.create(requestData, `invalid_token_${adminAccessToken}`);

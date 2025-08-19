@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { SystemPermissionValue } from 'src/core/system-permission.enum';
-import { IPermissionRouteData, IRouteData } from 'src/interfaces/common/route.data';
+import { IPermissionRouteData, IRouteData } from 'src/core/interfaces/common/route.data';
 import { PermissionGuard } from 'src/services/auth/permission.guard';
 import {
   AddAnnouncementsMenu,
@@ -51,7 +51,6 @@ const routes: Routes = [
       hideFooter: true,
     } satisfies IPermissionRouteData,
   },
-
   {
     path: PreviewAnnouncementsMenu.Route + '/:id',
     loadComponent: () =>
@@ -65,7 +64,6 @@ const routes: Routes = [
       hideFooter: true,
     } satisfies IPermissionRouteData,
   },
-
   {
     path: AnnouncementsListMenu.Route,
     loadComponent: () =>

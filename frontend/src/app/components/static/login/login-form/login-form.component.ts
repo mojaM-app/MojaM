@@ -21,7 +21,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { environment } from 'src/environments/environment';
-import { IResponseError } from 'src/interfaces/errors/response.error';
+import { IResponseError } from 'src/core/interfaces/errors/response.error';
 import { WithForm } from 'src/mixins/with-form.mixin';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthTokenService } from 'src/services/auth/auth-token.service';

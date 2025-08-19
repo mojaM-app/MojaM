@@ -31,23 +31,23 @@
       <div class="options-panel">
         <div class="buttons-container px-md-4 px-3">
           <div class="col text-start">
-            <button mat-icon-button (click)="moveItemUp()" class="me-2">
+            <button mat-icon-button (click)="moveItemUp()" class="me-2" type="button">
               <mat-icon>arrow_upward</mat-icon>
             </button>
-            <button mat-icon-button (click)="moveItemDown()">
+            <button mat-icon-button (click)="moveItemDown()" type="button">
               <mat-icon>arrow_downward</mat-icon>
             </button>
           </div>
           <div class="col text-center">
-            <button mat-icon-button (click)="editItem()" class="me-3">
+            <button mat-icon-button (click)="editItem()" class="me-3" type="button">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button (click)="confirmDeleteItem()">
+            <button mat-icon-button (click)="confirmDeleteItem()" type="button">
               <mat-icon>delete</mat-icon>
             </button>
           </div>
           <div class="col text-end">
-            <button mat-icon-button (click)="hideOptionsPanel()">
+            <button mat-icon-button (click)="hideOptionsPanel()" type="button">
               <mat-icon>close</mat-icon>
             </button>
           </div>

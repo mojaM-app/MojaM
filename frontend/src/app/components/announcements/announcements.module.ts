@@ -10,7 +10,8 @@ import { DirectivesModule } from 'src/directives/directives.module';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { AnnouncementsRoutingModule } from './announcements.routing';
 import { CurrentAnnouncementsComponent } from './current-announcements.component';
-import { AnnouncementsItemComponent } from './preview-announcements/announcement-item/announcements-item.component';
+import { AnnouncementItemListComponent } from './preview-announcements/announcement-item-list/announcement-item-list.component';
+import { AnnouncementsPublishInfoComponent } from './preview-announcements/announcements-publish-info/announcements-publish-info.component';
 
 @NgModule({
   declarations: [CurrentAnnouncementsComponent],
@@ -25,7 +26,8 @@ import { AnnouncementsItemComponent } from './preview-announcements/announcement
     RouterModule,
     PipesModule,
     DirectivesModule,
-    AnnouncementsItemComponent,
+    AnnouncementItemListComponent,
+    AnnouncementsPublishInfoComponent,
   ],
 })
 export class AnnouncementsModule {}

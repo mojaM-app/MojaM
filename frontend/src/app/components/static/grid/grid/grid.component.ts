@@ -24,12 +24,12 @@ import { MatSort, MatSortModule, SortDirection } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { map, merge, startWith, switchMap } from 'rxjs';
 import { IS_MOBILE } from 'src/app/app.config';
-import { IGridData } from 'src/interfaces/common/grid.data';
-import { IMenuItem } from 'src/interfaces/menu/menu-item';
+import { IGridData } from 'src/core/interfaces/common/grid.data';
+import { IMenuItem } from 'src/core/interfaces/menu/menu-item';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { BrowserWindowService } from 'src/services/browser/browser-window.service';
-import { MenuItemClickResult } from '../../../../../interfaces/menu/menu.enum';
+import { MenuItemClickResult } from '../../../../../core/interfaces/menu/menu.enum';
 import { BottomSheetService } from '../../bottom-sheet/bottom-sheet.service';
 import { DetailsDirective } from '../directive/details.directive';
 import { IDetailsDirectiveContext } from '../interfaces/details.interfaces';
@@ -100,35 +100,30 @@ export class GridComponent<TGridItemDto, TGridData extends IGridData<TGridItemDt
     this.sortActiveColumnName = signal(_gridService.getSortActiveColumnName());
     this.columns = signal(_gridService.getDisplayedColumns());
 
-    effect(
-      () => {
-        if (this._sort()) {
-          this.addSubscription(
-            this._sort().sortChange.subscribe(() => (this._paginator().pageIndex = 0))
-          );
-        }
+    effect(() => {
+      if (this._sort()) {
+        this.addSubscription(
+          this._sort().sortChange.subscribe(() => (this._paginator().pageIndex = 0))
+        );
+      }
 
-        if (this.columns()) {
-          this.addSubscription(
-            browserService.onResize$.subscribe(() => {
-              this.refreshVisibleColumns();
-            })
-          );
-        }
+      if (this.columns()) {
+        this.addSubscription(
+          browserService.onResize$.subscribe(() => {
+            this.refreshVisibleColumns();
+          })
+        );
+      }
 
-        if (this.visibleColumns()) {
-          this.showExpandableColumn.set(this.visibleColumns().some(column => column.isExpandable));
-          this.visibleColumnNames.set(this.visibleColumns().map(column => column.propertyName));
-        }
+      if (this.visibleColumns()) {
+        this.showExpandableColumn.set(this.visibleColumns().some(column => column.isExpandable));
+        this.visibleColumnNames.set(this.visibleColumns().map(column => column.propertyName));
+      }
 
-        if (this.items()) {
-          this.dataSource.data = this.items();
-        }
-      },
-      {
-        allowSignalWrites: true,
-      } satisfies CreateEffectOptions
-    );
+      if (this.items()) {
+        this.dataSource.data = this.items();
+      }
+    });
   }
 
   public ngAfterViewInit(): void {

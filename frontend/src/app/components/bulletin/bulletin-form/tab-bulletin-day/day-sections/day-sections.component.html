@@ -1,0 +1,93 @@
+<div class="row">
+  <div class="col-12 col-md-6 col-lg-5 col-xl-4">
+    <div class="row mb-2">
+      <div class="col">
+        <mat-label class="fs-80 me-3">{{
+          'Bulletin/Form/TabBulletinDay/Sections' | gmessage
+        }}</mat-label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <button mat-flat-button type="button" class="mb-2 me-3" (click)="openAddSectionDialog()">
+          <mat-icon>add</mat-icon>
+          <span class="d-none d-sm-block">{{
+            'Bulletin/Form/TabBulletinDay/AddSection' | gmessage
+          }}</span>
+          <span class="d-block d-sm-none">{{ 'Shared/BtnAdd' | gmessage }}</span>
+        </button>
+
+        <button
+          mat-flat-button
+          type="button"
+          class="responsive-button mb-2 me-3"
+          (click)="openHelpSectionDialog()">
+          <mat-icon>help</mat-icon>
+          <span class="d-none d-sm-block">{{ 'Shared/BtnHelp' | gmessage }}</span>
+        </button>
+      </div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-12">
+        @if (sectionControls().length > 0) {
+          <div
+            cdkDropList
+            class="section-list alert alert-dark p-1"
+            (cdkDropListDropped)="drop($event)">
+            @for (section of sectionControls(); track section) {
+              <div
+                clickable
+                class="section-box"
+                cdkDrag
+                cdkDragPreviewClass="drag-preview"
+                (itemClick)="editSection(section)"
+                [class.selected]="isSelected(section)">
+                @if (controlHasErrors(section)) {
+                  <mat-icon class="error-color me-1">error</mat-icon>
+                }
+                @switch (section.controls.type.value) {
+                  @case (sectionTypes.INTRODUCTION) {
+                    {{
+                      'Bulletin/Form/TabBulletinDay/AddSectionDialog/SectionTypes/' +
+                        section.controls.type.value | gmessage
+                    }}
+                  }
+                  @case (sectionTypes.TIPS_FOR_WORK) {
+                    {{
+                      'Bulletin/Form/TabBulletinDay/AddSectionDialog/SectionTypes/' +
+                        section.controls.type.value | gmessage
+                    }}
+                  }
+                  @case (sectionTypes.DAILY_PRAYER) {
+                    {{
+                      'Bulletin/Form/TabBulletinDay/AddSectionDialog/SectionTypes/' +
+                        section.controls.type.value | gmessage
+                    }}
+                  }
+                  @case (sectionTypes.CUSTOM_TEXT) {
+                    {{
+                      'Bulletin/Form/TabBulletinDay/AddSectionDialog/SectionTypes/' +
+                        section.controls.type.value | gmessage
+                    }}
+                  }
+                }
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="section-list alert alert-dark p-3 text-center">
+            <mat-label class="fs-80">{{
+              'Bulletin/Form/TabBulletinDay/NoSections' | gmessage
+            }}</mat-label>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-6 col-lg-7 col-xl-8">
+    <app-day-section
+      [formGroup]="section()"
+      [bulletinProperties]="bulletinProperties()"></app-day-section>
+  </div>
+</div>

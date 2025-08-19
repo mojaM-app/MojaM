@@ -761,20 +761,6 @@ describe('PUT /user/:id', () => {
   });
 
   describe('PUT should respond with a status code of 403', () => {
-    test('when token is not set', async () => {
-      const admin = getAdminLoginData();
-      const updateUserResponse = await app!.user.update(admin.uuid, userTestHelpers.generateValidUserWithPassword());
-      expect(updateUserResponse.statusCode).toBe(401);
-      const body = updateUserResponse.body;
-      expect(typeof body).toBe('object');
-      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    });
-
     test('when user has no permission', async () => {
       const requestData = userTestHelpers.generateValidUserWithPassword();
       const newUserResponse = await app!.user.create(requestData, adminAccessToken);
@@ -898,6 +884,20 @@ describe('PUT /user/:id', () => {
   });
 
   describe('PUT should respond with a status code of 401', () => {
+    test('when token is not set', async () => {
+      const admin = getAdminLoginData();
+      const updateUserResponse = await app!.user.update(admin.uuid, userTestHelpers.generateValidUserWithPassword());
+      expect(updateUserResponse.statusCode).toBe(401);
+      const body = updateUserResponse.body;
+      expect(typeof body).toBe('object');
+      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
     test('when token is invalid', async () => {
       const requestData = getAdminLoginData();
       const response = await app!.user.update(requestData.uuid, requestData, `invalid_token_${adminAccessToken}`);

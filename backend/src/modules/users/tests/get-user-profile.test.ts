@@ -224,9 +224,7 @@ describe('GET/user-profile', () => {
         expect(eventHandler).not.toHaveBeenCalled();
       });
     });
-  });
 
-  describe('GET should respond with a status code of 403', () => {
     test('when token is not set', async () => {
       const getUserProfileResponse = await app!.userProfile.get();
       expect(getUserProfileResponse.statusCode).toBe(401);
@@ -240,6 +238,8 @@ describe('GET/user-profile', () => {
       });
     });
   });
+
+  //describe('GET should respond with a status code of 403', () => {});
 
   describe('GET should respond with a status code of 404', () => {
     test('GET should respond with a status code of 404 when path is invalid', async () => {

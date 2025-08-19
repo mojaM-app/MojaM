@@ -28,6 +28,7 @@
                   <button
                     mat-icon-button
                     matSuffix
+                    type="button"
                     [attr.aria-label]="'Management/Permissions/BtnClearLabel' | gmessage"
                     [matTooltip]="'Management/Permissions/BtnClearLabel' | gmessage"
                     (click)="filterInput.value = ''; handleFilterChanged('')"
@@ -47,6 +48,7 @@
                         <button
                           mat-icon-button
                           class="d-md-none me-2"
+                          type="button"
                           aria-label="Example icon button with a vertical three dot icon"
                           (click)="showUserPermissions(user.id)">
                           <mat-icon>key</mat-icon>

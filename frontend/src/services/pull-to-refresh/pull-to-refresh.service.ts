@@ -1,13 +1,13 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable, signal, WritableSignal } from '@angular/core';
 import { Router, NavigationEnd, ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
-import { Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { IRouteData } from 'src/interfaces/common/route.data';
+import { IRouteData } from 'src/core/interfaces/common/route.data';
 
 @Injectable({ providedIn: 'root' })
 export class PullToRefreshService {
-  private readonly _refreshSubject = new Subject<void>();
-  public readonly refresh$ = this._refreshSubject.asObservable();
+  private readonly _refresh = signal<boolean>(false);
+  public readonly refresh = this._refresh.asReadonly();
 
   private _currentRouteData: WritableSignal<IRouteData> = signal({});
 
@@ -26,7 +26,7 @@ export class PullToRefreshService {
   }
 
   public emitRefresh(): void {
-    this._refreshSubject.next();
+    this._refresh.set(true);
   }
 
   private getDeepestChild(snapshot: ActivatedRouteSnapshot): ActivatedRouteSnapshot {

@@ -1,0 +1,21 @@
+:host {
+  width: 100%;
+
+  .section-list {
+    max-width: 100%;
+    min-height: 60px;
+    display: block;
+    border-radius: 4px;
+    overflow: hidden;
+
+    .section-box {
+      &.clickable {
+        cursor: pointer;
+
+        &.selected {
+          background-color: var(--bs-card-cap-bg);
+        }
+      }
+    }
+  }
+}

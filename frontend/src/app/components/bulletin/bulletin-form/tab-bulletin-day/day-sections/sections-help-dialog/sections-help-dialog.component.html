@@ -1,0 +1,49 @@
+<div class="dialog-header">
+  <div mat-dialog-title>{{ 'Shared/Help' | gmessage }}</div>
+  <button
+    mat-dialog-close
+    mat-icon-button
+    [attr.aria-label]="'Dialog/CloseBtnAriaLabel' | gmessage"
+    type="button">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<mat-dialog-content>
+  <p>Każdy dzień w biuletynie składa się z sekcji.</p>
+  <p>
+    Sekcjami mogą być np. 'Wprowadzenie do biuletynu', 'Wskazówki do pracy' czy 'Modlitwa na każdy
+    dzień'. Ustawia się je na pierwszej zakładce 'Właściwości', czyli we właściwościach biuletynu.
+  </p>
+  <p>
+    Tworząc nowy biuletyn, należy ustawić np. wprowadzenie do biuletynu. Trafi ono do wersji PDF,
+    ale nic nie stoi na przeszkodzie, aby wprowadzenie dodać również do każdego dnia biuletynu.
+    Podobnie jest z pozostałymi informacjami ustawionymi we właściwościach - dzięki temu każdy, kto
+    wyświetli dany dzień, zobaczy komplet informacji dotyczących danego dnia formacji.
+  </p>
+  <p>
+    Oprócz wymienionych powyżej sekcji, można dodać także sekcje z dowolnym tekstem - np. rozważania
+    na dany dzień czy zadania do wykonania. Wszystko, co jest związane z konkretnym dniem
+    formacyjnym.
+  </p>
+  <p>
+    Sekcje można dodawać, usuwać, edytować oraz zmieniać ich kolejność. Aby zmienić kolejność,
+    przeciągnij wybraną sekcję w górę lub w dół.
+  </p>
+  <p>
+    Aby dodać nową sekcję, kliknij przycisk „Dodaj sekcję” i wybierz jej typ. Po dodaniu możesz ją
+    edytować, klikając w nią.
+  </p>
+  <p>
+    Aby edytować sekcję, kliknij ją - otworzy się edytor, w którym możesz zmienić treść. Po
+    zapisaniu zmian, sekcja zostanie zaktualizowana.
+  </p>
+  <p>
+    Aby usunąć sekcję, kliknij ikonę kosza przy danej sekcji. Uwaga: po usunięciu nie będzie
+    możliwości jej odzyskania.
+  </p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button type="button" mat-dialog-close>
+    {{ 'Shared/BtnOk' | gmessage }}
+  </button>
+</mat-dialog-actions>

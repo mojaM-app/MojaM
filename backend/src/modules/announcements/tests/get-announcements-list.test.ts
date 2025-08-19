@@ -90,19 +90,6 @@ describe('GET/announcements-list', () => {
   });
 
   describe('GET should respond with a status code of 403', () => {
-    test('when token is not set', async () => {
-      const getAnnouncementsListResponse = await request(app!.getServer()).get(AnnouncementsListRoute.path).send();
-      expect(getAnnouncementsListResponse.statusCode).toBe(401);
-      const body = getAnnouncementsListResponse.body;
-      expect(typeof body).toBe('object');
-      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    });
-
     test('when user has no permission', async () => {
       const requestData = userTestHelpers.generateValidUserWithPassword();
       const createUserResponse = await app!.user.create(requestData, adminAccessToken);
@@ -222,6 +209,19 @@ describe('GET/announcements-list', () => {
   });
 
   describe('GET should respond with a status code of 401', () => {
+    test('when token is not set', async () => {
+      const getAnnouncementsListResponse = await request(app!.getServer()).get(AnnouncementsListRoute.path).send();
+      expect(getAnnouncementsListResponse.statusCode).toBe(401);
+      const body = getAnnouncementsListResponse.body;
+      expect(typeof body).toBe('object');
+      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
     test('when token is invalid', async () => {
       const getListResponse = await request(app!.getServer())
         .get(AnnouncementsListRoute.path)

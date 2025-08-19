@@ -17,7 +17,12 @@
     <app-reset-pin-control class="row mb-3" [formGroup]="formGroup"> </app-reset-pin-control>
     <div class="row mb-4">
       <div class="col text-end">
-        <button mat-raised-button color="primary" [disabled]="!formGroup.valid" (click)="save()">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="!formGroup.valid"
+          (click)="save()">
           {{ 'ResetPin/ChangePin' | gmessage }}
         </button>
       </div>

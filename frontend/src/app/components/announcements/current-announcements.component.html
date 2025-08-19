@@ -15,17 +15,21 @@
             }">
             @if (showButtonAddAnnouncement()) {
               <div class="col-4 col-sm-5 text-center">
-                <button mat-raised-button [matMenuTriggerFor]="addMenu">
+                <button mat-raised-button [matMenuTriggerFor]="addMenu" type="button">
                   <mat-icon>{{ AddAnnouncementsMenu.Icon }}</mat-icon>
                   <span>{{ 'Shared/BtnAdd' | gmessage }}</span>
                 </button>
                 <mat-menu #addMenu="matMenu">
-                  <button mat-menu-item [routerLink]="['./' + AddAnnouncementsMenu.Route]">
+                  <button
+                    mat-menu-item
+                    type="button"
+                    [routerLink]="['./' + AddAnnouncementsMenu.Route]">
                     <mat-icon>add</mat-icon>
                     <span>{{ 'Announcements/MenuAdd/AddBlank' | gmessage }}</span>
                   </button>
                   <button
                     mat-menu-item
+                    type="button"
                     [routerLink]="['./' + AddAnnouncementsMenu.Route + '/' + announcements()?.id]">
                     <mat-icon>content_copy</mat-icon>
                     <span>{{ 'Announcements/MenuAdd/AddByCopy' | gmessage }}</span>
@@ -35,42 +39,31 @@
             }
             @if (showButtonGoToAnnouncementList()) {
               <div class="col-8 col-sm-7 text-center">
-                <button mat-raised-button [routerLink]="['./' + AnnouncementsListMenu.Route]">
+                <button
+                  mat-raised-button
+                  [routerLink]="['./' + AnnouncementsListMenu.Route]"
+                  type="button">
                   <mat-icon>{{ AnnouncementsListMenu.Icon }}</mat-icon>
                   <span>{{ AnnouncementsListMenu.Label | gmessage }}</span>
                 </button>
               </div>
             }
           </div>
-          <div class="row">
-            @for (item of announcements()!.items; track item; let i = $index) {
-              <div class="col-12 col-xl-6">
-                <app-announcements-item [item]="item"></app-announcements-item>
-              </div>
-            }
-          </div>
-          <div class="row lh-1 published-by opacity-50">
-            <div class="col d-flex justify-content-end flex-wrap">
-              <div>
-                <mat-icon class="align-middle">person</mat-icon>
-                <span
-                  >{{ 'Announcements/PublishedBy' | gmessage }}
-                  {{ announcements()!.getPublisherName() }}&nbsp;
-                </span>
-              </div>
-              <div class="text-nowrap">
-                <mat-icon class="align-middle">calendar_month</mat-icon>
-                <span>{{ announcements()!.getPublishDateTime() | gdate }} </span>
-                <mat-icon class="align-middle">schedule</mat-icon>
-                <span>{{ announcements()!.getPublishDateTime() | gtime }}</span>
-              </div>
-            </div>
-          </div>
+
+          <app-announcement-item-list [items]="announcements()!.items"></app-announcement-item-list>
+
+          @if (showPublishInfo()) {
+            <app-announcements-publish-info
+              [announcements]="announcements()"></app-announcements-publish-info>
+          }
         } @else {
           @if (showButtonAddAnnouncement()) {
             <div class="row mb-2">
               <div class="col text-center">
-                <button mat-raised-button [routerLink]="['./' + AddAnnouncementsMenu.Route]">
+                <button
+                  mat-raised-button
+                  [routerLink]="['./' + AddAnnouncementsMenu.Route]"
+                  type="button">
                   <mat-icon>{{ AddAnnouncementsMenu.Icon }}</mat-icon>
                   <span>{{ AddAnnouncementsMenu.Label | gmessage }}</span>
                 </button>
@@ -86,7 +79,10 @@
             </div>
             <div class="row mb-2">
               <div class="col text-center">
-                <button mat-raised-button [routerLink]="['./' + AnnouncementsListMenu.Route]">
+                <button
+                  mat-raised-button
+                  [routerLink]="['./' + AnnouncementsListMenu.Route]"
+                  type="button">
                   <mat-icon>{{ AnnouncementsListMenu.Icon }}</mat-icon>
                   <span>{{ AnnouncementsListMenu.Label | gmessage }}</span>
                 </button>

@@ -2,6 +2,9 @@ import { DataSource, DataSourceOptions, Repository } from 'typeorm';
 import { AnnouncementItem } from './entities/announcements/announcement-item.entity';
 import { Announcement } from './entities/announcements/announcement.entity';
 import { vAnnouncement } from './entities/announcements/vAnnouncement.entity';
+import { BulletinDay } from './entities/bulletin/bulletin-day.entity';
+import { Bulletin } from './entities/bulletin/bulletin.entity';
+import { vBulletin } from './entities/bulletin/vBulletin.entity';
 import { Log } from './entities/logs/log.entity';
 import { vLog } from './entities/logs/vLog.entity';
 import { UserResetPasscodeToken } from './entities/users/user-reset-passcode-tokens.entity';
@@ -44,6 +47,19 @@ export class DbContext extends DataSource {
 
   public get vAnnouncements(): Repository<vAnnouncement> {
     return this.getRepository(vAnnouncement);
+  }
+
+  public get vBulletins(): Repository<vBulletin> {
+    return this.getRepository(vBulletin);
+  }
+
+  // Bulletin repositories
+  public get bulletins(): Repository<Bulletin> {
+    return this.getRepository(Bulletin);
+  }
+
+  public get bulletinDays(): Repository<BulletinDay> {
+    return this.getRepository(BulletinDay);
   }
 
   constructor(options: DataSourceOptions) {

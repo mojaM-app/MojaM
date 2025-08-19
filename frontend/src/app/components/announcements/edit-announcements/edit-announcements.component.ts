@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, model, OnInit, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  model,
+  OnInit,
+  viewChild,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -41,11 +48,11 @@ export class EditAnnouncementsComponent extends WithUnsubscribe() implements OnI
   ) {
     super();
 
-    this.addSubscription(
-      authService.onAuthStateChanged.subscribe(() => {
+    effect(() => {
+      authService.onAuthStateChanged.whenUnauthenticated(() => {
         this.navigateToAnnouncements();
-      })
-    );
+      });
+    });
   }
 
   public ngOnInit(): void {

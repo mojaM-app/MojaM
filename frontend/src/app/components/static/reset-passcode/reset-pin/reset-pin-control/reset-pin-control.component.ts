@@ -1,3 +1,4 @@
+/* eslint-disable @angular-eslint/no-forward-ref */
 import {
   ChangeDetectionStrategy,
   Component,

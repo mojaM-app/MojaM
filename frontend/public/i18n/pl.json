@@ -17,10 +17,13 @@
     "BtnAdd": "Dodaj",
     "BtnPreview": "Podgląd",
     "BtnPublish": "Opublikuj",
+    "BtnHelp": "Pomoc",
     "Location": "Lokalizacja",
     "Yes": "Tak",
     "No": "Nie",
-    "CopiedToClipboard": "Skopiowano do schowka"
+    "CopiedToClipboard": "Skopiowano do schowka",
+    "Information": "Informacja",
+    "Help": "Pomoc"
   },
   "Header": {
     "Menu": {
@@ -67,7 +70,8 @@
     "Cannot_Activate_Locked_Account": "Twoje konto jest zablokowane, nie można aktywować zablokowanego konta. Skontaktuj się z liderem.",
     "Failed_To_Activate_Account": "Nie udało się aktywować konta. Zgłoś ten problem jednemu z animatorów lub liderowi wspólnoty.",
     "Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted": "Nie można usunąć tego rekordu ponieważ jest on powiązany z innymi rekordami w bazie.",
-    "Activation_Failed_Passcode_Is_Not_Set": "Nie można aktywować konta ponieważ nie ma ono ustawionego sposobu uwierzytelniania (logowania). Gdy użytkownik ten został dodany do aplikacji, został wysłany do niego e-mail z instrukcją jak aktywować konto. Podczas aktywacji wybierany jest sposób uwierzytelniania. Poproś użytkownika aby dokończył aktywację konta lub wyślij do niego ponownie e-mail aktywujący."
+    "Activation_Failed_Passcode_Is_Not_Set": "Nie można aktywować konta ponieważ nie ma ono ustawionego sposobu uwierzytelniania (logowania). Gdy użytkownik ten został dodany do aplikacji, został wysłany do niego e-mail z instrukcją jak aktywować konto. Podczas aktywacji wybierany jest sposób uwierzytelniania. Poproś użytkownika aby dokończył aktywację konta lub wyślij do niego ponownie e-mail aktywujący.",
+    "Bulletin_With_Given_Date_Already_Exists": "Istnieje już biuletyn z wprowadzoną datą utworzenia."
   },
   "Error404": {
     "Message": "Strona nie istnieje"
@@ -135,7 +139,6 @@
       "SectionNo": "Sekcja {no}",
       "NoSectionContentMobile": "Brak treści, stuknij dwukrotnie aby edytować",
       "NoSectionContentDesktop": "Brak treści, kliknij aby edytować",
-      "AnnouncementPlaceholder": "Treść ogłoszenia",
       "Errors": {
         "AtLeastOneItemIsRequired": "Co najmniej jedna sekcja jest wymagana.",
         "ContentIsRequired": "Treść ogłoszenia jest wymagana. Każda z sekcji musi być wypełniona, usuń puste sekcje.",
@@ -177,7 +180,94 @@
     "Title": "Aktualności"
   },
   "Bulletin": {
-    "Title": "Biuletyn"
+    "Title": "Biuletyn",
+    "Header": "Biuletyn - teksty do formacji",
+    "BtnAdd": "Dodaj biuletyn",
+    "BtnList": "Lista biuletynów",
+    "FormAdd": {
+      "Title": "Dodaj biuletyn"
+    },
+    "FormEdit": {
+      "Title": "Edytuj biuletyn"
+    },
+    "Form": {
+      "BtnAdd": "Dodaj dzień",
+      "BtnDeleteTabAriaLabel": "Usuń dzień {dayIndex}",
+      "DeleteDayConfirmText": "Czy na pewno chcesz usunąć dzień '{dayTitle}' z biuletynu?",
+      "TabBulletinProperties": {
+        "Label": "Właściwości",
+        "Date": "Data utworzenia biuletynu",
+        "DatePlaceholder": "Wprowadź datę",
+        "DateHint": "Data utworzenia biuletynu widoczna w wersji PDF w nagłówku lewej kolumny",
+        "DateRequiredError": "Data utworzenia biuletynu jest wymagana",
+        "Number": "Numer biuletynu",
+        "NumberPlaceholder": "np. 710 (kolejny numer biuletynu)",
+        "NumberHint": "Numer biuletynu widoczny w wersji PDF w nagłówku prawej kolumny",
+        "NumberRequiredError": "Numer biuletynu jest wymagany",
+        "Title": "Tytuł biuletynu",
+        "TitlePlaceholder": "np. Teksty do formacji od dzień.miesiąc.rok",
+        "TitleHint": "Tytuł biuletynu widoczny w wersji PDF",
+        "TitleRequiredError": "Tytuł biuletynu jest wymagany",
+        "TitleMaxLengthError": "Tytuł biuletynu nie może przekraczać {maxLength} znaków",
+        "Introduction": "Wprowadzenie do biuletynu",
+        "IntroductionPlaceholder": "Podaj treść wprowadzenia do biuletynu",
+        "IntroductionHint": "Wprowadzenie do biuletynu widoczne w wersji PDF może również zostać dodane do każdego dnia biuletynu",
+        "IntroductionMaxLengthError": "Wprowadzenie do biuletynu nie może przekraczać {maxLength} znaków",
+        "TipsForWork": "Wskazówki do pracy",
+        "TipsForWorkPlaceholder": "Podaj treść wskazówek do pracy",
+        "TipsForWorkHint": "Wskazówki do pracy widoczne w wersji PDF mogą również zostać dodane do każdego dnia biuletynu",
+        "TipsForWorkMaxLengthError": "Wskazówki do pracy nie mogą przekraczać {maxLength} znaków",
+        "DailyPrayer": "Modlitwa na każdy dzień",
+        "DailyPrayerPlaceholder": "Podaj treść modlitwy na każdy dzień",
+        "DailyPrayerHint": "Modlitwa na każdy dzień widoczna w wersji PDF może również zostać dodana do każdego dnia biuletynu",
+        "DailyPrayerMaxLengthError": "Modlitwa na każdy dzień nie może przekraczać {maxLength} znaków"
+      },
+      "TabBulletinDay": {
+        "EmptyDate": "Dzień {dayIndex}",
+        "Date": "Data",
+        "DatePlaceholder": "Wprowadź datę",
+        "DateHint": "Dzień na który przeznaczone są teksty formacyjne",
+        "DateRequiredError": "Data jest wymagana",
+        "Title": "Tytuł dnia",
+        "TitlePlaceholder": "np. Dzień 1, Dzień 2, ... lub Mt 13,44-52",
+        "TitleHint": "Tytuł dnia widoczny w wersji PDF i w kalendarzu w aplikacji",
+        "TitleRequiredError": "Tytuł dnia jest wymagany",
+        "TitleMaxLengthError": "Tytuł dnia nie może przekraczać {maxLength} znaków",
+        "AddSection": "Dodaj sekcję",
+        "AddSectionDialog": {
+          "Title": "Dodaj sekcję",
+          "SelectSectionLabel": "Wybierz sekcję",
+          "SectionTypes": {
+            "introduction": "Wprowadzenie do biuletynu",
+            "introductionDescription": "Wprowadzenie do biuletynu z zakładki 'Właściwości' biuletynu",
+            "tipsForWork": "Wskazówki do pracy",
+            "tipsForWorkDescription": "Wskazówki do pracy z zakładki 'Właściwości' biuletynu",
+            "dailyPrayer": "Modlitwa na każdy dzień",
+            "dailyPrayerDescription": "Modlitwa na każdy dzień z zakładki 'Właściwości' biuletynu",
+            "customText": "Dowolny tekst",
+            "customTextDescription": "Dowolny tekst, który można edytować"
+          }
+        },
+        "Sections": "Sekcje",
+        "NoSections": "Brak sekcji, kliknij przycisk 'Dodaj sekcję' aby dodać sekcję do biuletynu na danych dzień.",
+        "NoSectionSelected": "Nie wybrano sekcji",
+        "Section": {
+          "Title": "Tytuł sekcji",
+          "TitlePlaceholder": "np. rozważanie",
+          "TitleHint": "Tytuł sekcji widoczny w aplikacji",
+          "TitleRequiredError": "Tytuł sekcji jest wymagany",
+          "TitleMaxLengthError": "Tytuł sekcji nie może przekraczać {maxLength} znaków",
+          "Content": "Treść sekcji",
+          "ContentPlaceholder": "Wprowadź treść sekcji",
+          "ContentHint": "Treść sekcji widoczna w aplikacji i w wersji PDF",
+          "ContentRequiredError": "Treść sekcji jest wymagana",
+          "ContentMaxLengthError": "Treść sekcji nie może przekraczać {maxLength} znaków"
+        }
+      }
+    },
+    "List": {
+      "Title": "Lista biuletynów"
+    }
   },
   "Settings": {
     "Title": "Ustawienia",

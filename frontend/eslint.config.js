@@ -103,6 +103,7 @@ module.exports = tseslint.config(
         },
       ],
       '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-inferrable-types': 'off',
       'max-len': 'off',
       'no-empty-function': 'off',
       '@typescript-eslint/no-empty-function': 'warn',
@@ -157,6 +158,8 @@ module.exports = tseslint.config(
       ...angular.configs.templateRecommended,
       ...angular.configs.templateAccessibility,
     ],
-    rules: {},
+    rules: {
+      '@angular-eslint/template/button-has-type': 'error',
+    },
   },
 );

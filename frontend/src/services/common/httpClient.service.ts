@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, EMPTY, map, Observable, retry, throwError } from 'rxjs';
-import { IResponseError } from 'src/interfaces/errors/response.error';
+import { IResponseError } from 'src/core/interfaces/errors/response.error';
 import { TranslationService } from '../translate/translation.service';
 
 @Injectable({

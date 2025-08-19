@@ -1,0 +1,18 @@
+<div
+  class="quill-container"
+  tabindex="0"
+  [attr.aria-labelledby]="_formField?.getLabelId()"
+  (focusin)="onFocusIn()"
+  (focusout)="onFocusOut($event)">
+  <quill-editor
+    [placeholder]="placeholder"
+    [(ngModel)]="_value"
+    (onContentChanged)="onContentChanged($event)"
+    (onEditorCreated)="onEditorCreated($event)"
+    [modules]="quillModules()"
+    [maxLength]="maxLength"
+    [required]="required"
+    [readOnly]="readonly"
+    [disabled]="disabled">
+  </quill-editor>
+</div>

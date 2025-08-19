@@ -1,4 +1,5 @@
 export { type IAnnouncementGridItemDto } from './announcements/IAnnouncementGridItem.dto';
+export { type IBulletinGridItemDto } from './bulletins/IBulletinGridItem.dto';
 
 export { type TLoginResult } from './auth/login.types';
 

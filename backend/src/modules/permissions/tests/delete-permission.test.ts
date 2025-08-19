@@ -135,6 +135,19 @@ describe('DELETE /permissions', () => {
   });
 
   describe('DELETE should respond with a status code of 401', () => {
+    it('when token is not set', async () => {
+      const response = await app!.permissions.delete(Guid.EMPTY, SystemPermissions.PreviewUserList);
+      expect(response.statusCode).toBe(401);
+      const body = response.body;
+      expect(typeof body).toBe('object');
+      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
     it('when token is invalid', async () => {
       const response = await app!.permissions.delete(
         Guid.EMPTY,
@@ -154,19 +167,6 @@ describe('DELETE /permissions', () => {
   });
 
   describe('DELETE should respond with a status code of 403', () => {
-    it('when token is not set', async () => {
-      const response = await app!.permissions.delete(Guid.EMPTY, SystemPermissions.PreviewUserList);
-      expect(response.statusCode).toBe(401);
-      const body = response.body;
-      expect(typeof body).toBe('object');
-      expect(body.data.message).toBe(errorKeys.login.User_Not_Authenticated);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    });
-
     it('when user has no permission', async () => {
       const requestData = userTestHelpers.generateValidUserWithPassword();
 

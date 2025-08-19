@@ -6,7 +6,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { IS_MOBILE } from 'src/app/app.config';
 import { SystemPermissionValue } from 'src/core/system-permission.enum';
-import { ISideMenuItem } from 'src/interfaces/menu/menu-item';
+import { ISideMenuItem } from 'src/core/interfaces/menu/menu-item';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { AuthTokenService } from 'src/services/auth/auth-token.service';
 import { PermissionService } from 'src/services/auth/permission.service';

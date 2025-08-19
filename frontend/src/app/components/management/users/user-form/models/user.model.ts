@@ -1,5 +1,5 @@
 import { FormControl } from '@angular/forms';
-import { IUser } from 'src/interfaces/users/user.interfaces';
+import { IUser } from 'src/core/interfaces/users/user.interfaces';
 import { IUserForm } from '../user.form';
 
 export abstract class UserDto {

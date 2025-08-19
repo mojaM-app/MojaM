@@ -1,14 +1,15 @@
 import { ComponentType } from '@angular/cdk/portal';
 import { Location } from '@angular/common';
-import { Inject, inject, Injectable } from '@angular/core';
+import { Inject, inject, Injectable, Type } from '@angular/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { firstValueFrom, map, tap } from 'rxjs';
 import { IS_MOBILE } from 'src/app/app.config';
 import { ConfirmDialogComponent } from 'src/app/components/static/confirmation-dialog/confirm-dialog.component';
+import { BaseDialogComponent } from 'src/app/components/static/dialog/base-dialog.component';
 import { LoginDialogComponent } from 'src/app/components/static/login/login-dialog/login-dialog.component';
 import { ILoginDialogOptions } from 'src/app/components/static/login/login-dialog/login-dialog.options';
 import { WysiwygEditorPopupComponent } from 'src/app/components/static/wysiwyg-editor/wysiwyg-editor-dialog/wysiwyg-editor-dialog.component';
-import { IDialogSettings } from 'src/interfaces/common/dialog.settings';
+import { IDialogSettings } from 'src/core/interfaces/common/dialog.settings';
 import { GuidUtils } from 'src/utils/guid.utils';
 
 @Injectable({
@@ -26,7 +27,19 @@ export class DialogService {
     return this._dialog.open(component, config);
   }
 
-  public openLoginComponent(options?: ILoginDialogOptions): MatDialogRef<LoginDialogComponent> {
+  public openComponentDialog<T>(
+    component: Type<T>,
+    componentData?: Partial<T> | undefined,
+    config?: MatDialogConfig
+  ): MatDialogRef<BaseDialogComponent> {
+    return this._dialog.open(BaseDialogComponent, {
+      ...config,
+      data: { component, componentData },
+      restoreFocus: false,
+    });
+  }
+
+  public openLoginDialog(options?: ILoginDialogOptions): MatDialogRef<LoginDialogComponent> {
     return this.open(LoginDialogComponent, {
       restoreFocus: false,
       width: '90%',

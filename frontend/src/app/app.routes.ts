@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { IRouteData } from 'src/interfaces/common/route.data';
+import { IRouteData } from 'src/core/interfaces/common/route.data';
 import { AnnouncementsMenu } from './components/announcements/announcements.menu';
 import { BulletinMenu } from './components/bulletin/bulletin.menu';
 import { CalendarMenu } from './components/calendar/calendar.menu';

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CalendarComponent } from './calendar.component';
-import { IRouteData } from 'src/interfaces/common/route.data';
+import { IRouteData } from 'src/core/interfaces/common/route.data';
 
 const routes: Routes = [
   { path: '**', redirectTo: '', pathMatch: 'full' },
