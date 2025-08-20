@@ -33,7 +33,7 @@ export abstract class AnnouncementItemBase {
     });
   }
 
-  public editItem(): void {
+  protected editItem(): void {
     const dialogRef = this._dialogService.openWysiwygEditor(
       this.content() ?? '',
       this.getDialogConfig()
@@ -47,7 +47,7 @@ export abstract class AnnouncementItemBase {
     });
   }
 
-  public confirmDeleteItem(): void {
+  protected confirmDeleteItem(): void {
     this._dialogService
       .confirm({
         message: { text: 'Announcements/Form/DeleteConfirmText' },
@@ -61,11 +61,11 @@ export abstract class AnnouncementItemBase {
       });
   }
 
-  public moveItemUp(): void {
+  protected moveItemUp(): void {
     this.moveItem.emit({ index: this.index(), direction: 'up' });
   }
 
-  public moveItemDown(): void {
+  protected moveItemDown(): void {
     this.moveItem.emit({ index: this.index(), direction: 'down' });
   }
 

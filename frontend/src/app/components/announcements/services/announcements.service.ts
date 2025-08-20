@@ -6,8 +6,9 @@ import { ErrorUtils } from 'src/utils/error.utils';
 import { BaseService } from '../../../../services/common/base.service';
 import { HttpClientService } from '../../../../services/common/httpClient.service';
 import { SpinnerService } from '../../../../services/spinner/spinner.service';
-import { IAnnouncements } from '../interfaces/announcements';
+import { IAnnouncementItem, IAnnouncements } from '../interfaces/announcements';
 import { EditAnnouncementsDto } from '../models/edit-announcements.model';
+import { AnnouncementItemDto } from '../models/announcements.model';
 
 @Injectable({
   providedIn: 'root',
@@ -110,5 +111,18 @@ export class AnnouncementsService extends BaseService {
           return throwError(() => error);
         })
       );
+  }
+
+  public getTopAnnouncementItems(
+    excludeItems: AnnouncementItemDto[]
+  ): Observable<IAnnouncementItem[]> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.announcements.getTopNItems())
+      .withBody({
+        excludeItems: excludeItems?.filter(item => item.content),
+      })
+      .post<IAnnouncementItem[]>()
+      .pipe(this._spinnerService.waitForSubscription());
   }
 }

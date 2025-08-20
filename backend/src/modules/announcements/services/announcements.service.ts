@@ -6,6 +6,7 @@ import { Announcement } from '../../../dataBase/entities/announcements/announcem
 import { CreateAnnouncementsReqDto } from '../dtos/create-announcements.dto';
 import { DeleteAnnouncementsReqDto } from '../dtos/delete-announcements.dto';
 import { GetAnnouncementsReqDto, IAnnouncementItemDto, IAnnouncementsDto } from '../dtos/get-announcements.dto';
+import { GetTopAnnouncementItemsReqDto, TopAnnouncementItemDto } from '../dtos/get-top-announcement-items.dto';
 import { PublishAnnouncementsReqDto } from '../dtos/publish-announcements.dto';
 import { UpdateAnnouncementsReqDto } from '../dtos/update-announcements.dto';
 import { AnnouncementStateValue } from '../enums/announcement-state.enum';
@@ -163,6 +164,10 @@ export class AnnouncementsService extends BaseService {
     );
 
     return result;
+  }
+
+  public async getTopAnnouncementItems(reqDto: GetTopAnnouncementItemsReqDto): Promise<TopAnnouncementItemDto[]> {
+    return await this._announcementsRepository.getTopAnnouncementItems(reqDto);
   }
 
   private announcementToIAnnouncements(announcement: Announcement): IAnnouncementsDto {

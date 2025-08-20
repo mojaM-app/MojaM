@@ -1,7 +1,7 @@
-import { request, type Response } from 'supertest';
 import type { CreateAnnouncementsDto } from '@modules/announcements/dtos/create-announcements.dto';
 import type { UpdateAnnouncementsDto } from '@modules/announcements/dtos/update-announcements.dto';
 import { AnnouncementsRout } from '@modules/announcements/routes/announcements.routes';
+import request, { type Response } from 'supertest';
 import type { ITestApp } from './test-helpers.interface';
 
 export class AnnouncementsHelpers {
@@ -39,5 +39,12 @@ export class AnnouncementsHelpers {
       .post(`${AnnouncementsRout.path}/${id}/${AnnouncementsRout.publishPath}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send();
+  }
+
+  public async getTopItems(accessToken?: string, excludeItems?: any[]): Promise<Response> {
+    return await request(this._app.getServer())
+      .post(`${AnnouncementsRout.path}/top-items`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ excludeItems: excludeItems || [] });
   }
 }

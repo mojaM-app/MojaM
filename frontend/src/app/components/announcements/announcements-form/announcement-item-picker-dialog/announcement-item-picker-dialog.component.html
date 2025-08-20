@@ -1,0 +1,28 @@
+<div class="dialog-header">
+  <div mat-dialog-title>{{ 'Announcements/Form/TopNItems' | gmessage }}</div>
+</div>
+<mat-dialog-content>
+  <mat-list role="list">
+    <mat-divider></mat-divider>
+    @for (item of items(); track $index) {
+      <mat-list-item role="listitem" class="announcement-item">
+        <div class="row mb-2 text-wrap">
+          <app-wysiwyg-preview [content]="item.content"></app-wysiwyg-preview>
+        </div>
+        <div class="row">
+          <div class="col text-end">
+            <button mat-flat-button type="button" (click)="addItem(item)">
+              {{ 'Shared/BtnAdd' | gmessage }}
+            </button>
+          </div>
+        </div>
+      </mat-list-item>
+      <mat-divider></mat-divider>
+    }
+  </mat-list>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-raised-button mat-dialog-close type="button">
+    {{ 'Shared/BtnClose' | gmessage }}
+  </button>
+</mat-dialog-actions>

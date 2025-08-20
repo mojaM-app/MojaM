@@ -70,6 +70,8 @@ export const {
   ADMIN_EMAIL,
   ADMIN_PASSWORD,
   ADMIN_UUID,
+
+  GET_TOP_ANNOUNCEMENTS_ITEMS,
 } = process.env;
 export { REGEX_PATTERNS, USER_ACCOUNT_LOCKOUT_SETTINGS, VALIDATOR_SETTINGS, ACCESS_TOKEN_ALGORITHM } from './constants';
 export { ValidateEnv } from './validateEnv';

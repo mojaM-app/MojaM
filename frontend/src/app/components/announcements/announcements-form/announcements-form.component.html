@@ -48,8 +48,11 @@
     </ng-container>
     <div class="row my-2">
       <div class="col text-end">
-        <button mat-raised-button type="button" (click)="addItem()">
+        <button mat-raised-button type="button" class="mb-2" (click)="addItem()">
           {{ 'Announcements/Form/AddItem' | gmessage }}
+        </button>
+        <button mat-raised-button type="button" class="mb-2 ms-3" (click)="addItemFromAnother()">
+          {{ 'Announcements/Form/AddItemFromAnother' | gmessage }}
         </button>
       </div>
     </div>

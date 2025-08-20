@@ -1,7 +1,7 @@
-import { request, type Response } from 'supertest';
 import type { CreateUserDto } from '@modules/users/dtos/create-user.dto';
 import type { UpdateUserDto } from '@modules/users/dtos/update-user.dto';
 import { UserRoute } from '@modules/users/routes/user.routes';
+import request, { type Response } from 'supertest';
 import { type ITestApp } from './test-helpers.interface';
 
 export class UserHelpers {

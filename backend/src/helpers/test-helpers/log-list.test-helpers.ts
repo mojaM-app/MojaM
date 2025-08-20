@@ -1,5 +1,5 @@
-import { request, type Response } from 'supertest';
 import { LogListRoutes } from '@modules/log/routes/log-list.routes';
+import request, { type Response } from 'supertest';
 import { type ITestApp } from './test-helpers.interface';
 
 export class LogListHelpers {

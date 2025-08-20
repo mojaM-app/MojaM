@@ -1,6 +1,6 @@
 import { IAnnouncementId, ICreateAnnouncement, ICreateAnnouncementItem, IUpdateAnnouncementItem, IUserId } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { isDate, isNullOrUndefined } from '@utils';
+import { isDate, isEmptyString, isNullOrUndefined, isString, toNumber } from '@utils';
 import { Service } from 'typedi';
 import { FindOptionsWhere } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
@@ -8,6 +8,7 @@ import { AnnouncementItem } from './../../../dataBase/entities/announcements/ann
 import { BaseAnnouncementsRepository } from './base.announcements.repository';
 import { CreateAnnouncementsReqDto } from '../dtos/create-announcements.dto';
 import { DeleteAnnouncementsReqDto } from '../dtos/delete-announcements.dto';
+import { GetTopAnnouncementItemsReqDto, TopAnnouncementItemDto } from '../dtos/get-top-announcement-items.dto';
 import { PublishAnnouncementsReqDto } from '../dtos/publish-announcements.dto';
 import { UpdateAnnouncementsDto, UpdateAnnouncementsReqDto } from '../dtos/update-announcements.dto';
 import { AnnouncementStateValue } from '../enums/announcement-state.enum';
@@ -192,10 +193,7 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
     return id!;
   }
 
-  public async checkIfExistWithDate(
-    validFromDate: Date | null | undefined,
-    skippedUuid?: string,
-  ): Promise<boolean> {
+  public async checkIfExistWithDate(validFromDate: Date | null | undefined, skippedUuid?: string): Promise<boolean> {
     if (!isDate(validFromDate)) {
       return false;
     }
@@ -257,6 +255,46 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
 
   public async count(): Promise<number> {
     return await this._dbContext.announcements.count();
+  }
+
+  public async getTopAnnouncementItems(reqDto: GetTopAnnouncementItemsReqDto): Promise<TopAnnouncementItemDto[]> {
+    const queryBuilder = this._dbContext.announcementItems
+      .createQueryBuilder('item')
+      .innerJoin('item.announcement', 'announcement')
+      .select('item.content', 'content')
+      .addSelect('COUNT(item.id)', 'count')
+      .addSelect('MIN(item.createdAt)', 'minCreatedAt')
+      .where('announcement.state = :publishedState', {
+        publishedState: AnnouncementStateValue.PUBLISHED,
+      })
+      .andWhere('item.content IS NOT NULL')
+      .andWhere("item.content <> ''");
+
+    // Exclude specified items
+    if (reqDto.excludeItems && reqDto.excludeItems.length > 0) {
+      const excludeContents = reqDto.excludeItems
+        .filter(item => isString(item.content) && !isEmptyString(item.content))
+        .map(item => item.content!.trim());
+
+      if (excludeContents.length > 0) {
+        queryBuilder.andWhere('item.content NOT IN (:...excludeContents)', { excludeContents });
+      }
+    }
+
+    const result = await queryBuilder
+      .groupBy('item.content')
+      .orderBy('count', 'DESC')
+      .addOrderBy('minCreatedAt', 'ASC')
+      .limit(reqDto.numberOfItems)
+      .getRawMany();
+
+    return result.map(
+      row =>
+        ({
+          content: row.content,
+          count: toNumber(row.count)!,
+        }) satisfies TopAnnouncementItemDto,
+    );
   }
 
   private getUpdateAnnouncementModel(

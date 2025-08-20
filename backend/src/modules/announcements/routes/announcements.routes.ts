@@ -5,6 +5,7 @@ import { default as express } from 'express';
 import { AnnouncementsController } from '../controllers/announcements.controller';
 import { CurrentAnnouncementsController } from '../controllers/current-announcements.controller';
 import { CreateAnnouncementsDto } from '../dtos/create-announcements.dto';
+import { GetTopAnnouncementItemsDto } from '../dtos/get-top-announcement-items.dto';
 import { UpdateAnnouncementsDto } from '../dtos/update-announcements.dto';
 
 export class AnnouncementsRout implements IRoutes {
@@ -28,6 +29,16 @@ export class AnnouncementsRout implements IRoutes {
       `${AnnouncementsRout.path}/:id(${REGEX_PATTERNS.GUID})`,
       [setIdentity, requirePermission(user => user.canGetAnnouncements())],
       this._announcementsController.get,
+    );
+
+    this.router.post(
+      `${AnnouncementsRout.path}/top-items`,
+      [
+        validateData(GetTopAnnouncementItemsDto),
+        setIdentity,
+        requirePermission(user => user.canAddAnnouncements() || user.canEditAnnouncements()),
+      ],
+      this._announcementsController.getTopAnnouncementItems,
     );
 
     this.router.post(

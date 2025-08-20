@@ -1,7 +1,7 @@
-import { request, type Response } from 'supertest';
 import { SystemPermissions } from '@core/enums/system-permissions.enum';
 import { PermissionsRoute } from '@modules/permissions/routes/permissions.routes';
 import { isNumber } from '@utils';
+import request, { type Response } from 'supertest';
 import { type ITestApp } from './test-helpers.interface';
 
 export class PermissionsHelpers {
@@ -54,7 +54,7 @@ export class PermissionsHelpers {
           .set('Authorization', `Bearer ${accessToken}`)
           .send();
 
-        if (addPermissionResponse.statusCode !== 201) {
+        if (addPermissionResponse?.statusCode !== 201) {
           break; // Stop if any permission fails to add
         }
       }

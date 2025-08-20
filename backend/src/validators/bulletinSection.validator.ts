@@ -1,3 +1,6 @@
+import { ICreateBulletinDaySection, IUpdateBulletinDaySection } from '@core';
+import { errorKeys } from '@exceptions';
+import { isNullOrUndefined, isString } from '@utils';
 import {
   registerDecorator,
   ValidationArguments,
@@ -5,9 +8,6 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { ICreateBulletinDaySection, IUpdateBulletinDaySection } from '@core';
-import { errorKeys } from '@exceptions';
-import { isNullOrUndefined, isString } from '@utils';
 import { SectionType } from '../modules/bulletin/enums/bulletin-section-type.enum';
 
 @ValidatorConstraint({ name: 'isBulletinSectionValid', async: false })
@@ -26,7 +26,7 @@ export class IsBulletinSectionValidConstraint implements ValidatorConstraintInte
 
     // For section types (INTRODUCTION, TIPS_FOR_WORK, DAILY_PRAYER),
     // title and content should be null as they will be taken from Bulletin entity
-    if ([SectionType.INTRODUCTION, SectionType.TIPS_FOR_WORK, SectionType.DAILY_PRAYER].includes(type)) {
+    if ([SectionType.INTRODUCTION, SectionType.TIPS_FOR_WORK, SectionType.DAILY_PRAYER].includes(type as SectionType)) {
       return isNullOrUndefined(section.title) && isNullOrUndefined(section.content);
     }
 

@@ -1,4 +1,4 @@
-import { cleanEnv, email, port, str, url } from 'envalid';
+import { cleanEnv, email, num, port, str, url } from 'envalid';
 
 export const ValidateEnv = (): void => {
   cleanEnv(process.env, {
@@ -45,6 +45,8 @@ export const ValidateEnv = (): void => {
     ADMIN_EMAIL: email(),
     ADMIN_PASSWORD: str(),
     ADMIN_UUID: str(),
+
+    GET_TOP_ANNOUNCEMENTS_ITEMS: num({ default: 10 }),
 
     // Logging configuration
     LOG_LEVEL: str({ default: 'warn', choices: ['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'] }),

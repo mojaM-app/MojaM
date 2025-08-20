@@ -20,6 +20,8 @@ export class BaseService {
         `${environment.backendUrl}/${this.API_ROUTES.announcements.path}/${uuid}`,
       publish: (uuid: string): string =>
         `${environment.backendUrl}/${this.API_ROUTES.announcements.path}/${uuid}/publish`,
+      getTopNItems: (): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.announcements.path}/top-items`,
     },
     announcementsList: {
       path: 'announcements-list',

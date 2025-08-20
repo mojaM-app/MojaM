@@ -136,16 +136,19 @@
       "Announcements": "Ogłoszenia",
       "NoAnnouncements": "Brak ogłoszeń, kliknij poniższy przycisk \"Dodaj sekcję\".",
       "AddItem": "Dodaj sekcję",
+      "AddItemFromAnother": "Dodaj sekcję z innych ogłoszeń",
       "SectionNo": "Sekcja {no}",
       "NoSectionContentMobile": "Brak treści, stuknij dwukrotnie aby edytować",
       "NoSectionContentDesktop": "Brak treści, kliknij aby edytować",
       "Errors": {
         "AtLeastOneItemIsRequired": "Co najmniej jedna sekcja jest wymagana.",
         "ContentIsRequired": "Treść ogłoszenia jest wymagana. Każda z sekcji musi być wypełniona, usuń puste sekcje.",
-        "ContentIsTooLong": "Treść ogłoszenia jest zbyt długa. Maksymalnie {maxLength} znaków."
+        "ContentIsTooLong": "Treść ogłoszenia jest zbyt długa. Maksymalnie {maxLength} znaków.",
+        "NoTopNItems": "Brak opublikowanych ogłoszeń."
       },
       "DeleteConfirmText": "Czy na pewno chcesz usunąć sekcję?",
-      "CheckProvidedData": "Sprawdź poprawność wprowadzonych danych. Data rozpoczęcia obowiązywania nie może być wcześniejsza niż dzisiejsza. Każda z sekcji musi być wypełniona, usuń puste sekcje."
+      "CheckProvidedData": "Sprawdź poprawność wprowadzonych danych. Data rozpoczęcia obowiązywania nie może być wcześniejsza niż dzisiejsza. Każda z sekcji musi być wypełniona, usuń puste sekcje.",
+      "TopNItems": "Najczęściej powtarzające się ogłoszenia"
     },
     "List": {
       "Title": "Lista ogłoszeń",

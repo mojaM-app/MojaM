@@ -1,6 +1,6 @@
-import { request, type Response } from 'supertest';
 import type { UpdateUserProfileDto } from '@modules/users/dtos/update-user-profile.dto';
 import { UserProfileRoute } from '@modules/users/routes/user-profile.routes';
+import request, { type Response } from 'supertest';
 import { type ITestApp } from './test-helpers.interface';
 
 export class UserProfileHelpers {

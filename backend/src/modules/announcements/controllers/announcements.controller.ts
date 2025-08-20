@@ -1,5 +1,6 @@
+import { GET_TOP_ANNOUNCEMENTS_ITEMS } from '@config';
 import { BaseController, type IRequestWithIdentity } from '@core';
-import { isGuid } from '@utils';
+import { isGuid, toNumber } from '@utils';
 import type { NextFunction, Request, Response } from 'express';
 import { StatusCode } from 'status-code-enum';
 import { Container } from 'typedi';
@@ -10,6 +11,11 @@ import {
 } from '../dtos/create-announcements.dto';
 import { DeleteAnnouncementsReqDto, DeleteAnnouncementsResponseDto } from '../dtos/delete-announcements.dto';
 import { GetAnnouncementsReqDto, GetAnnouncementsResponseDto } from '../dtos/get-announcements.dto';
+import {
+  GetTopAnnouncementItemsDto,
+  GetTopAnnouncementItemsReqDto,
+  GetTopAnnouncementItemsResponseDto,
+} from '../dtos/get-top-announcement-items.dto';
 import { PublishAnnouncementsReqDto, PublishAnnouncementsResponseDto } from '../dtos/publish-announcements.dto';
 import {
   type UpdateAnnouncementsDto,
@@ -72,6 +78,22 @@ export class AnnouncementsController extends BaseController {
       const reqDto = new PublishAnnouncementsReqDto(this.getAnnouncementsGuid(req), this.getCurrentUserId(req)!);
       const result = await this._service.publish(reqDto);
       res.status(StatusCode.SuccessOK).json(new PublishAnnouncementsResponseDto(result));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getTopAnnouncementItems = async (
+    req: IRequestWithIdentity,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const numberOfItems = toNumber(GET_TOP_ANNOUNCEMENTS_ITEMS) || 10;
+      const model: GetTopAnnouncementItemsDto = req.body;
+      const reqDto = new GetTopAnnouncementItemsReqDto(numberOfItems, model, this.getCurrentUserId(req));
+      const result = await this._service.getTopAnnouncementItems(reqDto);
+      res.status(StatusCode.SuccessOK).json(new GetTopAnnouncementItemsResponseDto(result));
     } catch (error) {
       next(error);
     }

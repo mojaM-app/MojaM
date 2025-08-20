@@ -54,7 +54,7 @@ export class DaySectionsComponent {
   public constructor(
     private readonly _bulletinFormBuilder: BulletinFormBuilder,
     private readonly _dialogService: DialogService,
-    private readonly _cdr: ChangeDetectorRef,
+    private readonly _changeDetectorRef: ChangeDetectorRef,
     private readonly _translationService: TranslationService
   ) {}
 
@@ -83,8 +83,8 @@ export class DaySectionsComponent {
           });
           this.sections().push(newSection);
           this.editSection(newSection);
-          this._cdr.markForCheck();
-          this._cdr.detectChanges();
+          this._changeDetectorRef.markForCheck();
+          this._changeDetectorRef.detectChanges();
         }
       });
   }

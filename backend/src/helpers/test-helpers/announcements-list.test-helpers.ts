@@ -1,5 +1,5 @@
-import { request, type Response } from 'supertest';
 import { AnnouncementsListRoute } from '@modules/announcements/routes/announcements-list.routes';
+import request, { type Response } from 'supertest';
 import type { ITestApp } from './test-helpers.interface';
 
 export class AnnouncementsListHelpers {

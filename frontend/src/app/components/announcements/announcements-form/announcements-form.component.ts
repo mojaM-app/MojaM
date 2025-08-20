@@ -1,6 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, effect, Inject, input } from '@angular/core';
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  effect,
+  Inject,
+  input,
+} from '@angular/core';
+import { FormArray, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -20,6 +27,12 @@ import {
   IAnnouncementsForm,
   IAnnouncementsItemForm,
 } from './announcements.form';
+import { AnnouncementsService } from '../services/announcements.service';
+import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
+import { IAnnouncementItem } from '../interfaces/announcements';
+import { DialogService } from 'src/services/dialog/dialog.service';
+import { AnnouncementItemPickerDialogComponent } from './announcement-item-picker-dialog/announcement-item-picker-dialog.component';
+import { MatDialogConfig } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-announcements-form',
@@ -42,13 +55,16 @@ import {
   styleUrl: './announcements-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
+export class AnnouncementsFormComponent extends WithUnsubscribe(WithForm<IAnnouncementsForm>()) {
   public readonly announcements = input.required<AnnouncementsDto>();
 
   public constructor(
     @Inject(IS_MOBILE) protected isMobile: boolean,
     private readonly _formBuilder: AnnouncementsFormBuilder,
-    private _snackBarService: SnackBarService
+    private readonly _snackBarService: SnackBarService,
+    private readonly _announcementsService: AnnouncementsService,
+    private readonly _dialogService: DialogService,
+    private readonly _changeDetectorRef: ChangeDetectorRef
   ) {
     super(_formBuilder.form);
 
@@ -96,8 +112,45 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
     return this._formBuilder.isValid() && this.isReadyToSubmit();
   }
 
-  protected addItem(id?: string, content?: string): void {
-    this._formBuilder.addNewItem(id, content);
+  protected addItem(): void {
+    this._formBuilder.addNewItem();
+  }
+
+  protected addItemFromAnother(): void {
+    const items = this.controls.items as any as FormArray<FormGroup<IAnnouncementsItemForm>>;
+    const itemsToExclude = items.controls
+      .map(formGroup => formGroup.controls.content.value)
+      .filter(content => content)
+      .map(content => {
+        return {
+          content: content!,
+        } satisfies Partial<IAnnouncementItem>;
+      });
+
+    this._announcementsService
+      .getTopAnnouncementItems(itemsToExclude)
+      .subscribe((items: IAnnouncementItem[]) => {
+        if (items.length === 0) {
+          this._snackBarService.translateAndShowError({
+            message: 'Announcements/Form/Errors/NoTopNItems',
+          });
+          return;
+        }
+
+        const dialogRef = this._dialogService.open(AnnouncementItemPickerDialogComponent, {
+          data: {
+            items: items,
+          },
+          autoFocus: false,
+          restoreFocus: false,
+          ...(this.isMobile ? this.mobileDialogSettings() : this.desktopDialogSettings()),
+        });
+
+        dialogRef.componentInstance.addItemHandler.subscribe(value => {
+          this._formBuilder.addNewItem(undefined, value);
+          this._changeDetectorRef.markForCheck();
+        });
+      });
   }
 
   protected removeItem(index: number): void {
@@ -113,5 +166,24 @@ export class AnnouncementsFormComponent extends WithForm<IAnnouncementsForm>() {
     const item = items.at(index);
     items.removeAt(index);
     items.insert(newIndex, item);
+  }
+
+  private mobileDialogSettings(): MatDialogConfig {
+    return {
+      height: 'calc(100% - 10px)',
+      width: 'calc(100% - 10px)',
+      maxWidth: '100%',
+      maxHeight: '100%',
+      position: { top: '5px', left: '5px' },
+    };
+  }
+
+  private desktopDialogSettings(): MatDialogConfig {
+    return {
+      maxHeight: '80%',
+      width: '60%',
+      maxWidth: '100%',
+      position: { top: '5%', left: '20%' },
+    };
   }
 }

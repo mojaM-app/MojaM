@@ -13,6 +13,7 @@ export const events = {
     announcementsDeleted: 'onAnnouncementsDeleted',
     announcementsPublished: 'onAnnouncementsPublished',
     announcementsUpdated: 'onAnnouncementsUpdated',
+    announcementsItemsRetrieved: 'onAnnouncementsItemsRetrieved',
   },
   bulletin: {
     bulletinListRetrieved: 'onBulletinListRetrieved',

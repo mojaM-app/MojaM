@@ -1,5 +1,5 @@
-import { request, type Response } from 'supertest';
 import { NewsRoutes } from '@modules/news/routes/news.routes';
+import request, { type Response } from 'supertest';
 import { type ITestApp } from './test-helpers.interface';
 
 export class NewsHelpers {
