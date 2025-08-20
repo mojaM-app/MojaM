@@ -16,7 +16,7 @@ import { AddBulletinDto } from '../models/add-bulletin.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/services/auth/auth.service';
 import { BulletinService } from '../services/bulletin.service';
-import { BulletinMenu } from '../bulletin.menu';
+import { BulletinListMenu, BulletinMenu } from '../bulletin.menu';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -98,7 +98,7 @@ export class AddBulletinComponent implements OnInit {
   }
 
   private navigateToBulletinList(): void {
-    //this._router.navigateByUrl(BulletinListMenu.Path);
+    this._router.navigateByUrl(BulletinListMenu.Path);
   }
 
   private navigateToBulletin(): void {
