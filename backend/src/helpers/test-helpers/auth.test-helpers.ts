@@ -1,8 +1,8 @@
-import { StatusCode } from 'status-code-enum';
-import { request, type Response } from 'supertest';
 import type { IAccountTryingToLogInModel, ILoginModel, TLoginResult } from '@core';
 import type { ActivateAccountDto } from '@modules/auth/dtos/activate-account.dto';
 import { AuthRoute } from '@modules/auth/routes/auth.routes';
+import { StatusCode } from 'status-code-enum';
+import request, { type Response } from 'supertest';
 import type { ITestApp } from './test-helpers.interface';
 
 export class AuthHelpers {
