@@ -3,7 +3,7 @@ import { events, ILoginModel, SystemPermissions } from '@core';
 import { BadRequestException, errorKeys, UnauthorizedException } from '@exceptions';
 import { testHelpers } from '@helpers';
 import { userTestHelpers } from '@modules/users';
-import { generateRandomDate, generateRandomNumber, getAdminLoginData } from '@utils';
+import { generateRandomDate, generateRandomNumber, getAdminLoginData, normalizeEmail } from '@utils';
 import { TestApp } from '../../../helpers/test-helpers/test.app';
 import { CreateUserDto, CreateUserResponseDto } from '../dtos/create-user.dto';
 import { GetUserDetailsResponseDto } from '../dtos/get-user-details.dto';
@@ -177,7 +177,7 @@ describe('PUT /user/:id', () => {
       expect(getMessage).toBe(events.users.userRetrieved);
       expect(user).toBeDefined();
       expect(user!.id).toBe(newUser.id);
-      expect(user!.email).toBe(updateUserRequestData.email);
+      expect(user!.email).toBe(normalizeEmail(updateUserRequestData.email));
       expect(user!.phone).toBe(updateUserRequestData.phone);
       expect(user!.firstName).toBe(updateUserRequestData.firstName);
       expect(user!.lastName).toBe(updateUserRequestData.lastName);
