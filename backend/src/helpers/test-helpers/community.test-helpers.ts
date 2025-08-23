@@ -1,6 +1,5 @@
-import type { Response } from 'supertest';
-import request from 'supertest';
 import { CommunityRoutes } from '@modules/community/routes/community.routes';
+import request, { type Response } from 'supertest';
 import type { ITestApp } from './test-helpers.interface';
 
 export class CommunityHelpers {

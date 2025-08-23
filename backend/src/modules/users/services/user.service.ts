@@ -1,8 +1,8 @@
-import { Service } from 'typedi';
 import { BaseService, events, IUpdateUser, IUserDto } from '@core';
 import { userToIUser } from '@db';
 import { BadRequestException, ConflictException, errorKeys } from '@exceptions';
 import { isNullOrEmptyString, isNullOrUndefined } from '@utils';
+import { Service } from 'typedi';
 import { User } from '../../../dataBase/entities/users/user.entity';
 import { ActivateUserReqDto } from '../dtos/activate-user.dto';
 import { CreateUserReqDto } from '../dtos/create-user.dto';
