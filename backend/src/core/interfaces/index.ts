@@ -54,7 +54,7 @@ export {
   type IUnlockAccountEmailSettings,
 } from './notifications/email-settings.interface';
 
-export { type IPasscodeService, type IResetPasscodeService, type ICryptoService } from './auth/auth.services';
+export { type IPasscodeService, type ICryptoService } from './auth/auth.services';
 export { type IUserService } from './users/user.services';
 export { type IPermissionsService } from './permissions/permissions.services';
 export { type INotificationsService } from './notifications/notifications.services';
