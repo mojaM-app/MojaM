@@ -22,7 +22,7 @@ import { CultureService } from 'src/services/translate/culture.service';
 import { TranslationService } from 'src/services/translate/translation.service';
 import { MenuItemClickResult } from '../../../../core/interfaces/menu/menu.enum';
 import { BaseGridService } from '../../static/grid/grid/services/base-grid.service';
-import { AnnouncementStateValue } from '../announcement-state.enum';
+import { AnnouncementStateValue } from '../enums/announcement-state.enum';
 import {
   AddAnnouncementsMenu,
   EditAnnouncementsMenu,

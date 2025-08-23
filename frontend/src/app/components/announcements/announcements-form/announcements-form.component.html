@@ -41,9 +41,11 @@
           }
         </ng-container>
       } @empty {
-        <small class="mat-mdc-form-field-error">{{
-          'Announcements/Form/NoAnnouncements' | gmessage
-        }}</small>
+        <div class="row mb-3 text-center">
+          <small class="mat-mdc-form-field-error">{{
+            'Announcements/Form/NoAnnouncements' | gmessage
+          }}</small>
+        </div>
       }
     </ng-container>
     <div class="row my-2">

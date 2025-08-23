@@ -1,27 +1,20 @@
-import {
-  CreateEffectOptions,
-  Directive,
-  effect,
-  input,
-  output,
-  signal,
-  WritableSignal,
-} from '@angular/core';
+import { Directive, effect, input, output, signal, WritableSignal } from '@angular/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { MatDialogConfig } from '@angular/material/dialog';
 import { IDialogSettings } from 'src/core/interfaces/common/dialog.settings';
 import { DialogService } from 'src/services/dialog/dialog.service';
 import { IAnnouncementsItemForm } from '../announcements.form';
+import { TDirection } from '../../enums/move.direction';
 
 @Directive()
 export abstract class AnnouncementItemBase {
   public readonly itemFormGroup = input.required<AbstractControl>();
-  public readonly controls = signal<IAnnouncementsItemForm | undefined>(undefined);
   public readonly index = input.required<number>();
-  public content: WritableSignal<string> = signal('');
+  public readonly deleteItem = output<number>();
+  public readonly moveItem = output<{ index: number; direction: TDirection }>();
 
-  public deleteItem = output<number>();
-  public moveItem = output<{ index: number; direction: 'up' | 'down' }>();
+  protected readonly content: WritableSignal<string> = signal('');
+  protected readonly controls = signal<IAnnouncementsItemForm | undefined>(undefined);
 
   protected constructor(protected _dialogService: DialogService) {
     effect(() => {
@@ -48,6 +41,11 @@ export abstract class AnnouncementItemBase {
   }
 
   protected confirmDeleteItem(): void {
+    if ((this.content()?.trim()?.length ?? 0) === 0) {
+      this.deleteItem.emit(this.index());
+      return;
+    }
+
     this._dialogService
       .confirm({
         message: { text: 'Announcements/Form/DeleteConfirmText' },

@@ -33,6 +33,7 @@ import { IAnnouncementItem } from '../interfaces/announcements';
 import { DialogService } from 'src/services/dialog/dialog.service';
 import { AnnouncementItemPickerDialogComponent } from './announcement-item-picker-dialog/announcement-item-picker-dialog.component';
 import { MatDialogConfig } from '@angular/material/dialog';
+import { TDirection } from '../enums/move.direction';
 
 @Component({
   selector: 'app-announcements-form',
@@ -157,7 +158,7 @@ export class AnnouncementsFormComponent extends WithUnsubscribe(WithForm<IAnnoun
     this.formGroup.controls.items.removeAt(index);
   }
 
-  protected moveItem({ index, direction }: { index: number; direction: 'up' | 'down' }): void {
+  protected moveItem({ index, direction }: { index: number; direction: TDirection }): void {
     const items = this.formGroup.controls.items;
     const newIndex = direction === 'up' ? index - 1 : index + 1;
     if (newIndex < 0 || newIndex >= items.length) {

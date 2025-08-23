@@ -35,11 +35,6 @@ export class AddAnnouncementsDto extends AnnouncementsDto {
   }
 
   public static create(): AddAnnouncementsDto {
-    return new AddAnnouncementsDto().addItem();
-  }
-
-  private addItem(): AddAnnouncementsDto {
-    this.items!.push(new AnnouncementItemDto());
-    return this;
+    return new AddAnnouncementsDto();
   }
 }
