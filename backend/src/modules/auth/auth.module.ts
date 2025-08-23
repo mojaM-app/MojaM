@@ -1,12 +1,5 @@
-import {
-  type ICryptoService,
-  type IModule,
-  type IPasscodeService,
-  type IResetPasscodeService,
-  type IRoutes,
-} from '@core';
+import { type ICryptoService, type IModule, type IPasscodeService, type IRoutes } from '@core';
 import { Container } from 'typedi';
-import { ResetPasscodeTokensRepository } from './repositories/reset-passcode-tokens.repository';
 import { AuthRoute } from './routes/auth.routes';
 import { CryptoService } from './services/crypto.service';
 import { PasscodeService } from './services/passcode.service';
@@ -20,11 +13,5 @@ export class AuthModule implements IModule {
   public register(): void {
     Container.set<ICryptoService>('ICryptoService', Container.get(CryptoService));
     Container.set<IPasscodeService>('IPasscodeService', Container.get(PasscodeService));
-    Container.set<IResetPasscodeService>('IResetPasscodeService', {
-      deleteResetPasscodeTokens(userId: number): Promise<boolean> {
-        const resetPasscodeTokensRepository = Container.get(ResetPasscodeTokensRepository);
-        return resetPasscodeTokensRepository.deleteTokens(userId);
-      },
-    } satisfies IResetPasscodeService);
   }
 }
