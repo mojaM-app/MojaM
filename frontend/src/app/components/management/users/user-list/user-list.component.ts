@@ -27,10 +27,11 @@ export class UserListComponent {
     permissionService: PermissionService,
     private _router: Router
   ) {
+    this.showAddButton.set(permissionService.hasPermission(SystemPermissionValue.AddUser));
+
     effect(() => {
       authService.onAuthStateChanged.whenUnauthenticated(() => {
         this.navigateToHomePage();
-        this.showAddButton.set(permissionService.hasPermission(SystemPermissionValue.AddUser));
       });
     });
   }
