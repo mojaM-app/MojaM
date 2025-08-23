@@ -1,17 +1,13 @@
-import { Container, Service } from 'typedi';
-import { Not } from 'typeorm';
-import {
-  ICreateUser,
-  ICryptoService,
-  IPasscodeService,
-  IResetPasscodeService,
-  IUpdateUser,
-  IUpdateUserPasscode,
-} from '@core';
+import { ICreateUser, ICryptoService, IPasscodeService, IUpdateUser, IUpdateUserPasscode } from '@core';
 import { relatedDataNames } from '@db';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { getDateTimeNow, isNullOrEmptyString, toNumber } from '@utils';
+import { getDateTimeNow, isNullOrEmptyString, normalizeEmail, normalizePhone } from '@utils';
+import { Container, Service } from 'typedi';
+import { SelectQueryBuilder } from 'typeorm/query-builder/SelectQueryBuilder';
+import { Repository } from 'typeorm/repository/Repository';
 import { BaseUserRepository } from './base.user.repository';
+import { UserResetPasscodeToken } from '../../../dataBase/entities/users/user-reset-passcode-tokens.entity';
+import { UserSystemPermission } from '../../../dataBase/entities/users/user-system-permission.entity';
 import { User } from '../../../dataBase/entities/users/user.entity';
 import { CreateUserReqDto } from '../dtos/create-user.dto';
 import { DeleteUserReqDto } from '../dtos/delete-user.dto';
@@ -21,14 +17,12 @@ import { UserCacheService } from '../services/user-cache.service';
 @Service()
 export class UserRepository extends BaseUserRepository {
   private readonly _passcodeService: IPasscodeService;
-  private readonly _resetPasscodeService: IResetPasscodeService;
   private readonly _cryptoService: ICryptoService;
 
   constructor(cacheService: UserCacheService) {
     super(cacheService);
 
     this._passcodeService = Container.get<IPasscodeService>('IPasscodeService');
-    this._resetPasscodeService = Container.get<IResetPasscodeService>('IResetPasscodeService');
     this._cryptoService = Container.get<ICryptoService>('ICryptoService');
   }
 
@@ -37,33 +31,38 @@ export class UserRepository extends BaseUserRepository {
       return [];
     }
 
+    const normEmail = normalizeEmail(email);
+    const normPhone = normalizePhone(phone);
+
     let users: User[];
-    if ((phone?.length ?? 0) > 0) {
-      users = await this._dbContext.users.findBy({ email: email!, phone: phone! });
+    if ((normPhone?.length ?? 0) > 0) {
+      users = await this._dbContext.users.findBy({ email: normEmail!, phone: normPhone! });
     } else {
-      users = await this._dbContext.users.findBy({ email: email! });
+      users = await this._dbContext.users.findBy({ email: normEmail! });
     }
 
     return users;
   }
 
   public async checkIfExists(
-    user: { email: string; phone: string } | null | undefined,
+    user: { email?: string; phone?: string } | null | undefined,
     skippedUserId?: number,
   ): Promise<boolean> {
-    if (isNullOrEmptyString(user?.email) || isNullOrEmptyString(user?.phone)) {
+    const email = normalizeEmail(user?.email ?? null);
+    const phone = normalizePhone(user?.phone);
+
+    if ((email?.length ?? 0) === 0 && (phone?.length ?? 0) === 0) {
       throw new BadRequestException(errorKeys.users.Invalid_Email_Or_Phone);
     }
 
-    const count: number = await this._dbContext.users.count({
-      where: {
-        id: Not(skippedUserId ?? 0),
-        email: user!.email,
-        phone: user!.phone,
-      },
-    });
+    if ((email?.length ?? 0) > 0 && (phone?.length ?? 0) > 0) {
+      const count = await this.countUsersByEmailPhonePair(this._dbContext.users, email!, phone!, skippedUserId);
+      return count > 0;
+    }
 
-    return count > 0;
+    // If only one of the fields is provided, by the business rule we should not block creation/update
+    // because uniqueness is defined on the pair. Treat as no conflict.
+    return false;
   }
 
   public async create(reqDto: CreateUserReqDto): Promise<User> {
@@ -74,8 +73,8 @@ export class UserRepository extends BaseUserRepository {
       ? null
       : this._passcodeService.getHash(salt, userData.passcode);
     const model = {
-      email: userData.email,
-      phone: userData.phone,
+      email: normalizeEmail(userData.email)!,
+      phone: normalizePhone(userData.phone)!,
       firstName: userData.firstName,
       lastName: userData.lastName,
       joiningDate: userData.joiningDate,
@@ -92,70 +91,43 @@ export class UserRepository extends BaseUserRepository {
 
     const entity = this._dbContext.users.create(model);
 
-    return await this._dbContext.users.save(entity);
+    try {
+      return await this._dbContext.users.save(entity);
+    } catch (error: unknown) {
+      if (this.isUniqueConstraintError(error, 'UQ_User_Email_Phone')) {
+        throw new BadRequestException(errorKeys.users.User_Already_Exists, {
+          email: model.email,
+          phone: model.phone,
+        });
+      }
+      throw error;
+    }
   }
 
   public async update(model: UpdateUserModel): Promise<User | null> {
     return await this._update(model);
   }
-  public async checkIfCanBeDeleted(userId: number): Promise<string[]> {
-    const relatedDataConnectedWithUser = await this._dbContext.query(
-      `SELECT COUNT(*) AS count, ? as entities
-        FROM user_to_systempermissions uts
-        WHERE uts.AssignedById = ? AND uts.UserId != ?
-      UNION
-      SELECT COUNT(*) AS count, ? as entities
-        FROM announcements an_cr
-        WHERE an_cr.CreatedById = ?
-      UNION
-      SELECT COUNT(*) AS count, ? as entities
-      FROM announcements an_pub
-        WHERE an_pub.PublishedById = ?
-      UNION
-        SELECT COUNT(*) AS count, ? as entities
-        FROM announcement_items ani_cr
-        WHERE ani_cr.CreatedById = ?
-      UNION
-        SELECT COUNT(*) AS count, ? as entities
-        FROM announcement_items ani_up
-        WHERE ani_up.UpdatedById = ?
-      `,
-      [
-        relatedDataNames.SystemPermission_AssignedBy,
-        userId,
-        userId,
-        relatedDataNames.Announcements_CreatedBy,
-        userId,
-        relatedDataNames.Announcements_PublishedBy,
-        userId,
-        relatedDataNames.AnnouncementItems_CreatedBy,
-        userId,
-        relatedDataNames.AnnouncementItems_UpdatedBy,
-        userId,
-      ],
-    );
 
-    return relatedDataConnectedWithUser
-      .map((x: { count: string; entities: string }) => {
-        return {
-          count: toNumber(x.count),
-          entities: x.entities,
-        };
-      })
-      .filter((x: { count: number; entities: string }) => x.count > 0)
-      .map((x: { count: number; entities: string }) => x.entities);
+  public async checkIfCanBeDeleted(userId: number): Promise<string[]> {
+    const { sql, params } = this.getCheckRelatedDataSqlAndParams(userId);
+    const relatedDataConnectedWithUser = await this._dbContext.query(sql, params);
+
+    return this.mapRelatedDataRows(relatedDataConnectedWithUser);
   }
 
   public async delete(userId: number, reqDto: DeleteUserReqDto): Promise<boolean> {
-    await this._dbContext.userSystemPermissions
-      .createQueryBuilder()
-      .delete()
-      .where('userId = :userId', { userId })
-      .execute();
-    await this._resetPasscodeService.deleteResetPasscodeTokens(userId);
+    await this._dbContext.transaction(async transactionalEntityManager => {
+      const uspRepo = transactionalEntityManager.getRepository(UserSystemPermission);
+      await uspRepo.createQueryBuilder().delete().where('userId = :userId', { userId }).execute();
 
-    await this._dbContext.users.delete({ id: userId });
+      const resetTokensRepo = transactionalEntityManager.getRepository(UserResetPasscodeToken);
+      await resetTokensRepo.createQueryBuilder().delete().where('userId = :userId', { userId }).execute();
 
+      const userRepo = transactionalEntityManager.getRepository(User);
+      await userRepo.delete({ id: userId });
+    });
+
+    // Clear cache after successful commit
     await this._cacheService.removeIdFromCacheAsync(reqDto.userGuid);
 
     return true;
@@ -243,11 +215,97 @@ export class UserRepository extends BaseUserRepository {
   }
 
   private async _update(model: UpdateUserModel): Promise<User | null> {
-    await this._dbContext.users.update(model.userId, model.userData);
+    const updates: IUpdateUser = { ...model.userData };
+
+    if (typeof updates.email === 'string') {
+      const normalized = normalizeEmail(updates.email);
+      if (normalized !== null) {
+        updates.email = normalized;
+      }
+    }
+    if (typeof updates.phone === 'string') {
+      const normalized = normalizePhone(updates.phone);
+      if (normalized !== null) {
+        updates.phone = normalized;
+      }
+    }
+
+    try {
+      await this._dbContext.users.update(model.userId, updates);
+    } catch (error: unknown) {
+      if (this.isUniqueConstraintError(error, 'UQ_User_Email_Phone')) {
+        throw new BadRequestException(errorKeys.users.User_Already_Exists, {
+          email: updates.email,
+          phone: updates.phone,
+        });
+      }
+      throw error;
+    }
 
     return await this._dbContext.users
       .createQueryBuilder('user')
       .where('user.id = :userId', { userId: model.userId })
       .getOne();
+  }
+
+  private buildEmailPhonePairFilter(
+    qb: SelectQueryBuilder<User>,
+    alias: string,
+    email: string,
+    phone: string,
+  ): SelectQueryBuilder<User> {
+    return qb.andWhere(`(${alias}.email = :email AND ${alias}.phone = :phone)`, { email, phone });
+  }
+
+  private async countUsersByEmailPhonePair(
+    repo: Repository<User>,
+    email: string,
+    phone: string,
+    skippedUserId?: number,
+  ): Promise<number> {
+    const queryBuilder = repo.createQueryBuilder('u');
+    if ((skippedUserId ?? 0) > 0) {
+      queryBuilder.andWhere('u.id <> :skippedUserId', { skippedUserId });
+    }
+    this.buildEmailPhonePairFilter(queryBuilder, 'u', email, phone);
+    return await queryBuilder.getCount();
+  }
+
+  private getCheckRelatedDataSqlAndParams(userId: number): { sql: string; params: Array<string | number> } {
+    const sql = `SELECT COUNT(*) AS count, ? as entities
+        FROM user_to_systempermissions uts
+        WHERE uts.AssignedById = ? AND uts.UserId != ?
+      UNION
+      SELECT COUNT(*) AS count, ? as entities
+        FROM announcements an_cr
+        WHERE an_cr.CreatedById = ?
+      UNION
+      SELECT COUNT(*) AS count, ? as entities
+      FROM announcements an_pub
+        WHERE an_pub.PublishedById = ?
+      UNION
+        SELECT COUNT(*) AS count, ? as entities
+        FROM announcement_items ani_cr
+        WHERE ani_cr.CreatedById = ?
+      UNION
+        SELECT COUNT(*) AS count, ? as entities
+        FROM announcement_items ani_up
+        WHERE ani_up.UpdatedById = ?`;
+
+    const params = [
+      relatedDataNames.SystemPermission_AssignedBy,
+      userId,
+      userId,
+      relatedDataNames.Announcements_CreatedBy,
+      userId,
+      relatedDataNames.Announcements_PublishedBy,
+      userId,
+      relatedDataNames.AnnouncementItems_CreatedBy,
+      userId,
+      relatedDataNames.AnnouncementItems_UpdatedBy,
+      userId,
+    ];
+
+    return { sql, params };
   }
 }
