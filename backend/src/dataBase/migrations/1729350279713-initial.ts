@@ -47,6 +47,8 @@ export class Initial1729350279713 implements MigrationInterface {
         \`IsLockedOut\` tinyint NOT NULL DEFAULT 0,
         UNIQUE INDEX \`UQ_User_Uuid\` (\`Uuid\`),
         UNIQUE INDEX \`UQ_User_Email_Phone\` (\`Email\`, \`Phone\`),
+        INDEX \`IX_User_Email\` (\`Email\`),
+        INDEX \`IX_User_Phone\` (\`Phone\`),
         PRIMARY KEY (\`Id\`)
       ) ENGINE=InnoDB`,
     );
