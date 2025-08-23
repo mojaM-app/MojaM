@@ -57,18 +57,28 @@ export class BulletinRepository extends BaseBulletinRepository {
     return await this._dbContext.transaction(async transactionalEntityManager => {
       const bulletinRepository = transactionalEntityManager.getRepository(Bulletin);
 
-      const bulletin = await bulletinRepository.save({
-        title: reqDto.title ?? null,
-        date: reqDto.date ?? null,
-        number: reqDto.number ?? null,
-        state: BulletinState.Draft,
-        createdBy: {
-          id: userId,
-        } satisfies IUserId,
-        introduction: reqDto.introduction ?? null,
-        tipsForWork: reqDto.tipsForWork ?? null,
-        dailyPrayer: reqDto.dailyPrayer ?? null,
-      } satisfies ICreateBulletin);
+      let bulletin: Bulletin;
+      try {
+        bulletin = await bulletinRepository.save({
+          title: reqDto.title ?? null,
+          date: reqDto.date ?? null,
+          number: reqDto.number ?? null,
+          state: BulletinState.Draft,
+          createdBy: {
+            id: userId,
+          } satisfies IUserId,
+          introduction: reqDto.introduction ?? null,
+          tipsForWork: reqDto.tipsForWork ?? null,
+          dailyPrayer: reqDto.dailyPrayer ?? null,
+        } satisfies ICreateBulletin);
+      } catch (error: unknown) {
+        if (this.isUniqueConstraintError(error, 'UQ_Bulletin_Date')) {
+          throw new BadRequestException(errorKeys.bulletin.Bulletin_With_Given_Date_Already_Exists, {
+            date: reqDto.date,
+          });
+        }
+        throw error;
+      }
 
       if (isNullOrUndefined(bulletin.days)) {
         bulletin.days = [];
@@ -87,7 +97,17 @@ export class BulletinRepository extends BaseBulletinRepository {
           } satisfies IUserId,
         } satisfies ICreateBulletinDay;
 
-        const day = await bulletinDaysRepository.save(bulletinDay);
+        let day: BulletinDay;
+        try {
+          day = await bulletinDaysRepository.save(bulletinDay);
+        } catch (error: unknown) {
+          if (this.isUniqueConstraintError(error, 'UQ_BulletinDay_Date')) {
+            throw new BadRequestException(errorKeys.bulletin.Bulletin_Day_With_Given_Date_Already_Exists, {
+              date: dayDto.date,
+            });
+          }
+          throw error;
+        }
 
         const sectionsToSave = (dayDto.sections ?? [])
           .sort((a, b) => a.order - b.order)
@@ -156,7 +176,16 @@ export class BulletinRepository extends BaseBulletinRepository {
       const updateBulletinModel = this.getUpdateBulletinModel(bulletin!, reqDto);
 
       if (updateBulletinModel !== null) {
-        await bulletinRepository.update({ id: bulletinId } satisfies FindOptionsWhere<Bulletin>, updateBulletinModel);
+        try {
+          await bulletinRepository.update({ id: bulletinId } satisfies FindOptionsWhere<Bulletin>, updateBulletinModel);
+        } catch (error: unknown) {
+          if (this.isUniqueConstraintError(error, 'UQ_Bulletin_Date')) {
+            throw new BadRequestException(errorKeys.bulletin.Bulletin_With_Given_Date_Already_Exists, {
+              date: reqDto.date,
+            });
+          }
+          throw error;
+        }
       }
 
       // Update days if provided (including empty array which should clear all days)
@@ -181,7 +210,17 @@ export class BulletinRepository extends BaseBulletinRepository {
               createdBy: { id: userId } satisfies IUserId,
             } satisfies ICreateBulletinDay;
 
-            const savedDay = await bulletinDaysRepository.save(newDay);
+            let savedDay: BulletinDay;
+            try {
+              savedDay = await bulletinDaysRepository.save(newDay);
+            } catch (error: unknown) {
+              if (this.isUniqueConstraintError(error, 'UQ_BulletinDay_Date')) {
+                throw new BadRequestException(errorKeys.bulletin.Bulletin_Day_With_Given_Date_Already_Exists, {
+                  date: dayDto.date,
+                });
+              }
+              throw error;
+            }
 
             // Create sections for new day
             if (dayDto.sections && dayDto.sections.length > 0) {
@@ -219,10 +258,19 @@ export class BulletinRepository extends BaseBulletinRepository {
 
             if (shouldUpdateDay) {
               dayUpdateData.updatedBy = { id: userId } satisfies IUserId;
-              await bulletinDaysRepository.update(
-                { id: existingDay.id } satisfies FindOptionsWhere<BulletinDay>,
-                dayUpdateData,
-              );
+              try {
+                await bulletinDaysRepository.update(
+                  { id: existingDay.id } satisfies FindOptionsWhere<BulletinDay>,
+                  dayUpdateData,
+                );
+              } catch (error: unknown) {
+                if (this.isUniqueConstraintError(error, 'UQ_BulletinDay_Date')) {
+                  throw new BadRequestException(errorKeys.bulletin.Bulletin_Day_With_Given_Date_Already_Exists, {
+                    date: dayDto.date,
+                  });
+                }
+                throw error;
+              }
             }
 
             // Handle sections for existing day
