@@ -325,12 +325,14 @@ describe('PUT /bulletins/:id', () => {
       await app!.bulletin.delete(bulletinId, adminAccessToken);
     });
 
-    test('when bulletin id is not valid guid', async () => {
+    test('when bulletin Id looks like a valid guid but it is not', async () => {
+      const nonExistentId = '99999999-9999-9999-9999-999999999999';
       const updateData = generateValidUpdateBulletin();
-
-      const updateBulletinResponse = await app!.bulletin.update('invalid-id', updateData, adminAccessToken);
-      // Route regex doesn't match invalid GUID, so returns 404
-      expect(updateBulletinResponse.statusCode).toBe(404);
+      const updateResponse = await app!.bulletin.update(nonExistentId, updateData, adminAccessToken);
+      expect(updateResponse.statusCode).toBe(400);
+      const data = updateResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
+      expect(errors.filter(x => x !== errorKeys.bulletin.Bulletin_Does_Not_Exist).length).toBe(0);
     });
 
     test('when section content is too long', async () => {
@@ -554,19 +556,6 @@ describe('PUT /bulletins/:id', () => {
     });
   });
 
-  describe('PUT should respond with a status code of 400', () => {
-    // Moved "when bulletin does not exist" test here since it returns BadRequestException (400)
-    // TODO: Fix this behavior - currently returns 200 instead of expected 400
-    test('when bulletin does not exist', async () => {
-      const nonExistentId = '99999999-9999-9999-9999-999999999999'; // Use unlikely GUID
-      const updateData = generateValidUpdateBulletin();
-
-      const updateBulletinResponse = await app!.bulletin.update(nonExistentId, updateData, adminAccessToken);
-      // FIXME: This should return 400 but currently returns 200 - needs investigation
-      expect(updateBulletinResponse.statusCode).toBe(200);
-    });
-  });
-
   describe('PUT should respond with a status code of 403', () => {
     test('when token is not set', async () => {
       const updateData = generateValidUpdateBulletin();
@@ -662,6 +651,16 @@ describe('PUT /bulletins/:id', () => {
 
       // Accept any 401 error message
       expect(errorMessage).toBeDefined();
+    });
+  });
+
+  describe('PUT should respond with a status code of 404', () => {
+    test('when bulletin id is not valid guid', async () => {
+      const updateData = generateValidUpdateBulletin();
+
+      const updateBulletinResponse = await app!.bulletin.update('invalid-id', updateData, adminAccessToken);
+      // Route regex doesn't match invalid GUID, so returns 404
+      expect(updateBulletinResponse.statusCode).toBe(404);
     });
   });
 

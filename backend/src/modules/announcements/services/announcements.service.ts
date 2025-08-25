@@ -74,8 +74,10 @@ export class AnnouncementsService extends BaseService {
   }
 
   public async update(reqDto: UpdateAnnouncementsReqDto): Promise<IAnnouncementsDto | null> {
-    if (isNullOrUndefined(reqDto.announcementsId) || isNullOrUndefined(reqDto.announcements)) {
-      return null;
+    if (isNullOrUndefined(reqDto.announcementsId)) {
+      throw new BadRequestException(errorKeys.announcements.Announcements_Does_Not_Exist, {
+        id: reqDto.announcementsId,
+      });
     }
 
     const announcementsModel = reqDto.announcements;

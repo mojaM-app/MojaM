@@ -758,6 +758,16 @@ describe('PUT /user/:id', () => {
       expect(testEventHandlers.onUserDeleted).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onUserUpdated).not.toHaveBeenCalled();
     });
+
+    test('when bulletin Id looks like a valid guid but it is not', async () => {
+      const nonExistentId = '99999999-9999-9999-9999-999999999999';
+      const updateData = userTestHelpers.generateValidUserWithPassword();
+      const updateResponse = await app!.user.update(nonExistentId, updateData, adminAccessToken);
+      expect(updateResponse.statusCode).toBe(400);
+      const data = updateResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
+      expect(errors.filter(x => x !== errorKeys.users.User_Does_Not_Exist).length).toBe(0);
+    });
   });
 
   describe('PUT should respond with a status code of 403', () => {

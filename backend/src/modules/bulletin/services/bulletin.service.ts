@@ -89,8 +89,8 @@ export class BulletinService extends BaseService {
   }
 
   public async update(reqDto: UpdateBulletinReqDto): Promise<IBulletinDto | null> {
-    if (isNullOrUndefined(reqDto.bulletinId) || isNullOrUndefined(reqDto.bulletin)) {
-      return null;
+    if (isNullOrUndefined(reqDto.bulletinId)) {
+      throw new BadRequestException(errorKeys.bulletin.Bulletin_Does_Not_Exist);
     }
 
     const bulletinModel = reqDto.bulletin;

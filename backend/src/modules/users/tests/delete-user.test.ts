@@ -1090,6 +1090,7 @@ describe('DELETE /user', () => {
               testEventHandlers.onPermissionAdded,
               testEventHandlers.onUserLoggedIn,
               testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinRetrieved,
               testEventHandlers.onBulletinUpdated,
               testEventHandlers.onBulletinDeleted,
             ].includes(eventHandler),
@@ -1103,6 +1104,7 @@ describe('DELETE /user', () => {
       expect(testEventHandlers.onPermissionAdded).toHaveBeenCalled();
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
       expect(testEventHandlers.onBulletinCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onBulletinRetrieved).toHaveBeenCalled();
       expect(testEventHandlers.onBulletinUpdated).toHaveBeenCalled();
       expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalled();
     });

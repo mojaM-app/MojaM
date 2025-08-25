@@ -151,6 +151,15 @@ describe('POST /bulletins/:id/publish', () => {
 
       await app!.bulletin.delete(bulletinId, adminAccessToken);
     });
+
+    test('when bulletin Id looks like a valid guid but it is not', async () => {
+      const nonExistentId = '99999999-9999-9999-9999-999999999999';
+      const publishRes = await app!.bulletin.publish(nonExistentId, adminAccessToken);
+      expect(publishRes.statusCode).toBe(400);
+      const data = publishRes.body.data as BadRequestException;
+      const errors = data.message.split(',');
+      expect(errors.filter(x => x !== errorKeys.bulletin.Bulletin_Does_Not_Exist).length).toBe(0);
+    });
   });
 
   describe('POST should respond with a status code of 404', () => {

@@ -76,7 +76,7 @@ export class vBulletin implements IBulletinGridItemDto {
   public updatedAt!: Date;
 
   @ViewColumn()
-  public updatedBy: string | null = null;
+  public updatedBy!: string;
 
   @ViewColumn()
   public publishedAt: Date | null = null;

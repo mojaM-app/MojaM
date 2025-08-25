@@ -176,6 +176,9 @@ export class BulletinRepository extends BaseBulletinRepository {
 
       if (updateBulletinModel !== null) {
         try {
+          updateBulletinModel.updatedBy = {
+            id: userId,
+          } satisfies IUserId;
           await bulletinRepository.update({ id: bulletinId } satisfies FindOptionsWhere<Bulletin>, updateBulletinModel);
         } catch (error: unknown) {
           if (this.isUniqueConstraintError(error, 'UQ_Bulletin_Date')) {
