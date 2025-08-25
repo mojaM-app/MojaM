@@ -32,14 +32,14 @@ export class CreateBulletinDaySectionDto {
 
   @IsOptional()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH, { message: errorKeys.bulletin.Section_Title_Too_Long })
-  @Transform(DtoTransformFunctions.returnNullIfEmpty)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public title?: string | null;
 
   @IsOptional()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_DAY_SECTION_CONTENT_MAX_LENGTH, {
     message: errorKeys.bulletin.Section_Content_Too_Long,
   })
-  @Transform(DtoTransformFunctions.returnNullIfEmpty)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public content?: string | null;
 
   @IsBulletinSectionValid()
@@ -54,7 +54,7 @@ export class CreateBulletinDayDto {
 
   @IsOptional()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH, { message: errorKeys.bulletin.Title_Too_Long })
-  @Transform(DtoTransformFunctions.returnNullIfEmpty)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public title?: string | null;
 
   @IsArray()
@@ -67,6 +67,7 @@ export class CreateBulletinDto {
   @IsNotEmpty({ message: errorKeys.bulletin.Title_Is_Required })
   @IsString({ message: errorKeys.bulletin.Title_Must_Be_A_String })
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH, { message: errorKeys.bulletin.Title_Too_Long })
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public title?: string | null;
 
   @IsNotEmpty({ message: errorKeys.bulletin.Date_Is_Required })
@@ -83,19 +84,19 @@ export class CreateBulletinDto {
   @IsOptional()
   @IsString()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH)
-  @Transform(DtoTransformFunctions.returnNullIfEmpty)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public introduction?: string | null;
 
   @IsOptional()
   @IsString()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH)
-  @Transform(DtoTransformFunctions.returnNullIfEmpty)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public tipsForWork?: string | null;
 
   @IsOptional()
   @IsString()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH)
-  @Transform(DtoTransformFunctions.returnNullIfEmpty)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public dailyPrayer?: string | null;
 
   @IsOptional()

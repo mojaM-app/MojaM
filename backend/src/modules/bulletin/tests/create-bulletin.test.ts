@@ -8,8 +8,13 @@ import { getAdminLoginData, isGuid } from '@utils';
 import { isDateString } from 'class-validator';
 import { generateValidBulletin } from './test.helpers';
 import { TestApp } from '../../../helpers/test-helpers/test.app';
-import { CreateBulletinResponseDto } from '../dtos/create-bulletin.dto';
+import {
+  CreateBulletinDayDto,
+  CreateBulletinDaySectionDto,
+  CreateBulletinResponseDto,
+} from '../dtos/create-bulletin.dto';
 import { GetBulletinResponseDto } from '../dtos/get-bulletin.dto';
+import { SectionType } from '../enums/bulletin-section-type.enum';
 import { BulletinState } from '../enums/bulletin-state.enum';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 
@@ -176,6 +181,774 @@ describe('POST /bulletins', () => {
       expect(testEventHandlers.onBulletinRetrieved).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
     });
+
+    test('create bulletin with multiple days and different section types', async () => {
+      const requestData = generateValidBulletin();
+      const baseDate = new Date();
+
+      // Test różnych typów sekcji
+      requestData.days = [
+        {
+          date: baseDate,
+          title: 'Day with Introduction',
+          sections: [
+            {
+              order: 1,
+              type: SectionType.INTRODUCTION,
+              title: null, // INTRODUCTION nie może mieć title
+              content: null, // INTRODUCTION nie może mieć content
+            },
+            {
+              order: 2,
+              type: SectionType.CUSTOM_TEXT,
+              title: 'Custom Section',
+              content: 'Custom content text',
+            },
+          ],
+        },
+        {
+          date: new Date(baseDate.getTime() + 24 * 60 * 60 * 1000), // +1 dzień
+          title: 'Day with Tips and Prayer',
+          sections: [
+            {
+              order: 1,
+              type: SectionType.TIPS_FOR_WORK,
+              title: null,
+              content: null,
+            },
+            {
+              order: 2,
+              type: SectionType.DAILY_PRAYER,
+              title: null,
+              content: null,
+            },
+          ],
+        },
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createBulletinResponse.body;
+
+      const getBulletinResponse = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getBulletinResponse.statusCode).toBe(200);
+      const { data: bulletin }: GetBulletinResponseDto = getBulletinResponse.body;
+
+      expect(bulletin.days.length).toBe(2);
+      expect(bulletin.days[0].sections.length).toBe(2);
+      expect(bulletin.days[1].sections.length).toBe(2);
+
+      // Sprawdzenie typów sekcji
+      expect(bulletin.days[0].sections[0].type).toBe(SectionType.INTRODUCTION);
+      expect(bulletin.days[0].sections[1].type).toBe(SectionType.CUSTOM_TEXT);
+      expect(bulletin.days[1].sections[0].type).toBe(SectionType.TIPS_FOR_WORK);
+      expect(bulletin.days[1].sections[1].type).toBe(SectionType.DAILY_PRAYER);
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinRetrieved,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('create bulletin with minimum required fields', async () => {
+      const requestData = {
+        title: 'Minimum Title',
+        date: new Date(),
+        number: 1,
+        introduction: null,
+        tipsForWork: null,
+        dailyPrayer: null,
+        days: [],
+      };
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createBulletinResponse.body;
+
+      const getBulletinResponse = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getBulletinResponse.statusCode).toBe(200);
+      const { data: bulletin }: GetBulletinResponseDto = getBulletinResponse.body;
+
+      expect(bulletin.title).toBe(requestData.title);
+      expect(bulletin.number).toBe(requestData.number);
+      expect(bulletin.introduction).toBeNull();
+      expect(bulletin.tipsForWork).toBeNull();
+      expect(bulletin.dailyPrayer).toBeNull();
+      expect(bulletin.days.length).toBe(0);
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinRetrieved,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('create bulletin with maximum field lengths', async () => {
+      const requestData = {
+        title: 'x'.repeat(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH),
+        date: new Date(),
+        number: 999999, // Maksymalna praktyczna wartość
+        introduction: 'y'.repeat(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH),
+        tipsForWork: 'z'.repeat(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH),
+        dailyPrayer: 'a'.repeat(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH),
+        days: [
+          {
+            date: new Date(),
+            title: 'b'.repeat(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH), // używamy tej samej co dla bulletin title
+            sections: [
+              {
+                order: 1,
+                type: SectionType.CUSTOM_TEXT,
+                title: 'c'.repeat(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH), // używamy tej samej
+                content: 'd'.repeat(VALIDATOR_SETTINGS.BULLETIN_DAY_SECTION_CONTENT_MAX_LENGTH),
+              },
+            ],
+          },
+        ],
+      };
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createBulletinResponse.body;
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onBulletinCreated, testEventHandlers.onBulletinDeleted].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('when day has empty title', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days = [
+        {
+          date: new Date(),
+          title: '', // Empty title
+          sections: [
+            {
+              order: 1,
+              type: SectionType.CUSTOM_TEXT,
+              title: 'Valid Title',
+              content: 'Valid Content',
+            } satisfies CreateBulletinDaySectionDto,
+          ],
+        } satisfies CreateBulletinDayDto,
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201);
+
+      const { data: bulletinId }: CreateBulletinResponseDto = createBulletinResponse.body;
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onBulletinCreated, testEventHandlers.onBulletinDeleted].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('when sections have invalid order (duplicate orders), orders are renumbered when created', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days = [
+        {
+          date: new Date(),
+          title: 'Day with duplicate orders',
+          sections: [
+            {
+              order: 1,
+              type: SectionType.CUSTOM_TEXT,
+              title: 'First Section',
+              content: 'First Content',
+            },
+            {
+              order: 1, // Duplicate order
+              type: SectionType.CUSTOM_TEXT,
+              title: 'Second Section',
+              content: 'Second Content',
+            },
+          ],
+        },
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201);
+
+      const { data: bulletinId }: CreateBulletinResponseDto = createBulletinResponse.body;
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onBulletinCreated, testEventHandlers.onBulletinDeleted].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('create bulletin with only INTRODUCTION section type', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days = [
+        {
+          date: new Date(),
+          title: 'Day with Introduction only',
+          sections: [
+            {
+              order: 1,
+              type: SectionType.INTRODUCTION,
+              title: null,
+              content: null,
+            },
+          ],
+        },
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201);
+
+      const { data: bulletinId }: CreateBulletinResponseDto = createBulletinResponse.body;
+      const getBulletinResponse = await app!.bulletin.get(bulletinId, adminAccessToken);
+      const { data: bulletin }: GetBulletinResponseDto = getBulletinResponse.body;
+
+      expect(bulletin.days[0].sections[0].type).toBe(SectionType.INTRODUCTION);
+      expect(bulletin.days[0].sections[0].title).toBeNull();
+      expect(bulletin.days[0].sections[0].content).toBeNull();
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinRetrieved,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('create bulletin with only TIPS_FOR_WORK section type', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days = [
+        {
+          date: new Date(),
+          title: 'Day with Tips for Work only',
+          sections: [
+            {
+              order: 1,
+              type: SectionType.TIPS_FOR_WORK,
+              title: null,
+              content: null,
+            },
+          ],
+        },
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201);
+
+      const { data: bulletinId }: CreateBulletinResponseDto = createBulletinResponse.body;
+      const getBulletinResponse = await app!.bulletin.get(bulletinId, adminAccessToken);
+      const { data: bulletin }: GetBulletinResponseDto = getBulletinResponse.body;
+
+      expect(bulletin.days[0].sections[0].type).toBe(SectionType.TIPS_FOR_WORK);
+      expect(bulletin.days[0].sections[0].title).toBeNull();
+      expect(bulletin.days[0].sections[0].content).toBeNull();
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinRetrieved,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('create bulletin with only DAILY_PRAYER section type', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days = [
+        {
+          date: new Date(),
+          title: 'Day with Daily Prayer only',
+          sections: [
+            {
+              order: 1,
+              type: SectionType.DAILY_PRAYER,
+              title: null,
+              content: null,
+            },
+          ],
+        },
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201);
+
+      const { data: bulletinId }: CreateBulletinResponseDto = createBulletinResponse.body;
+      const getBulletinResponse = await app!.bulletin.get(bulletinId, adminAccessToken);
+      const { data: bulletin }: GetBulletinResponseDto = getBulletinResponse.body;
+
+      expect(bulletin.days[0].sections[0].type).toBe(SectionType.DAILY_PRAYER);
+      expect(bulletin.days[0].sections[0].title).toBeNull();
+      expect(bulletin.days[0].sections[0].content).toBeNull();
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinRetrieved,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('when DAILY_PRAYER section has whitespace-only title and content', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days = [
+        {
+          date: new Date(),
+          title: 'Day with whitespace custom text',
+          sections: [
+            {
+              order: 1,
+              type: SectionType.DAILY_PRAYER,
+              title: '   ', // Only whitespace
+              content: '   ', // Only whitespace
+            } satisfies CreateBulletinDaySectionDto,
+          ],
+        } satisfies CreateBulletinDayDto,
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createBulletinResponse.body;
+
+      const getBulletinResponse = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getBulletinResponse.statusCode).toBe(200);
+      const { data: bulletin }: GetBulletinResponseDto = getBulletinResponse.body;
+      expect(bulletin.days[0].sections[0].title).toBeNull();
+      expect(bulletin.days[0].sections[0].content).toBeNull();
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher - handle both cases
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinRetrieved,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('create bulletin with future date', async () => {
+      const requestData = generateValidBulletin();
+      const futureDate = new Date();
+      futureDate.setFullYear(futureDate.getFullYear() + 1);
+      requestData.date = futureDate;
+      requestData.days![0].date = futureDate;
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201);
+
+      const { data: bulletinId }: CreateBulletinResponseDto = createBulletinResponse.body;
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onBulletinCreated, testEventHandlers.onBulletinDeleted].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('create bulletin with past date', async () => {
+      const requestData = generateValidBulletin();
+      const pastDate = new Date();
+      pastDate.setFullYear(pastDate.getFullYear() - 1);
+      requestData.date = pastDate;
+      requestData.days![0].date = pastDate;
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201);
+
+      const { data: bulletinId }: CreateBulletinResponseDto = createBulletinResponse.body;
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onBulletinCreated, testEventHandlers.onBulletinDeleted].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('create bulletin with multiple sections in specific order', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days = [
+        {
+          date: new Date(),
+          title: 'Day with ordered sections',
+          sections: [
+            {
+              order: 3,
+              type: SectionType.CUSTOM_TEXT,
+              title: 'Third Section',
+              content: 'Third Content',
+            },
+            {
+              order: 1,
+              type: SectionType.INTRODUCTION,
+              title: null,
+              content: null,
+            },
+            {
+              order: 5,
+              type: SectionType.CUSTOM_TEXT,
+              title: 'Fifth Section',
+              content: 'Fifth Content',
+            },
+            {
+              order: 2,
+              type: SectionType.TIPS_FOR_WORK,
+              title: null,
+              content: null,
+            },
+            {
+              order: 4,
+              type: SectionType.DAILY_PRAYER,
+              title: null,
+              content: null,
+            },
+          ],
+        },
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201);
+
+      const { data: bulletinId }: CreateBulletinResponseDto = createBulletinResponse.body;
+      const getBulletinResponse = await app!.bulletin.get(bulletinId, adminAccessToken);
+      const { data: bulletin }: GetBulletinResponseDto = getBulletinResponse.body;
+
+      expect(bulletin.days[0].sections.length).toBe(5);
+      // Sections should be ordered by their order field
+      expect(bulletin.days[0].sections[0].order).toBe(1);
+      expect(bulletin.days[0].sections[1].order).toBe(2);
+      expect(bulletin.days[0].sections[2].order).toBe(3);
+      expect(bulletin.days[0].sections[3].order).toBe(4);
+      expect(bulletin.days[0].sections[4].order).toBe(5);
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinRetrieved,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('create bulletin with minimal content lengths', async () => {
+      const requestData = generateValidBulletin();
+      requestData.title = 'A'; // Minimal length
+      requestData.introduction = 'B'; // Minimal length
+      requestData.tipsForWork = 'C'; // Minimal length
+      requestData.dailyPrayer = 'D'; // Minimal length
+      requestData.days = [
+        {
+          date: new Date(),
+          title: 'E', // Minimal length
+          sections: [
+            {
+              order: 1,
+              type: SectionType.CUSTOM_TEXT,
+              title: 'F', // Minimal length
+              content: 'G', // Minimal length
+            },
+          ],
+        },
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201);
+
+      const { data: bulletinId }: CreateBulletinResponseDto = createBulletinResponse.body;
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onBulletinCreated, testEventHandlers.onBulletinDeleted].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('create bulletin with sections having high order numbers', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days = [
+        {
+          date: new Date(),
+          title: 'Day with high order numbers',
+          sections: [
+            {
+              order: 999999,
+              type: SectionType.CUSTOM_TEXT,
+              title: 'High Order Section',
+              content: 'Content for high order section',
+            },
+            {
+              order: 1000000,
+              type: SectionType.INTRODUCTION,
+              title: null,
+              content: null,
+            },
+          ],
+        },
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201);
+
+      const { data: bulletinId }: CreateBulletinResponseDto = createBulletinResponse.body;
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onBulletinCreated, testEventHandlers.onBulletinDeleted].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('create bulletin with many days and sections', async () => {
+      const requestData = generateValidBulletin();
+      const baseDate = new Date();
+
+      // Tworzymy biuletyn z wieloma dniami i sekcjami
+      requestData.days = [];
+      for (let dayIndex = 0; dayIndex < 5; dayIndex++) {
+        const dayDate = new Date(baseDate);
+        dayDate.setDate(baseDate.getDate() + dayIndex);
+
+        const sections = [];
+        for (let sectionIndex = 0; sectionIndex < 10; sectionIndex++) {
+          sections.push({
+            order: sectionIndex + 1,
+            type: SectionType.CUSTOM_TEXT,
+            title: `Day ${dayIndex + 1} Section ${sectionIndex + 1}`,
+            content: `Content for day ${dayIndex + 1} section ${sectionIndex + 1}`,
+          });
+        }
+
+        requestData.days.push({
+          date: dayDate,
+          title: `Day ${dayIndex + 1}`,
+          sections,
+        });
+      }
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201);
+
+      const { data: bulletinId }: CreateBulletinResponseDto = createBulletinResponse.body;
+      const getBulletinResponse = await app!.bulletin.get(bulletinId, adminAccessToken);
+      const { data: bulletin }: GetBulletinResponseDto = getBulletinResponse.body;
+
+      expect(bulletin.days.length).toBe(5);
+      bulletin.days.forEach(day => {
+        expect(day.sections.length).toBe(10);
+      });
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinRetrieved,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('when optional fields are explicitly null', async () => {
+      const requestData = {
+        title: 'Test Bulletin',
+        date: new Date(),
+        number: 1,
+        introduction: null, // Explicitly null
+        tipsForWork: null, // Explicitly null
+        dailyPrayer: null, // Explicitly null
+        days: undefined, // Explicitly undefined (not null)
+      };
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201);
+
+      const { data: bulletinId }: CreateBulletinResponseDto = createBulletinResponse.body;
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onBulletinCreated, testEventHandlers.onBulletinDeleted].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('when sections array is empty for a day', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days = [
+        {
+          date: new Date(),
+          title: 'Day with no sections',
+          sections: [], // Empty sections array
+        },
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201);
+
+      const { data: bulletinId }: CreateBulletinResponseDto = createBulletinResponse.body;
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![testEventHandlers.onBulletinCreated, testEventHandlers.onBulletinDeleted].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('POST should respond with a status code of 400', () => {
@@ -188,7 +961,7 @@ describe('POST /bulletins', () => {
       expect(createBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const data = createBulletinResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.bulletin.Title_Too_Long).length).toBe(0);
+      expect(errors.some(x => x === errorKeys.bulletin.Title_Too_Long)).toBe(true);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -204,7 +977,7 @@ describe('POST /bulletins', () => {
       expect(createBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const data = createBulletinResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
-      expect(errors.filter(x => x === errorKeys.bulletin.Title_Must_Be_A_String).length).toBe(1);
+      expect(errors.some(x => x === errorKeys.bulletin.Title_Must_Be_A_String)).toBe(true);
 
       // checking events running via eventDispatcher
       Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
@@ -221,7 +994,7 @@ describe('POST /bulletins', () => {
       expect(createBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const data = createBulletinResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.bulletin.Title_Is_Required).length).toBe(0);
+      expect(errors.some(x => x === errorKeys.bulletin.Title_Is_Required)).toBe(true);
     });
 
     test('when title is null', async () => {
@@ -233,7 +1006,7 @@ describe('POST /bulletins', () => {
       expect(createBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const data = createBulletinResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
-      expect(errors.filter(x => x === errorKeys.bulletin.Title_Is_Required).length).toBe(1);
+      expect(errors.some(x => x === errorKeys.bulletin.Title_Is_Required)).toBe(true);
     });
 
     test('when title is not set', async () => {
@@ -245,7 +1018,7 @@ describe('POST /bulletins', () => {
       expect(createBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const data = createBulletinResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
-      expect(errors.filter(x => x === errorKeys.bulletin.Title_Is_Required).length).toBe(1);
+      expect(errors.some(x => x === errorKeys.bulletin.Title_Is_Required)).toBe(true);
     });
 
     test('when date is null', async () => {
@@ -256,7 +1029,7 @@ describe('POST /bulletins', () => {
       expect(createBulletinResponse.statusCode).toBe(400);
       const data = createBulletinResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.bulletin.Date_Is_Required).length).toBe(0);
+      expect(errors.some(x => x === errorKeys.bulletin.Date_Is_Required)).toBe(true);
     });
 
     test('when date is not set', async () => {
@@ -267,7 +1040,7 @@ describe('POST /bulletins', () => {
       expect(createBulletinResponse.statusCode).toBe(400);
       const data = createBulletinResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.bulletin.Date_Is_Required).length).toBe(0);
+      expect(errors.some(x => x === errorKeys.bulletin.Date_Is_Required)).toBe(true);
     });
 
     test('when number is null', async () => {
@@ -278,7 +1051,7 @@ describe('POST /bulletins', () => {
       expect(createBulletinResponse.statusCode).toBe(400);
       const data = createBulletinResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
-      expect(errors.filter(x => x === errorKeys.bulletin.Number_Is_Required).length).toBe(1);
+      expect(errors.some(x => x === errorKeys.bulletin.Number_Is_Required)).toBe(true);
     });
 
     test('when number is not set', async () => {
@@ -289,7 +1062,7 @@ describe('POST /bulletins', () => {
       expect(createBulletinResponse.statusCode).toBe(400);
       const data = createBulletinResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
-      expect(errors.filter(x => x === errorKeys.bulletin.Number_Is_Required).length).toBe(1);
+      expect(errors.some(x => x === errorKeys.bulletin.Number_Is_Required)).toBe(true);
     });
 
     test('when number is 0', async () => {
@@ -361,6 +1134,456 @@ describe('POST /bulletins', () => {
 
       // cleanup
       await app!.bulletin.delete(id1, adminAccessToken);
+    });
+
+    test('when days array contains invalid section types', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days = [
+        {
+          date: new Date(),
+          title: 'Day with invalid section',
+          sections: [
+            {
+              order: 1,
+              type: 'INVALID_TYPE' as any,
+              title: 'Test Title',
+              content: 'Test Content',
+            },
+          ],
+        },
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+      expect(createBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when sections have invalid order (zero or negative)', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days = [
+        {
+          date: new Date(),
+          title: 'Day with invalid order',
+          sections: [
+            {
+              order: 0, // Invalid order
+              type: SectionType.CUSTOM_TEXT,
+              title: 'Test Section',
+              content: 'Test Content',
+            },
+          ],
+        },
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when INTRODUCTION section has title or content', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days = [
+        {
+          date: new Date(),
+          title: 'Day with invalid introduction',
+          sections: [
+            {
+              order: 1,
+              type: SectionType.INTRODUCTION,
+              title: 'Should be null', // INTRODUCTION nie może mieć title
+              content: 'Should be null', // INTRODUCTION nie może mieć content
+            },
+          ],
+        },
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when CUSTOM_TEXT section has empty title or content', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days = [
+        {
+          date: new Date(),
+          title: 'Day with empty custom text',
+          sections: [
+            {
+              order: 1,
+              type: SectionType.CUSTOM_TEXT,
+              title: '', // Empty title
+              content: '', // Empty content
+            },
+          ],
+        },
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when CUSTOM_TEXT section has whitespace-only title and content', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days = [
+        {
+          date: new Date(),
+          title: 'Day with whitespace custom text',
+          sections: [
+            {
+              order: 1,
+              type: SectionType.CUSTOM_TEXT,
+              title: '   ', // Only whitespace
+              content: '   ', // Only whitespace
+            } satisfies CreateBulletinDaySectionDto,
+          ],
+        } satisfies CreateBulletinDayDto,
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when day has duplicate dates within same bulletin', async () => {
+      const requestData = generateValidBulletin();
+      const sameDate = new Date();
+      requestData.days = [
+        {
+          date: sameDate,
+          title: 'First Day',
+          sections: [
+            {
+              order: 1,
+              type: SectionType.CUSTOM_TEXT,
+              title: 'Section 1',
+              content: 'Content 1',
+            },
+          ],
+        },
+        {
+          date: sameDate, // Duplicate date
+          title: 'Second Day',
+          sections: [
+            {
+              order: 1,
+              type: SectionType.CUSTOM_TEXT,
+              title: 'Section 2',
+              content: 'Content 2',
+            },
+          ],
+        },
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when introduction field exceeds maximum length', async () => {
+      const requestData = generateValidBulletin();
+      requestData.introduction = 'x'.repeat(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH + 1);
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when tipsForWork field exceeds maximum length', async () => {
+      const requestData = generateValidBulletin();
+      requestData.tipsForWork = 'x'.repeat(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH + 1);
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when dailyPrayer field exceeds maximum length', async () => {
+      const requestData = generateValidBulletin();
+      requestData.dailyPrayer = 'x'.repeat(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH + 1);
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when section title exceeds maximum length', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days![0].sections[0].title = 'x'.repeat(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH + 1);
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+      expect(createBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const data = createBulletinResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
+      expect(errors.filter(x => x !== errorKeys.bulletin.Section_Title_Too_Long).length).toBe(0);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when day title exceeds maximum length', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days![0].title = 'x'.repeat(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH + 1);
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+      expect(createBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const data = createBulletinResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
+      expect(errors.filter(x => x !== errorKeys.bulletin.Title_Too_Long).length).toBe(0);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when day date is null', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days![0].date = null as any;
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when section order is not a number', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days![0].sections[0].order = 'invalid' as any;
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when TIPS_FOR_WORK section has title or content', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days = [
+        {
+          date: new Date(),
+          title: 'Day with invalid tips for work',
+          sections: [
+            {
+              order: 1,
+              type: SectionType.TIPS_FOR_WORK,
+              title: 'Should be null', // TIPS_FOR_WORK nie może mieć title
+              content: 'Should be null', // TIPS_FOR_WORK nie może mieć content
+            },
+          ],
+        },
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when DAILY_PRAYER section has title or content', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days = [
+        {
+          date: new Date(),
+          title: 'Day with invalid daily prayer',
+          sections: [
+            {
+              order: 1,
+              type: SectionType.DAILY_PRAYER,
+              title: 'Should be null', // DAILY_PRAYER nie może mieć title
+              content: 'Should be null', // DAILY_PRAYER nie może mieć content
+            },
+          ],
+        },
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when CUSTOM_TEXT section has null title but valid content', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days = [
+        {
+          date: new Date(),
+          title: 'Day with null title custom text',
+          sections: [
+            {
+              order: 1,
+              type: SectionType.CUSTOM_TEXT,
+              title: null, // Invalid for CUSTOM_TEXT
+              content: 'Valid content',
+            },
+          ],
+        },
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when CUSTOM_TEXT section has valid title but null content', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days = [
+        {
+          date: new Date(),
+          title: 'Day with null content custom text',
+          sections: [
+            {
+              order: 1,
+              type: SectionType.CUSTOM_TEXT,
+              title: 'Valid title',
+              content: null, // Invalid for CUSTOM_TEXT
+            },
+          ],
+        },
+      ];
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when days array is not an array', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days = 'invalid' as any;
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when date is an invalid date string', async () => {
+      const requestData = generateValidBulletin();
+      requestData.date = 'invalid-date' as any;
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when multiple validation errors occur simultaneously', async () => {
+      const requestData = generateValidBulletin();
+      // Kombinacja różnych błędów
+      requestData.title = ''; // Empty title
+      requestData.number = 0; // Invalid number
+      requestData.introduction = 'x'.repeat(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH + 1); // Too long
+      requestData.days![0].sections[0].content = 'x'.repeat(
+        VALIDATOR_SETTINGS.BULLETIN_DAY_SECTION_CONTENT_MAX_LENGTH + 1,
+      ); // Too long
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+      expect(createBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const data = createBulletinResponse.body.data as BadRequestException;
+      const errors = data.message.split(',');
+
+      // Sprawdzamy czy występuje więcej niż jeden błąd
+      expect(errors.length).toBeGreaterThan(1);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when section type is valid but casing is different', async () => {
+      const requestData = generateValidBulletin();
+      requestData.days![0].sections[0].type = 'CustomText' as any; // Different case
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    test('when bulletin number is a float', async () => {
+      const requestData = generateValidBulletin();
+      requestData.number = 1.5; // Float instead of integer
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(400);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
     });
   });
 

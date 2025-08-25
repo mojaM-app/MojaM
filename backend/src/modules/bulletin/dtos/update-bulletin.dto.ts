@@ -30,14 +30,14 @@ export class UpdateBulletinDaySectionDto {
 
   @IsOptional()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH, { message: errorKeys.bulletin.Section_Title_Too_Long })
-  @Transform(DtoTransformFunctions.returnNullIfEmpty)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public title?: string | null;
 
   @IsOptional()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_DAY_SECTION_CONTENT_MAX_LENGTH, {
     message: errorKeys.bulletin.Section_Content_Too_Long,
   })
-  @Transform(DtoTransformFunctions.returnNullIfEmpty)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public content?: string | null;
 
   @IsNotEmpty()
@@ -59,7 +59,7 @@ export class UpdateBulletinDayDto {
   @IsOptional()
   @IsString()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH)
-  @Transform(DtoTransformFunctions.returnNullIfEmpty)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public title?: string | null;
 
   @IsOptional()
@@ -82,7 +82,7 @@ export class UpdateBulletinDto {
   @IsOptional()
   @IsString()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH, { message: errorKeys.bulletin.Title_Too_Long })
-  @Transform(DtoTransformFunctions.getEmptyStringIfNotSet)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public title?: string | null;
 
   @IsOptional()
@@ -97,19 +97,19 @@ export class UpdateBulletinDto {
   @IsOptional()
   @IsString()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH)
-  @Transform(DtoTransformFunctions.returnNullIfEmpty)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public introduction?: string | null;
 
   @IsOptional()
   @IsString()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH)
-  @Transform(DtoTransformFunctions.returnNullIfEmpty)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public tipsForWork?: string | null;
 
   @IsOptional()
   @IsString()
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH)
-  @Transform(DtoTransformFunctions.returnNullIfEmpty)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public dailyPrayer?: string | null;
 
   @IsOptional()

@@ -189,10 +189,7 @@ describe('PUT /bulletins/:id', () => {
       const getBulletinResponse = await app!.bulletin.get(bulletinId, adminAccessToken);
       expect(getBulletinResponse.statusCode).toBe(200);
       const { data: bulletin }: GetBulletinResponseDto = getBulletinResponse.body;
-
-      // Backend might transform null to empty string via DtoTransformFunctions
-      expect(bulletin.title).toEqual(expect.any(String));
-      expect(bulletin.title === null || bulletin.title === '').toBe(true);
+      expect(bulletin.title).toBeNull();
       expect(bulletin.number).toBeNull();
 
       await app!.bulletin.delete(bulletinId, adminAccessToken);
