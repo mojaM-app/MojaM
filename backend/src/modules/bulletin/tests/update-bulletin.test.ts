@@ -367,10 +367,7 @@ describe('PUT /bulletins/:id', () => {
       Object.entries(testEventHandlers)
         .filter(
           ([, eventHandler]) =>
-            ![
-              testEventHandlers.onBulletinCreated,
-              testEventHandlers.onBulletinDeleted,
-            ].includes(eventHandler),
+            ![testEventHandlers.onBulletinCreated, testEventHandlers.onBulletinDeleted].includes(eventHandler),
         )
         .forEach(([, eventHandler]) => {
           expect(eventHandler).not.toHaveBeenCalled();
