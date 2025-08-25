@@ -12,18 +12,20 @@ import {
   model,
   output,
   computed,
+  Inject,
 } from '@angular/core';
 import { ControlValueAccessor, FormsModule, NgControl } from '@angular/forms';
 import { MAT_FORM_FIELD, MatFormFieldControl } from '@angular/material/form-field';
 import { FocusMonitor } from '@angular/cdk/a11y';
 import { Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { ContentChange, QuillModule } from 'ngx-quill';
+import { ContentChange, QuillConfig, QuillModule } from 'ngx-quill';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { WysiwygUtils } from '../wysiwyg.utils';
 import { StringUtils } from 'src/utils/string.utils';
 import Quill from 'quill';
 import { TranslationService } from 'src/services/translate/translation.service';
+import { QUILL_CONFIG_TOKEN } from 'ngx-quill';
 
 @Component({
   selector: 'app-wysiwyg-form-field',
@@ -57,6 +59,7 @@ export class WysiwygFormFieldComponent
   public readonly showHelpBtn = input.required<boolean>();
   public readonly helpClicked = output<void>();
 
+  protected _valueRaw: string | null = null;
   protected readonly _formField = inject(MAT_FORM_FIELD, {
     optional: true,
   });
@@ -72,6 +75,7 @@ export class WysiwygFormFieldComponent
     }
 
     return {
+      ...this._globalConfig.modules,
       toolbar: {
         container: toolbar,
         handlers: {
@@ -135,7 +139,10 @@ export class WysiwygFormFieldComponent
     return !!(this.ngControl?.control?.invalid && this.touched());
   }
 
-  public constructor(private readonly translationService: TranslationService) {
+  public constructor(
+    @Inject(QUILL_CONFIG_TOKEN) private _globalConfig: QuillConfig,
+    private readonly _translationService: TranslationService
+  ) {
     if (this.ngControl != null) {
       this.ngControl.valueAccessor = this;
     }
@@ -174,6 +181,7 @@ export class WysiwygFormFieldComponent
   }
 
   public writeValue(value: string | null): void {
+    this._valueRaw = value;
     this._value.set(WysiwygUtils.clearContent(value));
   }
 
@@ -201,14 +209,14 @@ export class WysiwygFormFieldComponent
         button.style.padding = '0 10px';
         button.classList.add('mat-mdc-button', 'mat-mdc-unelevated-button', 'mat-mdc-button-base');
         button.innerHTML = `<span style="font-size: 90%;">
-          ${this.translationService.get('Shared/BtnHelp')}
+          ${this._translationService.get('Shared/BtnHelp')}
           </span>`;
       }
     }
   }
 
   protected onContentChanged(event: ContentChange): void {
-    const html = event?.html;
+    const html = WysiwygUtils.clearContent(event?.html);
     this._value.set(html);
     this.onChange(html);
     this.stateChanges.next();

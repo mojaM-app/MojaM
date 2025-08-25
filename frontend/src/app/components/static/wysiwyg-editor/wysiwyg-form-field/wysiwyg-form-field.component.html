@@ -6,7 +6,7 @@
   (focusout)="onFocusOut($event)">
   <quill-editor
     [placeholder]="placeholder"
-    [(ngModel)]="_value"
+    [ngModel]="_valueRaw"
     (onContentChanged)="onContentChanged($event)"
     (onEditorCreated)="onEditorCreated($event)"
     [modules]="quillModules()"
