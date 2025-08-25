@@ -11,9 +11,13 @@
     .section-box {
       &.clickable {
         cursor: pointer;
+        background-color: var(--bs-card-cap-bg);
 
         &.selected {
-          background-color: var(--bs-card-cap-bg);
+          background-color: var(
+            --mat-list-active-indicator-color,
+            var(--mat-sys-secondary-container)
+          );
         }
       }
     }
