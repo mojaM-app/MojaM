@@ -49,7 +49,6 @@ export class BulletinRepository extends BaseBulletinRepository {
   }
 
   public async create(reqDto: CreateBulletinDto, userId: number): Promise<{ id: number }> {
-    // Validate unique dates for bulletin days
     if (reqDto.days && reqDto.days.length > 0) {
       this.validateUniqueBulletinDayDates(reqDto.days);
     }
@@ -103,7 +102,7 @@ export class BulletinRepository extends BaseBulletinRepository {
         } catch (error: unknown) {
           if (this.isUniqueConstraintError(error, 'UQ_BulletinDay_Date')) {
             throw new BadRequestException(errorKeys.bulletin.Bulletin_Day_With_Given_Date_Already_Exists, {
-              date: dayDto.date,
+              date: dayDto.date.toLocaleDateString(),
             });
           }
           throw error;

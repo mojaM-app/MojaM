@@ -6,6 +6,7 @@ import { CreateAnnouncementsResponseDto } from '@modules/announcements/dtos/crea
 import { GetAnnouncementsResponseDto } from '@modules/announcements/dtos/get-announcements.dto';
 import { UpdateAnnouncementsDto } from '@modules/announcements/dtos/update-announcements.dto';
 import { generateValidAnnouncements } from '@modules/announcements/tests/test.helpers';
+import { generateValidBulletin } from '@modules/bulletin/tests/test.helpers';
 import { userTestHelpers } from '@modules/users';
 import { getAdminLoginData } from '@utils';
 import { Guid } from 'guid-typescript';
@@ -499,10 +500,10 @@ describe('DELETE /user', () => {
         } satisfies ILoginModel)
       )?.accessToken;
 
-      const createAnnouncementsResponse = await request(app!.getServer())
-        .post(RouteConstants.ANNOUNCEMENTS_PATH)
-        .send(generateValidAnnouncements())
-        .set('Authorization', `Bearer ${userAccessToken}`);
+      const createAnnouncementsResponse = await app!.announcements.create(
+        generateValidAnnouncements(),
+        userAccessToken,
+      );
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = createAnnouncementsResponse.body;
@@ -521,11 +522,7 @@ describe('DELETE /user', () => {
         relatedData: [relatedDataNames.Announcements_CreatedBy, relatedDataNames.AnnouncementItems_CreatedBy],
       });
 
-      let path = RouteConstants.ANNOUNCEMENTS_PATH + '/' + announcementsId;
-      const deleteAnnouncementsResponse = await request(app!.getServer())
-        .delete(path)
-        .send()
-        .set('Authorization', `Bearer ${adminAccessToken}`);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       deleteUserResponse = await app!.user.delete(user.id, adminAccessToken);
@@ -884,6 +881,230 @@ describe('DELETE /user', () => {
       expect(testEventHandlers.onAnnouncementsRetrieved).toHaveBeenCalled();
       expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalled();
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
+    });
+
+    test('when a user has created bulletins', async () => {
+      const userRequestData = userTestHelpers.generateValidUserWithPassword();
+
+      const createUserResponse = await app!.user.create(userRequestData, adminAccessToken);
+      expect(createUserResponse.statusCode).toBe(201);
+      let body = createUserResponse.body;
+      const { data: user }: CreateUserResponseDto = body;
+      expect(user?.id).toBeDefined();
+
+      const activateUserResponse = await app!.user.activate(user.id, adminAccessToken);
+      expect(activateUserResponse.statusCode).toBe(200);
+
+      const addUserPermissionResponse = await app!.permissions.add(
+        user.id,
+        SystemPermissions.AddBulletin,
+        adminAccessToken,
+      );
+      expect(addUserPermissionResponse.statusCode).toBe(201);
+      expect(addUserPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = addUserPermissionResponse.body;
+      const { data: addPermissionResult } = body;
+      expect(addPermissionResult).toBe(true);
+
+      const userAccessToken = (
+        await app!.auth.loginAs({
+          email: userRequestData.email,
+          passcode: userRequestData.passcode,
+        } satisfies ILoginModel)
+      )?.accessToken;
+
+      const createBulletinResponse = await request(app!.getServer())
+        .post('/bulletin')
+        .send(generateValidBulletin())
+        .set('Authorization', `Bearer ${userAccessToken}`);
+      expect(createBulletinResponse.statusCode).toBe(201);
+      expect(createBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = createBulletinResponse.body;
+      const { data: bulletinId } = body;
+      expect(bulletinId).toBeDefined();
+
+      let deleteUserResponse = await app!.user.delete(user.id, adminAccessToken);
+      expect(deleteUserResponse.statusCode).toBe(409);
+      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = deleteUserResponse.body;
+      const data = body.data as BadRequestException;
+      const { message: deleteUserMessage, args: deleteUserArgs } = data;
+      expect(deleteUserMessage).toBe(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted);
+      expect(deleteUserArgs).toEqual({
+        id: user.id,
+        relatedData: [
+          relatedDataNames.Bulletins_CreatedBy,
+          relatedDataNames.BulletinDays_CreatedBy,
+          relatedDataNames.BulletinDaySections_CreatedBy,
+        ],
+      });
+
+      const deleteBulletinResponse = await request(app!.getServer())
+        .delete(`/bulletin/${bulletinId}`)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteBulletinResponse.statusCode).toBe(200);
+
+      deleteUserResponse = await app!.user.delete(user.id, adminAccessToken);
+      expect(deleteUserResponse.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onUserDeleted,
+              testEventHandlers.onPermissionAdded,
+              testEventHandlers.onUserLoggedIn,
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
+      expect(testEventHandlers.onPermissionAdded).toHaveBeenCalled();
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalled();
+    });
+
+    test('when a user has updated bulletins', async () => {
+      const userRequestData = userTestHelpers.generateValidUserWithPassword();
+
+      const createUserResponse = await app!.user.create(userRequestData, adminAccessToken);
+      expect(createUserResponse.statusCode).toBe(201);
+      let body = createUserResponse.body;
+      const { data: user }: CreateUserResponseDto = body;
+      expect(user?.id).toBeDefined();
+
+      const activateUserResponse = await app!.user.activate(user.id, adminAccessToken);
+      expect(activateUserResponse.statusCode).toBe(200);
+
+      // First create a bulletin as admin
+      const createBulletinResponse = await request(app!.getServer())
+        .post('/bulletin')
+        .send(generateValidBulletin())
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(createBulletinResponse.statusCode).toBe(201);
+      expect(createBulletinResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = createBulletinResponse.body;
+      const { data: bulletinId } = body;
+      expect(bulletinId).toBeDefined();
+
+      // Get created bulletin to retrieve IDs of existing days and sections
+      const getBulletinResponse = await request(app!.getServer())
+        .get(`/bulletin/${bulletinId}`)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(getBulletinResponse.statusCode).toBe(200);
+      body = getBulletinResponse.body;
+      const { data: createdBulletin } = body;
+      expect(createdBulletin.days).toBeDefined();
+      expect(createdBulletin.days.length).toBeGreaterThan(0);
+
+      // Give user permission to edit bulletins
+      const addUserPermissionResponse = await app!.permissions.add(
+        user.id,
+        SystemPermissions.EditBulletin,
+        adminAccessToken,
+      );
+      expect(addUserPermissionResponse.statusCode).toBe(201);
+      expect(addUserPermissionResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = addUserPermissionResponse.body;
+      const { data: addPermissionResult } = body;
+      expect(addPermissionResult).toBe(true);
+
+      const userAccessToken = (
+        await app!.auth.loginAs({
+          email: userRequestData.email,
+          passcode: userRequestData.passcode,
+        } satisfies ILoginModel)
+      )?.accessToken;
+
+      // Update bulletin as user - modifying existing days and sections by including their IDs
+      const updateData = {
+        title: 'Updated Title',
+        number: createdBulletin.number + 100,
+        introduction: 'Updated introduction',
+        tipsForWork: 'Updated tips',
+        dailyPrayer: 'Updated prayer',
+        date: createdBulletin.date,
+        days: createdBulletin.days.map((day: any) => ({
+          id: day.id, // Include ID to update existing day
+          title: `Updated ${day.title}`,
+          date: day.date,
+          sections: day.sections.map((section: any) => ({
+            id: section.id, // Include ID to update existing section
+            title: `Updated ${section.title || 'Title'}`,
+            content: `Updated ${section.content || 'Content'}`,
+            type: section.type,
+            order: section.order,
+          })),
+        })),
+      };
+
+      const updateBulletinResponse = await request(app!.getServer())
+        .put(`/bulletin/${bulletinId}`)
+        .send(updateData)
+        .set('Authorization', `Bearer ${userAccessToken}`);
+      expect(updateBulletinResponse.statusCode).toBe(200);
+
+      let deleteUserResponse = await app!.user.delete(user.id, adminAccessToken);
+      expect(deleteUserResponse.statusCode).toBe(409);
+      expect(deleteUserResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      body = deleteUserResponse.body;
+      const data = body.data as BadRequestException;
+      const { message: deleteUserMessage, args: deleteUserArgs } = data;
+      expect(deleteUserMessage).toBe(errorKeys.general.Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted);
+      expect(deleteUserArgs).toEqual({
+        id: user.id,
+        relatedData: [
+          relatedDataNames.Bulletins_UpdatedBy,
+          relatedDataNames.BulletinDays_UpdatedBy,
+          relatedDataNames.BulletinDaySections_UpdatedBy,
+        ],
+      });
+
+      const deleteBulletinResponse = await request(app!.getServer())
+        .delete(`/bulletin/${bulletinId}`)
+        .send()
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expect(deleteBulletinResponse.statusCode).toBe(200);
+
+      deleteUserResponse = await app!.user.delete(user.id, adminAccessToken);
+      expect(deleteUserResponse.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onUserCreated,
+              testEventHandlers.onUserActivated,
+              testEventHandlers.onUserDeleted,
+              testEventHandlers.onPermissionAdded,
+              testEventHandlers.onUserLoggedIn,
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinUpdated,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onUserCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserActivated).toHaveBeenCalled();
+      expect(testEventHandlers.onUserDeleted).toHaveBeenCalled();
+      expect(testEventHandlers.onPermissionAdded).toHaveBeenCalled();
+      expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onBulletinUpdated).toHaveBeenCalled();
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalled();
     });
   });
 

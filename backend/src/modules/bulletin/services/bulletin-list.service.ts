@@ -37,8 +37,8 @@ export class BulletinListService extends BaseService {
       state: bulletin.state,
       createdAt: bulletin.createdAt,
       createdBy: bulletin.createdBy,
-      updatedAt: bulletin.updatedAt,
-      updatedBy: bulletin.updatedBy,
+      updatedAt: bulletin.updatedAt ?? bulletin.createdAt,
+      updatedBy: bulletin.updatedBy ?? bulletin.createdBy,
       publishedAt: bulletin.publishedAt,
       publishedBy: bulletin.publishedBy,
     } satisfies IBulletinGridItemDto;

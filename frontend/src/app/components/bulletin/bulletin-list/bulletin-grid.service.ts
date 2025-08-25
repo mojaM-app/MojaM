@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SortDirection } from '@angular/material/sort';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { IBulletinGridItemDto } from 'src/app/components/bulletin/interfaces/bulletin-list.interfaces';
 import { BulletinListService } from 'src/app/components/bulletin/services/bulletin-list.service';
 import {
@@ -21,14 +21,11 @@ import { CultureService } from 'src/services/translate/culture.service';
 import { TranslationService } from 'src/services/translate/translation.service';
 import { MenuItemClickResult } from '../../../../core/interfaces/menu/menu.enum';
 import { BaseGridService } from '../../static/grid/grid/services/base-grid.service';
-import { BulletinStateValue } from '../enums/bulletin-state.enum';
-import {
-  AddBulletinMenu,
-  EditBulletinMenu,
-  PreviewBulletinMenu,
-} from '../bulletin.menu';
+import { BulletinState } from '../enums/bulletin-state.enum';
+import { AddBulletinMenu, EditBulletinMenu, PreviewBulletinMenu } from '../bulletin.menu';
 import { BulletinService } from '../services/bulletin.service';
 import { BULLETIN_LIST_COLUMNS } from './bulletin-list.columns';
+import { DeleteResult } from 'src/core/delete-result.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -88,17 +85,6 @@ export class BulletinGridService
         title: this._translationService.get('Bulletin/List/GridColumns/State'),
         transform: (value: string): string =>
           this._translationService.get(`Bulletin/State/${value}`),
-      },
-      {
-        propertyName: BULLETIN_LIST_COLUMNS.createdAt,
-        title: this._translationService.get('Bulletin/List/GridColumns/CreatedAt'),
-        type: ColumnType.DateTime,
-        mediaMinWidth: 500,
-      },
-      {
-        propertyName: BULLETIN_LIST_COLUMNS.createdBy!,
-        title: this._translationService.get('Bulletin/List/GridColumns/CreatedBy'),
-        mediaMinWidth: 800,
       },
       {
         propertyName: BULLETIN_LIST_COLUMNS.updatedAt!,
@@ -161,7 +147,7 @@ export class BulletinGridService
 
     if (
       this._permissionService.hasPermission(SystemPermissionValue.PublishBulletin) &&
-      bulletin.state === BulletinStateValue.DRAFT
+      bulletin.state === BulletinState.DRAFT
     ) {
       result.push({
         title: this._translationService.get('Bulletin/List/ContextMenu/Publish'),
@@ -272,21 +258,19 @@ export class BulletinGridService
       return;
     }
 
-    // TODO: Implement delete method in BulletinService
-    // const result = await firstValueFrom(this._bulletinService.delete(bulletin.id));
+    const result = await firstValueFrom(this._bulletinService.delete(bulletin.id));
 
-    // if (result === DeleteResult.Success) {
-    //   return MenuItemClickResult.REFRESH_GRID;
-    // }
+    if (result === DeleteResult.Success) {
+      return MenuItemClickResult.REFRESH_GRID;
+    }
 
-    // if (result === DeleteResult.DbFkConstraintError) {
-    //   this._snackBarService.translateAndShowError({
-    //     message: 'Errors/Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted',
-    //   });
-    //   return MenuItemClickResult.NONE;
-    // }
+    if (result === DeleteResult.DbFkConstraintError) {
+      this._snackBarService.translateAndShowError({
+        message: 'Errors/Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted',
+      });
+      return MenuItemClickResult.NONE;
+    }
 
-    // throw new Error('Not supported delete result');
     return MenuItemClickResult.NONE;
   }
 }

@@ -54,8 +54,7 @@ export class DaySectionsComponent {
   public constructor(
     private readonly _bulletinFormBuilder: BulletinFormBuilder,
     private readonly _dialogService: DialogService,
-    private readonly _changeDetectorRef: ChangeDetectorRef,
-    private readonly _translationService: TranslationService
+    private readonly _changeDetectorRef: ChangeDetectorRef
   ) {}
 
   protected drop(event: CdkDragDrop<FormArray<FormGroup<IBulletinDaySectionForm>>>): void {
@@ -79,7 +78,6 @@ export class DaySectionsComponent {
         if (section) {
           const newSection = this._bulletinFormBuilder.createDaySection({
             type: section,
-            title: this.getSectionDefaultTitle(section),
           });
           this.sections().push(newSection);
           this.editSection(newSection);
@@ -105,10 +103,5 @@ export class DaySectionsComponent {
 
   protected controlHasErrors(control: AbstractControl): boolean {
     return control && control.invalid && (control.dirty || control.touched);
-  }
-
-  private getSectionDefaultTitle(section: SectionType): string {
-    const type = DaySections.getTypes().find(s => s.value === section);
-    return this._translationService.get(type!.label);
   }
 }

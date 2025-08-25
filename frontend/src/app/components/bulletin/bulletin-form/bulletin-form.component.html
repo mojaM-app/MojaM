@@ -1,5 +1,5 @@
 <form [formGroup]="formGroup">
-  <mat-tab-group [(selectedIndex)]="selectedTabIndex">
+  <mat-tab-group [(selectedIndex)]="selectedTabIndex" (selectedTabChange)="onTabChange($event)">
     <mat-tab>
       <ng-template mat-tab-label>
         @if (controlHasErrors(formGroup.controls.properties)) {

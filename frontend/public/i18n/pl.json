@@ -71,7 +71,8 @@
     "Failed_To_Activate_Account": "Nie udało się aktywować konta. Zgłoś ten problem jednemu z animatorów lub liderowi wspólnoty.",
     "Object_Is_Connected_With_Another_And_Can_Not_Be_Deleted": "Nie można usunąć tego rekordu ponieważ jest on powiązany z innymi rekordami w bazie.",
     "Activation_Failed_Passcode_Is_Not_Set": "Nie można aktywować konta ponieważ nie ma ono ustawionego sposobu uwierzytelniania (logowania). Gdy użytkownik ten został dodany do aplikacji, został wysłany do niego email z instrukcją jak aktywować konto. Podczas aktywacji wybierany jest sposób uwierzytelniania. Poproś użytkownika aby dokończył aktywację konta lub wyślij do niego ponownie email aktywujący.",
-    "Bulletin_With_Given_Date_Already_Exists": "Istnieje już biuletyn z wprowadzoną datą utworzenia."
+    "Bulletin_With_Given_Date_Already_Exists": "Istnieje już biuletyn z wprowadzoną datą utworzenia.",
+    "Bulletin_Day_With_Given_Date_Already_Exists": "Dzień {date} jest już użyty w innym biuletynie."
   },
   "Error404": {
     "Message": "Strona nie istnieje"
@@ -156,10 +157,9 @@
         "ValidFrom": "Ważne od",
         "State": "Status",
         "CreatedAt": "Data utworzenia",
-        "CreatedBy": "Utworzone przez",
-        "UpdatedAt": "Data modyfikacji",
+        "CreatedBy": "Utworzył(a)",
         "PublishedAt": "Data publikacji",
-        "PublishedBy": "Opublikowane przez",
+        "PublishedBy": "Opublikował(a)",
         "ItemsCount": "Ilość ogłoszeń"
       },
       "ContextMenu": {
@@ -269,7 +269,31 @@
       }
     },
     "List": {
-      "Title": "Lista biuletynów"
+      "Title": "Lista biuletynów",
+      "GridColumns": {
+        "Date": "Data",
+        "Number": "Numer",
+        "Title": "Tytuł",
+        "UpdatedAt": "Data utworzenia",
+        "UpdatedBy": "Utworzył(a)",
+        "PublishedAt": "Data publikacji",
+        "PublishedBy": "Opublikował(a)",
+        "State": "Status"
+      },
+      "ContextMenu": {
+        "Copy": "Utworz kopię",
+        "Edit": "Edytuj",
+        "Publish": "Opublikuj",
+        "Archive": "Zarchiwizuj",
+        "Delete": "Usuń",
+        "Preview": "Podgląd"
+      },
+      "DeleteConfirmText": "Czy na pewno chcesz usunąć biuletyn utworzony {createdAt} przez '{createdBy}'?",
+      "PublishConfirmText": "Czy na pewno chcesz opublikować biuletyn utworzony {createdAt} przez '{createdBy}'?"
+    },
+    "State": {
+      "1": "Nowe",
+      "2": "Opublikowane"
     }
   },
   "Settings": {

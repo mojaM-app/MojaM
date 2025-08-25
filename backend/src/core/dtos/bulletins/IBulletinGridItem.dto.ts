@@ -7,7 +7,7 @@ export interface IBulletinGridItemDto {
   createdAt: Date;
   createdBy: string;
   updatedAt: Date;
-  updatedBy: string | null;
+  updatedBy: string;
   publishedAt: Date | null;
   publishedBy: string | null;
 }

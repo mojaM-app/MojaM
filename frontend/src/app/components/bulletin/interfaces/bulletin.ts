@@ -1,26 +1,35 @@
-export interface IBulletinDay {
-  id: string;
-  // content: string;
-  // createdAt: Date;
-  // createdBy: string | null;
-  // updatedAt?: Date;
-  // updatedBy?: string | null;
+import { BulletinState } from '../enums/bulletin-state.enum';
+import { SectionType } from '../enums/section-type.enum';
 
-  // getAuthorName(): string;
-  // getCreationDateTime(): Date;
+export interface IBulletinDaySection {
+  id: string;
+  title: string | null;
+  content: string | null;
+  type: SectionType;
+  order: number;
+}
+
+export interface IBulletinDayDto {
+  id: string;
+  date: Date | null;
+  title: string | null;
+  sections: IBulletinDaySection[];
 }
 
 export interface IBulletin {
   id: string;
-  title?: string | null;
-  startDate?: Date | null;
-  //state: number;
-  // createdAt: Date;
-  // createdBy: string | null;
-  // updatedAt: Date;
-  // publishedAt?: Date | null;
-  // publishedBy?: string | null;
-  days: IBulletinDay[];
-  // getPublisherName(): string;
-  // getPublishDateTime(): Date | undefined | null;
+  date: Date | null;
+  title: string | null;
+  state: BulletinState;
+  number: number | null;
+  introduction: string | null;
+  tipsForWork: string | null;
+  dailyPrayer: string | null;
+  createdAt: Date;
+  createdBy: string;
+  updatedAt: Date;
+  updatedBy: string | null;
+  publishedAt: Date | null;
+  publishedBy: string | null;
+  days: IBulletinDayDto[];
 }

@@ -90,6 +90,8 @@ export class BulletinFormBuilder {
         const sectionGroup = this.getNewSectionFormGroup();
         sectionGroup.patchValue({
           id: section.id,
+          title: section.title ?? null,
+          type: section.type ?? SectionType.CUSTOM_TEXT,
           content: section.content ?? null,
         });
         sectionsArray.push(sectionGroup);

@@ -26,6 +26,7 @@ import { DaySections } from '../day-sections';
 import { WysiwygFormFieldComponent } from 'src/app/components/static/wysiwyg-editor/wysiwyg-form-field/wysiwyg-form-field.component';
 import { SectionType } from 'src/app/components/bulletin/enums/section-type.enum';
 import { WysiwygPreviewComponent } from 'src/app/components/static/wysiwyg-editor/wysiwyg-preview/wysiwyg-preview.component';
+import { TranslationService } from 'src/services/translate/translation.service';
 
 @Component({
   selector: 'app-day-section',
@@ -49,24 +50,17 @@ export class DaySectionComponent {
   public readonly bulletinProperties = input.required<FormGroup<IBulletinPropertiesForm>>();
   public readonly formGroup = model<FormGroup<IBulletinDaySectionForm> | undefined>(undefined);
 
-  protected readonly isTitleReadOnly = computed(() => {
+  protected readonly isTitleReadOnly = computed<boolean>(() => {
     const sectionType = this.formGroup()?.controls.type.value;
     return DaySections.isTitleReadOnly(sectionType);
   });
 
-  protected readonly isContentReadOnly = computed(() => {
+  protected readonly isContentReadOnly = computed<boolean>(() => {
     const sectionType = this.formGroup()?.controls.type.value;
     return DaySections.isContentReadOnly(sectionType);
   });
 
-  protected readonly errorNames = errorNames;
-  protected readonly maxLengths = VALIDATOR_SETTINGS;
-
-  protected getControlErrors(control: AbstractControl): ValidationErrors {
-    return control?.errors ?? {};
-  }
-
-  protected getSectionContent(): string {
+  protected readonly sectionContent = computed<string>(() => {
     switch (this.formGroup()?.controls.type.value) {
       case SectionType.DAILY_PRAYER:
         return this.bulletinProperties().controls.dailyPrayer.value ?? '';
@@ -77,5 +71,20 @@ export class DaySectionComponent {
       default:
         return '';
     }
+  });
+
+  protected readonly sectionDefaultTitle = computed<string>(() => {
+    const sectionType = this.formGroup()!.controls.type.value;
+    const type = DaySections.getTypes().find(s => s.value === sectionType);
+    return this._translationService.get(type!.label);
+  });
+
+  protected readonly errorNames = errorNames;
+  protected readonly maxLengths = VALIDATOR_SETTINGS;
+
+  public constructor(private readonly _translationService: TranslationService) {}
+
+  protected getControlErrors(control: AbstractControl): ValidationErrors {
+    return control?.errors ?? {};
   }
 }

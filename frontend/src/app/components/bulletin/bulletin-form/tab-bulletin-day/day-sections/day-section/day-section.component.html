@@ -2,13 +2,35 @@
   @if (isContentReadOnly()) {
     <div class="row mb-3">
       <div class="col-12">
-        <mat-label>{{ formGroup()!.controls.title.value }}</mat-label>
+        {{ sectionDefaultTitle() }}
       </div>
     </div>
 
     <div class="row mb-3">
       <div class="col-12">
-        <app-wysiwyg-preview [content]="getSectionContent()"></app-wysiwyg-preview>
+        <div
+          class="mat-mdc-form-field w-100 mat-mdc-form-field-type-wysiwyg-editor mat-form-field-appearance-fill mat-primary">
+          <div class="mat-mdc-text-field-wrapper mdc-text-field mdc-text-field--filled">
+            <div class="mat-mdc-form-field-flex">
+              <div class="mat-mdc-form-field-infix">
+                <label
+                  class="mdc-floating-label mat-mdc-floating-label mdc-floating-label--float-above"
+                  >{{ 'Bulletin/Form/TabBulletinDay/Section/Content' | gmessage }}</label
+                >
+                <p></p>
+                <app-wysiwyg-preview [content]="sectionContent()"></app-wysiwyg-preview>
+              </div>
+            </div>
+          </div>
+          <div
+            class="mat-mdc-form-field-subscript-wrapper mat-mdc-form-field-bottom-align mat-mdc-form-field-subscript-dynamic-size">
+            <div class="mat-mdc-form-field-hint-wrapper">
+              <mat-hint class="mat-mdc-form-field-hint mat-mdc-form-field-bottom-align">{{
+                'Bulletin/Form/TabBulletinDay/Section/ContentHint' | gmessage
+              }}</mat-hint>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   } @else {

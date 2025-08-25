@@ -6,6 +6,9 @@ import { BaseService } from '../../../../services/common/base.service';
 import { HttpClientService } from '../../../../services/common/httpClient.service';
 import { SpinnerService } from '../../../../services/spinner/spinner.service';
 import { AddBulletinDto } from '../models/add-bulletin.model';
+import { EditBulletinDto } from '../models/edit-bulletin.model';
+import { IBulletin } from '../interfaces/bulletin';
+import { SectionType } from '../enums/section-type.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -18,41 +21,29 @@ export class BulletinService extends BaseService {
     super();
   }
 
-  // public get(uuid: string): Observable<IAnnouncements> {
-  //   return this._httpClient
-  //     .request()
-  //     .withUrl(this.API_ROUTES.announcements.get(uuid))
-  //     .get<IAnnouncements>()
-  //     .pipe(
-  //       this._spinnerService.waitForSubscription(),
-  //       map((resp: IAnnouncements) => {
-  //         if (resp) {
-  //           resp.validFromDate = this.toDateTime(resp.validFromDate);
-  //           resp.createdAt = this.toDateTime(resp.createdAt)!;
-  //           resp.updatedAt = this.toDateTime(resp.updatedAt)!;
-  //           resp.publishedAt = this.toDateTime(resp.publishedAt);
-  //           resp.items?.forEach(item => {
-  //             item.createdAt = this.toDateTime(item.createdAt)!;
-  //             item.updatedAt = this.toDateTime(item.updatedAt);
-  //             item.getAuthorName = (): string => {
-  //               return item.updatedBy ?? item.createdBy ?? '';
-  //             };
-  //             item.getCreationDateTime = (): Date => {
-  //               return item.updatedAt ?? item.createdAt;
-  //             };
-  //           });
-  //           resp.getPublisherName = (): string => {
-  //             return resp.publishedBy ?? '';
-  //           };
-  //           resp.getPublishDateTime = (): Date | undefined | null => {
-  //             return resp.publishedAt;
-  //           };
-  //         }
+  public get(uuid: string): Observable<IBulletin> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.bulletin.get(uuid))
+      .get<IBulletin>()
+      .pipe(
+        this._spinnerService.waitForSubscription(),
+        map((resp: IBulletin) => {
+          if (resp) {
+            resp.date = this.toDateTime(resp.date) ?? null;
+            resp.createdAt = this.toDateTime(resp.createdAt)!;
+            resp.updatedAt = this.toDateTime(resp.updatedAt)!;
+            resp.publishedAt = this.toDateTime(resp.publishedAt) ?? null;
+            resp.days = resp.days?.map(day => {
+              day.date = this.toDateTime(day.date) ?? null;
+              return day;
+            });
+          }
 
-  //         return resp;
-  //       })
-  //     );
-  // }
+          return resp;
+        })
+      );
+  }
 
   public create(model: AddBulletinDto): Observable<string | null> {
     console.log('BulletinService.create', model);
@@ -69,19 +60,19 @@ export class BulletinService extends BaseService {
       );
   }
 
-  // public update(model: EditAnnouncementsDto): Observable<string | null> {
-  //   return this._httpClient
-  //     .request()
-  //     .withUrl(this.API_ROUTES.announcements.update(model.id!))
-  //     .withBody({ ...model })
-  //     .put<string | null>()
-  //     .pipe(
-  //       this._spinnerService.waitForSubscription(),
-  //       map((resp: string | null) => {
-  //         return resp ?? null;
-  //       })
-  //     );
-  // }
+  public update(model: EditBulletinDto): Observable<string | null> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.bulletin.update(model.id!))
+      .withBody({ ...model })
+      .put<string | null>()
+      .pipe(
+        this._spinnerService.waitForSubscription(),
+        map((resp: string | null) => {
+          return resp ?? null;
+        })
+      );
+  }
 
   // public publish(uuid: string): Observable<boolean> {
   //   return this._httpClient
@@ -94,20 +85,20 @@ export class BulletinService extends BaseService {
   //     );
   // }
 
-  // public delete(uuid: string): Observable<DeleteResult> {
-  //   return this._httpClient
-  //     .request()
-  //     .withUrl(this.API_ROUTES.announcements.delete(uuid))
-  //     .delete<boolean>()
-  //     .pipe(
-  //       this._spinnerService.waitForSubscription(),
-  //       map(() => DeleteResult.Success),
-  //       catchError((error: unknown) => {
-  //         if (ErrorUtils.isConflictError(error)) {
-  //           return of(DeleteResult.DbFkConstraintError);
-  //         }
-  //         return throwError(() => error);
-  //       })
-  //     );
-  // }
+  public delete(uuid: string): Observable<DeleteResult> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.bulletin.delete(uuid))
+      .delete<boolean>()
+      .pipe(
+        this._spinnerService.waitForSubscription(),
+        map(() => DeleteResult.Success),
+        catchError((error: unknown) => {
+          if (ErrorUtils.isConflictError(error)) {
+            return of(DeleteResult.DbFkConstraintError);
+          }
+          return throwError(() => error);
+        })
+      );
+  }
 }

@@ -290,7 +290,35 @@ export class UserRepository extends BaseUserRepository {
       UNION
         SELECT COUNT(*) AS count, ? as entities
         FROM announcement_items ani_up
-        WHERE ani_up.UpdatedById = ?`;
+        WHERE ani_up.UpdatedById = ?
+      UNION
+        SELECT COUNT(*) AS count, ? as entities
+        FROM bulletins b_cr
+        WHERE b_cr.CreatedById = ?
+      UNION
+        SELECT COUNT(*) AS count, ? as entities
+        FROM bulletins b_up
+        WHERE b_up.UpdatedById = ?
+      UNION
+        SELECT COUNT(*) AS count, ? as entities
+        FROM bulletins b_pub
+        WHERE b_pub.PublishedById = ?
+      UNION
+        SELECT COUNT(*) AS count, ? as entities
+        FROM bulletin_days bd_cr
+        WHERE bd_cr.CreatedById = ?
+      UNION
+        SELECT COUNT(*) AS count, ? as entities
+        FROM bulletin_days bd_up
+        WHERE bd_up.UpdatedById = ?
+      UNION
+        SELECT COUNT(*) AS count, ? as entities
+        FROM bulletin_day_sections bds_cr
+        WHERE bds_cr.CreatedById = ?
+      UNION
+        SELECT COUNT(*) AS count, ? as entities
+        FROM bulletin_day_sections bds_up
+        WHERE bds_up.UpdatedById = ?`;
 
     const params = [
       relatedDataNames.SystemPermission_AssignedBy,
@@ -303,6 +331,20 @@ export class UserRepository extends BaseUserRepository {
       relatedDataNames.AnnouncementItems_CreatedBy,
       userId,
       relatedDataNames.AnnouncementItems_UpdatedBy,
+      userId,
+      relatedDataNames.Bulletins_CreatedBy,
+      userId,
+      relatedDataNames.Bulletins_UpdatedBy,
+      userId,
+      relatedDataNames.Bulletins_PublishedBy,
+      userId,
+      relatedDataNames.BulletinDays_CreatedBy,
+      userId,
+      relatedDataNames.BulletinDays_UpdatedBy,
+      userId,
+      relatedDataNames.BulletinDaySections_CreatedBy,
+      userId,
+      relatedDataNames.BulletinDaySections_UpdatedBy,
       userId,
     ];
 

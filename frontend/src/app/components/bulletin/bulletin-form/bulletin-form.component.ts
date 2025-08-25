@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   effect,
   inject,
@@ -18,7 +19,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatTabGroup, MatTabsModule } from '@angular/material/tabs';
+import { MatTabChangeEvent, MatTabGroup, MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -67,7 +68,8 @@ export class BulletinFormComponent extends WithForm<IBulletinForm>() {
     private readonly _dialogService: DialogService,
     private readonly _formBuilder: BulletinFormBuilder,
     private readonly _translateService: TranslationService,
-    private readonly _datePipe: GdatePipe
+    private readonly _datePipe: GdatePipe,
+    private readonly _cd: ChangeDetectorRef
   ) {
     super(_formBuilder.form);
 
@@ -139,6 +141,10 @@ export class BulletinFormComponent extends WithForm<IBulletinForm>() {
     return this._translateService.get('Bulletin/Form/TabBulletinDay/EmptyDate', {
       dayIndex: index + 1,
     });
+  }
+
+  protected onTabChange(event: MatTabChangeEvent): void {
+    this._cd.detectChanges();
   }
 
   private addButtonAddToHeader(): void {

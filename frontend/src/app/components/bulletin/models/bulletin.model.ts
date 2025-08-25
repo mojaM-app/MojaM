@@ -1,4 +1,12 @@
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { SectionType } from '../enums/section-type.enum';
+import {
+  IBulletinDayForm,
+  IBulletinDaySectionForm,
+  IBulletinForm,
+  IBulletinPropertiesForm,
+} from '../bulletin-form/bulletin.form';
+import { WysiwygUtils } from '../../static/wysiwyg-editor/wysiwyg.utils';
 
 export class BulletinDaySectionDto {
   public id?: string;
@@ -23,4 +31,64 @@ export abstract class BulletinDto {
   public tipsForWork: string | null = null;
   public dailyPrayer: string | null = null;
   public days: BulletinDayDto[] = [];
+
+  protected constructor(formControls?: {
+    [K in keyof IBulletinForm]: FormControl<any> | FormArray<any> | FormGroup<any>;
+  }) {
+    this.days = [];
+
+    if (formControls) {
+      const propertiesFormControls = (formControls.properties as FormGroup<IBulletinPropertiesForm>)
+        ?.controls;
+      this.date = propertiesFormControls?.date?.value ?? null;
+      this.title = propertiesFormControls?.title?.value ?? null;
+      this.number = propertiesFormControls?.number?.value ?? null;
+      this.introduction = propertiesFormControls?.introduction?.value ?? null;
+      this.tipsForWork = propertiesFormControls?.tipsForWork?.value ?? null;
+      this.dailyPrayer = propertiesFormControls?.dailyPrayer?.value ?? null;
+
+      const days = formControls.days as FormArray<FormGroup<IBulletinDayForm>>;
+      days?.controls?.forEach((day: FormGroup<IBulletinDayForm>) => {
+        const sections = day.controls.sections as FormArray<FormGroup<IBulletinDaySectionForm>>;
+        this.days!.push({
+          id: day.controls.id?.value ?? undefined,
+          date: day.controls.date?.value ?? null,
+          title: day.controls.title?.value ?? null,
+          sections:
+            sections?.controls?.map(
+              (section: FormGroup<IBulletinDaySectionForm>, index: number) =>
+                ({
+                  id: section.controls.id?.value ?? undefined,
+                  type: section.controls.type?.value ?? SectionType.CUSTOM_TEXT,
+                  order: index + 1,
+                  title: this.getSectionTitle(section),
+                  content: this.getSectionContent(section),
+                }) satisfies BulletinDaySectionDto
+            ) ?? [],
+        } satisfies BulletinDayDto);
+      });
+    }
+  }
+
+  private getSectionContent(section: FormGroup<IBulletinDaySectionForm>): string | null {
+    switch (section.controls.type?.value) {
+      case SectionType.DAILY_PRAYER:
+      case SectionType.INTRODUCTION:
+      case SectionType.TIPS_FOR_WORK:
+        return null;
+      default:
+        return section.controls.content?.value ?? null;
+    }
+  }
+
+  private getSectionTitle(section: FormGroup<IBulletinDaySectionForm>): string | null {
+    switch (section.controls.type?.value) {
+      case SectionType.DAILY_PRAYER:
+      case SectionType.INTRODUCTION:
+      case SectionType.TIPS_FOR_WORK:
+        return null;
+      default:
+        return section.controls.title?.value ?? null;
+    }
+  }
 }
