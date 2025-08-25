@@ -36,7 +36,7 @@ export class AnnouncementsListService extends BaseService {
       validFromDate: announcement.validFromDate,
       createdAt: announcement.createdAt,
       createdBy: announcement.createdBy,
-      updatedAt: announcement.updatedAt,
+      updatedAt: announcement.updatedAt ?? announcement.createdAt,
       publishedAt: announcement.publishedAt,
       publishedBy: announcement.publishedBy,
       itemsCount: announcement.itemsCount,

@@ -8,22 +8,10 @@ export class EditAnnouncementsDto extends AnnouncementsDto {
 
   public constructor(
     id: string,
-    formControls?: { [K in keyof IAnnouncementsForm]: FormControl<any> }
+    formControls?: { [K in keyof IAnnouncementsForm]: FormControl<any> | FormArray<any> }
   ) {
-    super();
+    super(formControls);
     this.id = id;
-    this.items = [];
-
-    if (formControls) {
-      this.validFromDate = formControls.validFromDate?.value ?? null;
-      const items = formControls.items as any as FormArray;
-      items?.controls?.forEach((item: any) => {
-        this.items!.push({
-          id: item.controls.id?.value ?? undefined,
-          content: item.controls.content?.value ?? null,
-        } satisfies AnnouncementItemDto);
-      });
-    }
   }
 
   public static create(announcements: IAnnouncements): EditAnnouncementsDto {

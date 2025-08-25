@@ -36,7 +36,7 @@ import { AnnouncementsService } from '../services/announcements.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditAnnouncementsComponent extends WithUnsubscribe() implements OnInit {
-  public readonly announcements = model<EditAnnouncementsDto>();
+  protected readonly announcements = model<EditAnnouncementsDto>();
 
   private readonly _formComponent = viewChild(AnnouncementsFormComponent);
 
