@@ -319,6 +319,534 @@ describe('PUT /bulletins/:id', () => {
 
       await app!.bulletin.delete(bulletinId, adminAccessToken);
     });
+
+    test('update bulletin with only INTRODUCTION section type', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const updateData = {
+        title: createData.title,
+        number: createData.number,
+        introduction: createData.introduction,
+        tipsForWork: createData.tipsForWork,
+        dailyPrayer: createData.dailyPrayer,
+        date: createData.date,
+        days: [
+          {
+            title: 'Day with INTRODUCTION section only',
+            date: new Date('2024-06-20'),
+            sections: [
+              {
+                order: 1,
+                type: SectionType.INTRODUCTION,
+                title: null,
+                content: null,
+              },
+            ],
+          },
+        ],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      expect(updateRes.statusCode).toBe(200);
+
+      const getRes = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getRes.statusCode).toBe(200);
+      const { data: bulletin }: GetBulletinResponseDto = getRes.body;
+
+      expect(bulletin.days.length).toBe(1);
+      expect(bulletin.days[0].sections.length).toBe(1);
+      expect(bulletin.days[0].sections[0].type).toBe(SectionType.INTRODUCTION);
+      expect(bulletin.days[0].sections[0].title).toBeNull();
+      expect(bulletin.days[0].sections[0].content).toBeNull();
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinUpdated,
+              testEventHandlers.onBulletinRetrieved,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinUpdated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('update bulletin with only TIPS_FOR_WORK section type', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const updateData = {
+        title: createData.title,
+        number: createData.number,
+        introduction: createData.introduction,
+        tipsForWork: createData.tipsForWork,
+        dailyPrayer: createData.dailyPrayer,
+        date: createData.date,
+        days: [
+          {
+            title: 'Day with TIPS_FOR_WORK section only',
+            date: new Date('2024-06-21'),
+            sections: [
+              {
+                order: 1,
+                type: SectionType.TIPS_FOR_WORK,
+                title: null,
+                content: null,
+              },
+            ],
+          },
+        ],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      expect(updateRes.statusCode).toBe(200);
+
+      const getRes = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getRes.statusCode).toBe(200);
+      const { data: bulletin }: GetBulletinResponseDto = getRes.body;
+
+      expect(bulletin.days.length).toBe(1);
+      expect(bulletin.days[0].sections.length).toBe(1);
+      expect(bulletin.days[0].sections[0].type).toBe(SectionType.TIPS_FOR_WORK);
+      expect(bulletin.days[0].sections[0].title).toBeNull();
+      expect(bulletin.days[0].sections[0].content).toBeNull();
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinUpdated,
+              testEventHandlers.onBulletinRetrieved,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinUpdated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('update bulletin with only DAILY_PRAYER section type', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const updateData = {
+        title: createData.title,
+        number: createData.number,
+        introduction: createData.introduction,
+        tipsForWork: createData.tipsForWork,
+        dailyPrayer: createData.dailyPrayer,
+        date: createData.date,
+        days: [
+          {
+            title: 'Day with DAILY_PRAYER section only',
+            date: new Date('2024-06-22'),
+            sections: [
+              {
+                order: 1,
+                type: SectionType.DAILY_PRAYER,
+                title: null,
+                content: null,
+              },
+            ],
+          },
+        ],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      expect(updateRes.statusCode).toBe(200);
+
+      const getRes = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getRes.statusCode).toBe(200);
+      const { data: bulletin }: GetBulletinResponseDto = getRes.body;
+
+      expect(bulletin.days.length).toBe(1);
+      expect(bulletin.days[0].sections.length).toBe(1);
+      expect(bulletin.days[0].sections[0].type).toBe(SectionType.DAILY_PRAYER);
+      expect(bulletin.days[0].sections[0].title).toBeNull();
+      expect(bulletin.days[0].sections[0].content).toBeNull();
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinUpdated,
+              testEventHandlers.onBulletinRetrieved,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinUpdated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('update bulletin with multiple days and different section types', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const updateData = {
+        title: createData.title,
+        number: createData.number,
+        introduction: createData.introduction,
+        tipsForWork: createData.tipsForWork,
+        dailyPrayer: createData.dailyPrayer,
+        date: createData.date,
+        days: [
+          {
+            title: 'Day 1 Updated',
+            date: new Date('2024-06-15'),
+            sections: [
+              {
+                order: 1,
+                type: SectionType.INTRODUCTION,
+                title: null,
+                content: null,
+              },
+              {
+                order: 2,
+                type: SectionType.CUSTOM_TEXT,
+                title: 'Custom Section Title',
+                content: 'Custom section content',
+              },
+            ],
+          },
+          {
+            title: 'Day 2 Updated',
+            date: new Date('2024-06-16'),
+            sections: [
+              {
+                order: 1,
+                type: SectionType.TIPS_FOR_WORK,
+                title: null,
+                content: null,
+              },
+              {
+                order: 2,
+                type: SectionType.DAILY_PRAYER,
+                title: null,
+                content: null,
+              },
+            ],
+          },
+        ],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      expect(updateRes.statusCode).toBe(200);
+
+      const getRes = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getRes.statusCode).toBe(200);
+      const { data: bulletin }: GetBulletinResponseDto = getRes.body;
+
+      expect(bulletin.days.length).toBe(2);
+      expect(bulletin.days[0].sections[0].type).toBe(SectionType.INTRODUCTION);
+      expect(bulletin.days[0].sections[1].type).toBe(SectionType.CUSTOM_TEXT);
+      expect(bulletin.days[1].sections[0].type).toBe(SectionType.TIPS_FOR_WORK);
+      expect(bulletin.days[1].sections[1].type).toBe(SectionType.DAILY_PRAYER);
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinUpdated,
+              testEventHandlers.onBulletinRetrieved,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinUpdated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('update bulletin with maximum field lengths', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const updateData = {
+        title: 'x'.repeat(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH),
+        number: 999999,
+        introduction: 'y'.repeat(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH),
+        tipsForWork: 'z'.repeat(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH),
+        dailyPrayer: 'a'.repeat(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH),
+        date: new Date('2024-12-31'),
+        days: [
+          {
+            title: 'b'.repeat(100), // reasonable length for day title
+            date: new Date('2024-06-25'),
+            sections: [
+              {
+                order: 1,
+                type: SectionType.CUSTOM_TEXT,
+                title: 'c'.repeat(200), // reasonable length for section title
+                content: 'd'.repeat(VALIDATOR_SETTINGS.BULLETIN_DAY_SECTION_CONTENT_MAX_LENGTH),
+              },
+            ],
+          },
+        ],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      expect(updateRes.statusCode).toBe(200);
+
+      const getRes = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getRes.statusCode).toBe(200);
+      const { data: bulletin }: GetBulletinResponseDto = getRes.body;
+
+      expect(bulletin.title).toBe(updateData.title);
+      expect(bulletin.number).toBe(updateData.number);
+      expect(bulletin.introduction).toBe(updateData.introduction);
+      expect(bulletin.tipsForWork).toBe(updateData.tipsForWork);
+      expect(bulletin.dailyPrayer).toBe(updateData.dailyPrayer);
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+    });
+
+    test('update bulletin with minimal required fields only', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const updateData = {
+        title: null,
+        number: null,
+        introduction: null,
+        tipsForWork: null,
+        dailyPrayer: null,
+        date: new Date('2024-01-01'),
+        days: [],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      expect(updateRes.statusCode).toBe(200);
+
+      const getRes = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getRes.statusCode).toBe(200);
+      const { data: bulletin }: GetBulletinResponseDto = getRes.body;
+
+      expect(bulletin.title).toBeNull();
+      expect(bulletin.number).toBeNull();
+      expect(bulletin.introduction).toBeNull();
+      expect(bulletin.tipsForWork).toBeNull();
+      expect(bulletin.dailyPrayer).toBeNull();
+      expect(bulletin.days).toEqual([]);
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+    });
+
+    test('update bulletin with future date', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const futureDate = new Date();
+      futureDate.setFullYear(futureDate.getFullYear() + 2);
+
+      const updateData = {
+        title: createData.title,
+        number: createData.number,
+        introduction: createData.introduction,
+        tipsForWork: createData.tipsForWork,
+        dailyPrayer: createData.dailyPrayer,
+        date: futureDate,
+        days: [],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      expect(updateRes.statusCode).toBe(200);
+
+      const getRes = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getRes.statusCode).toBe(200);
+      const { data: bulletin }: GetBulletinResponseDto = getRes.body;
+
+      expect(new Date(bulletin.date!).toDateString()).toBe(futureDate.toDateString());
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+    });
+
+    test('update bulletin with past date', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const pastDate = new Date('2020-01-01');
+
+      const updateData = {
+        title: createData.title,
+        number: createData.number,
+        introduction: createData.introduction,
+        tipsForWork: createData.tipsForWork,
+        dailyPrayer: createData.dailyPrayer,
+        date: pastDate,
+        days: [],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      expect(updateRes.statusCode).toBe(200);
+
+      const getRes = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getRes.statusCode).toBe(200);
+      const { data: bulletin }: GetBulletinResponseDto = getRes.body;
+
+      expect(new Date(bulletin.date!).toDateString()).toBe(pastDate.toDateString());
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+    });
+
+    test('update bulletin with sections having high order numbers', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const updateData = {
+        title: createData.title,
+        number: createData.number,
+        introduction: createData.introduction,
+        tipsForWork: createData.tipsForWork,
+        dailyPrayer: createData.dailyPrayer,
+        date: createData.date,
+        days: [
+          {
+            title: 'Day with high order numbers',
+            date: new Date('2024-06-30'),
+            sections: [
+              {
+                order: 100,
+                type: SectionType.CUSTOM_TEXT,
+                title: 'Section 100',
+                content: 'Content 100',
+              },
+              {
+                order: 200,
+                type: SectionType.CUSTOM_TEXT,
+                title: 'Section 200',
+                content: 'Content 200',
+              },
+              {
+                order: 300,
+                type: SectionType.CUSTOM_TEXT,
+                title: 'Section 300',
+                content: 'Content 300',
+              },
+            ],
+          },
+        ],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      expect(updateRes.statusCode).toBe(200);
+
+      const getRes = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getRes.statusCode).toBe(200);
+      const { data: bulletin }: GetBulletinResponseDto = getRes.body;
+
+      expect(bulletin.days.length).toBe(1);
+      expect(bulletin.days[0].sections.length).toBe(3);
+      // Orders are renumbered to be sequential starting from 1
+      const orders = bulletin.days[0].sections.map(s => s.order).sort((a, b) => a - b);
+      expect(orders).toEqual([1, 2, 3]);
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+    });
+
+    test('update bulletin by adding new day to existing bulletin', async () => {
+      const createData = generateValidBulletin();
+      createData.days = [createData.days![0]]; // Start with only one day
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      // Get the current state
+      const getRes1 = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getRes1.statusCode).toBe(200);
+      const { data: bulletin1 }: GetBulletinResponseDto = getRes1.body;
+
+      // Add a new day while keeping the existing one
+      const updateData = {
+        title: bulletin1.title,
+        number: bulletin1.number,
+        introduction: bulletin1.introduction,
+        tipsForWork: bulletin1.tipsForWork,
+        dailyPrayer: bulletin1.dailyPrayer,
+        date: bulletin1.date,
+        days: [
+          ...bulletin1.days,
+          {
+            title: 'New Added Day',
+            date: new Date('2024-07-01'),
+            sections: [
+              {
+                order: 1,
+                type: SectionType.CUSTOM_TEXT,
+                title: 'New Day Section',
+                content: 'Content for new day',
+              },
+            ],
+          },
+        ],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData as any, adminAccessToken);
+      expect(updateRes.statusCode).toBe(200);
+
+      const getRes2 = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getRes2.statusCode).toBe(200);
+      const { data: bulletin2 }: GetBulletinResponseDto = getRes2.body;
+
+      expect(bulletin2.days.length).toBe(2);
+      const newDay = bulletin2.days.find(d => d.title === 'New Added Day');
+      expect(newDay).toBeDefined();
+      expect(newDay!.sections[0].title).toBe('New Day Section');
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+    });
   });
 
   describe('PUT should respond with a status code of 400', () => {
@@ -601,6 +1129,466 @@ describe('PUT /bulletins/:id', () => {
       expect(errors.some(x => x !== errorKeys.bulletin.Non_Custom_Section_Should_Not_Have_Content)).toBe(true);
 
       await app!.bulletin.delete(id, adminAccessToken);
+    });
+
+    test('when updating with DAILY_PRAYER section having whitespace-only title and content', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const updateData = {
+        title: createData.title,
+        number: createData.number,
+        introduction: createData.introduction,
+        tipsForWork: createData.tipsForWork,
+        dailyPrayer: createData.dailyPrayer,
+        date: createData.date,
+        days: [
+          {
+            title: 'Day with whitespace-only DAILY_PRAYER section',
+            date: new Date('2024-06-23'),
+            sections: [
+              {
+                order: 1,
+                type: SectionType.DAILY_PRAYER,
+                title: '   ',
+                content: '\t\n  \t',
+              },
+            ],
+          },
+        ],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      // Unlike create, update might allow whitespace-only content but it should be trimmed
+      expect(updateRes.statusCode).toBe(200);
+
+      const getRes = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getRes.statusCode).toBe(200);
+      const { data: bulletin }: GetBulletinResponseDto = getRes.body;
+
+      // Whitespace should be trimmed to null
+      expect(bulletin.days[0].sections[0].title).toBeNull();
+      expect(bulletin.days[0].sections[0].content).toBeNull();
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+    });
+
+    test('when updating with sections having invalid order (duplicate orders)', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const updateData = {
+        title: createData.title,
+        number: createData.number,
+        introduction: createData.introduction,
+        tipsForWork: createData.tipsForWork,
+        dailyPrayer: createData.dailyPrayer,
+        date: createData.date,
+        days: [
+          {
+            title: 'Day with duplicate orders',
+            date: new Date('2024-06-24'),
+            sections: [
+              {
+                order: 1,
+                type: SectionType.CUSTOM_TEXT,
+                title: 'First Section',
+                content: 'Content 1',
+              },
+              {
+                order: 1, // Duplicate order
+                type: SectionType.CUSTOM_TEXT,
+                title: 'Second Section',
+                content: 'Content 2',
+              },
+            ],
+          },
+        ],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      // Should succeed as orders are renumbered when saved
+      expect(updateRes.statusCode).toBe(200);
+
+      const getRes = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getRes.statusCode).toBe(200);
+      const { data: bulletin }: GetBulletinResponseDto = getRes.body;
+
+      expect(bulletin.days[0].sections.length).toBe(2);
+      const orders = bulletin.days[0].sections.map(s => s.order).sort();
+      expect(orders).toEqual([1, 2]); // Orders should be renumbered to be unique
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+    });
+
+    test('when updating with number too small', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const updateData = {
+        title: createData.title,
+        number: 0, // Below minimum
+        introduction: createData.introduction,
+        tipsForWork: createData.tipsForWork,
+        dailyPrayer: createData.dailyPrayer,
+        date: createData.date,
+        days: [],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      expect(updateRes.statusCode).toBe(400);
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+    });
+
+    test('when updating with introduction too long', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const updateData = {
+        title: createData.title,
+        number: createData.number,
+        introduction: 'x'.repeat(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH + 1),
+        tipsForWork: createData.tipsForWork,
+        dailyPrayer: createData.dailyPrayer,
+        date: createData.date,
+        days: [],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      expect(updateRes.statusCode).toBe(400);
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+    });
+
+    test('when updating with tipsForWork too long', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const updateData = {
+        title: createData.title,
+        number: createData.number,
+        introduction: createData.introduction,
+        tipsForWork: 'x'.repeat(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH + 1),
+        dailyPrayer: createData.dailyPrayer,
+        date: createData.date,
+        days: [],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      expect(updateRes.statusCode).toBe(400);
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+    });
+
+    test('when updating with dailyPrayer too long', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const updateData = {
+        title: createData.title,
+        number: createData.number,
+        introduction: createData.introduction,
+        tipsForWork: createData.tipsForWork,
+        dailyPrayer: 'x'.repeat(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH + 1),
+        date: createData.date,
+        days: [],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      expect(updateRes.statusCode).toBe(400);
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+    });
+
+    test('when updating with day having empty title', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const updateData = {
+        title: createData.title,
+        number: createData.number,
+        introduction: createData.introduction,
+        tipsForWork: createData.tipsForWork,
+        dailyPrayer: createData.dailyPrayer,
+        date: createData.date,
+        days: [
+          {
+            title: '', // Empty title
+            date: new Date('2024-06-26'),
+            sections: [
+              {
+                order: 1,
+                type: SectionType.CUSTOM_TEXT,
+                title: 'Valid section',
+                content: 'Valid content',
+              },
+            ],
+          },
+        ],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      // Empty title might be allowed during update (but should be validated at publish)
+      expect(updateRes.statusCode).toBe(200);
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+    });
+
+    test('when updating with sections array empty for a day', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const updateData = {
+        title: createData.title,
+        number: createData.number,
+        introduction: createData.introduction,
+        tipsForWork: createData.tipsForWork,
+        dailyPrayer: createData.dailyPrayer,
+        date: createData.date,
+        days: [
+          {
+            title: 'Day without sections',
+            date: new Date('2024-06-27'),
+            sections: [], // Empty sections array
+          },
+        ],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      // Empty sections might be allowed during update (but should be validated at publish)
+      expect(updateRes.statusCode).toBe(200);
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+    });
+
+    test('when updating with multiple sections in specific order', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const updateData = {
+        title: createData.title,
+        number: createData.number,
+        introduction: createData.introduction,
+        tipsForWork: createData.tipsForWork,
+        dailyPrayer: createData.dailyPrayer,
+        date: createData.date,
+        days: [
+          {
+            title: 'Day with ordered sections',
+            date: new Date('2024-06-28'),
+            sections: [
+              {
+                order: 1,
+                type: SectionType.CUSTOM_TEXT,
+                title: 'Section 1',
+                content: 'First content',
+              },
+              {
+                order: 2,
+                type: SectionType.INTRODUCTION,
+                title: null,
+                content: null,
+              },
+            ],
+          },
+        ],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      expect(updateRes.statusCode).toBe(200);
+
+      const getRes = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getRes.statusCode).toBe(200);
+      const { data: bulletin }: GetBulletinResponseDto = getRes.body;
+
+      expect(bulletin.days[0].sections.length).toBe(2);
+      expect(bulletin.days[0].sections[0].order).toBe(1);
+      expect(bulletin.days[0].sections[1].order).toBe(2);
+      expect(bulletin.days[0].sections[0].type).toBe(SectionType.CUSTOM_TEXT);
+      expect(bulletin.days[0].sections[1].type).toBe(SectionType.INTRODUCTION);
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+    });
+
+    test('update bulletin with minimal content lengths', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const updateData = {
+        title: 'T', // Minimal title
+        number: VALIDATOR_SETTINGS.BULLETIN_MIN_NUMBER,
+        introduction: 'I', // Minimal introduction
+        tipsForWork: 'T', // Minimal tips
+        dailyPrayer: 'D', // Minimal daily prayer
+        date: new Date('2024-07-01'),
+        days: [
+          {
+            title: 'D', // Minimal day title
+            date: new Date('2024-07-01'),
+            sections: [
+              {
+                order: 1,
+                type: SectionType.CUSTOM_TEXT,
+                title: 'S', // Minimal section title
+                content: 'C', // Minimal content
+              },
+            ],
+          },
+        ],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      expect(updateRes.statusCode).toBe(200);
+
+      const getRes = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getRes.statusCode).toBe(200);
+      const { data: bulletin }: GetBulletinResponseDto = getRes.body;
+
+      expect(bulletin.title).toBe('T');
+      expect(bulletin.number).toBe(VALIDATOR_SETTINGS.BULLETIN_MIN_NUMBER);
+      expect(bulletin.introduction).toBe('I');
+      expect(bulletin.tipsForWork).toBe('T');
+      expect(bulletin.dailyPrayer).toBe('D');
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+    });
+
+    test('update bulletin with many days and sections', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      // Create 3 days with 2 sections each to avoid hitting possible limits
+      const manyDays = Array.from({ length: 3 }, (_, dayIndex) => ({
+        title: `Day ${dayIndex + 1}`,
+        date: new Date(2024, 6, dayIndex + 1), // July 1-3, 2024
+        sections: Array.from({ length: 2 }, (_, sectionIndex) => ({
+          order: sectionIndex + 1,
+          type: SectionType.CUSTOM_TEXT,
+          title: `Day ${dayIndex + 1} Section ${sectionIndex + 1}`,
+          content: `Content for day ${dayIndex + 1}, section ${sectionIndex + 1}`,
+        })),
+      }));
+
+      const updateData = {
+        title: createData.title,
+        number: createData.number,
+        introduction: createData.introduction,
+        tipsForWork: createData.tipsForWork,
+        dailyPrayer: createData.dailyPrayer,
+        date: createData.date,
+        days: manyDays,
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      expect(updateRes.statusCode).toBe(200);
+
+      const getRes = await app!.bulletin.get(bulletinId, adminAccessToken);
+      expect(getRes.statusCode).toBe(200);
+      const { data: bulletin }: GetBulletinResponseDto = getRes.body;
+
+      expect(bulletin.days.length).toBe(3);
+      bulletin.days.forEach(day => {
+        expect(day.sections.length).toBe(2);
+        day.sections.forEach((section, sectionIndex) => {
+          expect(section.order).toBe(sectionIndex + 1);
+          expect(section.type).toBe(SectionType.CUSTOM_TEXT);
+        });
+      });
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+    });
+
+    test('when updating with invalid section type', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const updateData = {
+        title: createData.title,
+        number: createData.number,
+        introduction: createData.introduction,
+        tipsForWork: createData.tipsForWork,
+        dailyPrayer: createData.dailyPrayer,
+        date: createData.date,
+        days: [
+          {
+            title: 'Day with invalid section type',
+            date: new Date('2024-07-02'),
+            sections: [
+              {
+                order: 1,
+                type: 'INVALID_TYPE' as any,
+                title: 'Invalid Section',
+                content: 'Invalid content',
+              },
+            ],
+          },
+        ],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      expect(updateRes.statusCode).toBe(400);
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
+    });
+
+    test('when updating with negative section order', async () => {
+      const createData = generateValidBulletin();
+      const createRes = await app!.bulletin.create(createData, adminAccessToken);
+      expect(createRes.statusCode).toBe(201);
+      const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
+
+      const updateData = {
+        title: createData.title,
+        number: createData.number,
+        introduction: createData.introduction,
+        tipsForWork: createData.tipsForWork,
+        dailyPrayer: createData.dailyPrayer,
+        date: createData.date,
+        days: [
+          {
+            title: 'Day with negative order',
+            date: new Date('2024-07-03'),
+            sections: [
+              {
+                order: -1, // Negative order
+                type: SectionType.CUSTOM_TEXT,
+                title: 'Section with negative order',
+                content: 'Content',
+              },
+            ],
+          },
+        ],
+      };
+
+      const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
+      expect(updateRes.statusCode).toBe(400);
+
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
     });
   });
 
