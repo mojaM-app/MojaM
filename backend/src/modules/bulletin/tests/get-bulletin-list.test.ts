@@ -8,6 +8,7 @@ import { generateValidBulletin } from './test.helpers';
 import { TestApp } from '../../../helpers/test-helpers/test.app';
 import { CreateBulletinResponseDto } from '../dtos/create-bulletin.dto';
 import { GetBulletinListResponseDto } from '../dtos/get-bulletin-list.dto';
+import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 
 describe('GET /bulletins', () => {
   let app: TestApp | undefined;
@@ -64,6 +65,23 @@ describe('GET /bulletins', () => {
 
       await app!.bulletin.delete(bulletinId1, adminAccessToken);
       await app!.bulletin.delete(bulletinId2, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinListRetrieved,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(2);
+      expect(testEventHandlers.onBulletinListRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(2);
     });
 
     test('get bulletin list with custom pagination', async () => {

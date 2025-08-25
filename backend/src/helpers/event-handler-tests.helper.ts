@@ -19,6 +19,7 @@ import {
 import {
   BulletinCreatedEvent,
   BulletinDeletedEvent,
+  BulletinListRetrievedEvent,
   BulletinPublishedEvent,
   BulletinRetrievedEvent,
   BulletinUpdatedEvent,
@@ -75,6 +76,7 @@ export const testEventHandlers: {
   onCommunityRetrieved: (data: any) => void;
   onNewsRetrieved: (data: any) => void;
   onBulletinCreated: (data: any) => void;
+  onBulletinListRetrieved: (data: any) => void;
   onBulletinRetrieved: (data: any) => void;
   onBulletinUpdated: (data: any) => void;
   onBulletinDeleted: (data: any) => void;
@@ -112,6 +114,7 @@ export const testEventHandlers: {
   onCommunityRetrieved: jest.fn((_: CommunityRetrievedEvent) => {}),
   onNewsRetrieved: jest.fn((_: NewsRetrievedEvent) => {}),
   onBulletinCreated: jest.fn((_: BulletinCreatedEvent) => {}),
+  onBulletinListRetrieved: jest.fn((_: BulletinListRetrievedEvent) => {}),
   onBulletinRetrieved: jest.fn((_: BulletinRetrievedEvent) => {}),
   onBulletinUpdated: jest.fn((_: BulletinUpdatedEvent) => {}),
   onBulletinDeleted: jest.fn((_: BulletinDeletedEvent) => {}),

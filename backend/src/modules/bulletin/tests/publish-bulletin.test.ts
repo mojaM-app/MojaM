@@ -11,6 +11,7 @@ import { CreateBulletinResponseDto } from '../dtos/create-bulletin.dto';
 import { GetBulletinResponseDto } from '../dtos/get-bulletin.dto';
 import { PublishBulletinResponseDto } from '../dtos/publish-bulletin.dto';
 import { BulletinState } from '../enums/bulletin-state.enum';
+import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 
 describe('POST /bulletins/:id/publish', () => {
   let app: TestApp | undefined;
@@ -63,6 +64,25 @@ describe('POST /bulletins/:id/publish', () => {
       expect(bulletinAfter.publishedBy!.length).toBeGreaterThan(0);
 
       await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinRetrieved,
+              testEventHandlers.onBulletinPublished,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinRetrieved).toHaveBeenCalledTimes(2);
+      expect(testEventHandlers.onBulletinPublished).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
     });
 
     test('republish already published bulletin should succeed', async () => {

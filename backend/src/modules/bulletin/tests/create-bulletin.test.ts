@@ -11,6 +11,7 @@ import { TestApp } from '../../../helpers/test-helpers/test.app';
 import { CreateBulletinResponseDto } from '../dtos/create-bulletin.dto';
 import { GetBulletinResponseDto } from '../dtos/get-bulletin.dto';
 import { BulletinState } from '../enums/bulletin-state.enum';
+import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 
 describe('POST /bulletins', () => {
   let app: TestApp | undefined;
@@ -95,7 +96,22 @@ describe('POST /bulletins', () => {
 
       await app!.bulletin.delete(bulletinId, adminAccessToken);
 
-      // Bulletin event handler test would go here when implemented
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinRetrieved,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
     });
 
     test('create bulletin with no days', async () => {
@@ -143,7 +159,22 @@ describe('POST /bulletins', () => {
 
       await app!.bulletin.delete(bulletinId, adminAccessToken);
 
-      // Bulletin event handler test would go here when implemented
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinRetrieved,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -158,6 +189,11 @@ describe('POST /bulletins', () => {
       const data = createBulletinResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
       expect(errors.filter(x => x !== errorKeys.bulletin.Title_Too_Long).length).toBe(0);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
     });
 
     test('when title is not a string', async () => {
@@ -169,6 +205,11 @@ describe('POST /bulletins', () => {
       const data = createBulletinResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
       expect(errors.filter(x => x === errorKeys.bulletin.Title_Must_Be_A_String).length).toBe(1);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
     });
 
     test('when title is empty', async () => {

@@ -16,6 +16,7 @@ import {
 import { GetBulletinResponseDto } from '../dtos/get-bulletin.dto';
 import { UpdateBulletinDayDto, UpdateBulletinDaySectionDto, UpdateBulletinDto } from '../dtos/update-bulletin.dto';
 import { SectionType } from '../enums/bulletin-section-type.enum';
+import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 
 describe('PUT /bulletins/:id', () => {
   let app: TestApp | undefined;
@@ -63,6 +64,25 @@ describe('PUT /bulletins/:id', () => {
       expect(bulletin.days.length).toBeGreaterThanOrEqual(0);
 
       await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinUpdated,
+              testEventHandlers.onBulletinRetrieved,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinUpdated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
     });
 
     test('update bulletin with days and sections', async () => {
@@ -125,6 +145,25 @@ describe('PUT /bulletins/:id', () => {
       expect(section1.content).toBe(updateData.days[0].sections[0].content);
 
       await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinUpdated,
+              testEventHandlers.onBulletinRetrieved,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinUpdated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
     });
 
     test('update bulletin with null title and number', async () => {
@@ -323,6 +362,21 @@ describe('PUT /bulletins/:id', () => {
       }
 
       await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
     });
 
     test('when bulletin Id looks like a valid guid but it is not', async () => {

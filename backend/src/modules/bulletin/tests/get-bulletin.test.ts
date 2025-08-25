@@ -9,6 +9,7 @@ import { generateValidBulletin } from './test.helpers';
 import { TestApp } from '../../../helpers/test-helpers/test.app';
 import { CreateBulletinResponseDto } from '../dtos/create-bulletin.dto';
 import { GetBulletinResponseDto } from '../dtos/get-bulletin.dto';
+import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 
 describe('GET /bulletins/:id', () => {
   let app: TestApp | undefined;
@@ -83,6 +84,23 @@ describe('GET /bulletins/:id', () => {
       });
 
       await app!.bulletin.delete(bulletinId, adminAccessToken);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinRetrieved,
+              testEventHandlers.onBulletinDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinRetrieved).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -97,6 +115,11 @@ describe('GET /bulletins/:id', () => {
       const data = body.data as BadRequestException;
       const { message } = data;
       expect(message).toBe(errorKeys.bulletin.Bulletin_Does_Not_Exist);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
+        expect(eventHandler).not.toHaveBeenCalled();
+      });
     });
   });
 
