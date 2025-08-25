@@ -2,7 +2,6 @@ import { DataSource, DataSourceOptions, Repository } from 'typeorm';
 import { AnnouncementItem } from './entities/announcements/announcement-item.entity';
 import { Announcement } from './entities/announcements/announcement.entity';
 import { vAnnouncement } from './entities/announcements/vAnnouncement.entity';
-import { BulletinDay } from './entities/bulletin/bulletin-day.entity';
 import { Bulletin } from './entities/bulletin/bulletin.entity';
 import { vBulletin } from './entities/bulletin/vBulletin.entity';
 import { Log } from './entities/logs/log.entity';
@@ -53,13 +52,8 @@ export class DbContext extends DataSource {
     return this.getRepository(vBulletin);
   }
 
-  // Bulletin repositories
   public get bulletins(): Repository<Bulletin> {
     return this.getRepository(Bulletin);
-  }
-
-  public get bulletinDays(): Repository<BulletinDay> {
-    return this.getRepository(BulletinDay);
   }
 
   constructor(options: DataSourceOptions) {
