@@ -4,8 +4,8 @@ export interface IAnnouncementsGridItemColumns {
   validFromDate?: Date;
   state: number;
   createdAt: Date;
-  createdBy?: string | null;
-  updatedAt?: Date;
+  createdBy: string | null;
+  updatedAt: Date;
   publishedAt?: Date;
   publishedBy?: string | null;
   itemsCount: number;

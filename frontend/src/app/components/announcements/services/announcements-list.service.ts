@@ -43,7 +43,7 @@ export class AnnouncementsListService extends BaseService {
             resp.items.forEach((item: IAnnouncementsGridItemDto) => {
               item.validFromDate = this.toDateTime(item.validFromDate);
               item.createdAt = this.toDateTime(item.createdAt)!;
-              item.updatedAt = this.toDateTime(item.updatedAt);
+              item.updatedAt = this.toDateTime(item.updatedAt)!;
               item.publishedAt = this.toDateTime(item.publishedAt);
               item.itemsCount = parseInt(item.itemsCount as any);
             });

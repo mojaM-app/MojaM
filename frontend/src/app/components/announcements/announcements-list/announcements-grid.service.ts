@@ -81,21 +81,15 @@ export class AnnouncementsGridService
           this._translationService.get(`Announcements/State/${value}`),
       },
       {
-        propertyName: AnnouncementsListColumns.createdAt,
+        propertyName: AnnouncementsListColumns.updatedAt,
         title: this._translationService.get('Announcements/List/GridColumns/CreatedAt'),
         type: ColumnType.DateTime,
         mediaMinWidth: 400,
       },
       {
-        propertyName: AnnouncementsListColumns.createdBy!,
+        propertyName: AnnouncementsListColumns.createdBy,
         title: this._translationService.get('Announcements/List/GridColumns/CreatedBy'),
         mediaMinWidth: 900,
-      },
-      {
-        propertyName: AnnouncementsListColumns.updatedAt!,
-        title: this._translationService.get('Announcements/List/GridColumns/UpdatedAt'),
-        type: ColumnType.DateTime,
-        mediaMinWidth: 1000,
       },
       {
         propertyName: AnnouncementsListColumns.publishedAt!,
