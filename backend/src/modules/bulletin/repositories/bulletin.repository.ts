@@ -172,7 +172,7 @@ export class BulletinRepository extends BaseBulletinRepository {
         });
       }
 
-      const updateBulletinModel = this.getUpdateBulletinModel(bulletin!, reqDto);
+      const updateBulletinModel = bulletin!.getUpdateModel(reqDto);
 
       if (updateBulletinModel !== null) {
         try {
@@ -246,20 +246,10 @@ export class BulletinRepository extends BaseBulletinRepository {
             processedDayIds.add(existingDay.uuid);
 
             // Update existing day if needed
-            const dayUpdateData: any = {};
-            let shouldUpdateDay = false;
+            const dayUpdateData = existingDay.getUpdateModel(dayDto.title, dayDto.date);
 
-            if ((existingDay.title ?? null) !== (dayDto.title ?? null)) {
-              dayUpdateData.title = dayDto.title;
-              shouldUpdateDay = true;
-            }
-            if ((existingDay.date ?? null) !== (dayDto.date ?? null)) {
-              dayUpdateData.date = dayDto.date;
-              shouldUpdateDay = true;
-            }
-
-            if (shouldUpdateDay) {
-              dayUpdateData.updatedBy = { id: userId } satisfies IUserId;
+            if (dayUpdateData) {
+              (dayUpdateData as any).updatedBy = { id: userId } satisfies IUserId;
               try {
                 await bulletinDaysRepository.update(
                   { id: existingDay.id } satisfies FindOptionsWhere<BulletinDay>,
@@ -302,24 +292,14 @@ export class BulletinRepository extends BaseBulletinRepository {
                   } else {
                     processedSectionIds.add(existingSection.uuid);
 
-                    const sectionUpdateData: any = {};
-                    let shouldUpdateSection = false;
+                    const sectionUpdateData = existingSection.getUpdateModel(
+                      sectionDto.content,
+                      sectionDto.title,
+                      order,
+                    );
 
-                    if (existingSection.content !== sectionDto.content) {
-                      sectionUpdateData.content = sectionDto.content;
-                      shouldUpdateSection = true;
-                    }
-                    if ((existingSection.title ?? null) !== (sectionDto.title ?? null)) {
-                      sectionUpdateData.title = sectionDto.title;
-                      shouldUpdateSection = true;
-                    }
-                    if (existingSection.order !== order) {
-                      sectionUpdateData.order = order;
-                      shouldUpdateSection = true;
-                    }
-
-                    if (shouldUpdateSection) {
-                      sectionUpdateData.updatedBy = { id: userId } satisfies IUserId;
+                    if (sectionUpdateData) {
+                      (sectionUpdateData as any).updatedBy = { id: userId } satisfies IUserId;
                       sectionsToUpdate.push({ id: existingSection.id, data: sectionUpdateData });
                     }
                   }
@@ -389,46 +369,6 @@ export class BulletinRepository extends BaseBulletinRepository {
 
       return true;
     });
-  }
-
-  private getUpdateBulletinModel(
-    bulletinFromDb: Bulletin,
-    dto: UpdateBulletinDto,
-  ): QueryDeepPartialEntity<Bulletin> | null {
-    const result: QueryDeepPartialEntity<Bulletin> = {};
-
-    let wasChanged = false;
-    if ((bulletinFromDb.title ?? null) !== (dto.title ?? null)) {
-      result.title = dto.title;
-      wasChanged = true;
-    }
-
-    if ((bulletinFromDb.date ?? null) !== (dto.date ?? null)) {
-      result.date = dto.date;
-      wasChanged = true;
-    }
-
-    if ((bulletinFromDb.number ?? null) !== (dto.number ?? null)) {
-      result.number = dto.number;
-      wasChanged = true;
-    }
-
-    if ((bulletinFromDb.introduction ?? null) !== (dto.introduction ?? null)) {
-      result.introduction = dto.introduction;
-      wasChanged = true;
-    }
-
-    if ((bulletinFromDb.tipsForWork ?? null) !== (dto.tipsForWork ?? null)) {
-      result.tipsForWork = dto.tipsForWork;
-      wasChanged = true;
-    }
-
-    if ((bulletinFromDb.dailyPrayer ?? null) !== (dto.dailyPrayer ?? null)) {
-      result.dailyPrayer = dto.dailyPrayer;
-      wasChanged = true;
-    }
-
-    return wasChanged ? result : null;
   }
 
   private validateUniqueBulletinDayDates(days: Array<{ date?: Date | null; id?: string }>): void {

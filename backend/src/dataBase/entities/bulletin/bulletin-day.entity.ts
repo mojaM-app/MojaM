@@ -118,4 +118,27 @@ export class BulletinDay implements IBulletinDayEntity, ICreateBulletinDay, IUpd
 
   @OneToMany(() => BulletinDaySection, (section: BulletinDaySection) => section.bulletinDay, { cascade: true })
   public sections!: Relation<BulletinDaySection[]>;
+
+  /**
+   * Gets the update model for the bulletin day
+   * @param title The new title
+   * @param date The new date
+   * @returns Update model if changes detected, null otherwise
+   */
+  public getUpdateModel(title?: string | null, date?: Date | null): Partial<BulletinDay> | null {
+    const result: Partial<BulletinDay> = {};
+    let wasChanged = false;
+
+    if ((this.title ?? null) !== (title ?? null)) {
+      result.title = title;
+      wasChanged = true;
+    }
+
+    if ((this.date ?? null) !== (date ?? null)) {
+      result.date = date;
+      wasChanged = true;
+    }
+
+    return wasChanged ? result : null;
+  }
 }

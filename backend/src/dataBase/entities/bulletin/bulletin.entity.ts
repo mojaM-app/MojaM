@@ -11,6 +11,7 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { BulletinState } from '../../../modules/bulletin/enums/bulletin-state.enum';
 import { EntityDefaultFunctions } from '../../EntityDefaultFunctions';
 import { EntityTransformFunctions } from '../../EntityTransformFunctions';
@@ -171,5 +172,54 @@ export class Bulletin implements IBulletinEntity, ICreateBulletin, IUpdateBullet
 
   public get isDraft(): boolean {
     return this.state === BulletinState.Draft;
+  }
+
+  /**
+   * Gets the update model for the bulletin
+   * @param updates The updates to apply
+   * @returns Update model if changes detected, null otherwise
+   */
+  public getUpdateModel(updates: {
+    title?: string | null;
+    date?: Date | null;
+    number?: number | null;
+    introduction?: string | null;
+    tipsForWork?: string | null;
+    dailyPrayer?: string | null;
+  }): QueryDeepPartialEntity<Bulletin> | null {
+    const result: QueryDeepPartialEntity<Bulletin> = {};
+    let wasChanged = false;
+
+    if ((this.title ?? null) !== (updates.title ?? null)) {
+      result.title = updates.title;
+      wasChanged = true;
+    }
+
+    if ((this.date ?? null) !== (updates.date ?? null)) {
+      result.date = updates.date;
+      wasChanged = true;
+    }
+
+    if ((this.number ?? null) !== (updates.number ?? null)) {
+      result.number = updates.number;
+      wasChanged = true;
+    }
+
+    if ((this.introduction ?? null) !== (updates.introduction ?? null)) {
+      result.introduction = updates.introduction;
+      wasChanged = true;
+    }
+
+    if ((this.tipsForWork ?? null) !== (updates.tipsForWork ?? null)) {
+      result.tipsForWork = updates.tipsForWork;
+      wasChanged = true;
+    }
+
+    if ((this.dailyPrayer ?? null) !== (updates.dailyPrayer ?? null)) {
+      result.dailyPrayer = updates.dailyPrayer;
+      wasChanged = true;
+    }
+
+    return wasChanged ? result : null;
   }
 }

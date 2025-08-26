@@ -134,4 +134,37 @@ export class BulletinDaySection
     default: EntityDefaultFunctions.defaultCurrentTimestampPrecision0,
   })
   public updatedAt!: Date;
+
+  /**
+   * Gets the update model for the bulletin day section
+   * @param content The new content
+   * @param title The new title
+   * @param order The new order
+   * @returns Update model if changes detected, null otherwise
+   */
+  public getUpdateModel(
+    content?: string | null,
+    title?: string | null,
+    order?: number,
+  ): Partial<BulletinDaySection> | null {
+    const result: Partial<BulletinDaySection> = {};
+    let hasChanges = false;
+
+    if (this.content !== content) {
+      result.content = content;
+      hasChanges = true;
+    }
+
+    if ((this.title ?? null) !== (title ?? null)) {
+      result.title = title;
+      hasChanges = true;
+    }
+
+    if (this.order !== order) {
+      result.order = order;
+      hasChanges = true;
+    }
+
+    return hasChanges ? result : null;
+  }
 }
