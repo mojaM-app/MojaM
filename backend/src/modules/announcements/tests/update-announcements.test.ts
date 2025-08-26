@@ -90,8 +90,6 @@ describe('PUT /announcements', () => {
       expect(announcementsAfterUpdate.updatedAt).toBeDefined();
       expect(isDateString(announcementsAfterUpdate.updatedAt)).toBe(true);
       expect(announcementsBeforeUpdate.createdAt).toBe(announcementsAfterUpdate.createdAt);
-      // expect(announcementsBeforeUpdate.updatedAt).not.toBe(announcementsAfterUpdate.updatedAt);
-      // expect(new Date(announcementsAfterUpdate.updatedAt).getTime()).toBeGreaterThan(new Date(announcementsBeforeUpdate.updatedAt).getTime());
       expect(announcementsAfterUpdate.title).toBe(announcementsBeforeUpdate.title);
       expect(announcementsAfterUpdate.state).toBe(AnnouncementStateValue.DRAFT);
       expect(announcementsAfterUpdate.publishedAt).toBeUndefined();
@@ -110,12 +108,8 @@ describe('PUT /announcements', () => {
       expect(announcementsAfterUpdate.items.every(item => item.updatedBy === undefined)).toBe(true);
       announcementsAfterUpdate.items.forEach((item, index) => {
         expect(updateAnnouncementsModel.items![index].content).toBe(item.content);
-        // expect(announcementsBeforeUpdate.items[index].content).not.toBe(item.content);
       });
-      // const lastItemId = announcementsBeforeUpdate.items[announcementsBeforeUpdate.items.length - 1].id;
-      // expect(announcementsAfterUpdate.items.every(item => item.id !== lastItemId)).toBe(true);
 
-      // cleanup
       const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
@@ -942,6 +936,62 @@ describe('PUT /announcements', () => {
       expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onAnnouncementsUpdated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onAnnouncementsRetrieved).toHaveBeenCalledTimes(2);
+      expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('when try to update published announcements without changing validFromDate', async () => {
+      const requestData = generateValidAnnouncements();
+      const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
+      expect(createAnnouncementsResponse.statusCode).toBe(201);
+      expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
+      const body = createAnnouncementsResponse.body;
+      expect(typeof body).toBe('object');
+      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
+      expect(announcementsId).toBeDefined();
+
+      const publishAnnouncementsResponse = await app!.announcements.publish(announcementsId, adminAccessToken);
+      expect(publishAnnouncementsResponse.statusCode).toBe(200);
+
+      const updateAnnouncementsModel: UpdateAnnouncementsDto = {
+        title: null,
+      };
+      expect(requestData.title).not.toBe(updateAnnouncementsModel.title);
+      const updateAnnouncementsResponse = await app!.announcements.update(
+        announcementsId,
+        updateAnnouncementsModel,
+        adminAccessToken,
+      );
+      expect(updateAnnouncementsResponse.statusCode).toBe(200);
+
+      const getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      expect(getAnnouncementsResponse.statusCode).toBe(200);
+      const { data: announcements }: GetAnnouncementsResponseDto = getAnnouncementsResponse.body;
+      expect(announcements.title).toBeUndefined();
+      expect(new Date(announcements.validFromDate!).toDateString()).toBe(requestData.validFromDate!.toDateString());
+
+      // cleanup
+      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      expect(deleteAnnouncementsResponse.statusCode).toBe(200);
+
+      // checking events running via eventDispatcher
+      Object.entries(testEventHandlers)
+        .filter(
+          ([, eventHandler]) =>
+            ![
+              testEventHandlers.onAnnouncementsCreated,
+              testEventHandlers.onAnnouncementsPublished,
+              testEventHandlers.onAnnouncementsUpdated,
+              testEventHandlers.onAnnouncementsRetrieved,
+              testEventHandlers.onAnnouncementsDeleted,
+            ].includes(eventHandler),
+        )
+        .forEach(([, eventHandler]) => {
+          expect(eventHandler).not.toHaveBeenCalled();
+        });
+      expect(testEventHandlers.onAnnouncementsCreated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onAnnouncementsPublished).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onAnnouncementsUpdated).toHaveBeenCalledTimes(1);
+      expect(testEventHandlers.onAnnouncementsRetrieved).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onAnnouncementsDeleted).toHaveBeenCalledTimes(1);
     });
   });

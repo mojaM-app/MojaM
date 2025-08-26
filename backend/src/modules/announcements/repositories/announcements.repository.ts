@@ -10,7 +10,7 @@ import { CreateAnnouncementsReqDto } from '../dtos/create-announcements.dto';
 import { DeleteAnnouncementsReqDto } from '../dtos/delete-announcements.dto';
 import { GetTopAnnouncementItemsReqDto, TopAnnouncementItemDto } from '../dtos/get-top-announcement-items.dto';
 import { PublishAnnouncementsReqDto } from '../dtos/publish-announcements.dto';
-import { UpdateAnnouncementsDto, UpdateAnnouncementsReqDto } from '../dtos/update-announcements.dto';
+import { UpdateAnnouncementsReqDto } from '../dtos/update-announcements.dto';
 import { AnnouncementStateValue } from '../enums/announcement-state.enum';
 import { Announcement } from './../../../dataBase/entities/announcements/announcement.entity';
 
@@ -100,16 +100,13 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
         });
       }
 
-      if (
-        announcements!.state === AnnouncementStateValue.PUBLISHED &&
-        isNullOrUndefined(reqDto.announcements.validFromDate)
-      ) {
+      if (!announcements!.canBeSavedWithoutValidFromDate(reqDto.announcements)) {
         throw new BadRequestException(
           errorKeys.announcements.Cannot_Save_Published_Announcements_Without_ValidFromDate,
         );
       }
 
-      const updateAnnouncementModel = this.getUpdateAnnouncementModel(announcements!, reqDto.announcements);
+      const updateAnnouncementModel = announcements!.getUpdateModel(reqDto.announcements);
 
       if (updateAnnouncementModel !== null) {
         await announcementsRepository.update(
@@ -144,15 +141,13 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
           } else {
             processedItemIds.add(existingItem.id);
 
-            if (existingItem.shouldBeUpdated(itemDto.content, order)) {
+            const updateModel = existingItem.getUpdateModel(itemDto, order);
+            if (updateModel) {
               itemsToUpdate.push({
+                ...updateModel,
                 id: existingItem.id,
-                content: itemDto.content,
-                order,
-                updatedBy: {
-                  id: reqDto.currentUserId!,
-                } satisfies IUserId,
-              } satisfies IUpdateAnnouncementItem);
+                updatedBy: { id: reqDto.currentUserId! } satisfies IUserId,
+              } as IUpdateAnnouncementItem);
             }
           }
         });
@@ -233,6 +228,10 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
   */
 
   public async publish(announcements: Announcement, reqDto: PublishAnnouncementsReqDto): Promise<boolean> {
+    if (!announcements.canBePublished()) {
+      throw new BadRequestException(errorKeys.announcements.Announcements_Without_ValidFromDate_Can_Not_Be_Published);
+    }
+
     return await this._dbContext.transaction(async transactionalEntityManager => {
       const announcementsRepository = transactionalEntityManager.getRepository(Announcement);
 
@@ -295,25 +294,5 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
           count: toNumber(row.count)!,
         }) satisfies TopAnnouncementItemDto,
     );
-  }
-
-  private getUpdateAnnouncementModel(
-    announcementFromDb: Announcement,
-    dto: UpdateAnnouncementsDto,
-  ): QueryDeepPartialEntity<Announcement> | null {
-    const result: QueryDeepPartialEntity<Announcement> = {};
-
-    let wasChanged = false;
-    if ((announcementFromDb.title ?? null) !== (dto.title ?? null)) {
-      result.title = dto.title;
-      wasChanged = true;
-    }
-
-    if ((announcementFromDb.validFromDate ?? null) !== (dto.validFromDate ?? null)) {
-      result.validFromDate = dto.validFromDate;
-      wasChanged = true;
-    }
-
-    return wasChanged ? result : null;
   }
 }

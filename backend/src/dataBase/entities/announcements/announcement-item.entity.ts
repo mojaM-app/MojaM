@@ -97,7 +97,23 @@ export class AnnouncementItem implements ICreateAnnouncementItem, IUpdateAnnounc
   })
   public announcement: Relation<Announcement>;
 
-  public shouldBeUpdated(content: string, order: number): boolean {
-    return (this.content ?? null) !== (content ?? null) || (this.order ?? null) !== (order ?? null);
+  public getUpdateModel(
+    dto: Partial<Pick<AnnouncementItem, 'content'>>,
+    order: number,
+  ): Partial<AnnouncementItem> | null {
+    const result: Partial<AnnouncementItem> = {};
+    let wasChanged = false;
+
+    if ((this.content ?? null) !== (dto.content ?? null)) {
+      result.content = dto.content;
+      wasChanged = true;
+    }
+
+    if ((this.order ?? 0) !== (order ?? 0)) {
+      result.order = order;
+      wasChanged = true;
+    }
+
+    return wasChanged ? result : null;
   }
 }
