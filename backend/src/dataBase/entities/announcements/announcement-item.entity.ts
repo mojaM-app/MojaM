@@ -100,8 +100,8 @@ export class AnnouncementItem implements ICreateAnnouncementItem, IUpdateAnnounc
   public getUpdateModel(
     dto: Partial<Pick<AnnouncementItem, 'content'>>,
     order: number,
-  ): Partial<AnnouncementItem> | null {
-    const result: Partial<AnnouncementItem> = {};
+  ): Partial<IUpdateAnnouncementItem> | null {
+    const result: Partial<IUpdateAnnouncementItem> = {};
     let wasChanged = false;
 
     if ((this.content ?? null) !== (dto.content ?? null)) {

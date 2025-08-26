@@ -21,6 +21,6 @@ export interface IUpdateBulletinDaySection {
   updatedBy?: IUserId;
   title?: string | null;
   content?: string | null;
-  order: number;
+  order?: number;
   type?: string;
 }

@@ -9,8 +9,7 @@ export interface ICreateAnnouncementItem {
 }
 
 export interface IUpdateAnnouncementItem {
-  id: string;
-  content: string;
+  content?: string;
   updatedBy?: IUserId;
-  order: number;
+  order?: number;
 }

@@ -1,5 +1,8 @@
 import { ICreateBulletin, ICreateBulletinDay, IUserId } from '@core';
-import { ICreateBulletinDaySection } from '@core/interfaces/bulletin/bulletin-day-section.interfaces';
+import {
+  ICreateBulletinDaySection,
+  IUpdateBulletinDaySection,
+} from '@core/interfaces/bulletin/bulletin-day-section.interfaces';
 import { BadRequestException, errorKeys } from '@exceptions';
 import { isDate, isNullOrUndefined, isPositiveNumber } from '@utils';
 import { Service } from 'typedi';
@@ -249,7 +252,10 @@ export class BulletinRepository extends BaseBulletinRepository {
             const dayUpdateData = existingDay.getUpdateModel(dayDto.title, dayDto.date);
 
             if (dayUpdateData) {
-              (dayUpdateData as any).updatedBy = { id: userId } satisfies IUserId;
+              dayUpdateData.updatedBy = {
+                id: userId,
+              } satisfies IUserId;
+
               try {
                 await bulletinDaysRepository.update(
                   { id: existingDay.id } satisfies FindOptionsWhere<BulletinDay>,
@@ -270,7 +276,7 @@ export class BulletinRepository extends BaseBulletinRepository {
               const existingSections = existingDay.sections || [];
               const existingSectionsMap = new Map(existingSections.map(section => [section.uuid, section]));
               const sectionsToCreate: ICreateBulletinDaySection[] = [];
-              const sectionsToUpdate: any[] = [];
+              const sectionsToUpdate: { id: number; updateModel: IUpdateBulletinDaySection }[] = [];
               const sectionIdsToDelete: number[] = [];
               const processedSectionIds = new Set<string>();
 
@@ -299,8 +305,10 @@ export class BulletinRepository extends BaseBulletinRepository {
                     );
 
                     if (sectionUpdateData) {
-                      (sectionUpdateData as any).updatedBy = { id: userId } satisfies IUserId;
-                      sectionsToUpdate.push({ id: existingSection.id, data: sectionUpdateData });
+                      sectionUpdateData.updatedBy = {
+                        id: userId,
+                      } satisfies IUserId;
+                      sectionsToUpdate.push({ id: existingSection.id, updateModel: sectionUpdateData });
                     }
                   }
                 });
@@ -320,7 +328,7 @@ export class BulletinRepository extends BaseBulletinRepository {
               for (const update of sectionsToUpdate) {
                 await bulletinDaySectionsRepository.update(
                   { id: update.id } satisfies FindOptionsWhere<BulletinDaySection>,
-                  update.data,
+                  update.updateModel,
                 );
               }
 

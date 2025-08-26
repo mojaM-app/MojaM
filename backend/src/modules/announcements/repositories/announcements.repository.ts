@@ -123,7 +123,7 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
         const existingItems = announcements!.items || [];
         const existingItemsMap = new Map(existingItems.map(item => [item.id, item]));
         const itemsToCreate: ICreateAnnouncementItem[] = [];
-        const itemsToUpdate: IUpdateAnnouncementItem[] = [];
+        const itemsToUpdate: { id: string; updateModel: IUpdateAnnouncementItem }[] = [];
         const itemIdsToDelete: string[] = [];
         const processedItemIds = new Set<string>();
 
@@ -141,13 +141,15 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
           } else {
             processedItemIds.add(existingItem.id);
 
-            const updateModel = existingItem.getUpdateModel(itemDto, order);
-            if (updateModel) {
-              itemsToUpdate.push({
-                ...updateModel,
-                id: existingItem.id,
-                updatedBy: { id: reqDto.currentUserId! } satisfies IUserId,
-              } as IUpdateAnnouncementItem);
+            let itemUpdateModel = existingItem.getUpdateModel(itemDto, order);
+            if (itemUpdateModel) {
+              itemUpdateModel = {
+                ...itemUpdateModel,
+                updatedBy: {
+                  id: reqDto.currentUserId!,
+                } satisfies IUserId,
+              } satisfies IUpdateAnnouncementItem;
+              itemsToUpdate.push({ id: existingItem.id, updateModel: itemUpdateModel });
             }
           }
         });
@@ -169,9 +171,9 @@ export class AnnouncementsRepository extends BaseAnnouncementsRepository {
                 id: item.id,
               } satisfies FindOptionsWhere<AnnouncementItem>,
               {
-                content: item.content,
-                updatedBy: item.updatedBy,
-                order: item.order,
+                content: item.updateModel.content,
+                updatedBy: item.updateModel.updatedBy,
+                order: item.updateModel.order,
               } satisfies QueryDeepPartialEntity<AnnouncementItem>,
             ),
           );

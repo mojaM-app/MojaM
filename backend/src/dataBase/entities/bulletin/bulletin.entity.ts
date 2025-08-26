@@ -186,8 +186,8 @@ export class Bulletin implements IBulletinEntity, ICreateBulletin, IUpdateBullet
     introduction?: string | null;
     tipsForWork?: string | null;
     dailyPrayer?: string | null;
-  }): QueryDeepPartialEntity<Bulletin> | null {
-    const result: QueryDeepPartialEntity<Bulletin> = {};
+  }): QueryDeepPartialEntity<IUpdateBulletin> | null {
+    const result: QueryDeepPartialEntity<IUpdateBulletin> = {};
     let wasChanged = false;
 
     if ((this.title ?? null) !== (updates.title ?? null)) {

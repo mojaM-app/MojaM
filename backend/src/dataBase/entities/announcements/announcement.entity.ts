@@ -128,8 +128,10 @@ export class Announcement implements IAnnouncementEntity, ICreateAnnouncement, I
    * @param dto The updates to apply
    * @returns Update model if changes detected, null otherwise
    */
-  public getUpdateModel(dto: Partial<Pick<Announcement, 'title' | 'validFromDate'>>): Partial<Announcement> | null {
-    const result: Partial<Announcement> = {};
+  public getUpdateModel(
+    dto: Partial<Pick<Announcement, 'title' | 'validFromDate'>>,
+  ): Partial<IUpdateAnnouncement> | null {
+    const result: Partial<IUpdateAnnouncement> = {};
     let wasChanged = false;
 
     if ((this.title ?? null) !== (dto.title ?? null)) {
