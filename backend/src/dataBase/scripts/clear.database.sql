@@ -1,12 +1,14 @@
 DROP VIEW IF EXISTS
-vusers,
+vbulletins,
 vannouncements,
-vlogs;
+vlogs,
+vusers;
 
 DROP VIEW IF EXISTS
-vUsers,
+vBulletins,
 vAnnouncements,
-vLogs;
+vLogs,
+vUsers;
 
 DROP TABLE IF EXISTS
 logs,

@@ -116,6 +116,13 @@ export class BulletinDay implements IBulletinDayEntity, ICreateBulletinDay, IUpd
   })
   public updatedAt!: Date;
 
+  @Column({
+    name: 'Settings',
+    type: 'json',
+    nullable: true,
+  })
+  public settings: Record<string, any> | null;
+
   @OneToMany(() => BulletinDaySection, (section: BulletinDaySection) => section.bulletinDay, { cascade: true })
   public sections!: Relation<BulletinDaySection[]>;
 
@@ -125,8 +132,8 @@ export class BulletinDay implements IBulletinDayEntity, ICreateBulletinDay, IUpd
    * @param date The new date
    * @returns Update model if changes detected, null otherwise
    */
-  public getUpdateModel(title?: string | null, date?: Date | null): Partial<BulletinDay> | null {
-    const result: Partial<BulletinDay> = {};
+  public getUpdateModel(title?: string | null, date?: Date | null): Partial<IUpdateBulletinDay> | null {
+    const result: Partial<IUpdateBulletinDay> = {};
     let wasChanged = false;
 
     if ((this.title ?? null) !== (title ?? null)) {

@@ -135,6 +135,13 @@ export class BulletinDaySection
   })
   public updatedAt!: Date;
 
+  @Column({
+    name: 'Settings',
+    type: 'json',
+    nullable: true,
+  })
+  public settings: Record<string, any> | null;
+
   /**
    * Gets the update model for the bulletin day section
    * @param content The new content
@@ -146,8 +153,8 @@ export class BulletinDaySection
     content?: string | null,
     title?: string | null,
     order?: number,
-  ): Partial<BulletinDaySection> | null {
-    const result: Partial<BulletinDaySection> = {};
+  ): Partial<IUpdateBulletinDaySection> | null {
+    const result: Partial<IUpdateBulletinDaySection> = {};
     let hasChanges = false;
 
     if (this.content !== content) {
