@@ -14,11 +14,14 @@
             <div class="mat-mdc-form-field-flex">
               <div class="mat-mdc-form-field-infix">
                 <label
+                  for="content"
                   class="mdc-floating-label mat-mdc-floating-label mdc-floating-label--float-above"
                   >{{ 'Bulletin/Form/TabBulletinDay/Section/Content' | gmessage }}</label
                 >
                 <p></p>
-                <app-wysiwyg-preview [content]="sectionContent()"></app-wysiwyg-preview>
+                <app-wysiwyg-preview
+                  name="content"
+                  [content]="sectionContent()"></app-wysiwyg-preview>
               </div>
             </div>
           </div>
