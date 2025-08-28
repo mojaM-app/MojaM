@@ -4,6 +4,8 @@ import { BaseService } from 'src/services/common/base.service';
 import { HttpClientService } from 'src/services/common/httpClient.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
 import { ICommunity } from '../interfaces/community.interfaces';
+import { map } from 'rxjs';
+import { UrlUtils } from 'src/utils/url.utils';
 
 @Injectable({
   providedIn: 'root',
@@ -21,6 +23,17 @@ export class CommunityService extends BaseService {
       .request()
       .withUrl(this.API_ROUTES.community.get())
       .get<ICommunity>()
-      .pipe(this._spinnerService.waitForSubscription());
+      .pipe(
+        map((response: ICommunity) => {
+          return {
+            ...(response ?? {}),
+            info: {
+              ...(response?.info ?? {}),
+              getMapsAddress: () => UrlUtils.getMapsAddress(response?.info?.address),
+            },
+          };
+        }),
+        this._spinnerService.waitForSubscription()
+      );
   }
 }

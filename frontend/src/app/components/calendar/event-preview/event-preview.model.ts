@@ -1,6 +1,7 @@
 import { CalendarEvent } from 'src/app/components/calendar/interfaces/calendar-event';
 import { CultureService } from 'src/services/translate/culture.service';
 import { TranslationService } from 'src/services/translate/translation.service';
+import { UrlUtils } from 'src/utils/url.utils';
 
 export class EventPreviewModel {
   public readonly title?: string;
@@ -51,23 +52,9 @@ export class EventPreviewModel {
 
     if ((event.location?.length ?? 0) > 0) {
       result += '<br/>' + translationService.get('Shared/Location') + ': ';
-      result += `<a href="${this.getMapsAddress(event.location!)}" target="_blank">${event.location}</a>`;
+      result += `<a href="${UrlUtils.getMapsAddress(event.location!)}" target="_blank" rel="noopener noreferrer">${event.location}</a>`;
     }
 
     return result;
-  }
-
-  private getMapsAddress(location: string): string {
-    //depends on device
-    // For iOS devices
-    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-      return `comgooglemaps://?daddr=${location}`;
-    }
-    // For Android devices
-    else if (/Android/.test(navigator.userAgent)) {
-      return `comgooglemaps://?daddr=${location}`;
-    }
-    // For other devices
-    return `http://maps.google.com/?daddr=${location}`;
   }
 }

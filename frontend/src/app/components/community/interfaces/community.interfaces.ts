@@ -4,6 +4,7 @@ export interface ICommunityInfo {
   webPage?: string;
   phone?: string;
   address?: string;
+  getMapsAddress(): string;
 }
 
 export interface ITab {
