@@ -132,7 +132,7 @@
     },
     "Form": {
       "ValidFrom": "Ważne od",
-      "ValidFromPlaceholder": "Wprowadź datę",
+      "ValidFromPlaceholder": "Wprowadź datę (dd.mm.rrrr)",
       "ValidFromHint": "Data od której ogłoszenia będą obowiązywać",
       "Announcements": "Ogłoszenia",
       "NoAnnouncements": "Brak ogłoszeń, kliknij poniższy przycisk \"Dodaj sekcję\".",
@@ -200,7 +200,7 @@
       "TabBulletinProperties": {
         "Label": "Właściwości",
         "Date": "Data utworzenia biuletynu",
-        "DatePlaceholder": "Wprowadź datę",
+        "DatePlaceholder": "Wprowadź datę (dd.mm.rrrr)",
         "DateHint": "Data utworzenia biuletynu widoczna w wersji PDF w nagłówku lewej kolumny",
         "DateRequiredError": "Data utworzenia biuletynu jest wymagana",
         "Number": "Numer biuletynu",
@@ -228,7 +228,7 @@
       "TabBulletinDay": {
         "EmptyDate": "Dzień {dayIndex}",
         "Date": "Data",
-        "DatePlaceholder": "Wprowadź datę",
+        "DatePlaceholder": "Wprowadź datę (dd.mm.rrrr)",
         "DateHint": "Dzień na który przeznaczone są teksty formacyjne",
         "DateRequiredError": "Data jest wymagana",
         "Title": "Tytuł dnia",
