@@ -23,6 +23,7 @@ import { PipesModule } from 'src/pipes/pipes.module';
 import { BrowserWindowSize } from 'src/services/browser/browser-window-size';
 import { BrowserWindowService } from 'src/services/browser/browser-window.service';
 import { SpinnerService } from 'src/services/spinner/spinner.service';
+import { SwUpdateService } from 'src/services/sw-update/sw-update.service';
 import { FontSizeService } from 'src/services/theme/font-size.service';
 import { ThemeService } from 'src/services/theme/theme.service';
 import { IS_MOBILE } from './app.config';
@@ -61,6 +62,7 @@ export class AppComponent extends WithUnsubscribe() implements OnInit {
     @Inject(IS_MOBILE) public isMobile: boolean,
     private _spinnerService: SpinnerService,
     private _browserService: BrowserWindowService,
+    private _swUpdateService: SwUpdateService,
     router: Router,
     activatedRoute: ActivatedRoute,
     themeService: ThemeService,
