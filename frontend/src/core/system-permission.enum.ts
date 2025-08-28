@@ -56,6 +56,14 @@ export class PermissionsTree {
         SystemPermissionValue.DeleteUser,
         SystemPermissionValue.UnlockUser,
       ],
+      BulletinAdministration: [
+        SystemPermissionValue.PreviewBulletinList,
+        SystemPermissionValue.AddBulletin,
+        SystemPermissionValue.EditBulletin,
+        SystemPermissionValue.DeleteBulletin,
+        SystemPermissionValue.PublishBulletin,
+        SystemPermissionValue.AnswerBulletinQuestion,
+      ],
       PermissionsAdministration: [
         SystemPermissionValue.AddPermission,
         SystemPermissionValue.DeletePermission,

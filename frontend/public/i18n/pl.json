@@ -529,7 +529,7 @@
   },
   "Permissions": {
     "AnnouncementsAdministration": {
-      "Title": "Uprawnienia do zarządzanie ogłoszeniami",
+      "Title": "Uprawnienia do zarządzania ogłoszeniami",
       "Description": "Zestaw uprawnień do podglądu, dodawania, edycji, usuwania i publikowania ogłoszeń.",
       "Permissions": {
         "PreviewAnnouncementsList": {
@@ -603,6 +603,40 @@
         "DeletePermission": {
           "Title": "Usuwanie uprawnień",
           "Description": "Uprawnienie do usuwania uprawnień daje dostęp do niniejszej listy uprawnień i pozwala na odbieranie dowolnych uprawnień innym użytkownikom. Użytkownik mający to uprawnienie może odbierać uprawnienia innym użytkownikom, ma również dostęp do lisy wszystkich użytkowników w formie \"imię nazwisko\" (lub email gdy imię i nazwisko nie jest podane)."
+        }
+      }
+    },
+    "AdvancedOptionsAdministration": {
+      "Title": "Zaawansowane opcje administracyjne",
+      "Description": "Zestaw opcji pozwalających na zaawansowane zarządzanie aplikacją."
+    },
+    "BulletinAdministration": {
+      "Title": "Uprawnienia do zarządzania biuletynami",
+      "Description": "Zestaw uprawnień do podglądu, dodawania, edycji, usuwania i publikowania biuletynów.",
+      "Permissions": {
+        "PreviewBulletinList": {
+          "Title": "Podgląd biuletynów",
+          "Description": "Uprawnienie pozwalające na wyświetlenie listy wszystkich biuletynów oraz pozwalające na podgląd każdego z nich. Użytkownik mający to uprawnienie uzyska dostęp do szczegółów biuletynu: kto i kiedy utworzył biuletyn oraz kto go opublikował. Jeżeli chcesz aby użytkownik miał możliwości dodawania, edycji, usuwania i publikowania biuletynów musi on mieć dostęp do podglądu listy biuletynów."
+        },
+        "AddBulletin": {
+          "Title": "Dodawanie biuletynów",
+          "Description": "Uprawnienie do dodawania biuletynów pozwala tylko i wyłącznie na dodanie nowych biuletynów."
+        },
+        "EditBulletin": {
+          "Title": "Edycja biuletynów",
+          "Description": "Uprawnienie do edycji biuletynów pozwala na edycję dowolnych biuletynów, nawet biuletynów dodanych przez innych użytkowników."
+        },
+        "DeleteBulletin": {
+          "Title": "Usuwanie biuletynów",
+          "Description": "Uprawnienie do usuwania biuletynów pozwala na usunięcie dowolnych biuletynów, nawet biuletynów dodanych przez innych użytkowników. Uprawnienie to pozwala również na usunięcie opublikowanych biuletynów."
+        },
+        "PublishBulletin": {
+          "Title": "Publikowanie biuletynów",
+          "Description": "Uprawnienie do publikowania biuletynów pozwala na opublikowanie dowolnych biuletynów. Tylko opublikowane biuletyny wyświetlane są wszystkim użytkownikom aplikacji."
+        },
+        "AnswerBulletinQuestion": {
+          "Title": "Odpowiadanie na pytania do biuletynu",
+          "Description": "Uprawnienie do odpowiadania na pytania dotyczące biuletynu."
         }
       }
     }
