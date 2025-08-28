@@ -1,5 +1,5 @@
 /* eslint-disable @angular-eslint/no-forward-ref */
-import { ChangeDetectionStrategy, Component, forwardRef, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, forwardRef, Inject, input } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IBulletinPropertiesForm } from '../bulletin.form';
 import { CommonModule } from '@angular/common';
@@ -16,6 +16,7 @@ import { IntroductionHelpDialogComponent } from '../help-dialogs/introduction-he
 import { TipsForWordHelpDialogComponent } from '../help-dialogs/tips-for-word-help-dialog/tips-for-word-help-dialog.component';
 import { DailyPrayerHelpDialogComponent } from '../help-dialogs/daily-prayer-help-dialog/daily-prayer-help-dialog.component';
 import { BaseTabBulletin } from '../base-tab-bulletin';
+import { IS_MOBILE } from 'src/app/app.config';
 
 @Component({
   selector: 'app-tab-bulletin-properties',
@@ -39,7 +40,10 @@ import { BaseTabBulletin } from '../base-tab-bulletin';
 export class TabBulletinPropertiesComponent extends BaseTabBulletin {
   public readonly formGroup = input.required<FormGroup<IBulletinPropertiesForm>>();
 
-  public constructor(private readonly _dialogService: DialogService) {
+  public constructor(
+    @Inject(IS_MOBILE) private _isMobile: boolean,
+    private readonly _dialogService: DialogService
+  ) {
     super();
   }
 
@@ -47,7 +51,7 @@ export class TabBulletinPropertiesComponent extends BaseTabBulletin {
     this._dialogService.openComponentDialog(
       IntroductionHelpDialogComponent,
       undefined,
-      this.helpDialogConfig
+      this.getDialogConfig(this._isMobile)
     );
   }
 
@@ -55,7 +59,7 @@ export class TabBulletinPropertiesComponent extends BaseTabBulletin {
     this._dialogService.openComponentDialog(
       TipsForWordHelpDialogComponent,
       undefined,
-      this.helpDialogConfig
+      this.getDialogConfig(this._isMobile)
     );
   }
 
@@ -63,7 +67,7 @@ export class TabBulletinPropertiesComponent extends BaseTabBulletin {
     this._dialogService.openComponentDialog(
       DailyPrayerHelpDialogComponent,
       undefined,
-      this.helpDialogConfig
+      this.getDialogConfig(this._isMobile)
     );
   }
 }
