@@ -26,9 +26,11 @@ rm -rf "$WORKING_DIR"/logs
 
 echo ">>>>>>>>>> Deleting all tests"
 rm -rf "$WORKING_DIR"/utils/tests-events.utils.js
-rm -rf "$WORKING_DIR"/utils/tests-events.utils.js.map
+rm -rf "$WORKING_DIR"/dataBase/test-helpers
+rm -rf "$WORKING_DIR"/helpers/test-helpers
 find "$WORKING_DIR" -name tests -exec rm -R "{}" \;
 find "$WORKING_DIR" -type f -name '*.spec.*' -delete
+find "$WORKING_DIR" -type f -name '*.test.*' -delete
 
 echo ">>>>>>>>>> Removing userTestHelpers from users module"
 USERS_INDEX_FILE="$WORKING_DIR/modules/users/index.js"
