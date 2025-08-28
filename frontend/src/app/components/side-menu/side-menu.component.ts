@@ -47,12 +47,12 @@ export class SideMenuComponent {
       route: CommunityMenu.Path,
       isVisible: (): boolean => true,
     },
-    {
-      name: NewsMenu.Label,
-      icon: NewsMenu.Icon,
-      route: NewsMenu.Path,
-      isVisible: (): boolean => true,
-    },
+    // {
+    //   name: NewsMenu.Label,
+    //   icon: NewsMenu.Icon,
+    //   route: NewsMenu.Path,
+    //   isVisible: (): boolean => true,
+    // },
     {
       name: AnnouncementsMenu.Label,
       icon: AnnouncementsMenu.Icon,
