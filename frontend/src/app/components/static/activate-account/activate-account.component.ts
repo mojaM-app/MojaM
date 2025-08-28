@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  effect,
   model,
   OnInit,
+  signal,
   WritableSignal,
 } from '@angular/core';
 import {
@@ -76,10 +76,10 @@ import { ActivateAccountService } from './services/activate-account.service';
 export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() implements OnInit {
   protected readonly maxLengths = VALIDATOR_SETTINGS;
   protected readonly AuthenticationTypes = AuthenticationTypes;
-  protected readonly user = model<IAccountToActivate>();
   protected readonly stepperOrientation: WritableSignal<StepperOrientation> =
     model<StepperOrientation>('horizontal');
   protected readonly selectedAuthenticationType = model<AuthenticationTypes | null>(null);
+  protected readonly user = signal<IAccountToActivate | null>(null);
 
   public constructor(
     formBuilder: FormBuilder,
@@ -203,32 +203,6 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
 
     super(form);
 
-    effect(() => {
-      const model = this.user();
-      if (model) {
-        this.formGroup.patchValue({
-          contact: {
-            email: model.email,
-            emailConfirmed: false,
-            phone: model.phone,
-            phoneConfirmed: false,
-          } satisfies { [K in keyof IContactFormGroup]: unknown },
-          personalInfo: {
-            firstName: model.firstName,
-            lastName: model.lastName,
-            joiningDate: model.joiningDate,
-          } satisfies { [K in keyof IPersonalInfoFormGroup]: unknown },
-          authentication: {
-            authenticationType: null,
-            password: null,
-            confirmPassword: null,
-            pin: null,
-            confirmPin: null,
-          } satisfies { [K in keyof IAuthenticationFormGroup]: unknown },
-        } satisfies { [K in keyof IActivateAccountForm]: unknown });
-      }
-    });
-
     this._browserWindowService.onResize$.subscribe(size => {
       this.stepperOrientation.set(size.width > 960 ? 'horizontal' : 'vertical');
     });
@@ -263,7 +237,7 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
         return;
       }
 
-      this.user.set(result);
+      this.setFormValues(result);
     });
   }
 
@@ -299,5 +273,32 @@ export class ActivateAccountComponent extends WithForm<IActivateAccountForm>() i
 
   private navigateToHomePage(): void {
     this._router.navigateByUrl(NewsMenu.Path);
+  }
+
+  private setFormValues(user: IAccountToActivate | null): void {
+    if (user) {
+      this.formGroup.patchValue({
+        contact: {
+          email: user.email,
+          emailConfirmed: false,
+          phone: user.phone,
+          phoneConfirmed: false,
+        } satisfies { [K in keyof IContactFormGroup]: unknown },
+        personalInfo: {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          joiningDate: user.joiningDate,
+        } satisfies { [K in keyof IPersonalInfoFormGroup]: unknown },
+        authentication: {
+          authenticationType: null,
+          password: null,
+          confirmPassword: null,
+          pin: null,
+          confirmPin: null,
+        } satisfies { [K in keyof IAuthenticationFormGroup]: unknown },
+      } satisfies { [K in keyof IActivateAccountForm]: unknown });
+    }
+
+    this.user.set(user);
   }
 }
