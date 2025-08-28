@@ -484,7 +484,7 @@
       "LastNamePlaceholder": "Wprowadź nazwisko",
       "LastNameHint": "Proszę podać nazwisko użytkownika. Maksymalnie {maxLength} znaków.",
       "JoiningDate": "Data dołączenia do wspólnoty",
-      "JoiningDatePlaceholder": "Wprowadź datę",
+      "JoiningDatePlaceholder": "Wprowadź datę (dd.mm.rrrr)",
       "JoiningDateHint": "Proszę podać datę dołączenia użytkownika do wspólnoty.",
       "UserSavedSuccessfully": "Zmiany zostały zapisane",
       "UserAddedSuccessfully": "Użytkownik został dodany"
