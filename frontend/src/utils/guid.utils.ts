@@ -6,12 +6,12 @@ export class GuidUtils {
    * @param value  value to check
    * @returns True if the value is a valid GUID and not empty GUID, otherwise false.
    */
-  public static isValidGuid(value: any): boolean {
+  public static isValidGuid(value: unknown): boolean {
     if (value === null || value === undefined || value === Guid.EMPTY) {
       return false;
     }
 
-    return Guid.isGuid(value) && !Guid.parse(value).isEmpty();
+    return Guid.isGuid(value) && !Guid.parse(value.toString()).isEmpty();
   }
 
   public static create(): string {

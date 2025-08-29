@@ -3,6 +3,7 @@ import { BaseReqDto, DtoTransformFunctions, events, type IResponse } from '@core
 import { errorKeys } from '@exceptions';
 import { Transform, Type } from 'class-transformer';
 import { IsArray, IsDate, IsNotEmpty, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
+import { SaveAnnouncementsResultDto } from './save-announcements-result.dto';
 
 export class CreateAnnouncementItemDto {
   @IsNotEmpty({ message: errorKeys.announcements.Item_Content_Is_Required })
@@ -44,11 +45,11 @@ export class CreateAnnouncementsReqDto extends BaseReqDto {
   }
 }
 
-export class CreateAnnouncementsResponseDto implements IResponse<string> {
-  public readonly data: string;
+export class CreateAnnouncementsResponseDto implements IResponse<SaveAnnouncementsResultDto | null> {
+  public readonly data: SaveAnnouncementsResultDto | null;
   public readonly message: string;
 
-  constructor(data: string) {
+  constructor(data: SaveAnnouncementsResultDto | null) {
     this.data = data;
     this.message = events.announcements.announcementsCreated;
   }

@@ -37,11 +37,11 @@ describe('PUT /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcementsId, message: createMessage }: CreateAnnouncementsResponseDto = body;
-      expect(announcementsId).toBeDefined();
+      const { data: saveAnnouncementsResult1, message: createMessage }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult1).toBeDefined();
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
-      let getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      let getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult1!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       body = getAnnouncementsResponse.body;
       const { data: announcementsBeforeUpdate }: GetAnnouncementsResponseDto = body;
@@ -61,7 +61,7 @@ describe('PUT /announcements', () => {
       expect(announcementsBeforeUpdate.items.length).toBeLessThan(updateAnnouncementsModel.items!.length);
 
       const updateAnnouncementsResponse = await app!.announcements.update(
-        announcementsId,
+        saveAnnouncementsResult1!.id,
         updateAnnouncementsModel,
         adminAccessToken,
       );
@@ -69,12 +69,12 @@ describe('PUT /announcements', () => {
       expect(updateAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = updateAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: updatedAnnouncementsId, message: updateMessage }: UpdateAnnouncementsResponseDto = body;
-      expect(updatedAnnouncementsId).toBeDefined();
+      const { data: saveAnnouncementsResult2, message: updateMessage }: UpdateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult2).toBeDefined();
       expect(updateMessage).toBe(events.announcements.announcementsUpdated);
-      expect(updatedAnnouncementsId).toBe(announcementsId);
+      expect(saveAnnouncementsResult2!.id).toBe(saveAnnouncementsResult1!.id);
 
-      getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult1!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getAnnouncementsResponse.body;
@@ -110,7 +110,10 @@ describe('PUT /announcements', () => {
         expect(updateAnnouncementsModel.items![index].content).toBe(item.content);
       });
 
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult1!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -140,11 +143,11 @@ describe('PUT /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcementsId, message: createMessage }: CreateAnnouncementsResponseDto = body;
-      expect(announcementsId).toBeDefined();
+      const { data: saveAnnouncementsResult1, message: createMessage }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult1).toBeDefined();
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
-      let getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      let getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult1!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       body = getAnnouncementsResponse.body;
       const { data: announcementsBeforeUpdate }: GetAnnouncementsResponseDto = body;
@@ -164,7 +167,7 @@ describe('PUT /announcements', () => {
       expect(announcementsBeforeUpdate.items.length).toBeGreaterThan(updateAnnouncementsModel.items!.length);
 
       const updateAnnouncementsResponse = await app!.announcements.update(
-        announcementsId,
+        saveAnnouncementsResult1!.id,
         updateAnnouncementsModel,
         adminAccessToken,
       );
@@ -172,12 +175,12 @@ describe('PUT /announcements', () => {
       expect(updateAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = updateAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: updatedAnnouncementsId, message: updateMessage }: UpdateAnnouncementsResponseDto = body;
-      expect(updatedAnnouncementsId).toBeDefined();
+      const { data: saveAnnouncementsResult2, message: updateMessage }: UpdateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult2).toBeDefined();
       expect(updateMessage).toBe(events.announcements.announcementsUpdated);
-      expect(updatedAnnouncementsId).toBe(announcementsId);
+      expect(saveAnnouncementsResult2!.id).toBe(saveAnnouncementsResult1!.id);
 
-      getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult1!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getAnnouncementsResponse.body;
@@ -219,7 +222,10 @@ describe('PUT /announcements', () => {
       expect(announcementsAfterUpdate.items.every(item => item.id !== lastItemId)).toBe(true);
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult1!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -249,11 +255,11 @@ describe('PUT /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcementsId, message: createMessage }: CreateAnnouncementsResponseDto = body;
-      expect(announcementsId).toBeDefined();
+      const { data: saveAnnouncementsResult1, message: createMessage }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult1).toBeDefined();
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
-      let getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      let getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult1!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       body = getAnnouncementsResponse.body;
       const { data: announcementsBeforeUpdate }: GetAnnouncementsResponseDto = body;
@@ -272,7 +278,7 @@ describe('PUT /announcements', () => {
       });
 
       const updateAnnouncementsResponse = await app!.announcements.update(
-        announcementsId,
+        saveAnnouncementsResult1!.id,
         updateAnnouncementsModel,
         adminAccessToken,
       );
@@ -280,12 +286,12 @@ describe('PUT /announcements', () => {
       expect(updateAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = updateAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: updatedAnnouncementsId, message: updateMessage }: UpdateAnnouncementsResponseDto = body;
-      expect(updatedAnnouncementsId).toBeDefined();
+      const { data: saveAnnouncementsResult2, message: updateMessage }: UpdateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult2).toBeDefined();
       expect(updateMessage).toBe(events.announcements.announcementsUpdated);
-      expect(updatedAnnouncementsId).toBe(announcementsId);
+      expect(saveAnnouncementsResult2!.id).toBe(saveAnnouncementsResult1!.id);
 
-      getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult1!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getAnnouncementsResponse.body;
@@ -325,7 +331,10 @@ describe('PUT /announcements', () => {
       });
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult1!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -355,11 +364,11 @@ describe('PUT /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcementsId, message: createMessage }: CreateAnnouncementsResponseDto = body;
-      expect(announcementsId).toBeDefined();
+      const { data: saveAnnouncementsResult1, message: createMessage }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult1).toBeDefined();
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
-      let getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      let getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult1!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       body = getAnnouncementsResponse.body;
       const { data: announcementsBeforeUpdate }: GetAnnouncementsResponseDto = body;
@@ -371,7 +380,7 @@ describe('PUT /announcements', () => {
       expect(requestData.title).not.toBe(updateAnnouncementsModel.title);
       expect(requestData.validFromDate).not.toBe(updateAnnouncementsModel.validFromDate);
       const updateAnnouncementsResponse = await app!.announcements.update(
-        announcementsId,
+        saveAnnouncementsResult1!.id,
         updateAnnouncementsModel,
         adminAccessToken,
       );
@@ -379,12 +388,12 @@ describe('PUT /announcements', () => {
       expect(updateAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = updateAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: updatedAnnouncementsId, message: updateMessage }: UpdateAnnouncementsResponseDto = body;
-      expect(updatedAnnouncementsId).toBeDefined();
+      const { data: saveAnnouncementsResult2, message: updateMessage }: UpdateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult2).toBeDefined();
       expect(updateMessage).toBe(events.announcements.announcementsUpdated);
-      expect(updatedAnnouncementsId).toBe(announcementsId);
+      expect(saveAnnouncementsResult2!.id).toBe(saveAnnouncementsResult1!.id);
 
-      getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult1!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getAnnouncementsResponse.body;
@@ -424,7 +433,10 @@ describe('PUT /announcements', () => {
       });
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult1!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -454,11 +466,11 @@ describe('PUT /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcementsId, message: createMessage }: CreateAnnouncementsResponseDto = body;
-      expect(announcementsId).toBeDefined();
+      const { data: saveAnnouncementsResult1, message: createMessage }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult1).toBeDefined();
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
-      let getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      let getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult1!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       body = getAnnouncementsResponse.body;
       const { data: announcementsBeforeUpdate }: GetAnnouncementsResponseDto = body;
@@ -470,7 +482,7 @@ describe('PUT /announcements', () => {
       expect(requestData.title).not.toBe(updateAnnouncementsModel.title);
       expect(requestData.validFromDate).not.toBe(updateAnnouncementsModel.validFromDate);
       const updateAnnouncementsResponse = await app!.announcements.update(
-        announcementsId,
+        saveAnnouncementsResult1!.id,
         updateAnnouncementsModel,
         adminAccessToken,
       );
@@ -478,12 +490,12 @@ describe('PUT /announcements', () => {
       expect(updateAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = updateAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: updatedAnnouncementsId, message: updateMessage }: UpdateAnnouncementsResponseDto = body;
-      expect(updatedAnnouncementsId).toBeDefined();
+      const { data: saveAnnouncementsResult2, message: updateMessage }: UpdateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult2).toBeDefined();
       expect(updateMessage).toBe(events.announcements.announcementsUpdated);
-      expect(updatedAnnouncementsId).toBe(announcementsId);
+      expect(saveAnnouncementsResult2!.id).toBe(saveAnnouncementsResult1!.id);
 
-      getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult1!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getAnnouncementsResponse.body;
@@ -522,7 +534,10 @@ describe('PUT /announcements', () => {
       });
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult1!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -552,11 +567,11 @@ describe('PUT /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcementsId, message: createMessage }: CreateAnnouncementsResponseDto = body;
-      expect(announcementsId).toBeDefined();
+      const { data: saveAnnouncementsResult1, message: createMessage }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult1).toBeDefined();
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
-      let getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      let getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult1!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       body = getAnnouncementsResponse.body;
       const { data: announcementsBeforeUpdate }: GetAnnouncementsResponseDto = body;
@@ -568,7 +583,7 @@ describe('PUT /announcements', () => {
       expect(requestData.title).not.toBe(updateAnnouncementsModel.title);
       expect(requestData.validFromDate).not.toBe(updateAnnouncementsModel.validFromDate);
       const updateAnnouncementsResponse = await app!.announcements.update(
-        announcementsId,
+        saveAnnouncementsResult1!.id,
         updateAnnouncementsModel,
         adminAccessToken,
       );
@@ -576,12 +591,12 @@ describe('PUT /announcements', () => {
       expect(updateAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = updateAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: updatedAnnouncementsId, message: updateMessage }: UpdateAnnouncementsResponseDto = body;
-      expect(updatedAnnouncementsId).toBeDefined();
+      const { data: saveAnnouncementsResult2, message: updateMessage }: UpdateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult2).toBeDefined();
       expect(updateMessage).toBe(events.announcements.announcementsUpdated);
-      expect(updatedAnnouncementsId).toBe(announcementsId);
+      expect(saveAnnouncementsResult2!.id).toBe(saveAnnouncementsResult1!.id);
 
-      getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult1!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getAnnouncementsResponse.body;
@@ -621,7 +636,10 @@ describe('PUT /announcements', () => {
       });
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult1!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -651,11 +669,11 @@ describe('PUT /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcementsId, message: createMessage }: CreateAnnouncementsResponseDto = body;
-      expect(announcementsId).toBeDefined();
+      const { data: saveAnnouncementsResult1, message: createMessage }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult1).toBeDefined();
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
-      let getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      let getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult1!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       body = getAnnouncementsResponse.body;
       const { data: announcementsBeforeUpdate }: GetAnnouncementsResponseDto = body;
@@ -667,7 +685,7 @@ describe('PUT /announcements', () => {
       expect(requestData.title).not.toBe(updateAnnouncementsModel.title);
       expect(requestData.validFromDate).not.toBe(updateAnnouncementsModel.validFromDate);
       const updateAnnouncementsResponse = await app!.announcements.update(
-        announcementsId,
+        saveAnnouncementsResult1!.id,
         updateAnnouncementsModel,
         adminAccessToken,
       );
@@ -675,12 +693,12 @@ describe('PUT /announcements', () => {
       expect(updateAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = updateAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: updatedAnnouncementsId, message: updateMessage }: UpdateAnnouncementsResponseDto = body;
-      expect(updatedAnnouncementsId).toBeDefined();
+      const { data: saveAnnouncementsResult2, message: updateMessage }: UpdateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult2).toBeDefined();
       expect(updateMessage).toBe(events.announcements.announcementsUpdated);
-      expect(updatedAnnouncementsId).toBe(announcementsId);
+      expect(saveAnnouncementsResult2!.id).toBe(saveAnnouncementsResult1!.id);
 
-      getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult1!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getAnnouncementsResponse.body;
@@ -718,7 +736,10 @@ describe('PUT /announcements', () => {
       });
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult1!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -748,11 +769,11 @@ describe('PUT /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcementsId, message: createMessage }: CreateAnnouncementsResponseDto = body;
-      expect(announcementsId).toBeDefined();
+      const { data: saveAnnouncementsResult1, message: createMessage }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult1).toBeDefined();
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
-      let getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      let getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult1!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       body = getAnnouncementsResponse.body;
       const { data: announcementsBeforeUpdate }: GetAnnouncementsResponseDto = body;
@@ -762,7 +783,7 @@ describe('PUT /announcements', () => {
       expect(requestData.title).not.toBe(updateAnnouncementsModel.title);
       expect(requestData.validFromDate).not.toBe(updateAnnouncementsModel.validFromDate);
       const updateAnnouncementsResponse = await app!.announcements.update(
-        announcementsId,
+        saveAnnouncementsResult1!.id,
         updateAnnouncementsModel,
         adminAccessToken,
       );
@@ -770,12 +791,12 @@ describe('PUT /announcements', () => {
       expect(updateAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = updateAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: updatedAnnouncementsId, message: updateMessage }: UpdateAnnouncementsResponseDto = body;
-      expect(updatedAnnouncementsId).toBeDefined();
+      const { data: saveAnnouncementsResult2, message: updateMessage }: UpdateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult2).toBeDefined();
       expect(updateMessage).toBe(events.announcements.announcementsUpdated);
-      expect(updatedAnnouncementsId).toBe(announcementsId);
+      expect(saveAnnouncementsResult2!.id).toBe(saveAnnouncementsResult1!.id);
 
-      getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult1!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getAnnouncementsResponse.body;
@@ -815,7 +836,10 @@ describe('PUT /announcements', () => {
       });
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult1!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -845,11 +869,11 @@ describe('PUT /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcementsId, message: createMessage }: CreateAnnouncementsResponseDto = body;
-      expect(announcementsId).toBeDefined();
+      const { data: saveAnnouncementsResult1, message: createMessage }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult1).toBeDefined();
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
-      let getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      let getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult1!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       body = getAnnouncementsResponse.body;
       const { data: announcementsBeforeUpdate }: GetAnnouncementsResponseDto = body;
@@ -863,7 +887,7 @@ describe('PUT /announcements', () => {
       expect(requestData.title).not.toBe(updateAnnouncementsModel.title);
       expect(requestData.validFromDate).not.toBe(updateAnnouncementsModel.validFromDate);
       const updateAnnouncementsResponse = await app!.announcements.update(
-        announcementsId,
+        saveAnnouncementsResult1!.id,
         updateAnnouncementsModel,
         adminAccessToken,
       );
@@ -871,12 +895,12 @@ describe('PUT /announcements', () => {
       expect(updateAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = updateAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: updatedAnnouncementsId, message: updateMessage }: UpdateAnnouncementsResponseDto = body;
-      expect(updatedAnnouncementsId).toBeDefined();
+      const { data: saveAnnouncementsResult2, message: updateMessage }: UpdateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult2).toBeDefined();
       expect(updateMessage).toBe(events.announcements.announcementsUpdated);
-      expect(updatedAnnouncementsId).toBe(announcementsId);
+      expect(saveAnnouncementsResult2!.id).toBe(saveAnnouncementsResult1!.id);
 
-      getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult1!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getAnnouncementsResponse.body;
@@ -916,7 +940,10 @@ describe('PUT /announcements', () => {
       });
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult1!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -946,10 +973,13 @@ describe('PUT /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
-      expect(announcementsId).toBeDefined();
+      const { data: saveAnnouncementsResult }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult).toBeDefined();
 
-      const publishAnnouncementsResponse = await app!.announcements.publish(announcementsId, adminAccessToken);
+      const publishAnnouncementsResponse = await app!.announcements.publish(
+        saveAnnouncementsResult!.id,
+        adminAccessToken,
+      );
       expect(publishAnnouncementsResponse.statusCode).toBe(200);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
@@ -957,20 +987,23 @@ describe('PUT /announcements', () => {
       };
       expect(requestData.title).not.toBe(updateAnnouncementsModel.title);
       const updateAnnouncementsResponse = await app!.announcements.update(
-        announcementsId,
+        saveAnnouncementsResult!.id,
         updateAnnouncementsModel,
         adminAccessToken,
       );
       expect(updateAnnouncementsResponse.statusCode).toBe(200);
 
-      const getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      const getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       const { data: announcements }: GetAnnouncementsResponseDto = getAnnouncementsResponse.body;
       expect(announcements.title).toBeUndefined();
       expect(new Date(announcements.validFromDate!).toDateString()).toBe(requestData.validFromDate!.toDateString());
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -1004,14 +1037,14 @@ describe('PUT /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
-      expect(announcementsId).toBeDefined();
+      const { data: saveAnnouncementsResult }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult).toBeDefined();
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
         title: 'a'.repeat(VALIDATOR_SETTINGS.ANNOUNCEMENTS_TITLE_MAX_LENGTH + 1),
       };
       const updateAnnouncementsResponse = await app!.announcements.update(
-        announcementsId,
+        saveAnnouncementsResult!.id,
         updateAnnouncementsModel,
         adminAccessToken,
       );
@@ -1021,7 +1054,10 @@ describe('PUT /announcements', () => {
       expect(errors.filter(x => x !== errorKeys.announcements.Title_Too_Long).length).toBe(0);
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -1046,8 +1082,8 @@ describe('PUT /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
-      expect(announcementsId).toBeDefined();
+      const { data: saveAnnouncementsResult }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult).toBeDefined();
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
         items: [
@@ -1058,7 +1094,7 @@ describe('PUT /announcements', () => {
       };
 
       const updateAnnouncementsResponse = await app!.announcements.update(
-        announcementsId,
+        saveAnnouncementsResult!.id,
         updateAnnouncementsModel,
         adminAccessToken,
       );
@@ -1068,7 +1104,10 @@ describe('PUT /announcements', () => {
       expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Too_Long).length).toBe(0);
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -1093,8 +1132,8 @@ describe('PUT /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
-      expect(announcementsId).toBeDefined();
+      const { data: saveAnnouncementsResult }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult).toBeDefined();
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
         items: [
@@ -1105,7 +1144,7 @@ describe('PUT /announcements', () => {
       };
 
       const updateAnnouncementsResponse = await app!.announcements.update(
-        announcementsId,
+        saveAnnouncementsResult!.id,
         updateAnnouncementsModel,
         adminAccessToken,
       );
@@ -1115,7 +1154,10 @@ describe('PUT /announcements', () => {
       expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Is_Required).length).toBe(0);
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -1140,8 +1182,8 @@ describe('PUT /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
-      expect(announcementsId).toBeDefined();
+      const { data: saveAnnouncementsResult }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult).toBeDefined();
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
         items: [
@@ -1152,7 +1194,7 @@ describe('PUT /announcements', () => {
       };
 
       const updateAnnouncementsResponse = await app!.announcements.update(
-        announcementsId,
+        saveAnnouncementsResult!.id,
         updateAnnouncementsModel,
         adminAccessToken,
       );
@@ -1162,7 +1204,10 @@ describe('PUT /announcements', () => {
       expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Is_Required).length).toBe(0);
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -1187,8 +1232,8 @@ describe('PUT /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
-      expect(announcementsId).toBeDefined();
+      const { data: saveAnnouncementsResult }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult).toBeDefined();
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
         items: [
@@ -1199,7 +1244,7 @@ describe('PUT /announcements', () => {
       };
 
       const updateAnnouncementsResponse = await app!.announcements.update(
-        announcementsId,
+        saveAnnouncementsResult!.id,
         updateAnnouncementsModel,
         adminAccessToken,
       );
@@ -1209,7 +1254,10 @@ describe('PUT /announcements', () => {
       expect(errors.filter(x => x !== errorKeys.announcements.Item_Content_Is_Required).length).toBe(0);
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -1235,8 +1283,8 @@ describe('PUT /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       let body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcements1Id }: CreateAnnouncementsResponseDto = body;
-      expect(announcements1Id).toBeDefined();
+      const { data: saveAnnouncementsResult1 }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult1).toBeDefined();
 
       requestData = generateValidAnnouncements();
       createAnnouncementsResponse = await app!.announcements.create(
@@ -1250,8 +1298,8 @@ describe('PUT /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcements2Id }: CreateAnnouncementsResponseDto = body;
-      expect(announcements2Id).toBeDefined();
+      const { data: saveAnnouncementsResult2 }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult2).toBeDefined();
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
         validFromDate: d1,
@@ -1260,7 +1308,7 @@ describe('PUT /announcements', () => {
       expect(requestData.validFromDate).not.toBe(updateAnnouncementsModel.validFromDate);
       expect(updateAnnouncementsModel.validFromDate).toBe(d1);
       const updateAnnouncementsResponse = await app!.announcements.update(
-        announcements2Id,
+        saveAnnouncementsResult2!.id,
         updateAnnouncementsModel,
         adminAccessToken,
       );
@@ -1272,10 +1320,10 @@ describe('PUT /announcements', () => {
       ).toBe(0);
 
       // cleanup
-      let deleteAnnouncementsResponse = await app!.announcements.delete(announcements1Id, adminAccessToken);
+      let deleteAnnouncementsResponse = await app!.announcements.delete(saveAnnouncementsResult1!.id, adminAccessToken);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
-      deleteAnnouncementsResponse = await app!.announcements.delete(announcements2Id, adminAccessToken);
+      deleteAnnouncementsResponse = await app!.announcements.delete(saveAnnouncementsResult2!.id, adminAccessToken);
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -1300,10 +1348,13 @@ describe('PUT /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
-      expect(announcementsId).toBeDefined();
+      const { data: saveAnnouncementsResult }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult).toBeDefined();
 
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
@@ -1311,7 +1362,7 @@ describe('PUT /announcements', () => {
       };
       expect(requestData.validFromDate).not.toBe(updateAnnouncementsModel.validFromDate);
       const updateAnnouncementsResponse = await app!.announcements.update(
-        announcementsId,
+        saveAnnouncementsResult!.id,
         updateAnnouncementsModel,
         adminAccessToken,
       );
@@ -1342,10 +1393,13 @@ describe('PUT /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
-      expect(announcementsId).toBeDefined();
+      const { data: saveAnnouncementsResult }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult).toBeDefined();
 
-      const publishAnnouncementsResponse = await app!.announcements.publish(announcementsId, adminAccessToken);
+      const publishAnnouncementsResponse = await app!.announcements.publish(
+        saveAnnouncementsResult!.id,
+        adminAccessToken,
+      );
       expect(publishAnnouncementsResponse.statusCode).toBe(200);
 
       const updateAnnouncementsModel: UpdateAnnouncementsDto = {
@@ -1353,7 +1407,7 @@ describe('PUT /announcements', () => {
       };
       expect(requestData.validFromDate).not.toBe(updateAnnouncementsModel.validFromDate);
       const updateAnnouncementsResponse = await app!.announcements.update(
-        announcementsId,
+        saveAnnouncementsResult!.id,
         updateAnnouncementsModel,
         adminAccessToken,
       );
@@ -1366,7 +1420,10 @@ describe('PUT /announcements', () => {
       ).toBe(0);
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher

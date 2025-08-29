@@ -34,10 +34,10 @@ describe('GET /announcements', () => {
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       let body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
-      expect(announcementsId).toBeDefined();
+      const { data: saveAnnouncementsResult }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult).toBeDefined();
 
-      const getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      const getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getAnnouncementsResponse.body;
@@ -72,7 +72,10 @@ describe('GET /announcements', () => {
       });
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -99,13 +102,16 @@ describe('GET /announcements', () => {
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       let body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcementsId }: CreateAnnouncementsResponseDto = body;
-      expect(announcementsId).toBeDefined();
+      const { data: saveAnnouncementsResult }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult).toBeDefined();
 
-      const publishAnnouncementsResponse = await app!.announcements.publish(announcementsId, adminAccessToken);
+      const publishAnnouncementsResponse = await app!.announcements.publish(
+        saveAnnouncementsResult!.id,
+        adminAccessToken,
+      );
       expect(publishAnnouncementsResponse.statusCode).toBe(200);
 
-      const getAnnouncementsResponse = await app!.announcements.get(announcementsId, adminAccessToken);
+      const getAnnouncementsResponse = await app!.announcements.get(saveAnnouncementsResult!.id, adminAccessToken);
       expect(getAnnouncementsResponse.statusCode).toBe(200);
       expect(getAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       body = getAnnouncementsResponse.body;
@@ -140,7 +146,10 @@ describe('GET /announcements', () => {
       });
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher

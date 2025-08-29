@@ -9,6 +9,7 @@ import { SpinnerService } from '../../../../services/spinner/spinner.service';
 import { IAnnouncementItem, IAnnouncements } from '../interfaces/announcements';
 import { EditAnnouncementsDto } from '../models/edit-announcements.model';
 import { AnnouncementItemDto } from '../models/announcements.model';
+import { SaveAnnouncementsResultDto } from '../interfaces/save-announcements-result.dto';
 
 @Injectable({
   providedIn: 'root',
@@ -57,30 +58,30 @@ export class AnnouncementsService extends BaseService {
       );
   }
 
-  public create(model: AddAnnouncementsDto): Observable<string | null> {
+  public create(model: AddAnnouncementsDto): Observable<SaveAnnouncementsResultDto> {
     return this._httpClient
       .request()
       .withUrl(this.API_ROUTES.announcements.create())
       .withBody({ ...model })
-      .post<string | null>()
+      .post<SaveAnnouncementsResultDto>()
       .pipe(
         this._spinnerService.waitForSubscription(),
-        map((resp: string | null) => {
-          return resp ?? null;
+        map((resp: SaveAnnouncementsResultDto) => {
+          return resp ?? {};
         })
       );
   }
 
-  public update(model: EditAnnouncementsDto): Observable<string | null> {
+  public update(model: EditAnnouncementsDto): Observable<SaveAnnouncementsResultDto> {
     return this._httpClient
       .request()
       .withUrl(this.API_ROUTES.announcements.update(model.id!))
       .withBody({ ...model })
-      .put<string | null>()
+      .put<SaveAnnouncementsResultDto>()
       .pipe(
         this._spinnerService.waitForSubscription(),
-        map((resp: string | null) => {
-          return resp ?? null;
+        map((resp: SaveAnnouncementsResultDto) => {
+          return resp ?? {};
         })
       );
   }

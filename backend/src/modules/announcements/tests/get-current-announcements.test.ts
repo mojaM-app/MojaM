@@ -50,7 +50,7 @@ describe('GET /announcements/current', () => {
       requestData.validFromDate = undefined;
       const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
-      const { data: announcementsId }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
+      const { data: saveAnnouncementsResult }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
 
       const response = await app!.currentAnnouncements.get();
       expect(response.statusCode).toBe(200);
@@ -63,7 +63,10 @@ describe('GET /announcements/current', () => {
       expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -88,7 +91,7 @@ describe('GET /announcements/current', () => {
       requestData.validFromDate = getDateNow();
       const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
-      const { data: announcementsId }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
+      const { data: saveAnnouncementsResult }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
 
       const response = await app!.currentAnnouncements.get();
       expect(response.statusCode).toBe(200);
@@ -101,7 +104,10 @@ describe('GET /announcements/current', () => {
       expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -126,9 +132,12 @@ describe('GET /announcements/current', () => {
       requestData.validFromDate = getDateNow().addDays(1);
       const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
-      const { data: announcementsId }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
+      const { data: saveAnnouncementsResult }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
 
-      const publishAnnouncementsResponse = await app!.announcements.publish(announcementsId, adminAccessToken);
+      const publishAnnouncementsResponse = await app!.announcements.publish(
+        saveAnnouncementsResult!.id,
+        adminAccessToken,
+      );
       expect(publishAnnouncementsResponse.statusCode).toBe(200);
       const { data: publishResult }: PublishAnnouncementsResponseDto = publishAnnouncementsResponse.body;
       expect(publishResult).toBe(true);
@@ -144,7 +153,10 @@ describe('GET /announcements/current', () => {
       expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -175,9 +187,12 @@ describe('GET /announcements/current', () => {
       requestData1.validFromDate = getDateNow().addDays(-6);
       const createAnnouncements1Response = await app!.announcements.create(requestData1, adminAccessToken);
       expect(createAnnouncements1Response.statusCode).toBe(201);
-      const { data: createdAnnouncements1Id }: CreateAnnouncementsResponseDto = createAnnouncements1Response.body;
+      const { data: saveAnnouncementsResult1 }: CreateAnnouncementsResponseDto = createAnnouncements1Response.body;
 
-      const publishAnnouncements1Response = await app!.announcements.publish(createdAnnouncements1Id, adminAccessToken);
+      const publishAnnouncements1Response = await app!.announcements.publish(
+        saveAnnouncementsResult1!.id,
+        adminAccessToken,
+      );
       expect(publishAnnouncements1Response.statusCode).toBe(200);
       const { data: publishResult }: PublishAnnouncementsResponseDto = publishAnnouncements1Response.body;
       expect(publishResult).toBe(true);
@@ -187,7 +202,7 @@ describe('GET /announcements/current', () => {
       requestData2.validFromDate = getDateNow();
       const createAnnouncements2Response = await app!.announcements.create(requestData2, adminAccessToken);
       expect(createAnnouncements2Response.statusCode).toBe(201);
-      const { data: createdAnnouncements2Id }: CreateAnnouncementsResponseDto = createAnnouncements2Response.body;
+      const { data: saveAnnouncementsResult2 }: CreateAnnouncementsResponseDto = createAnnouncements2Response.body;
 
       const response = await app!.currentAnnouncements.get();
       expect(response.statusCode).toBe(200);
@@ -202,7 +217,7 @@ describe('GET /announcements/current', () => {
       expect(currentAnnouncements).toBeDefined();
       expect(currentAnnouncements!.id).toBeDefined();
       expect(isGuid(currentAnnouncements!.id)).toBe(true);
-      expect(currentAnnouncements!.id).toBe(createdAnnouncements1Id);
+      expect(currentAnnouncements!.id).toBe(saveAnnouncementsResult1!.id);
       expect(currentAnnouncements!.createdBy.length).toBeGreaterThan(0);
       expect(currentAnnouncements!.createdAt).toBeDefined();
       expect(isDateString(currentAnnouncements!.createdAt)).toBe(true);
@@ -226,10 +241,16 @@ describe('GET /announcements/current', () => {
         expect(currentAnnouncements!.items[index].content).toBe(item.content);
       });
       // cleanup
-      const deleteAnnouncements1Response = await app!.announcements.delete(createdAnnouncements1Id, adminAccessToken);
+      const deleteAnnouncements1Response = await app!.announcements.delete(
+        saveAnnouncementsResult1!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncements1Response.statusCode).toBe(200);
 
-      const deleteAnnouncements2Response = await app!.announcements.delete(createdAnnouncements2Id, adminAccessToken);
+      const deleteAnnouncements2Response = await app!.announcements.delete(
+        saveAnnouncementsResult2!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncements2Response.statusCode).toBe(200);
 
       // checking events running via eventDispatcher
@@ -257,9 +278,12 @@ describe('GET /announcements/current', () => {
       requestData.validFromDate = getDateNow();
       const createAnnouncementsResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
-      const { data: createdAnnouncementsId }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
+      const { data: saveAnnouncementsResult }: CreateAnnouncementsResponseDto = createAnnouncementsResponse.body;
 
-      const publishAnnouncementsResponse = await app!.announcements.publish(createdAnnouncementsId, adminAccessToken);
+      const publishAnnouncementsResponse = await app!.announcements.publish(
+        saveAnnouncementsResult!.id,
+        adminAccessToken,
+      );
       expect(publishAnnouncementsResponse.statusCode).toBe(200);
       const { data: publishResult }: PublishAnnouncementsResponseDto = publishAnnouncementsResponse.body;
       expect(publishResult).toBe(true);
@@ -277,7 +301,7 @@ describe('GET /announcements/current', () => {
       expect(currentAnnouncements).toBeDefined();
       expect(currentAnnouncements!.id).toBeDefined();
       expect(isGuid(currentAnnouncements!.id)).toBe(true);
-      expect(currentAnnouncements!.id).toBe(createdAnnouncementsId);
+      expect(currentAnnouncements!.id).toBe(saveAnnouncementsResult!.id);
       expect(currentAnnouncements!.createdBy.length).toBeGreaterThan(0);
       expect(currentAnnouncements!.createdAt).toBeDefined();
       expect(isDateString(currentAnnouncements!.createdAt)).toBe(true);
@@ -302,7 +326,10 @@ describe('GET /announcements/current', () => {
       expect(getMessage).toBe(events.announcements.currentAnnouncementsRetrieved);
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(createdAnnouncementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher

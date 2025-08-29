@@ -171,7 +171,8 @@
         "Preview": "Podgląd"
       },
       "DeleteConfirmText": "Czy na pewno chcesz usunąć ogłoszenia utworzone {createdAt} przez '{createdBy}'?",
-      "PublishConfirmText": "Czy na pewno chcesz opublikować ogłoszenia utworzone {createdAt} przez '{createdBy}'?"
+      "PublishConfirmText": "Czy na pewno chcesz opublikować ogłoszenia utworzone {createdAt} przez '{createdBy}'?",
+      "AskIfPublishSavedText": "Ogłoszenia zostały zapisane, czy chcesz je teraz opublikować?"
     },
     "State": {
       "0": "Nowe",

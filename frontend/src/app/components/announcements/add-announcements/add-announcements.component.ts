@@ -19,6 +19,9 @@ import { AnnouncementsFormComponent } from '../announcements-form/announcements-
 import { AnnouncementsListMenu, AnnouncementsMenu } from '../announcements.menu';
 import { IAnnouncements } from '../interfaces/announcements';
 import { AddAnnouncementsDto } from '../models/add-announcements.model';
+import { SaveAnnouncementsResultDto } from '../interfaces/save-announcements-result.dto';
+import { DialogService } from 'src/services/dialog/dialog.service';
+import { IDialogSettings } from 'src/core/interfaces/common/dialog.settings';
 
 @Component({
   selector: 'app-add-announcements',
@@ -43,7 +46,8 @@ export class AddAnnouncementsComponent extends WithUnsubscribe() implements OnIn
     authService: AuthService,
     private _router: Router,
     private _route: ActivatedRoute,
-    private _announcementsService: AnnouncementsService
+    private _announcementsService: AnnouncementsService,
+    private _dialogService: DialogService
   ) {
     super();
 
@@ -82,7 +86,27 @@ export class AddAnnouncementsComponent extends WithUnsubscribe() implements OnIn
     }
 
     const dto = new AddAnnouncementsDto(form.controls);
-    this._announcementsService.create(dto).subscribe(() => {
+    this._announcementsService.create(dto).subscribe(async (result: SaveAnnouncementsResultDto) => {
+      if (result.showPublishDialog) {
+        const confirmed = await this._dialogService
+          .confirm({
+            message: {
+              text: 'Announcements/List/AskIfPublishSavedText',
+            },
+            noBtnText: 'Shared/BtnCancel',
+            yesBtnText: 'Shared/BtnPublish',
+          } satisfies IDialogSettings)
+          .then((result: boolean) => result);
+
+        if (confirmed === true) {
+          this._announcementsService.publish(result.id).subscribe(() => {
+            this.navigateToAnnouncementsList();
+          });
+        }
+
+        return;
+      }
+
       this.navigateToAnnouncementsList();
     });
   }

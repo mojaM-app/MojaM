@@ -32,12 +32,15 @@ describe('DELETE /announcements', () => {
       expect(createAnnouncementsResponse.headers['content-type']).toEqual(expect.stringContaining('json'));
       const body = createAnnouncementsResponse.body;
       expect(typeof body).toBe('object');
-      const { data: announcementsId, message: createMessage }: CreateAnnouncementsResponseDto = body;
-      expect(announcementsId).toBeDefined();
+      const { data: saveAnnouncementsResult, message: createMessage }: CreateAnnouncementsResponseDto = body;
+      expect(saveAnnouncementsResult).toBeDefined();
       expect(createMessage).toBe(events.announcements.announcementsCreated);
 
       // cleanup
-      const deleteAnnouncementsResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteAnnouncementsResponse = await app!.announcements.delete(
+        saveAnnouncementsResult!.id,
+        adminAccessToken,
+      );
       expect(deleteAnnouncementsResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher

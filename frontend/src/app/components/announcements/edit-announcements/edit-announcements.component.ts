@@ -20,6 +20,9 @@ import { AnnouncementsListMenu, AnnouncementsMenu } from '../announcements.menu'
 import { IAnnouncements } from '../interfaces/announcements';
 import { EditAnnouncementsDto } from '../models/edit-announcements.model';
 import { AnnouncementsService } from '../services/announcements.service';
+import { SaveAnnouncementsResultDto } from '../interfaces/save-announcements-result.dto';
+import { IDialogSettings } from 'src/core/interfaces/common/dialog.settings';
+import { DialogService } from 'src/services/dialog/dialog.service';
 
 @Component({
   selector: 'app-edit-announcements',
@@ -44,7 +47,8 @@ export class EditAnnouncementsComponent extends WithUnsubscribe() implements OnI
     authService: AuthService,
     private _router: Router,
     private _route: ActivatedRoute,
-    private _announcementsService: AnnouncementsService
+    private _announcementsService: AnnouncementsService,
+    private _dialogService: DialogService
   ) {
     super();
 
@@ -76,15 +80,34 @@ export class EditAnnouncementsComponent extends WithUnsubscribe() implements OnI
 
   public save(): void {
     const form = this._formComponent();
-    const announcementsId = this.announcements()?.id;
 
-    if (!form || !form.containsValidData() || !GuidUtils.isValidGuid(announcementsId)) {
+    if (!form || !form.containsValidData() || !GuidUtils.isValidGuid(this.announcements()?.id)) {
       form?.showErrors();
       return;
     }
 
-    const dto = new EditAnnouncementsDto(announcementsId!, form.controls);
-    this._announcementsService.update(dto).subscribe(() => {
+    const dto = new EditAnnouncementsDto(this.announcements()!.id, form.controls);
+    this._announcementsService.update(dto).subscribe(async (result: SaveAnnouncementsResultDto) => {
+      if (result.showPublishDialog) {
+        const confirmed = await this._dialogService
+          .confirm({
+            message: {
+              text: 'Announcements/List/AskIfPublishSavedText',
+            },
+            noBtnText: 'Shared/BtnCancel',
+            yesBtnText: 'Shared/BtnPublish',
+          } satisfies IDialogSettings)
+          .then((result: boolean) => result);
+
+        if (confirmed === true) {
+          this._announcementsService.publish(result.id).subscribe(() => {
+            this.navigateToAnnouncementsList();
+          });
+        }
+
+        return;
+      }
+
       this.navigateToAnnouncementsList();
     });
   }

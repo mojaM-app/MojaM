@@ -71,7 +71,7 @@ describe('POST /bulletins', () => {
       expect(bulletin.dailyPrayer).toBe(requestData.dailyPrayer);
       expect(bulletin.publishedAt).toBeNull();
       expect(bulletin.publishedBy).toBeNull();
-      expect(new Date(bulletin.date!).toDateString()).toEqual(new Date(requestData.date!).toDateString());
+      expect(bulletin!.date).toBe(requestData.date!.toISOString());
 
       expect(bulletin.days).toBeDefined();
       expect(Array.isArray(bulletin.days)).toBe(true);
@@ -156,7 +156,7 @@ describe('POST /bulletins', () => {
       expect(bulletin.dailyPrayer).toBe(requestData.dailyPrayer);
       expect(bulletin.publishedAt).toBeNull();
       expect(bulletin.publishedBy).toBeNull();
-      expect(new Date(bulletin.date!).toDateString()).toEqual(new Date(requestData.date!).toDateString());
+      expect(bulletin!.date).toBe(requestData.date!.toISOString());
 
       expect(bulletin.days).toBeDefined();
       expect(Array.isArray(bulletin.days)).toBe(true);

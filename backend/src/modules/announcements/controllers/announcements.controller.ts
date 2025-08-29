@@ -46,7 +46,7 @@ export class AnnouncementsController extends BaseController {
     try {
       const model: CreateAnnouncementsDto = req.body;
       const result = await this._service.create(new CreateAnnouncementsReqDto(model, this.getCurrentUserId(req)));
-      res.status(StatusCode.SuccessCreated).json(new CreateAnnouncementsResponseDto(result!.id));
+      res.status(StatusCode.SuccessCreated).json(new CreateAnnouncementsResponseDto(result));
     } catch (error) {
       next(error);
     }
@@ -57,7 +57,7 @@ export class AnnouncementsController extends BaseController {
       const model: UpdateAnnouncementsDto = req.body;
       const reqDto = new UpdateAnnouncementsReqDto(this.getAnnouncementsGuid(req), model, this.getCurrentUserId(req));
       const result = await this._service.update(reqDto);
-      res.status(StatusCode.SuccessOK).json(new UpdateAnnouncementsResponseDto(result!.id));
+      res.status(StatusCode.SuccessOK).json(new UpdateAnnouncementsResponseDto(result));
     } catch (error) {
       next(error);
     }

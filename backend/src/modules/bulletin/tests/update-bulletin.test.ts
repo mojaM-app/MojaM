@@ -59,7 +59,7 @@ describe('PUT /bulletins/:id', () => {
       expect(bulletin.introduction).toBe(updateData.introduction);
       expect(bulletin.tipsForWork).toBe(updateData.tipsForWork);
       expect(bulletin.dailyPrayer).toBe(updateData.dailyPrayer);
-      expect(new Date(bulletin.date!).toDateString()).toEqual(updateData.date!.toDateString());
+      expect(bulletin!.date).toBe(updateData.date!.toISOString());
       // Days should remain unchanged when empty array is sent
       expect(bulletin.days.length).toBeGreaterThanOrEqual(0);
 

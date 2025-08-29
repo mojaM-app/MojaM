@@ -3,6 +3,7 @@ import { BaseReqDto, DtoTransformFunctions, events, type IResponse } from '@core
 import { errorKeys } from '@exceptions';
 import { Transform, Type } from 'class-transformer';
 import { IsArray, IsDate, IsNotEmpty, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
+import { SaveAnnouncementsResultDto } from './save-announcements-result.dto';
 
 export class UpdateAnnouncementItemDto {
   public id?: string;
@@ -52,11 +53,11 @@ export class UpdateAnnouncementsReqDto extends BaseReqDto {
   }
 }
 
-export class UpdateAnnouncementsResponseDto implements IResponse<string> {
-  public readonly data: string;
+export class UpdateAnnouncementsResponseDto implements IResponse<SaveAnnouncementsResultDto | null> {
+  public readonly data: SaveAnnouncementsResultDto | null;
   public readonly message: string;
 
-  constructor(data: string) {
+  constructor(data: SaveAnnouncementsResultDto | null) {
     this.data = data;
     this.message = events.announcements.announcementsUpdated;
   }

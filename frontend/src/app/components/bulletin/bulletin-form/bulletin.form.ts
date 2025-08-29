@@ -71,6 +71,8 @@ export class BulletinFormBuilder {
       title: model.title ?? null,
       number: model.number ?? null,
       introduction: model.introduction ?? null,
+      dailyPrayer: model.dailyPrayer ?? null,
+      tipsForWork: model.tipsForWork ?? null,
     });
 
     this._form.controls.days.clear();

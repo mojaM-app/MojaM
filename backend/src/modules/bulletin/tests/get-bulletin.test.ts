@@ -55,7 +55,7 @@ describe('GET /bulletins/:id', () => {
       expect(isDateString(bulletin.createdAt)).toBe(true);
       expect(bulletin.updatedAt).toBeDefined();
       expect(isDateString(bulletin.updatedAt)).toBe(true);
-      expect(new Date(bulletin.date!).toDateString()).toEqual(new Date(requestData.date!).toDateString());
+      expect(bulletin!.date).toBe(requestData.date!.toISOString());
 
       expect(bulletin.days).toBeDefined();
       expect(Array.isArray(bulletin.days)).toBe(true);

@@ -5,3 +5,5 @@ export { AnnouncementsPublishedEvent } from './events/announcements-published-ev
 export { AnnouncementsRetrievedEvent } from './events/announcements-retrieved-event';
 export { AnnouncementsUpdatedEvent } from './events/announcements-updated-event';
 export { CurrentAnnouncementsRetrievedEvent } from './events/current-announcements-retrieved-event';
+
+export { SaveAnnouncementsResultDto } from './dtos/save-announcements-result.dto';

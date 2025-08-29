@@ -34,9 +34,9 @@ describe('GET/announcements-list', () => {
       const createAnnouncementsResponse = await app!.announcements.create(newAnnouncements, adminAccessToken);
       expect(createAnnouncementsResponse.statusCode).toBe(201);
       let body = createAnnouncementsResponse.body;
-      const { data: announcementsId, message: createMessage }: CreateAnnouncementsResponseDto = body;
+      const { data: saveAnnouncementsResult, message: createMessage }: CreateAnnouncementsResponseDto = body;
       expect(createMessage).toBe(events.announcements.announcementsCreated);
-      expect(announcementsId).toBeDefined();
+      expect(saveAnnouncementsResult).toBeDefined();
 
       const getAnnouncementsListResponse = await request(app!.getServer())
         .get(AnnouncementsListRoute.path)
@@ -64,7 +64,7 @@ describe('GET/announcements-list', () => {
       expect(announcements.itemsCount).toBeDefined();
       expect(announcements.itemsCount).toBe(newAnnouncements.items!.length);
 
-      const deleteResponse = await app!.announcements.delete(announcementsId, adminAccessToken);
+      const deleteResponse = await app!.announcements.delete(saveAnnouncementsResult!.id, adminAccessToken);
       expect(deleteResponse.statusCode).toBe(200);
 
       // checking events running via eventDispatcher

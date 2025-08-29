@@ -8,6 +8,7 @@ import { DeleteAnnouncementsReqDto } from '../dtos/delete-announcements.dto';
 import { GetAnnouncementsReqDto, IAnnouncementItemDto, IAnnouncementsDto } from '../dtos/get-announcements.dto';
 import { GetTopAnnouncementItemsReqDto, TopAnnouncementItemDto } from '../dtos/get-top-announcement-items.dto';
 import { PublishAnnouncementsReqDto } from '../dtos/publish-announcements.dto';
+import { SaveAnnouncementsResultDto } from '../dtos/save-announcements-result.dto';
 import { UpdateAnnouncementsReqDto } from '../dtos/update-announcements.dto';
 import { AnnouncementStateValue } from '../enums/announcement-state.enum';
 import { AnnouncementsCreatedEvent } from '../events/announcements-created-event';
@@ -45,7 +46,7 @@ export class AnnouncementsService extends BaseService {
     return dto;
   }
 
-  public async create(reqDto: CreateAnnouncementsReqDto): Promise<IAnnouncementsDto | null> {
+  public async create(reqDto: CreateAnnouncementsReqDto): Promise<SaveAnnouncementsResultDto | null> {
     const announcementsModel = reqDto.announcements;
 
     if (isNullOrUndefined(announcementsModel)) {
@@ -70,10 +71,13 @@ export class AnnouncementsService extends BaseService {
       new AnnouncementsCreatedEvent(dto, reqDto.currentUserId!),
     );
 
-    return dto;
+    return {
+      id: dto.id,
+      showPublishDialog: announcements?.state === AnnouncementStateValue.DRAFT && announcements.canBePublished(),
+    };
   }
 
-  public async update(reqDto: UpdateAnnouncementsReqDto): Promise<IAnnouncementsDto | null> {
+  public async update(reqDto: UpdateAnnouncementsReqDto): Promise<SaveAnnouncementsResultDto | null> {
     if (isNullOrUndefined(reqDto.announcementsId)) {
       throw new BadRequestException(errorKeys.announcements.Announcements_Does_Not_Exist, {
         id: reqDto.announcementsId,
@@ -103,7 +107,10 @@ export class AnnouncementsService extends BaseService {
       new AnnouncementsUpdatedEvent(dto, reqDto.currentUserId!),
     );
 
-    return dto;
+    return {
+      id: dto.id,
+      showPublishDialog: announcements?.state === AnnouncementStateValue.DRAFT && announcements.canBePublished(),
+    };
   }
 
   public async delete(reqDto: DeleteAnnouncementsReqDto): Promise<boolean> {

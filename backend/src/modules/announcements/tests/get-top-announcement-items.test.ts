@@ -47,12 +47,12 @@ describe('POST /announcements/top-items', () => {
 
         const createResponse = await app!.announcements.create(requestData, adminAccessToken);
         expect(createResponse.statusCode).toBe(201);
-        const { data: announcementId }: CreateAnnouncementsResponseDto = createResponse.body;
+        const { data: saveAnnouncementsResult }: CreateAnnouncementsResponseDto = createResponse.body;
 
-        const publishResponse = await app!.announcements.publish(announcementId, adminAccessToken);
+        const publishResponse = await app!.announcements.publish(saveAnnouncementsResult!.id, adminAccessToken);
         expect(publishResponse.statusCode).toBe(200);
 
-        announcements.push(announcementId);
+        announcements.push(saveAnnouncementsResult!.id);
       }
 
       // Create additional announcement with unique content
@@ -64,12 +64,12 @@ describe('POST /announcements/top-items', () => {
 
       const uniqueCreateResponse = await app!.announcements.create(uniqueRequestData, adminAccessToken);
       expect(uniqueCreateResponse.statusCode).toBe(201);
-      const { data: uniqueAnnouncementId }: CreateAnnouncementsResponseDto = uniqueCreateResponse.body;
+      const { data: saveAnnouncementsResult }: CreateAnnouncementsResponseDto = uniqueCreateResponse.body;
 
-      const uniquePublishResponse = await app!.announcements.publish(uniqueAnnouncementId, adminAccessToken);
+      const uniquePublishResponse = await app!.announcements.publish(saveAnnouncementsResult!.id, adminAccessToken);
       expect(uniquePublishResponse.statusCode).toBe(200);
 
-      announcements.push(uniqueAnnouncementId);
+      announcements.push(saveAnnouncementsResult!.id);
 
       // Test the endpoint
       const response = await app!.announcements.getTopItems(adminAccessToken, []);
@@ -134,11 +134,11 @@ describe('POST /announcements/top-items', () => {
 
       const createResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createResponse.statusCode).toBe(201);
-      const { data: announcementId }: CreateAnnouncementsResponseDto = createResponse.body;
+      const { data: saveAnnouncementsResult }: CreateAnnouncementsResponseDto = createResponse.body;
 
-      const publishResponse = await app!.announcements.publish(announcementId, adminAccessToken);
+      const publishResponse = await app!.announcements.publish(saveAnnouncementsResult!.id, adminAccessToken);
       expect(publishResponse.statusCode).toBe(200);
-      announcements.push(announcementId);
+      announcements.push(saveAnnouncementsResult!.id);
 
       // Test with limit of 3
       const response = await app!.announcements.getTopItems(adminAccessToken, []);
@@ -175,11 +175,11 @@ describe('POST /announcements/top-items', () => {
 
       const createResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createResponse.statusCode).toBe(201);
-      const { data: announcementId }: CreateAnnouncementsResponseDto = createResponse.body;
+      const { data: saveAnnouncementsResult }: CreateAnnouncementsResponseDto = createResponse.body;
 
-      const publishResponse = await app!.announcements.publish(announcementId, adminAccessToken);
+      const publishResponse = await app!.announcements.publish(saveAnnouncementsResult!.id, adminAccessToken);
       expect(publishResponse.statusCode).toBe(200);
-      announcements.push(announcementId);
+      announcements.push(saveAnnouncementsResult!.id);
 
       // First, get all top items without exclusion
       const allItemsResponse = await app!.announcements.getTopItems(adminAccessToken, []);
@@ -234,7 +234,7 @@ describe('POST /announcements/top-items', () => {
 
       const createResponse = await app!.announcements.create(requestData, adminAccessToken);
       expect(createResponse.statusCode).toBe(201);
-      const { data: announcementId }: CreateAnnouncementsResponseDto = createResponse.body;
+      const { data: saveAnnouncementsResult }: CreateAnnouncementsResponseDto = createResponse.body;
 
       // Test the endpoint - should return empty array
       const response = await app!.announcements.getTopItems(adminAccessToken, []);
@@ -245,7 +245,7 @@ describe('POST /announcements/top-items', () => {
       expect(topItems.length).toBe(0);
 
       // Cleanup
-      const deleteResponse = await app!.announcements.delete(announcementId, adminAccessToken);
+      const deleteResponse = await app!.announcements.delete(saveAnnouncementsResult!.id, adminAccessToken);
       expect(deleteResponse.statusCode).toBe(200);
     });
   });
