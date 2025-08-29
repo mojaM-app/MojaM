@@ -144,7 +144,7 @@ export const appConfig: ApplicationConfig = {
           ['code-block'],
 
           [{ list: 'ordered' }, { list: 'bullet' }],
-          //[{ script: 'sub' }, { script: 'super' }], // superscript/subscript
+          [{ script: 'sub' }, { script: 'super' }], // superscript/subscript
           //[{ indent: '-1' }, { indent: '+1' }], // outdent/indent
 
           [{ size: ['small', false, 'large', 'huge'] }], // custom dropdown

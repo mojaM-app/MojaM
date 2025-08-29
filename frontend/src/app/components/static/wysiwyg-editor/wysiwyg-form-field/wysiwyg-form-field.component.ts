@@ -66,7 +66,9 @@ export class WysiwygFormFieldComponent
   protected quillModules = computed(() => {
     const toolbar: any[] = [
       ['bold', 'italic', 'underline', 'strike'],
+      [{ script: 'sub' }, { script: 'super' }],
       [{ list: 'ordered' }, { list: 'bullet' }],
+      [{ align: [] }],
       ['clean'],
     ];
 
