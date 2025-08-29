@@ -174,6 +174,7 @@ export const appConfig: ApplicationConfig = {
                         strike: op.attributes?.strike,
                         size: op.attributes?.size,
                         align: op.attributes?.align,
+                        script: op.attributes?.script,
                       },
                     });
                   }
