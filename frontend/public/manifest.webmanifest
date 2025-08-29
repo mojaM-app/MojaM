@@ -10,6 +10,8 @@
   "orientation": "portrait-primary",
   "scope": "./",
   "start_url": "./",
+  "categories": ["Christian community", "Holy Spirit renewal"],
+  "lang": "pl",
   "icons": [
     {
       "src": "icons/android_icon-192x192.png",
