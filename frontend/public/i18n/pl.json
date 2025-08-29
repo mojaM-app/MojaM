@@ -640,8 +640,5 @@
         }
       }
     }
-  },
-  "SwUpdate": {
-    "NewVersionAvailable": "Nowa wersja aplikacji jest dostępna. Kliknij OK, aby zaktualizować."
   }
 }
