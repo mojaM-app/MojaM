@@ -21,7 +21,7 @@ export class EditAnnouncementsMenu {
 
 export class AnnouncementsListMenu {
   public static Label = 'Announcements/BtnList';
-  public static Icon = 'playlist_add_check';
+  public static Icon = 'table_rows';
   public static Route = 'list';
   public static Path: string = AnnouncementsMenu.Path + '/' + AnnouncementsListMenu.Route;
 }

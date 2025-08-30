@@ -6,7 +6,7 @@ export class BulletinMenu {
 
 export class BulletinListMenu {
   public static Label = 'Bulletin/BtnList';
-  public static Icon = 'list';
+  public static Icon = 'table_rows';
   public static Route = 'list';
   public static Path: string = BulletinMenu.Path + '/' + BulletinListMenu.Route;
 }
