@@ -13,7 +13,10 @@ export class WysiwygPreviewComponent {
 
   private _longPressTimer: number | null = null;
 
-  public constructor(private readonly _snackBarService: SnackBarService) {}
+  public constructor(
+    private _elementRef: ElementRef,
+    private readonly _snackBarService: SnackBarService
+  ) {}
 
   protected onMouseDown(): void {
     this.startLongPress();
@@ -50,12 +53,16 @@ export class WysiwygPreviewComponent {
   }
 
   private async copyToClipboard(): Promise<void> {
-    const text = this.content()?.trim();
+    const element = this._elementRef.nativeElement.querySelector('.ql-editor-preview');
+    const text = (element?.textContent || element?.innerText || '').trim();
 
-    if (text?.length > 0) {
+    if (text) {
       await navigator.clipboard.writeText(text);
       this._snackBarService.translateAndShowSuccess({
         message: 'WysiwygEditor/CopySuccess',
+        options: {
+          duration: 3000,
+        },
       });
     }
 
