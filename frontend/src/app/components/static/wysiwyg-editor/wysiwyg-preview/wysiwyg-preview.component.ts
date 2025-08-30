@@ -30,12 +30,15 @@ export class WysiwygPreviewComponent {
     this.cancelLongPress();
   }
 
-  protected onTouchStart(event: TouchEvent): void {
-    event.preventDefault();
+  protected onTouchStart(): void {
     this.startLongPress();
   }
 
   protected onTouchEnd(): void {
+    this.cancelLongPress();
+  }
+
+  protected onTouchMove(): void {
     this.cancelLongPress();
   }
 
