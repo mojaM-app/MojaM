@@ -128,14 +128,16 @@ body {
     var(--main-container-height) - var(--mat-toolbar-standard-height) - var(
         --mat-toolbar-standard-height
       ) *
-      var(--is-mobile) * var(--footer-is-visible)
+      var(--is-mobile) *
+      var(--footer-is-visible) - env(safe-area-inset-top) - env(safe-area-inset-bottom)
   );
   @media (max-width: 599px) {
     height: calc(
       var(--main-container-height) - var(--mat-toolbar-mobile-height) - var(
           --mat-toolbar-mobile-height
         ) *
-        var(--is-mobile) * var(--footer-is-visible)
+        var(--is-mobile) *
+        var(--footer-is-visible) - env(safe-area-inset-top) - env(safe-area-inset-bottom)
     );
   }
 
@@ -170,7 +172,7 @@ body {
         var(--is-mobile) * var(--footer-is-visible) - var(--bs-card-cap-padding-y) *
         2 - var(--mat-toolbar-title-text-line-height) - var(--bs-card-border-width) - var(
           --mat-toolbar-mobile-height
-        ) - var(--bs-card-border-width)
+        ) - var(--bs-card-border-width) - env(safe-area-inset-top) - env(safe-area-inset-bottom)
     );
     @media (max-width: 599px) {
       height: calc(
@@ -180,7 +182,7 @@ body {
           var(--is-mobile) * var(--footer-is-visible) - var(--bs-card-cap-padding-y) *
           2 - var(--mat-toolbar-title-text-line-height) - var(--bs-card-border-width) - var(
             --mat-toolbar-mobile-height
-          ) - var(--bs-card-border-width)
+          ) - var(--bs-card-border-width) - env(safe-area-inset-top) - env(safe-area-inset-bottom)
       );
     }
   }
@@ -202,14 +204,16 @@ body {
     var(--main-container-height) - var(--mat-toolbar-standard-height) - var(
         --mat-toolbar-standard-height
       ) *
-      var(--is-mobile) * var(--footer-is-visible)
+      var(--is-mobile) *
+      var(--footer-is-visible) - env(safe-area-inset-top) - env(safe-area-inset-bottom)
   );
   @media (max-width: 599px) {
     height: calc(
       var(--main-container-height) - var(--mat-toolbar-mobile-height) - var(
           --mat-toolbar-mobile-height
         ) *
-        var(--is-mobile) * var(--footer-is-visible)
+        var(--is-mobile) *
+        var(--footer-is-visible) - env(safe-area-inset-top) - env(safe-area-inset-bottom)
     );
   }
 
@@ -241,7 +245,9 @@ body {
           --mat-toolbar-standard-height
         ) *
         var(--is-mobile) * var(--footer-is-visible) - var(--bs-card-cap-padding-y) *
-        2 - var(--mat-toolbar-title-text-line-height) - var(--bs-card-border-width)
+        2 - var(--mat-toolbar-title-text-line-height) - var(--bs-card-border-width) - env(
+          safe-area-inset-top
+        ) - env(safe-area-inset-bottom)
     );
     @media (max-width: 599px) {
       height: calc(
@@ -249,7 +255,9 @@ body {
             --mat-toolbar-mobile-height
           ) *
           var(--is-mobile) * var(--footer-is-visible) - var(--bs-card-cap-padding-y) *
-          2 - var(--mat-toolbar-title-text-line-height) - var(--bs-card-border-width)
+          2 - var(--mat-toolbar-title-text-line-height) - var(--bs-card-border-width) - env(
+            safe-area-inset-top
+          ) - env(safe-area-inset-bottom)
       );
     }
 
@@ -261,7 +269,7 @@ body {
           var(--is-mobile) * var(--footer-is-visible) - var(--bs-card-cap-padding-y) *
           2 - var(--mat-toolbar-title-text-line-height) - var(--bs-card-border-width) - var(
             --mat-paginator-container-size
-          )
+          ) - env(safe-area-inset-top) - env(safe-area-inset-bottom)
       );
       @media (max-width: 599px) {
         height: calc(
@@ -271,7 +279,7 @@ body {
             var(--is-mobile) * var(--footer-is-visible) - var(--bs-card-cap-padding-y) *
             2 - var(--mat-toolbar-title-text-line-height) - var(--bs-card-border-width) - var(
               --mat-paginator-container-size
-            )
+            ) - env(safe-area-inset-top) - env(safe-area-inset-bottom)
         );
       }
     }
