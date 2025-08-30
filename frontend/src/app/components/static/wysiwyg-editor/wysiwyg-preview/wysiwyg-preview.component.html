@@ -1,1 +1,9 @@
-<span class="ql-editor-preview" [innerHTML]="content()"></span>
+<span
+  class="ql-editor-preview"
+  [innerHTML]="content()"
+  (mousedown)="onMouseDown()"
+  (mouseup)="onMouseUp()"
+  (mouseleave)="onMouseLeave()"
+  (touchstart)="onTouchStart($event)"
+  (touchend)="onTouchEnd()">
+</span>

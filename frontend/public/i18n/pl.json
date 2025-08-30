@@ -34,7 +34,8 @@
   },
   "Footer": {},
   "WysiwygEditor": {
-    "Placeholder": "Wprowadź treść"
+    "Placeholder": "Wprowadź treść",
+    "CopySuccess": "Tekst skopiowany do schowka!"
   },
   "Dialog": {
     "CloseBtnAriaLabel": "Zamknij okno"
