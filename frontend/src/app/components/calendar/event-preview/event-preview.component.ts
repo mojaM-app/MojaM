@@ -7,7 +7,7 @@ import {
   MatDialogContent,
   MatDialogTitle,
 } from '@angular/material/dialog';
-import { CalendarEvent } from 'src/app/components/calendar/interfaces/calendar-event';
+import { ICalendarEvent } from 'src/app/components/calendar/interfaces/calendar-event';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { CultureService } from 'src/services/translate/culture.service';
 import { TranslationService } from 'src/services/translate/translation.service';
@@ -32,7 +32,7 @@ export class EventPreviewComponent {
   private readonly _data = inject(MAT_DIALOG_DATA);
 
   public constructor(cultureService: CultureService, translationService: TranslationService) {
-    const event: CalendarEvent = this._data.event;
+    const event: ICalendarEvent = this._data.event;
     this.model = new EventPreviewModel(event, cultureService, translationService);
   }
 }

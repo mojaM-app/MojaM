@@ -1,6 +1,6 @@
-import { CalendarEvent as calCalendarEvent } from 'angular-calendar';
+import { CalendarEvent } from 'angular-calendar';
 
-export interface ICalendarEvent {
+export interface ICalendarEventDto {
   start: string | null | undefined;
   end: string | null | undefined;
   title: string | null | undefined;
@@ -8,6 +8,6 @@ export interface ICalendarEvent {
   allDay: boolean | null | undefined;
 }
 
-export interface CalendarEvent extends calCalendarEvent {
+export interface ICalendarEvent extends CalendarEvent {
   location?: string | null;
 }

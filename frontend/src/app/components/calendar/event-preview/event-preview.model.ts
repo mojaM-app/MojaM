@@ -1,4 +1,4 @@
-import { CalendarEvent } from 'src/app/components/calendar/interfaces/calendar-event';
+import { ICalendarEvent } from 'src/app/components/calendar/interfaces/calendar-event';
 import { CultureService } from 'src/services/translate/culture.service';
 import { TranslationService } from 'src/services/translate/translation.service';
 import { UrlUtils } from 'src/utils/url.utils';
@@ -8,7 +8,7 @@ export class EventPreviewModel {
   public readonly content?: string;
 
   public constructor(
-    event: CalendarEvent,
+    event: ICalendarEvent,
     cultureService: CultureService,
     translationService: TranslationService
   ) {
@@ -16,7 +16,7 @@ export class EventPreviewModel {
     this.content = this.getContent(event, cultureService, translationService);
   }
 
-  private getTitle(event: CalendarEvent, cultureService: CultureService): string {
+  private getTitle(event: ICalendarEvent, cultureService: CultureService): string {
     return event.start.toLocaleDateString(cultureService.currentCulture, {
       weekday: 'long',
       year: 'numeric',
@@ -26,7 +26,7 @@ export class EventPreviewModel {
   }
 
   private getContent(
-    event: CalendarEvent,
+    event: ICalendarEvent,
     cultureService: CultureService,
     translationService: TranslationService
   ): string {

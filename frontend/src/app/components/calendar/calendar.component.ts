@@ -20,7 +20,7 @@ import { ViewPeriod } from 'calendar-utils';
 import { debounceTime } from 'rxjs';
 import { IS_MOBILE } from 'src/app/app.config';
 import { CalendarService } from 'src/app/components/calendar/services/calendar.service';
-import { CalendarEvent } from 'src/app/components/calendar/interfaces/calendar-event';
+import { ICalendarEvent } from 'src/app/components/calendar/interfaces/calendar-event';
 import { DialogService } from 'src/services/dialog/dialog.service';
 import { CultureService } from 'src/services/translate/culture.service';
 import { CustomDateFormatter } from './date-formatters/custom.date.formatter';
@@ -48,25 +48,25 @@ import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
   standalone: false,
 })
 export class CalendarComponent extends WithUnsubscribe() {
-  public readonly weekStartsOn: number = DAYS_OF_WEEK.MONDAY;
-  public readonly weekendDays: number[] = [DAYS_OF_WEEK.SATURDAY, DAYS_OF_WEEK.SUNDAY];
+  protected readonly weekStartsOn: number = DAYS_OF_WEEK.MONDAY;
+  protected readonly weekendDays: number[] = [DAYS_OF_WEEK.SATURDAY, DAYS_OF_WEEK.SUNDAY];
 
-  public CalendarView = CalendarView;
-  public view = signal<CalendarView>(CalendarView.Month);
-  public viewDate = signal<Date>(new Date());
-  public events = signal<CalendarEvent[]>([]);
-  public locale = signal<string>(CultureService.DefaultCulture);
+  protected readonly CalendarView = CalendarView;
+  protected readonly view = signal<CalendarView>(CalendarView.Month);
+  protected readonly viewDate = signal<Date>(new Date());
+  protected readonly events = signal<ICalendarEvent[]>([]);
+  protected readonly locale = signal<string>(CultureService.DefaultCulture);
 
-  private _calendarMonth = viewChild(CalendarMonthViewComponent);
-  private _calendarWeek = viewChild(CalendarWeekViewComponent);
-  private _calendarDay = viewChild(CalendarDayViewComponent);
+  private readonly _calendarMonth = viewChild(CalendarMonthViewComponent);
+  private readonly _calendarWeek = viewChild(CalendarWeekViewComponent);
+  private readonly _calendarDay = viewChild(CalendarDayViewComponent);
 
   public constructor(
-    @Inject(IS_MOBILE) public isMobile: boolean,
+    @Inject(IS_MOBILE) protected readonly isMobile: boolean,
+    private readonly _dateAdapter: DateAdapter,
+    private readonly _calendarService: CalendarService,
+    private readonly _dialogService: DialogService,
     cultureService: CultureService,
-    private _dateAdapter: DateAdapter,
-    private _calendarService: CalendarService,
-    private _dialogService: DialogService,
     pullToRefreshService: PullToRefreshService
   ) {
     super();
@@ -89,23 +89,23 @@ export class CalendarComponent extends WithUnsubscribe() {
     });
   }
 
-  public viewDateChange(date: Date): void {
+  protected viewDateChange(date: Date): void {
     this.viewDate.set(date);
   }
 
-  public setView(view: CalendarView): void {
+  protected setView(view: CalendarView): void {
     this.view.set(view);
   }
 
-  public setNextView(): void {
+  protected setNextView(): void {
     this.setNewViewDate();
   }
 
-  public setPrevView(): void {
+  protected setPrevView(): void {
     this.setNewViewDate(true);
   }
 
-  public showMonthEvent(event: CalendarEvent): void {
+  protected showMonthEvent(event: ICalendarEvent): void {
     this._dialogService.open(EventPreviewComponent, {
       data: {
         event: event,
@@ -114,11 +114,11 @@ export class CalendarComponent extends WithUnsubscribe() {
     });
   }
 
-  public showWeekDayEvent({
+  protected showWeekDayEvent({
     event,
     sourceEvent,
   }: {
-    event: CalendarEvent;
+    event: ICalendarEvent;
     sourceEvent: MouseEvent | KeyboardEvent;
   }): void {
     sourceEvent.preventDefault();
@@ -165,7 +165,7 @@ export class CalendarComponent extends WithUnsubscribe() {
       this._calendarService
         .getEvents(period!.start, period!.end)
         .pipe(debounceTime(200))
-        .subscribe((events: CalendarEvent[]) => {
+        .subscribe((events: ICalendarEvent[]) => {
           this.events.set(events);
         })
     );

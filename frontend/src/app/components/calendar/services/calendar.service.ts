@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import {
-  CalendarEvent,
   ICalendarEvent,
+  ICalendarEventDto,
 } from 'src/app/components/calendar/interfaces/calendar-event';
 import { BaseService } from '../../../../services/common/base.service';
 import { HttpClientService } from '../../../../services/common/httpClient.service';
@@ -19,15 +19,15 @@ export class CalendarService extends BaseService {
     super();
   }
 
-  public getEvents(start: Date, end: Date): Observable<CalendarEvent[]> {
+  public getEvents(start: Date, end: Date): Observable<ICalendarEvent[]> {
     return this._httpClient
       .request()
       .withUrl(this.API_ROUTES.calendar.getEvents())
       .withParams({ start: start.toISOString(), end: end.toISOString() })
-      .get<ICalendarEvent[]>()
+      .get<ICalendarEventDto[]>()
       .pipe(
         this._spinnerService.waitForSubscription(),
-        map((events: ICalendarEvent[]) => {
+        map((events: ICalendarEventDto[]) => {
           return events.map(event => {
             return {
               start: this.toDateTime(event.start) ?? new Date(),
@@ -35,7 +35,7 @@ export class CalendarService extends BaseService {
               title: event.title ?? '',
               allDay: event.allDay ?? false,
               location: event.location,
-            } satisfies CalendarEvent;
+            } satisfies ICalendarEvent;
           });
         })
       );
