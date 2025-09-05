@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, signal } from '@angular/core';
 import { IS_MOBILE } from 'src/app/app.config';
+import { BulletinView } from '../enums/bulletin-view.enum';
 
 @Component({
   selector: 'app-bulletin-views',
@@ -9,5 +10,8 @@ import { IS_MOBILE } from 'src/app/app.config';
   standalone: false,
 })
 export class BulletinViewsComponent {
-  public constructor(@Inject(IS_MOBILE) protected isMobile: boolean) {}
+  protected BulletinView = BulletinView;
+  protected view = signal<BulletinView>(BulletinView.Calendar);
+
+  public constructor(@Inject(IS_MOBILE) protected readonly isMobile: boolean) {}
 }

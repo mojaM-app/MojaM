@@ -1,5 +1,5 @@
 import { REGEX_PATTERNS } from '@config';
-import { type IRoutes } from '@core';
+import { type IRoutes, RouteConstants } from '@core';
 import { requirePermission, setIdentity, validateData } from '@middlewares';
 import { default as express } from 'express';
 import { BulletinController } from '../controllers/bulletin.controller';
@@ -7,7 +7,8 @@ import { CreateBulletinDto } from '../dtos/create-bulletin.dto';
 import { UpdateBulletinDto } from '../dtos/update-bulletin.dto';
 
 export class BulletinRoutes implements IRoutes {
-  public static path = '/bulletin';
+  public static path = RouteConstants.BULLETIN_PATH;
+  public static publishPath = RouteConstants.BULLETIN_PUBLISH_PATH;
 
   public router = express.Router();
 
@@ -38,7 +39,7 @@ export class BulletinRoutes implements IRoutes {
     );
 
     this.router.post(
-      `${BulletinRoutes.path}/:id(${REGEX_PATTERNS.GUID})/publish`,
+      `${BulletinRoutes.path}/:id(${REGEX_PATTERNS.GUID})/${BulletinRoutes.publishPath}`,
       [setIdentity, requirePermission(user => user.canPublishBulletin())],
       this._bulletinController.publish,
     );

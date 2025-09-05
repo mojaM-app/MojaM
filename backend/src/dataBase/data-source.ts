@@ -18,6 +18,7 @@ import { BulletinDaySection } from './entities/bulletin/bulletin-day-section.ent
 import { BulletinDay } from './entities/bulletin/bulletin-day.entity';
 import { Bulletin } from './entities/bulletin/bulletin.entity';
 import { vBulletin } from './entities/bulletin/vBulletin.entity';
+import { vBulletinDay } from './entities/bulletin/vBulletinDay.entity';
 import { Log } from './entities/logs/log.entity';
 import { vLog } from './entities/logs/vLog.entity';
 import { SystemPermission } from './entities/permissions/system-permission.entity';
@@ -48,6 +49,7 @@ export const AppDataSource = new DbContext({
     BulletinDay,
     BulletinDaySection,
     vBulletin,
+    vBulletinDay,
     Log,
     vLog,
   ],

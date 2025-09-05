@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   Generated,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -77,6 +78,7 @@ export class Bulletin implements IBulletinEntity, ICreateBulletin, IUpdateBullet
   })
   public number: number | null = null;
 
+  @Index('IX_Bulletin_Introduction_Fulltext', { fulltext: true })
   @Column({
     name: 'Introduction',
     type: 'text',
@@ -84,6 +86,7 @@ export class Bulletin implements IBulletinEntity, ICreateBulletin, IUpdateBullet
   })
   public introduction: string | null = null;
 
+  @Index('IX_Bulletin_TipsForWork_Fulltext', { fulltext: true })
   @Column({
     name: 'TipsForWork',
     type: 'text',
@@ -91,6 +94,7 @@ export class Bulletin implements IBulletinEntity, ICreateBulletin, IUpdateBullet
   })
   public tipsForWork: string | null = null;
 
+  @Index('IX_Bulletin_DailyPrayer_Fulltext', { fulltext: true })
   @Column({
     name: 'DailyPrayer',
     type: 'text',
@@ -136,9 +140,10 @@ export class Bulletin implements IBulletinEntity, ICreateBulletin, IUpdateBullet
   @UpdateDateColumn({
     name: 'UpdatedAt',
     precision: 0,
-    nullable: false,
+    nullable: true,
     type: 'timestamp',
     default: EntityDefaultFunctions.defaultCurrentTimestampPrecision0,
+    onUpdate: 'CURRENT_TIMESTAMP',
   })
   public updatedAt!: Date;
 

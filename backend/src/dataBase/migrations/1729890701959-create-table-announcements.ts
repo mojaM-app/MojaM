@@ -32,7 +32,7 @@ export class CreateTableAnnouncements1729890701959 implements MigrationInterface
         \`UpdatedAt\` timestamp(3) NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
         \`UpdatedById\` int NULL,
         \`AnnouncementId\` int NOT NULL,
-        FULLTEXT INDEX \`IXD_AnnouncementItem_Content_Fulltext\` (\`Content\`),
+        FULLTEXT INDEX \`IX_AnnouncementItem_Content_Fulltext\` (\`Content\`),
         PRIMARY KEY (\`Id\`)
       ) ENGINE=InnoDB
     `);
@@ -133,7 +133,7 @@ export class CreateTableAnnouncements1729890701959 implements MigrationInterface
     await queryRunner.query('ALTER TABLE `announcements` DROP FOREIGN KEY `FK_Announcement_CreatedById_To_User`');
 
     // Drop indexes and tables
-    await queryRunner.query('DROP INDEX `IXD_AnnouncementItem_Content_Fulltext` ON `announcement_items`');
+    await queryRunner.query('DROP INDEX `IX_AnnouncementItem_Content_Fulltext` ON `announcement_items`');
     await queryRunner.query('DROP TABLE `announcement_items`');
     await queryRunner.query('DROP INDEX `UQ_Announcement_Uuid` ON `announcements`');
     await queryRunner.query('DROP TABLE `announcements`');

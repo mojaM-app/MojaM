@@ -30,7 +30,7 @@ export class BulletinHelpers {
 
   public async publish(id: string, accessToken?: string): Promise<Response> {
     return await request(this.app.getServer())
-      .post(`${BulletinRoutes.path}/${id}/publish`)
+      .post(`${BulletinRoutes.path}/${id}/${BulletinRoutes.publishPath}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send();
   }

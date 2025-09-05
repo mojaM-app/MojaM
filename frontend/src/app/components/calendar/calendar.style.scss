@@ -3,8 +3,18 @@
     width: 10px;
     padding: 0 0.125rem;
 
-    &.cal-out-month .cal-day-number {
-      opacity: 0.5;
+    &.cal-out-month {
+      .cal-day-number {
+        opacity: 0.5;
+      }
+
+      &.cal-disabled {
+        pointer-events: none;
+
+        .cal-day-number {
+          opacity: 0.3;
+        }
+      }
     }
 
     &.cal-today .cal-day-number {
@@ -16,9 +26,19 @@
     }
   }
 
-  .cal-month-view .cal-day-number {
-    opacity: 1;
-    font-size: 1rem;
+  .cal-month-view {
+    .cal-day-number {
+      opacity: 1;
+      font-size: 1rem;
+    }
+
+    .cal-disabled {
+      pointer-events: none;
+
+      .cal-day-number {
+        opacity: 0.3;
+      }
+    }
   }
 
   mwl-calendar-week-view-event {

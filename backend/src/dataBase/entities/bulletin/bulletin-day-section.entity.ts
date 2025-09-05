@@ -8,6 +8,7 @@ import {
   CreateDateColumn,
   Entity,
   Generated,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -59,6 +60,7 @@ export class BulletinDaySection
     name: 'Order',
     type: 'int',
     nullable: false,
+    default: 0,
   })
   public order!: number;
 
@@ -70,6 +72,7 @@ export class BulletinDaySection
   })
   public type!: string;
 
+  @Index('IX_BulletinDaySection_Title_Fulltext', { fulltext: true })
   @Column({
     name: 'Title',
     type: 'varchar',
@@ -78,6 +81,7 @@ export class BulletinDaySection
   })
   public title: string | null = null;
 
+  @Index('IX_BulletinDaySection_Content_Fulltext', { fulltext: true })
   @Column({
     name: 'Content',
     type: 'text',
@@ -129,9 +133,10 @@ export class BulletinDaySection
   @UpdateDateColumn({
     name: 'UpdatedAt',
     precision: 0,
-    nullable: false,
+    nullable: true,
     type: 'timestamp',
     default: EntityDefaultFunctions.defaultCurrentTimestampPrecision0,
+    onUpdate: 'CURRENT_TIMESTAMP',
   })
   public updatedAt!: Date;
 

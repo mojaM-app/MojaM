@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   Generated,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -52,6 +53,7 @@ export class BulletinDay implements IBulletinDayEntity, ICreateBulletinDay, IUpd
   @Generated('uuid')
   public uuid!: string;
 
+  @Index('IX_BulletinDay_Title_Fulltext', { fulltext: true })
   @Column({
     name: 'Title',
     type: 'varchar',
@@ -110,9 +112,10 @@ export class BulletinDay implements IBulletinDayEntity, ICreateBulletinDay, IUpd
   @UpdateDateColumn({
     name: 'UpdatedAt',
     precision: 0,
-    nullable: false,
+    nullable: true,
     type: 'timestamp',
     default: EntityDefaultFunctions.defaultCurrentTimestampPrecision0,
+    onUpdate: 'CURRENT_TIMESTAMP',
   })
   public updatedAt!: Date;
 

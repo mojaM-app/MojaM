@@ -6,6 +6,11 @@
     <main>
       <div class="card-body">
         <app-bulletin-views-header></app-bulletin-views-header>
+        @switch (view()) {
+          @case (BulletinView.Calendar) {
+            <app-bulletin-views-calendar></app-bulletin-views-calendar>
+          }
+        }
       </div>
     </main>
   </div>

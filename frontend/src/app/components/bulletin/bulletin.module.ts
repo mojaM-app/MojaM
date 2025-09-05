@@ -11,6 +11,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
+import { BulletinViewsCalendarComponent } from './bulletin-views/bulletin-views-calendar/bulletin-views-calendar.component';
+import { DateAdapter, CalendarModule as ngCalendarModule } from 'angular-calendar';
+import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 
 @NgModule({
   declarations: [BulletinViewsComponent],
@@ -18,6 +21,7 @@ import { MatButtonModule } from '@angular/material/button';
     CommonModule,
     BulletinRoutingModule,
     BulletinViewsHeaderComponent,
+    BulletinViewsCalendarComponent,
     MatButtonModule,
     MatToolbarModule,
     MatTabsModule,
@@ -26,6 +30,10 @@ import { MatButtonModule } from '@angular/material/button';
     RouterModule,
     PipesModule,
     DirectivesModule,
+    ngCalendarModule.forRoot({
+      provide: DateAdapter,
+      useFactory: adapterFactory,
+    }),
   ],
 })
 export class BulletinModule {}

@@ -5,6 +5,10 @@ export class RouteConstants {
   // Auth routes
   public static readonly AUTH_RESET_PASSCODE = 'reset-passcode';
 
+  // Bulletin routes
+  public static readonly BULLETIN_PATH = '/bulletin';
+  public static readonly BULLETIN_PUBLISH_PATH = 'publish';
+
   // Announcement routes
   public static readonly ANNOUNCEMENTS_PATH = '/announcements';
   public static readonly ANNOUNCEMENTS_PUBLISH_PATH = 'publish';

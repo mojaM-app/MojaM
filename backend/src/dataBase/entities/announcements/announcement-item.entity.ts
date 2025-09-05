@@ -24,7 +24,7 @@ export class AnnouncementItem implements ICreateAnnouncementItem, IUpdateAnnounc
   })
   public id: string;
 
-  @Index('IXD_AnnouncementItem_Content_Fulltext', { fulltext: true })
+  @Index('IX_AnnouncementItem_Content_Fulltext', { fulltext: true })
   @Column({
     name: 'Content',
     type: 'text',

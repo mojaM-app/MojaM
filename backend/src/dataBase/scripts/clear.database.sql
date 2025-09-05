@@ -1,10 +1,12 @@
 DROP VIEW IF EXISTS
+vbulletindays,
 vbulletins,
 vannouncements,
 vlogs,
 vusers;
 
 DROP VIEW IF EXISTS
+vBulletinDays,
 vBulletins,
 vAnnouncements,
 vLogs,

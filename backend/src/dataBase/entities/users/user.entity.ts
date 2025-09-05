@@ -4,6 +4,7 @@ import {
   CreateDateColumn,
   Entity,
   Generated,
+  Index,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -47,6 +48,7 @@ export class User implements IHasGuidId, ICreateUser, IUpdateUser, IUserEntity {
   @Generated('uuid')
   public uuid: string;
 
+  @Index('IX_User_Email')
   @Column({
     name: 'Email',
     type: 'varchar',
@@ -63,6 +65,7 @@ export class User implements IHasGuidId, ICreateUser, IUpdateUser, IUserEntity {
   })
   public emailConfirmed: boolean;
 
+  @Index('IX_User_Phone')
   @Column({
     name: 'Phone',
     type: 'varchar',

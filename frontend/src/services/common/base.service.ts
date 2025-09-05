@@ -41,6 +41,11 @@ export class BaseService {
       path: 'bulletin-list',
       get: (): string => `${environment.backendUrl}/${this.API_ROUTES.bulletinList.path}`,
     },
+    bulletinCalendarView: {
+      path: 'bulletin-calendar-view',
+      getMinMaxDate: (): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.bulletinCalendarView.path}/min-max-date`,
+    },
     calendar: {
       path: 'calendar',
       getEvents: (): string => `${environment.backendUrl}/${this.API_ROUTES.calendar.path}/events`,

@@ -1,0 +1,116 @@
+<div class="content" swipe (swipeNext)="setNextView()" (swipePrev)="setPrevView()">
+  <div class="row clearfix calendar-header text-center">
+    <!-- <div class="col-md-4 col-sm-3 d-sm-block d-none text-start">
+      <div class="btn-group">
+        <button
+          mat-flat-button
+          class="button"
+          type="button"
+          (click)="setView(CalendarView.Month)"
+          [class.active]="view() === CalendarView.Month">
+          <mat-icon>calendar_view_month</mat-icon>
+          <span class="d-none d-lg-inline mx-lg-2 lh-1">{{
+            'Calendar/CalendarView/Month' | gmessage
+          }}</span>
+        </button>
+        <button
+          mat-flat-button
+          class="button"
+          type="button"
+          (click)="setView(CalendarView.Week)"
+          [class.active]="view() === CalendarView.Week">
+          <mat-icon>calendar_view_week</mat-icon>
+          <span class="d-none d-lg-inline mx-lg-2 lh-1">{{
+            'Calendar/CalendarView/Week' | gmessage
+          }}</span>
+        </button>
+        <button
+          mat-flat-button
+          class="button"
+          type="button"
+          (click)="setView(CalendarView.Day)"
+          [class.active]="view() === CalendarView.Day">
+          <mat-icon>calendar_view_day</mat-icon>
+          <span class="d-none d-lg-inline mx-lg-2 lh-1">{{
+            'Calendar/CalendarView/Day' | gmessage
+          }}</span>
+        </button>
+      </div>
+    </div> -->
+    <div
+      class="col-md-4 col-sm-6 col-8 d-inline-flex align-items-center justify-content-center fw-semibold">
+      {{ viewDate() | calendarDate: view() + 'ViewTitle' : locale() : weekStartsOn }}
+    </div>
+    <div class="col-md-4 col-sm-3 col-2 text-end">
+      <div class="btn-group">
+        <button
+          mat-flat-button
+          class="button d-none d-sm-inline-flex"
+          mwlCalendarPreviousView
+          type="button"
+          [view]="view()"
+          [viewDate]="viewDate()"
+          (viewDateChange)="viewDateChange($event)"
+          [disabled]="btnPrevDisabled()">
+          <mat-icon>arrow_back_ios_new</mat-icon>
+          <span class="d-none d-lg-inline mx-lg-2 lh-1">{{ 'Calendar/Prev' | gmessage }}</span>
+        </button>
+        <button
+          mat-flat-button
+          class="button"
+          mwlCalendarToday
+          type="button"
+          [viewDate]="viewDate()"
+          (viewDateChange)="viewDateChange($event)">
+          <mat-icon>today</mat-icon>
+          <span class="d-none d-md-inline mx-lg-2 lh-1">{{ 'Calendar/Today' | gmessage }}</span>
+        </button>
+        <button
+          mat-flat-button
+          class="button d-none d-sm-inline-flex"
+          mwlCalendarNextView
+          type="button"
+          [view]="view()"
+          [viewDate]="viewDate()"
+          (viewDateChange)="viewDateChange($event)"
+          [disabled]="btnNextDisabled()">
+          <span class="d-none d-lg-inline mx-lg-2 lh-1">{{ 'Calendar/Next' | gmessage }}</span>
+          <mat-icon>arrow_forward_ios</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #monthViewCellTemplate let-day="day" let-locale="locale">
+    <div class="cal-day-number mx-0 my-2 p-0 text-center">
+      {{ day.date | calendarDate: 'monthViewDayNumber' : locale }}
+    </div>
+    <!-- @if (day.events?.length > 0) {
+      @for (event of day.events; track event) {
+        <div class="cal-week-view border-0 bg-transparent">
+          <div class="cal-event cell-month-day text-nowrap">
+            <div
+              class="cal-event-title"
+              (click)="showMonthEvent(event)"
+              (keyup.enter)="showMonthEvent(event)"
+              tabindex="0">
+              {{ event.title }}
+            </div>
+          </div>
+        </div>
+      }
+    } -->
+  </ng-template>
+
+  <div class="calendar-container">
+    <mwl-calendar-month-view
+      [viewDate]="viewDate()"
+      [events]="events()"
+      [locale]="locale()"
+      [weekStartsOn]="weekStartsOn"
+      [weekendDays]="weekendDays"
+      [cellTemplate]="monthViewCellTemplate"
+      (beforeViewRender)="beforeMonthViewRender($event)">
+    </mwl-calendar-month-view>
+  </div>
+</div>
