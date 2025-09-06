@@ -257,6 +257,10 @@
     .ql-size-huge {
       font-size: 2.5rem;
     }
+
+    &.ql-align-right {
+      text-align: right;
+    }
   }
 
   pre {

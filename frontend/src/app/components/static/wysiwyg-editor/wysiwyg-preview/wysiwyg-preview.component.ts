@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, input, ElementRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, ElementRef, computed } from '@angular/core';
 import { SnackBarService } from '../../snackbar/snack-bar.service';
+import { WysiwygUtils } from '../wysiwyg.utils';
 
 @Component({
   selector: 'app-wysiwyg-preview',
@@ -10,11 +11,14 @@ import { SnackBarService } from '../../snackbar/snack-bar.service';
 })
 export class WysiwygPreviewComponent {
   public readonly content = input.required<string>();
+  protected readonly displayedContent = computed(() => {
+    return WysiwygUtils.fixConjunctions(WysiwygUtils.clearContent(this.content()));
+  });
 
   private _longPressTimer: number | null = null;
 
   public constructor(
-    private _elementRef: ElementRef,
+    private readonly _elementRef: ElementRef,
     private readonly _snackBarService: SnackBarService
   ) {}
 
