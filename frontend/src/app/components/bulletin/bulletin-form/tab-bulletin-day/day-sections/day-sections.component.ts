@@ -24,6 +24,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { SectionsHelpDialogComponent } from './sections-help-dialog/sections-help-dialog.component';
 import { DaySectionComponent } from './day-section/day-section.component';
 import { DirectivesModule } from 'src/directives/directives.module';
+import { IDialogSettings } from 'src/core/interfaces/common/dialog.settings';
 
 @Component({
   selector: 'app-day-sections',
@@ -106,5 +107,30 @@ export class DaySectionsComponent {
 
   protected controlHasErrors(control: AbstractControl): boolean {
     return control && control.invalid && (control.dirty || control.touched);
+  }
+
+  protected confirmDeleteSection(): void {
+    const section = this.selectedSection();
+    if (section) {
+      this._dialogService
+        .confirm({
+          message: { text: 'Bulletin/Form/TabBulletinDay/Section/DeleteConfirmText' },
+          noBtnText: 'Shared/BtnCancel',
+          yesBtnText: 'Shared/BtnDelete',
+        } satisfies IDialogSettings)
+        .then((result: boolean) => {
+          if (result === true) {
+            this.deleteSection(section);
+          }
+        });
+    }
+  }
+
+  private deleteSection(section: FormGroup<IBulletinDaySectionForm>): void {
+    const index = this.sections().controls.indexOf(section);
+    if (index !== -1) {
+      this.sections().removeAt(index);
+      this.selectedSection.set(undefined);
+    }
   }
 }

@@ -266,7 +266,9 @@
           "ContentPlaceholder": "Wprowadź treść sekcji",
           "ContentHint": "Treść sekcji widoczna w wersji mobilnej oraz w wersji PDF, jeżeli sekcja ma trafiać do PDF",
           "ContentRequiredError": "Treść sekcji jest wymagana",
-          "ContentMaxLengthError": "Treść sekcji nie może przekraczać {maxLength} znaków"
+          "ContentMaxLengthError": "Treść sekcji nie może przekraczać {maxLength} znaków",
+          "DeleteButton": "Usuń sekcję",
+          "DeleteConfirmText": "Czy na pewno chcesz usunąć powyższą sekcję?"
         }
       }
     },

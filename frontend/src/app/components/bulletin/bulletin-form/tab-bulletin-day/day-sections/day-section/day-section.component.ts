@@ -5,6 +5,7 @@ import {
   forwardRef,
   input,
   model,
+  output,
 } from '@angular/core';
 import {
   AbstractControl,
@@ -49,6 +50,7 @@ import { TranslationService } from 'src/services/translate/translation.service';
 export class DaySectionComponent {
   public readonly bulletinProperties = input.required<FormGroup<IBulletinPropertiesForm>>();
   public readonly formGroup = model<FormGroup<IBulletinDaySectionForm> | undefined>(undefined);
+  public readonly deleteSection = output<void>();
 
   protected readonly isTitleReadOnly = computed<boolean>(() => {
     const sectionType = this.formGroup()?.controls.type.value;
@@ -86,5 +88,9 @@ export class DaySectionComponent {
 
   protected getControlErrors(control: AbstractControl): ValidationErrors {
     return control?.errors ?? {};
+  }
+
+  protected onDeleteClick(): void {
+    this.deleteSection.emit();
   }
 }

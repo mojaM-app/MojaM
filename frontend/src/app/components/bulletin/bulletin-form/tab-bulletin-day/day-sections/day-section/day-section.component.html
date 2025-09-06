@@ -87,6 +87,14 @@
       </div>
     </div>
   }
+  <div class="row mb-3">
+    <div class="col-12 d-flex justify-content-end">
+      <button mat-raised-button color="accent" type="button" (click)="onDeleteClick()">
+        <mat-icon>delete</mat-icon>
+        {{ 'Bulletin/Form/TabBulletinDay/Section/DeleteButton' | gmessage }}
+      </button>
+    </div>
+  </div>
 } @else {
   <p>{{ 'Bulletin/Form/TabBulletinDay/NoSectionSelected' | gmessage }}</p>
 }

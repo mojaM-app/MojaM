@@ -88,6 +88,7 @@
   <div class="col-12 col-md-6 col-lg-7 col-xl-8">
     <app-day-section
       [formGroup]="selectedSection()"
-      [bulletinProperties]="bulletinProperties()"></app-day-section>
+      [bulletinProperties]="bulletinProperties()"
+      (deleteSection)="confirmDeleteSection()"></app-day-section>
   </div>
 </div>
