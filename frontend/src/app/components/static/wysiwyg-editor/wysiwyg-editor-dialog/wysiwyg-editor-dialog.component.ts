@@ -23,5 +23,5 @@ import { WysiwygEditorComponent } from '../wysiwyg-editor/wysiwyg-editor.compone
 export class WysiwygEditorPopupComponent {
   private readonly _data = inject(MAT_DIALOG_DATA) as { content: string };
 
-  public readonly content = model(this._data.content);
+  protected readonly content = model(this._data.content);
 }

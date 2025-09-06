@@ -24,8 +24,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { SectionsHelpDialogComponent } from './sections-help-dialog/sections-help-dialog.component';
 import { DaySectionComponent } from './day-section/day-section.component';
 import { DirectivesModule } from 'src/directives/directives.module';
-import { TranslationService } from 'src/services/translate/translation.service';
-import { DaySections } from './day-sections';
 
 @Component({
   selector: 'app-day-sections',
@@ -49,7 +47,9 @@ export class DaySectionsComponent {
   public readonly bulletinProperties = input.required<FormGroup<IBulletinPropertiesForm>>();
   protected readonly sectionControls = computed(() => this.sections().controls);
   protected sectionTypes = SectionType;
-  protected readonly section = signal<FormGroup<IBulletinDaySectionForm> | undefined>(undefined);
+  protected readonly selectedSection = signal<FormGroup<IBulletinDaySectionForm> | undefined>(
+    undefined
+  );
 
   public constructor(
     private readonly _bulletinFormBuilder: BulletinFormBuilder,
@@ -72,6 +72,9 @@ export class DaySectionsComponent {
     this._dialogService
       .open(AddDaySectionDialogComponent, {
         width: '50%',
+        data: {
+          currentSections: this.sectionControls().map(s => s.value.type),
+        },
       })
       .afterClosed()
       .subscribe((section: SectionType) => {
@@ -94,11 +97,11 @@ export class DaySectionsComponent {
   }
 
   protected editSection(section: FormGroup<IBulletinDaySectionForm>): void {
-    this.section.set(section);
+    this.selectedSection.set(section);
   }
 
   protected isSelected(section: FormGroup<IBulletinDaySectionForm>): boolean {
-    return this.section() === section;
+    return this.selectedSection() === section;
   }
 
   protected controlHasErrors(control: AbstractControl): boolean {
