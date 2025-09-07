@@ -242,7 +242,7 @@
         "AddSectionDialog": {
           "Title": "Dodaj sekcję",
           "Description": "Wybierz rodzaj sekcji, jaką chcesz dodać do dnia formacji.",
-          "Hint": "Niektóre sekcje są powiązane z właściwościami biuletynu (zakładka 'Właściwości') i mogą być niedostępne do wyboru, jeżeli nie mają ustawionej treści. Sekcja 'Dowolny tekst' jest zawsze dostępna do wyboru.",
+          "Hint": "Niektóre sekcje są powiązane z właściwościami biuletynu (zakładka 'Właściwości') i mogą być niedostępne do wyboru, jeżeli nie mają ustawionej treści.",
           "SelectSectionLabel": "Wybierz sekcję",
           "SectionTypes": {
             "introduction": "Wprowadzenie do biuletynu",
