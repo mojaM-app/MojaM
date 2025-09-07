@@ -30,11 +30,11 @@ export class DialogService {
   public openComponentDialog<T>(
     component: Type<T>,
     componentData?: Partial<T> | undefined,
-    config?: MatDialogConfig
+    config?: MatDialogConfig & { title?: string }
   ): MatDialogRef<BaseDialogComponent> {
     return this._dialog.open(BaseDialogComponent, {
       ...config,
-      data: { component, componentData },
+      data: { component, componentData, title: config?.title },
       restoreFocus: false,
     });
   }
