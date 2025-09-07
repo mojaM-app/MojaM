@@ -1,3 +1,5 @@
+import { StringUtils } from 'src/utils/string.utils';
+
 export class WysiwygUtils {
   public static clearContent(content: string | null | undefined): string {
     return (content ?? '')
@@ -13,5 +15,9 @@ export class WysiwygUtils {
     const input = (content ?? '').trim();
     const regex = new RegExp(`(^|\\s)(${conjunctions.join('|')})\\s+`, 'gi');
     return input.replace(regex, `$1$2&nbsp;`);
+  }
+
+  public static isEmpty(content: string | null | undefined): boolean {
+    return !content || StringUtils.isEmpty(WysiwygUtils.clearContent(content));
   }
 }

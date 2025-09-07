@@ -6,7 +6,6 @@ import {
   IBulletinForm,
   IBulletinPropertiesForm,
 } from '../bulletin-form/bulletin.form';
-import { WysiwygUtils } from '../../static/wysiwyg-editor/wysiwyg.utils';
 
 export class BulletinDaySectionDto {
   public id?: string;

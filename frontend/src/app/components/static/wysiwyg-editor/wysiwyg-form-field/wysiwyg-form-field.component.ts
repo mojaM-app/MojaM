@@ -102,7 +102,7 @@ export class WysiwygFormFieldComponent
 
   public get empty(): boolean {
     const val = this._value();
-    return !val || StringUtils.isEmpty(WysiwygUtils.clearContent(val));
+    return WysiwygUtils.isEmpty(val);
   }
 
   public get shouldLabelFloat(): boolean {

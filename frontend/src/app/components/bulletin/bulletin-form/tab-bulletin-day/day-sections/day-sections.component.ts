@@ -25,6 +25,7 @@ import { SectionsHelpDialogComponent } from './sections-help-dialog/sections-hel
 import { DaySectionComponent } from './day-section/day-section.component';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { IDialogSettings } from 'src/core/interfaces/common/dialog.settings';
+import { BulletinDaySectionDto } from '../../../models/bulletin.model';
 
 @Component({
   selector: 'app-day-sections',
@@ -75,6 +76,7 @@ export class DaySectionsComponent {
         width: '50%',
         data: {
           currentSections: this.sectionControls().map(s => s.value.type),
+          bulletinProperties: this.bulletinProperties(),
         },
       })
       .afterClosed()
@@ -82,8 +84,10 @@ export class DaySectionsComponent {
         if (section) {
           const newSection = this._bulletinFormBuilder.createDaySection({
             type: section,
-          });
+          } satisfies Partial<BulletinDaySectionDto>);
+          newSection.markAsTouched();
           this.sections().push(newSection);
+          this.sections().markAsTouched();
           this.editSection(newSection);
           this._changeDetectorRef.markForCheck();
           this._changeDetectorRef.detectChanges();

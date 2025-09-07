@@ -2,7 +2,32 @@
   @if (isContentReadOnly()) {
     <div class="row mb-3">
       <div class="col-12">
-        {{ sectionDefaultTitle() }}
+        <div
+          class="mat-mdc-form-field w-100 mat-mdc-form-field-type-mat-input mat-form-field-appearance-fill mat-primary">
+          <div class="mat-mdc-text-field-wrapper mdc-text-field mdc-text-field--filled">
+            <div class="mat-mdc-form-field-flex">
+              <div class="mat-mdc-form-field-infix">
+                <div
+                  class="mdc-floating-label mat-mdc-floating-label mdc-floating-label--float-above">
+                  {{ 'Bulletin/Form/TabBulletinDay/Section/Title' | gmessage }}
+                </div>
+                <div
+                  class="mat-mdc-input-element mat-mdc-form-field-input-control mdc-text-field__input cdk-text-field-autofill-monitored">
+                  {{ sectionDefaultTitle() }}
+                </div>
+              </div>
+            </div>
+            <div class="mdc-line-ripple mdc-line-ripple--deactivating"></div>
+          </div>
+          <div
+            class="mat-mdc-form-field-subscript-wrapper mat-mdc-form-field-bottom-align mat-mdc-form-field-subscript-dynamic-size">
+            <div class="mat-mdc-form-field-hint-wrapper">
+              <div class="mat-mdc-form-field-hint mat-mdc-form-field-bottom-align">
+                {{ 'Bulletin/Form/TabBulletinDay/Section/TitleHint' | gmessage }}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -89,7 +114,17 @@
   }
   <div class="row mb-3">
     <div class="col-12 d-flex justify-content-end">
-      <button mat-raised-button color="accent" type="button" (click)="onDeleteClick()">
+      <button
+        mat-raised-button
+        color="accent"
+        type="button"
+        (click)="openOptionsDialog()"
+        class="me-3">
+        <mat-icon>edit_attributes</mat-icon>
+        {{ 'Bulletin/Form/TabBulletinDay/Section/OptionsButton' | gmessage }}
+      </button>
+
+      <button mat-raised-button color="warn" type="button" (click)="onDeleteClick()">
         <mat-icon>delete</mat-icon>
         {{ 'Bulletin/Form/TabBulletinDay/Section/DeleteButton' | gmessage }}
       </button>

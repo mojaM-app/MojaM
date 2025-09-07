@@ -9,6 +9,8 @@
   </button>
 </div>
 <mat-dialog-content>
+  <p>{{ 'Bulletin/Form/TabBulletinDay/AddSectionDialog/Description' | gmessage }}</p>
+  <p>{{ 'Bulletin/Form/TabBulletinDay/AddSectionDialog/Hint' | gmessage }}</p>
   <mat-form-field class="w-100">
     <mat-label>{{
       'Bulletin/Form/TabBulletinDay/AddSectionDialog/SelectSectionLabel' | gmessage
@@ -20,7 +22,10 @@
             | gmessage
         }}
       </mat-select-trigger>
-      <mat-option *ngFor="let sectionType of sectionTypes()" [value]="sectionType.value">
+      <mat-option
+        *ngFor="let sectionType of sectionTypes()"
+        [value]="sectionType.value"
+        [disabled]="sectionType.disabled">
         <div class="p-2">
           <span>{{ sectionType.label | gmessage }}</span>
           <br />

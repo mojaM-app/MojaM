@@ -220,11 +220,11 @@
         "IntroductionMaxLengthError": "Wprowadzenie do biuletynu nie może przekraczać {maxLength} znaków",
         "TipsForWork": "Wskazówki do pracy",
         "TipsForWorkPlaceholder": "Podaj treść wskazówek do pracy",
-        "TipsForWorkHint": "Wskazówki do pracy widoczne w wersji PDF, mogą również zostać dodane do każdego dnia biuletynu w wersji mobilnej",
+        "TipsForWorkHint": "Wskazówki do pracy widoczne na pierwszej stronie w wersji PDF, mogą również zostać dodane do każdego dnia biuletynu w wersji mobilnej",
         "TipsForWorkMaxLengthError": "Wskazówki do pracy nie mogą przekraczać {maxLength} znaków",
         "DailyPrayer": "Modlitwa na każdy dzień",
         "DailyPrayerPlaceholder": "Podaj treść modlitwy na każdy dzień",
-        "DailyPrayerHint": "Modlitwa na każdy dzień widoczna w wersji PDF, może również zostać dodana do każdego dnia biuletynu w wersji mobilnej",
+        "DailyPrayerHint": "Modlitwa na każdy dzień widoczna na pierwszej stronie w wersji PDF, może również zostać dodana do każdego dnia biuletynu w wersji mobilnej",
         "DailyPrayerMaxLengthError": "Modlitwa na każdy dzień nie może przekraczać {maxLength} znaków"
       },
       "TabBulletinDay": {
@@ -241,6 +241,8 @@
         "AddSection": "Dodaj sekcję",
         "AddSectionDialog": {
           "Title": "Dodaj sekcję",
+          "Description": "Wybierz rodzaj sekcji, jaką chcesz dodać do dnia formacji.",
+          "Hint": "Niektóre sekcje są powiązane z właściwościami biuletynu (zakładka 'Właściwości') i mogą być niedostępne do wyboru, jeżeli nie mają ustawionej treści. Sekcja 'Dowolny tekst' jest zawsze dostępna do wyboru.",
           "SelectSectionLabel": "Wybierz sekcję",
           "SectionTypes": {
             "introduction": "Wprowadzenie do biuletynu",
@@ -268,7 +270,16 @@
           "ContentRequiredError": "Treść sekcji jest wymagana",
           "ContentMaxLengthError": "Treść sekcji nie może przekraczać {maxLength} znaków",
           "DeleteButton": "Usuń sekcję",
-          "DeleteConfirmText": "Czy na pewno chcesz usunąć powyższą sekcję?"
+          "DeleteConfirmText": "Czy na pewno chcesz usunąć powyższą sekcję?",
+          "OptionsButton": "Opcje sekcji",
+          "OptionsDialog": {
+            "Title": "Opcje sekcji",
+            "Hint": "Ustawienia sekcji '{sectionTitle}' na konkretny dzień formacji.",
+            "IncludeInPdf": "Umieść sekcję w wersji PDF",
+            "IncludeInPdfHint": "Jeżeli dana sekcja ma trafiać do wersji PDF biuletynu oznacza to, że trafi do części związanej z konkretnym dniem. Nie pojawi się na początku biuletynu, we wstępie. Pojawi się w części związanej z dniem.<br>Jeżeli niniejsza sekcja związaną jest z właściwościami biuletynu (zakładka Właściwości), nie powinna być dołączana do wersji PDF, ponieważ w wersji PDF pojawi się dwa razy: raz we wstępie na pierwszej stronie i drugi raz w części związanej z dniem.",
+            "Expanded": "Sekcja domyślnie rozwinięta",
+            "ExpandedHint": "Jeżeli ta sekcja ma być domyślnie rozwinięta w wersji mobilnej, zaznacz tę opcję."
+          }
         }
       }
     },

@@ -28,6 +28,8 @@ import { WysiwygFormFieldComponent } from 'src/app/components/static/wysiwyg-edi
 import { SectionType } from 'src/app/components/bulletin/enums/section-type.enum';
 import { WysiwygPreviewComponent } from 'src/app/components/static/wysiwyg-editor/wysiwyg-preview/wysiwyg-preview.component';
 import { TranslationService } from 'src/services/translate/translation.service';
+import { DialogService } from 'src/services/dialog/dialog.service';
+import { SectionSettingsComponent } from './section-settings/section-settings.component';
 
 @Component({
   selector: 'app-day-section',
@@ -84,7 +86,10 @@ export class DaySectionComponent {
   protected readonly errorNames = errorNames;
   protected readonly maxLengths = VALIDATOR_SETTINGS;
 
-  public constructor(private readonly _translationService: TranslationService) {}
+  public constructor(
+    private readonly _translationService: TranslationService,
+    private readonly _dialogService: DialogService
+  ) {}
 
   protected getControlErrors(control: AbstractControl): ValidationErrors {
     return control?.errors ?? {};
@@ -92,5 +97,19 @@ export class DaySectionComponent {
 
   protected onDeleteClick(): void {
     this.deleteSection.emit();
+  }
+
+  protected openOptionsDialog(): void {
+    this._dialogService.openComponentDialog(
+      SectionSettingsComponent,
+      {
+        settings: this.formGroup()!.controls.settings,
+        sectionType: this.formGroup()!.controls.type.value,
+        sectionTitle: this.formGroup()!.controls.title.value ?? this.sectionDefaultTitle(),
+      },
+      {
+        title: 'Bulletin/Form/TabBulletinDay/Section/OptionsDialog/Title',
+      }
+    );
   }
 }

@@ -5,11 +5,17 @@ import { BulletinDaySectionDto, BulletinDto } from '../models/bulletin.model';
 import { SectionType } from '../enums/section-type.enum';
 import { conditionalValidator } from 'src/validators/conditional.validator';
 
+export interface IBulletinSectionSettingsForm {
+  includeInPdf: FormControl<boolean>;
+  expanded: FormControl<boolean>;
+}
+
 export interface IBulletinDaySectionForm {
   id: FormControl<string | undefined>;
   type: FormControl<SectionType | null>;
   title: FormControl<string | null>;
   content: FormControl<string | null>;
+  settings: FormGroup<IBulletinSectionSettingsForm>;
 }
 
 export interface IBulletinDayForm {
@@ -119,6 +125,9 @@ export class BulletinFormBuilder {
       type: section.type,
       content: section.content ?? null,
       title: section.title ?? null,
+      settings: {
+        includeInPdf: section.type === SectionType.CUSTOM_TEXT,
+      },
     });
 
     return formGroup;
@@ -146,10 +155,12 @@ export class BulletinFormBuilder {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      title: new FormControl<string | null>(null, {
-        validators: [Validators.maxLength(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH)],
-      }),
+      title: new FormControl<string | null>(null, {}),
       content: new FormControl<string | null>(null, {}),
+      settings: new FormGroup<IBulletinSectionSettingsForm>({
+        includeInPdf: new FormControl<boolean>(true, { nonNullable: true }),
+        expanded: new FormControl<boolean>(true, { nonNullable: true }),
+      }),
     });
 
     formGroup.controls.content.setValidators([
@@ -160,7 +171,26 @@ export class BulletinFormBuilder {
       Validators.maxLength(VALIDATOR_SETTINGS.BULLETIN_DAY_SECTION_CONTENT_MAX_LENGTH),
     ]);
 
-    formGroup.controls.type.valueChanges.subscribe(() => {
+    formGroup.controls.title.setValidators([
+      conditionalValidator(
+        () => formGroup.controls.type.value === SectionType.CUSTOM_TEXT,
+        Validators.required
+      ),
+      Validators.maxLength(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH),
+    ]);
+
+    formGroup.controls.type.valueChanges.subscribe((value: SectionType | null) => {
+      formGroup.controls.settings.controls.includeInPdf.setValue(value === SectionType.CUSTOM_TEXT);
+      if (value === SectionType.CUSTOM_TEXT) {
+        formGroup.controls.settings.controls.includeInPdf.setValue(true);
+        formGroup.controls.settings.controls.expanded.setValue(true);
+      } else {
+        formGroup.controls.title.setValue(null);
+        formGroup.controls.content.setValue(null);
+        formGroup.controls.settings.controls.includeInPdf.setValue(false);
+        formGroup.controls.settings.controls.includeInPdf.disable({ emitEvent: false });
+        formGroup.controls.settings.controls.expanded.setValue(false);
+      }
       formGroup.controls.content.updateValueAndValidity();
     });
 

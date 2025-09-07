@@ -66,8 +66,10 @@
                   }
                   @case (sectionTypes.CUSTOM_TEXT) {
                     {{
-                      'Bulletin/Form/TabBulletinDay/AddSectionDialog/SectionTypes/' +
-                        section.controls.type.value | gmessage
+                      (section.controls.title.value ? section.controls.title.value + ' (' : '') +
+                        ('Bulletin/Form/TabBulletinDay/AddSectionDialog/SectionTypes/' +
+                          section.controls.type.value | gmessage) +
+                        (section.controls.title.value ? ')' : '')
                     }}
                   }
                 }

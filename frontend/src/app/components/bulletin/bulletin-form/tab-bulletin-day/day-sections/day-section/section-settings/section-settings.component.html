@@ -1,0 +1,36 @@
+@if (settings) {
+  <form [formGroup]="settings">
+    <div class="row">
+      <div class="col-12 mb-2">
+        {{
+          'Bulletin/Form/TabBulletinDay/Section/OptionsDialog/Hint'
+            | gmessage: { sectionTitle: this.sectionTitle }
+        }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 mb-2">
+        <mat-checkbox [formControl]="settings.controls.includeInPdf">
+          {{ 'Bulletin/Form/TabBulletinDay/Section/OptionsDialog/IncludeInPdf' | gmessage }}
+        </mat-checkbox>
+        <p
+          class="ms-4"
+          [innerHTML]="
+            'Bulletin/Form/TabBulletinDay/Section/OptionsDialog/IncludeInPdfHint' | gmessage
+          "></p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 mb-2">
+        <mat-checkbox [formControl]="settings.controls.expanded">
+          {{ 'Bulletin/Form/TabBulletinDay/Section/OptionsDialog/Expanded' | gmessage }}
+        </mat-checkbox>
+        <p
+          class="ms-4"
+          [innerHTML]="
+            'Bulletin/Form/TabBulletinDay/Section/OptionsDialog/ExpandedHint' | gmessage
+          "></p>
+      </div>
+    </div>
+  </form>
+}
