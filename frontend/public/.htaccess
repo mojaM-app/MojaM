@@ -1,0 +1,65 @@
+# .htaccess - Additional security against robots for Apache server
+# Application should be invisible to robots that search and index the web
+
+# Blocking robots based on User-Agent
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Blocking known search engine robots
+    RewriteCond %{HTTP_USER_AGENT} (googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot) [NC]
+    RewriteRule .* - [F,L]
+
+    # Blocking social media robots
+    RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegrambot) [NC]
+    RewriteRule .* - [F,L]
+
+    # Blocking internet archives
+    RewriteCond %{HTTP_USER_AGENT} (ia_archiver|archive\.org_bot|wayback) [NC]
+    RewriteRule .* - [F,L]
+
+    # Blocking SEO/Marketing bots
+    RewriteCond %{HTTP_USER_AGENT} (semrushbot|ahrefsbot|mj12bot|dotbot|screaming.frog|serpstatbot|majestic12) [NC]
+    RewriteRule .* - [F,L]
+
+    # Blocking other crawlers
+    RewriteCond %{HTTP_USER_AGENT} (crawler|spider|scraper|bot) [NC]
+    RewriteRule .* - [F,L]
+
+    # Blocking development tools
+    RewriteCond %{HTTP_USER_AGENT} (curl|wget|python-requests|java/|go-http-client|node-fetch|axios) [NC]
+    RewriteRule .* - [F,L]
+
+    # Blocking security scanners
+    RewriteCond %{HTTP_USER_AGENT} (nmap|masscan|nuclei|burp|sqlmap|nikto|dirb|gobuster|wfuzz|hydra) [NC]
+    RewriteRule .* - [F,L]
+</IfModule>
+
+# HTTP headers blocking indexing
+<IfModule mod_headers.c>
+    Header always set X-Robots-Tag "noindex, nofollow, noarchive, nosnippet, noimageindex, notranslate"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Cache-Control "no-cache, no-store, must-revalidate, private"
+    Header always set Pragma "no-cache"
+    Header always set Expires "0"
+</IfModule>
+
+# Hiding server information
+ServerTokens Prod
+<IfModule mod_headers.c>
+    Header always unset Server
+    Header always unset X-Powered-By
+</IfModule>
+
+# Blocking access to system files
+<Files ~ "^\.">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Additional protection for robots.txt
+<Files "robots.txt">
+    <IfModule mod_headers.c>
+        Header set Cache-Control "public, max-age=86400"
+        Header set X-Robots-Tag "noindex, nofollow"
+    </IfModule>
+</Files>

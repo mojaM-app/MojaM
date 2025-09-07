@@ -3,9 +3,11 @@ import { fileStream, type IRoutes, fileLogger as logger } from '@core';
 import { DbConnectionManager } from '@db';
 import { errorKeys } from '@exceptions';
 import {
+  antiRobotMiddleware,
   corsOptions,
   ErrorMiddleware,
   requestIdMiddleware,
+  robotsTxtMiddleware,
   securityHeaders,
   securityLoggingMiddleware,
 } from '@middlewares';
@@ -59,7 +61,8 @@ export class App {
 
     // Security middleware - order matters!
     this.app.use(requestIdMiddleware); // First - add request ID to all requests
-    this.app.use(securityLoggingMiddleware); // Second - log security events with request ID
+    this.app.use(antiRobotMiddleware); // Second - block robots and crawlers
+    this.app.use(securityLoggingMiddleware); // Third - log security events with request ID
     this.app.use(securityHeaders); // Fourth - security headers (now array)
     this.app.use(corsOptions); // Fifth - CORS
 
@@ -112,6 +115,8 @@ export class App {
   }
 
   private initializeRoutes(routes: IRoutes[]): void {
+    this.app.get('/robots.txt', robotsTxtMiddleware);
+
     routes.forEach(route => {
       this.setRout(route);
     });
