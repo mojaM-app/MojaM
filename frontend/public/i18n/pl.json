@@ -252,7 +252,9 @@
             "dailyPrayer": "Modlitwa na każdy dzień",
             "dailyPrayerDescription": "Modlitwa na każdy dzień z zakładki 'Właściwości' biuletynu",
             "customText": "Dowolny tekst",
-            "customTextDescription": "Dowolny tekst, który można edytować"
+            "customTextDescription": "Dowolny tekst, który można edytować",
+            "textFromBible": "Tekst z Pisma Świętego",
+            "textFromBibleDescription": "Dowolny tekst z Pisma Świętego"
           }
         },
         "Sections": "Sekcje",

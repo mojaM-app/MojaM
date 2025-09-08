@@ -45,34 +45,7 @@
                 @if (controlHasErrors(section)) {
                   <mat-icon class="error-color me-1">error</mat-icon>
                 }
-                @switch (section.controls.type.value) {
-                  @case (sectionTypes.INTRODUCTION) {
-                    {{
-                      'Bulletin/Form/TabBulletinDay/AddSectionDialog/SectionTypes/' +
-                        section.controls.type.value | gmessage
-                    }}
-                  }
-                  @case (sectionTypes.TIPS_FOR_WORK) {
-                    {{
-                      'Bulletin/Form/TabBulletinDay/AddSectionDialog/SectionTypes/' +
-                        section.controls.type.value | gmessage
-                    }}
-                  }
-                  @case (sectionTypes.DAILY_PRAYER) {
-                    {{
-                      'Bulletin/Form/TabBulletinDay/AddSectionDialog/SectionTypes/' +
-                        section.controls.type.value | gmessage
-                    }}
-                  }
-                  @case (sectionTypes.CUSTOM_TEXT) {
-                    {{
-                      (section.controls.title.value ? section.controls.title.value + ' (' : '') +
-                        ('Bulletin/Form/TabBulletinDay/AddSectionDialog/SectionTypes/' +
-                          section.controls.type.value | gmessage) +
-                        (section.controls.title.value ? ')' : '')
-                    }}
-                  }
-                }
+                {{ getSectionTitle(section) }}
               </div>
             }
           </div>

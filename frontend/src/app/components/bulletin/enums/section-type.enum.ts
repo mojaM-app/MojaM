@@ -3,4 +3,5 @@ export enum SectionType {
   TIPS_FOR_WORK = 'tipsForWork',
   DAILY_PRAYER = 'dailyPrayer',
   CUSTOM_TEXT = 'customText',
+  TEXT_FROM_BIBLE = 'textFromBible',
 }

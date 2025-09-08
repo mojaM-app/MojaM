@@ -26,6 +26,8 @@ import { DaySectionComponent } from './day-section/day-section.component';
 import { DirectivesModule } from 'src/directives/directives.module';
 import { IDialogSettings } from 'src/core/interfaces/common/dialog.settings';
 import { BulletinDaySectionDto } from '../../../models/bulletin.model';
+import { TranslationService } from 'src/services/translate/translation.service';
+import { DaySections } from './day-sections';
 
 @Component({
   selector: 'app-day-sections',
@@ -48,7 +50,6 @@ export class DaySectionsComponent {
   public readonly sections = input.required<FormArray<FormGroup<IBulletinDaySectionForm>>>();
   public readonly bulletinProperties = input.required<FormGroup<IBulletinPropertiesForm>>();
   protected readonly sectionControls = computed(() => this.sections().controls);
-  protected sectionTypes = SectionType;
   protected readonly selectedSection = signal<FormGroup<IBulletinDaySectionForm> | undefined>(
     undefined
   );
@@ -56,8 +57,45 @@ export class DaySectionsComponent {
   public constructor(
     private readonly _bulletinFormBuilder: BulletinFormBuilder,
     private readonly _dialogService: DialogService,
-    private readonly _changeDetectorRef: ChangeDetectorRef
+    private readonly _changeDetectorRef: ChangeDetectorRef,
+    private readonly _translationService: TranslationService
   ) {}
+
+  protected getSectionTitle(section: FormGroup<IBulletinDaySectionForm>): string {
+    switch (section.controls.type.value) {
+      case SectionType.INTRODUCTION: {
+        return this._translationService.get(
+          'Bulletin/Form/TabBulletinDay/AddSectionDialog/SectionTypes/' +
+            section.controls.type.value
+        );
+      }
+      case SectionType.TIPS_FOR_WORK: {
+        return this._translationService.get(
+          'Bulletin/Form/TabBulletinDay/AddSectionDialog/SectionTypes/' +
+            section.controls.type.value
+        );
+      }
+      case SectionType.DAILY_PRAYER: {
+        return this._translationService.get(
+          'Bulletin/Form/TabBulletinDay/AddSectionDialog/SectionTypes/' +
+            section.controls.type.value
+        );
+      }
+      case SectionType.CUSTOM_TEXT: {
+        return (
+          (section.controls.title.value ? section.controls.title.value + ' (' : '') +
+          this._translationService.get(
+            'Bulletin/Form/TabBulletinDay/AddSectionDialog/SectionTypes/' +
+              section.controls.type.value
+          ) +
+          (section.controls.title.value ? ')' : '')
+        );
+      }
+      default: {
+        return 'not supported section type';
+      }
+    }
+  }
 
   protected drop(event: CdkDragDrop<FormArray<FormGroup<IBulletinDaySectionForm>>>): void {
     if (event.previousIndex === event.currentIndex) {
@@ -84,6 +122,10 @@ export class DaySectionsComponent {
         if (section) {
           const newSection = this._bulletinFormBuilder.createDaySection({
             type: section,
+            settings: {
+              includeInPdf: DaySections.isIncludeInPdfByDefault(section),
+              expanded: DaySections.isExpandedByDefault(section),
+            },
           } satisfies Partial<BulletinDaySectionDto>);
           newSection.markAsTouched();
           this.sections().push(newSection);

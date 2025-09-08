@@ -51,7 +51,7 @@ export class AddDaySectionDialogComponent {
     private readonly _dialogRef: MatDialogRef<AddDaySectionDialogComponent>
   ) {
     this.sectionTypes.set(this.getSectionTypes());
-    this.selectedSectionType.set(SectionType.CUSTOM_TEXT);
+    this.selectedSectionType.set(DaySections.defaultSectionType);
   }
 
   protected onAddClick(): void {
@@ -62,7 +62,9 @@ export class AddDaySectionDialogComponent {
     const sections = DaySections.getTypes(this._data?.bulletinProperties.value);
     const currentSections: SectionType[] = this._data?.currentSections ?? [];
     return sections.filter(
-      s => s.value === SectionType.CUSTOM_TEXT || !currentSections.includes(s.value)
+      s =>
+        !DaySections.canByUseOnlyOnce(s.value) ||
+        (DaySections.canByUseOnlyOnce(s.value) && !currentSections.includes(s.value))
     );
   }
 }

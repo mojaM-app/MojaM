@@ -6,13 +6,20 @@ import {
   IBulletinForm,
   IBulletinPropertiesForm,
 } from '../bulletin-form/bulletin.form';
+import { DaySections } from '../bulletin-form/tab-bulletin-day/day-sections/day-sections';
+
+export class BulletinSectionSettingsDto {
+  public includeInPdf: boolean = false;
+  public expanded: boolean = true;
+}
 
 export class BulletinDaySectionDto {
   public id?: string;
   public order: number = 0;
-  public type: SectionType = SectionType.CUSTOM_TEXT;
+  public type: SectionType = DaySections.defaultSectionType;
   public title: string | null = null;
   public content: string | null = null;
+  public settings: BulletinSectionSettingsDto = new BulletinSectionSettingsDto();
 }
 
 export class BulletinDayDto {
@@ -58,10 +65,14 @@ export abstract class BulletinDto {
               (section: FormGroup<IBulletinDaySectionForm>, index: number) =>
                 ({
                   id: section.controls.id?.value ?? undefined,
-                  type: section.controls.type?.value ?? SectionType.CUSTOM_TEXT,
+                  type: section.controls.type?.value ?? DaySections.defaultSectionType,
                   order: index + 1,
                   title: this.getSectionTitle(section),
                   content: this.getSectionContent(section),
+                  settings: {
+                    includeInPdf: section.controls.settings?.controls.includeInPdf?.value ?? false,
+                    expanded: section.controls.settings?.controls.expanded?.value ?? true,
+                  },
                 }) satisfies BulletinDaySectionDto
             ) ?? [],
         } satisfies BulletinDayDto);
@@ -70,24 +81,18 @@ export abstract class BulletinDto {
   }
 
   private getSectionContent(section: FormGroup<IBulletinDaySectionForm>): string | null {
-    switch (section.controls.type?.value) {
-      case SectionType.DAILY_PRAYER:
-      case SectionType.INTRODUCTION:
-      case SectionType.TIPS_FOR_WORK:
-        return null;
-      default:
-        return section.controls.content?.value ?? null;
+    if (DaySections.isContentReadOnly(section.controls.type?.value)) {
+      return null;
     }
+
+    return section.controls.content?.value ?? null;
   }
 
   private getSectionTitle(section: FormGroup<IBulletinDaySectionForm>): string | null {
-    switch (section.controls.type?.value) {
-      case SectionType.DAILY_PRAYER:
-      case SectionType.INTRODUCTION:
-      case SectionType.TIPS_FOR_WORK:
-        return null;
-      default:
-        return section.controls.title?.value ?? null;
+    if (DaySections.isTitleReadOnly(section.controls.type?.value)) {
+      return null;
     }
+
+    return section.controls.title?.value ?? null;
   }
 }

@@ -4,6 +4,7 @@ import { VALIDATOR_SETTINGS } from 'src/core/consts';
 import { BulletinDaySectionDto, BulletinDto } from '../models/bulletin.model';
 import { SectionType } from '../enums/section-type.enum';
 import { conditionalValidator } from 'src/validators/conditional.validator';
+import { DaySections } from './tab-bulletin-day/day-sections/day-sections';
 
 export interface IBulletinSectionSettingsForm {
   includeInPdf: FormControl<boolean>;
@@ -99,7 +100,7 @@ export class BulletinFormBuilder {
         sectionGroup.patchValue({
           id: section.id,
           title: section.title ?? null,
-          type: section.type ?? SectionType.CUSTOM_TEXT,
+          type: section.type ?? DaySections.defaultSectionType,
           content: section.content ?? null,
         });
         sectionsArray.push(sectionGroup);
@@ -126,7 +127,8 @@ export class BulletinFormBuilder {
       content: section.content ?? null,
       title: section.title ?? null,
       settings: {
-        includeInPdf: section.type === SectionType.CUSTOM_TEXT,
+        includeInPdf: section.settings?.includeInPdf ?? false,
+        expanded: section.settings?.expanded ?? true,
       },
     });
 
@@ -165,7 +167,7 @@ export class BulletinFormBuilder {
 
     formGroup.controls.content.setValidators([
       conditionalValidator(
-        () => formGroup.controls.type.value === SectionType.CUSTOM_TEXT,
+        () => !DaySections.isContentReadOnly(formGroup.controls.type.value),
         Validators.required
       ),
       Validators.maxLength(VALIDATOR_SETTINGS.BULLETIN_DAY_SECTION_CONTENT_MAX_LENGTH),
@@ -173,24 +175,30 @@ export class BulletinFormBuilder {
 
     formGroup.controls.title.setValidators([
       conditionalValidator(
-        () => formGroup.controls.type.value === SectionType.CUSTOM_TEXT,
+        () => !DaySections.isTitleReadOnly(formGroup.controls.type.value),
         Validators.required
       ),
       Validators.maxLength(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH),
     ]);
 
     formGroup.controls.type.valueChanges.subscribe((value: SectionType | null) => {
-      formGroup.controls.settings.controls.includeInPdf.setValue(value === SectionType.CUSTOM_TEXT);
-      if (value === SectionType.CUSTOM_TEXT) {
-        formGroup.controls.settings.controls.includeInPdf.setValue(true);
-        formGroup.controls.settings.controls.expanded.setValue(true);
-      } else {
+      if (DaySections.isTitleReadOnly(value)) {
         formGroup.controls.title.setValue(null);
-        formGroup.controls.content.setValue(null);
-        formGroup.controls.settings.controls.includeInPdf.setValue(false);
-        formGroup.controls.settings.controls.includeInPdf.disable({ emitEvent: false });
-        formGroup.controls.settings.controls.expanded.setValue(false);
       }
+
+      if (DaySections.isContentReadOnly(value)) {
+        formGroup.controls.content.setValue(null);
+      }
+
+      const isIncludeInPdfByDefault = DaySections.isIncludeInPdfByDefault(value);
+      formGroup.controls.settings.controls.includeInPdf.setValue(isIncludeInPdfByDefault);
+      if (!isIncludeInPdfByDefault) {
+        formGroup.controls.settings.controls.includeInPdf.disable({ emitEvent: false });
+      }
+
+      formGroup.controls.settings.controls.expanded.setValue(
+        DaySections.isExpandedByDefault(value)
+      );
       formGroup.controls.content.updateValueAndValidity();
     });
 

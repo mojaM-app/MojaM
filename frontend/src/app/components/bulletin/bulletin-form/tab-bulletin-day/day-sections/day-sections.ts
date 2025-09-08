@@ -10,6 +10,8 @@ export interface IMatOption {
 }
 
 export class DaySections {
+  public static readonly defaultSectionType = SectionType.CUSTOM_TEXT;
+
   public static getTypes(bulletin?: Partial<BulletinDto> | null | undefined): IMatOption[] {
     return [
       {
@@ -19,6 +21,13 @@ export class DaySections {
         value: SectionType.CUSTOM_TEXT,
         disabled: false,
       },
+      // {
+      //   label: 'Bulletin/Form/TabBulletinDay/AddSectionDialog/SectionTypes/textFromBible',
+      //   description:
+      //     'Bulletin/Form/TabBulletinDay/AddSectionDialog/SectionTypes/textFromBibleDescription',
+      //   value: SectionType.TEXT_FROM_BIBLE,
+      //   disabled: false,
+      // },
       {
         label: 'Bulletin/Form/TabBulletinDay/AddSectionDialog/SectionTypes/introduction',
         description:
@@ -57,5 +66,21 @@ export class DaySections {
       type === SectionType.DAILY_PRAYER ||
       type === SectionType.TIPS_FOR_WORK
     );
+  }
+
+  public static canByUseOnlyOnce(type: SectionType | null | undefined): boolean {
+    return (
+      type === SectionType.INTRODUCTION ||
+      type === SectionType.DAILY_PRAYER ||
+      type === SectionType.TIPS_FOR_WORK
+    );
+  }
+
+  public static isIncludeInPdfByDefault(type: SectionType | null | undefined): boolean {
+    return type === SectionType.CUSTOM_TEXT;
+  }
+
+  public static isExpandedByDefault(section: SectionType | null | undefined): boolean {
+    return section === SectionType.CUSTOM_TEXT || section === SectionType.TEXT_FROM_BIBLE;
   }
 }

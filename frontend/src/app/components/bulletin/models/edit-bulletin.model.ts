@@ -39,6 +39,10 @@ export class EditBulletinDto extends BulletinDto {
                   type: section.type,
                   title: section.title ?? null,
                   content: section.content ?? null,
+                  settings: {
+                    includeInPdf: section.settings?.includeInPdf ?? false,
+                    expanded: section.settings?.expanded ?? true,
+                  },
                 }) satisfies BulletinDaySectionDto
             ) ?? [],
         }) satisfies BulletinDayDto
