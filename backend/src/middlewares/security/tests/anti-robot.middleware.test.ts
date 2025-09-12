@@ -13,6 +13,30 @@ describe('Anti-Robot Middleware', () => {
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
   let mockNext: NextFunction;
+  let originalNodeEnv: string | undefined;
+  let originalJestWorkerId: string | undefined;
+
+  beforeAll(() => {
+    // Store original environment variables
+    originalNodeEnv = process.env.NODE_ENV;
+    originalJestWorkerId = process.env.JEST_WORKER_ID;
+
+    // Set environment to production to test actual blocking behavior
+    process.env.NODE_ENV = 'production';
+    delete process.env.JEST_WORKER_ID;
+  });
+
+  afterAll(() => {
+    // Restore original environment variables
+    if (originalNodeEnv !== undefined) {
+      process.env.NODE_ENV = originalNodeEnv;
+    } else {
+      delete process.env.NODE_ENV;
+    }
+    if (originalJestWorkerId !== undefined) {
+      process.env.JEST_WORKER_ID = originalJestWorkerId;
+    }
+  });
 
   beforeEach(() => {
     mockRequest = {
@@ -86,8 +110,10 @@ describe('Anti-Robot Middleware', () => {
       expect(mockNext).not.toHaveBeenCalled();
     });
 
-    it('should block suspicious user agents (empty)', () => {
+    it('should block suspicious user agents (empty) from non-localhost IP', () => {
       (mockRequest.get as jest.Mock).mockReturnValue('');
+      (mockRequest as any).ip = '192.168.1.100';
+      (mockRequest as any).connection = { remoteAddress: '192.168.1.100' };
 
       antiRobotMiddleware(mockRequest as Request, mockResponse as Response, mockNext);
 
@@ -131,8 +157,10 @@ describe('Anti-Robot Middleware', () => {
       expect(mockResponse.status).not.toHaveBeenCalled();
     });
 
-    it('should handle missing User-Agent gracefully', () => {
+    it('should handle missing User-Agent gracefully from non-localhost IP', () => {
       (mockRequest.get as jest.Mock).mockReturnValue(undefined);
+      (mockRequest as any).ip = '203.0.113.1';
+      (mockRequest as any).connection = { remoteAddress: '203.0.113.1' };
 
       antiRobotMiddleware(mockRequest as Request, mockResponse as Response, mockNext);
 
@@ -158,6 +186,65 @@ describe('Anti-Robot Middleware', () => {
 
       expect(mockResponse.status).toHaveBeenCalledWith(StatusCode.ClientErrorForbidden);
       expect(mockNext).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('antiRobotMiddleware in test environment', () => {
+    beforeAll(() => {
+      // Temporarily set test environment
+      process.env.NODE_ENV = 'development';
+      process.env.JEST_WORKER_ID = '1';
+    });
+
+    afterAll(() => {
+      // Restore production environment for other tests
+      process.env.NODE_ENV = 'production';
+      delete process.env.JEST_WORKER_ID;
+    });
+
+    beforeEach(() => {
+      mockRequest = {
+        get: jest.fn(),
+        path: '/',
+        ip: '::ffff:127.0.0.1',
+        connection: { remoteAddress: '::ffff:127.0.0.1' } as any,
+      } as any;
+
+      mockResponse = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn().mockReturnThis(),
+        set: jest.fn().mockReturnThis(),
+        send: jest.fn().mockReturnThis(),
+      };
+
+      mockNext = jest.fn();
+
+      // Reset mocks
+      jest.clearAllMocks();
+    });
+
+    it('should allow test requests with empty user agent from localhost', () => {
+      (mockRequest.get as jest.Mock).mockReturnValue('');
+
+      antiRobotMiddleware(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockResponse.set).toHaveBeenCalledWith({
+        'X-Robots-Tag': 'noindex, nofollow, noarchive, nosnippet, noimageindex, notranslate',
+      });
+      expect(mockNext).toHaveBeenCalled();
+      expect(mockResponse.status).not.toHaveBeenCalled();
+    });
+
+    it('should allow supertest requests', () => {
+      (mockRequest.get as jest.Mock).mockReturnValue('supertest');
+
+      antiRobotMiddleware(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockResponse.set).toHaveBeenCalledWith({
+        'X-Robots-Tag': 'noindex, nofollow, noarchive, nosnippet, noimageindex, notranslate',
+      });
+      expect(mockNext).toHaveBeenCalled();
+      expect(mockResponse.status).not.toHaveBeenCalled();
     });
   });
 

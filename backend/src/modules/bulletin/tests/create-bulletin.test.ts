@@ -11,9 +11,11 @@ import { TestApp } from '../../../helpers/test-helpers/test.app';
 import {
   CreateBulletinDayDto,
   CreateBulletinDaySectionDto,
+  CreateBulletinDto,
   CreateBulletinResponseDto,
 } from '../dtos/create-bulletin.dto';
 import { GetBulletinResponseDto } from '../dtos/get-bulletin.dto';
+import { BulletinSectionSettingsDto } from '../dtos/update-bulletin.dto';
 import { SectionType } from '../enums/bulletin-section-type.enum';
 import { BulletinState } from '../enums/bulletin-state.enum';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
@@ -197,12 +199,20 @@ describe('POST /bulletins', () => {
               type: SectionType.INTRODUCTION,
               title: null, // INTRODUCTION nie może mieć title
               content: null, // INTRODUCTION nie może mieć content
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
             {
               order: 2,
               type: SectionType.CUSTOM_TEXT,
               title: 'Custom Section',
               content: 'Custom content text',
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
           ],
         },
@@ -215,12 +225,20 @@ describe('POST /bulletins', () => {
               type: SectionType.TIPS_FOR_WORK,
               title: null,
               content: null,
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
             {
               order: 2,
               type: SectionType.DAILY_PRAYER,
               title: null,
               content: null,
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
           ],
         },
@@ -328,11 +346,15 @@ describe('POST /bulletins', () => {
                 type: SectionType.CUSTOM_TEXT,
                 title: 'c'.repeat(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH), // używamy tej samej
                 content: 'd'.repeat(VALIDATOR_SETTINGS.BULLETIN_DAY_SECTION_CONTENT_MAX_LENGTH),
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies CreateBulletinDaySectionDto,
             ],
-          },
+          } satisfies CreateBulletinDayDto,
         ],
-      };
+      } satisfies CreateBulletinDto;
 
       const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
       expect(createBulletinResponse.statusCode).toBe(201);
@@ -365,6 +387,10 @@ describe('POST /bulletins', () => {
               type: SectionType.CUSTOM_TEXT,
               title: 'Valid Title',
               content: 'Valid Content',
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             } satisfies CreateBulletinDaySectionDto,
           ],
         } satisfies CreateBulletinDayDto,
@@ -401,12 +427,20 @@ describe('POST /bulletins', () => {
               type: SectionType.CUSTOM_TEXT,
               title: 'First Section',
               content: 'First Content',
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
             {
               order: 1, // Duplicate order
               type: SectionType.CUSTOM_TEXT,
               title: 'Second Section',
               content: 'Second Content',
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
           ],
         },
@@ -443,6 +477,10 @@ describe('POST /bulletins', () => {
               type: SectionType.INTRODUCTION,
               title: null,
               content: null,
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
           ],
         },
@@ -491,6 +529,10 @@ describe('POST /bulletins', () => {
               type: SectionType.TIPS_FOR_WORK,
               title: null,
               content: null,
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
           ],
         },
@@ -539,6 +581,10 @@ describe('POST /bulletins', () => {
               type: SectionType.DAILY_PRAYER,
               title: null,
               content: null,
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
           ],
         },
@@ -587,6 +633,10 @@ describe('POST /bulletins', () => {
               type: SectionType.DAILY_PRAYER,
               title: '   ', // Only whitespace
               content: '   ', // Only whitespace
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             } satisfies CreateBulletinDaySectionDto,
           ],
         } satisfies CreateBulletinDayDto,
@@ -686,30 +736,50 @@ describe('POST /bulletins', () => {
               type: SectionType.CUSTOM_TEXT,
               title: 'Third Section',
               content: 'Third Content',
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
             {
               order: 1,
               type: SectionType.INTRODUCTION,
               title: null,
               content: null,
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
             {
               order: 5,
               type: SectionType.CUSTOM_TEXT,
               title: 'Fifth Section',
               content: 'Fifth Content',
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
             {
               order: 2,
               type: SectionType.TIPS_FOR_WORK,
               title: null,
               content: null,
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
             {
               order: 4,
               type: SectionType.DAILY_PRAYER,
               title: null,
               content: null,
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
           ],
         },
@@ -766,6 +836,10 @@ describe('POST /bulletins', () => {
               type: SectionType.CUSTOM_TEXT,
               title: 'F', // Minimal length
               content: 'G', // Minimal length
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
           ],
         },
@@ -802,12 +876,20 @@ describe('POST /bulletins', () => {
               type: SectionType.CUSTOM_TEXT,
               title: 'High Order Section',
               content: 'Content for high order section',
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
             {
               order: 1000000,
               type: SectionType.INTRODUCTION,
               title: null,
               content: null,
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
           ],
         },
@@ -849,6 +931,10 @@ describe('POST /bulletins', () => {
             type: SectionType.CUSTOM_TEXT,
             title: `Day ${dayIndex + 1} Section ${sectionIndex + 1}`,
             content: `Content for day ${dayIndex + 1} section ${sectionIndex + 1}`,
+            settings: {
+              expanded: true,
+              includeInPdf: false,
+            } satisfies BulletinSectionSettingsDto,
           });
         }
 
@@ -1148,6 +1234,10 @@ describe('POST /bulletins', () => {
               type: 'INVALID_TYPE' as any,
               title: 'Test Title',
               content: 'Test Content',
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
           ],
         },
@@ -1175,6 +1265,10 @@ describe('POST /bulletins', () => {
               type: SectionType.CUSTOM_TEXT,
               title: 'Test Section',
               content: 'Test Content',
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
           ],
         },
@@ -1201,6 +1295,10 @@ describe('POST /bulletins', () => {
               type: SectionType.INTRODUCTION,
               title: 'Should be null', // INTRODUCTION nie może mieć title
               content: 'Should be null', // INTRODUCTION nie może mieć content
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
           ],
         },
@@ -1227,6 +1325,10 @@ describe('POST /bulletins', () => {
               type: SectionType.CUSTOM_TEXT,
               title: '', // Empty title
               content: '', // Empty content
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
           ],
         },
@@ -1253,6 +1355,10 @@ describe('POST /bulletins', () => {
               type: SectionType.CUSTOM_TEXT,
               title: '   ', // Only whitespace
               content: '   ', // Only whitespace
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             } satisfies CreateBulletinDaySectionDto,
           ],
         } satisfies CreateBulletinDayDto,
@@ -1280,6 +1386,10 @@ describe('POST /bulletins', () => {
               type: SectionType.CUSTOM_TEXT,
               title: 'Section 1',
               content: 'Content 1',
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
           ],
         },
@@ -1292,6 +1402,10 @@ describe('POST /bulletins', () => {
               type: SectionType.CUSTOM_TEXT,
               title: 'Section 2',
               content: 'Content 2',
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
           ],
         },
@@ -1417,6 +1531,10 @@ describe('POST /bulletins', () => {
               type: SectionType.TIPS_FOR_WORK,
               title: 'Should be null', // TIPS_FOR_WORK nie może mieć title
               content: 'Should be null', // TIPS_FOR_WORK nie może mieć content
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
           ],
         },
@@ -1443,6 +1561,10 @@ describe('POST /bulletins', () => {
               type: SectionType.DAILY_PRAYER,
               title: 'Should be null', // DAILY_PRAYER nie może mieć title
               content: 'Should be null', // DAILY_PRAYER nie może mieć content
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
           ],
         },
@@ -1469,6 +1591,10 @@ describe('POST /bulletins', () => {
               type: SectionType.CUSTOM_TEXT,
               title: null, // Invalid for CUSTOM_TEXT
               content: 'Valid content',
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
           ],
         },
@@ -1495,6 +1621,10 @@ describe('POST /bulletins', () => {
               type: SectionType.CUSTOM_TEXT,
               title: 'Valid title',
               content: null, // Invalid for CUSTOM_TEXT
+              settings: {
+                expanded: true,
+                includeInPdf: false,
+              } satisfies BulletinSectionSettingsDto,
             },
           ],
         },

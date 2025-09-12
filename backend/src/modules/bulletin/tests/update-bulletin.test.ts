@@ -14,7 +14,12 @@ import {
   CreateBulletinResponseDto,
 } from '../dtos/create-bulletin.dto';
 import { GetBulletinResponseDto } from '../dtos/get-bulletin.dto';
-import { UpdateBulletinDayDto, UpdateBulletinDaySectionDto, UpdateBulletinDto } from '../dtos/update-bulletin.dto';
+import {
+  BulletinSectionSettingsDto,
+  UpdateBulletinDayDto,
+  UpdateBulletinDaySectionDto,
+  UpdateBulletinDto,
+} from '../dtos/update-bulletin.dto';
 import { SectionType } from '../enums/bulletin-section-type.enum';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 
@@ -110,17 +115,25 @@ describe('PUT /bulletins/:id', () => {
                 type: SectionType.INTRODUCTION,
                 title: null, // INTRODUCTION type should have null title
                 content: null, // INTRODUCTION type should have null content
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
               {
                 order: 2,
                 type: SectionType.CUSTOM_TEXT,
                 title: 'Custom Section',
                 content: 'Custom content',
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
             ],
-          },
+          } satisfies UpdateBulletinDayDto,
         ],
-      };
+      } satisfies UpdateBulletinDto;
 
       const updateBulletinResponse = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
       if (updateBulletinResponse.statusCode !== 200) {
@@ -274,6 +287,10 @@ describe('PUT /bulletins/:id', () => {
                   title: s1.title,
                   content: s1.content,
                   order: 1,
+                  settings: {
+                    expanded: true,
+                    includeInPdf: false,
+                  } satisfies BulletinSectionSettingsDto,
                 } satisfies UpdateBulletinDaySectionDto, // becomes order 1
                 {
                   id: s0.id,
@@ -281,17 +298,25 @@ describe('PUT /bulletins/:id', () => {
                   title: (s0.title || 'Updated') + ' - updated',
                   content: s0.content,
                   order: 2,
+                  settings: {
+                    expanded: true,
+                    includeInPdf: false,
+                  } satisfies BulletinSectionSettingsDto,
                 } satisfies UpdateBulletinDaySectionDto, // becomes order 2 + title changed
                 {
                   type: SectionType.CUSTOM_TEXT,
                   title: 'New section',
                   content: 'Created now',
                   order: 3,
+                  settings: {
+                    expanded: true,
+                    includeInPdf: false,
+                  } satisfies BulletinSectionSettingsDto,
                 } satisfies UpdateBulletinDaySectionDto, // new order 3
               ],
-            },
+            } satisfies UpdateBulletinDayDto, // keep first day only
           ],
-        },
+        } satisfies UpdateBulletinDto,
         adminAccessToken,
       );
       expect(updateRes.statusCode).toBe(200);
@@ -343,11 +368,15 @@ describe('PUT /bulletins/:id', () => {
                 type: SectionType.INTRODUCTION,
                 title: null,
                 content: null,
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
             ],
-          },
+          } satisfies UpdateBulletinDayDto,
         ],
-      };
+      } satisfies UpdateBulletinDto;
 
       const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
       expect(updateRes.statusCode).toBe(200);
@@ -407,11 +436,15 @@ describe('PUT /bulletins/:id', () => {
                 type: SectionType.TIPS_FOR_WORK,
                 title: null,
                 content: null,
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
             ],
-          },
+          } satisfies UpdateBulletinDayDto,
         ],
-      };
+      } satisfies UpdateBulletinDto;
 
       const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
       expect(updateRes.statusCode).toBe(200);
@@ -471,11 +504,15 @@ describe('PUT /bulletins/:id', () => {
                 type: SectionType.DAILY_PRAYER,
                 title: null,
                 content: null,
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
             ],
-          },
+          } satisfies UpdateBulletinDayDto,
         ],
-      };
+      } satisfies UpdateBulletinDto;
 
       const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
       expect(updateRes.statusCode).toBe(200);
@@ -535,15 +572,23 @@ describe('PUT /bulletins/:id', () => {
                 type: SectionType.INTRODUCTION,
                 title: null,
                 content: null,
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
               {
                 order: 2,
                 type: SectionType.CUSTOM_TEXT,
                 title: 'Custom Section Title',
                 content: 'Custom section content',
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
             ],
-          },
+          } satisfies UpdateBulletinDayDto,
           {
             title: 'Day 2 Updated',
             date: new Date('2024-06-16'),
@@ -553,17 +598,25 @@ describe('PUT /bulletins/:id', () => {
                 type: SectionType.TIPS_FOR_WORK,
                 title: null,
                 content: null,
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
               {
                 order: 2,
                 type: SectionType.DAILY_PRAYER,
                 title: null,
                 content: null,
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
             ],
-          },
+          } satisfies UpdateBulletinDayDto,
         ],
-      };
+      } satisfies UpdateBulletinDto;
 
       const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
       expect(updateRes.statusCode).toBe(200);
@@ -623,11 +676,15 @@ describe('PUT /bulletins/:id', () => {
                 type: SectionType.CUSTOM_TEXT,
                 title: 'c'.repeat(200), // reasonable length for section title
                 content: 'd'.repeat(VALIDATOR_SETTINGS.BULLETIN_DAY_SECTION_CONTENT_MAX_LENGTH),
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
             ],
-          },
+          } satisfies UpdateBulletinDayDto,
         ],
-      };
+      } satisfies UpdateBulletinDto;
 
       const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
       expect(updateRes.statusCode).toBe(200);
@@ -762,23 +819,35 @@ describe('PUT /bulletins/:id', () => {
                 type: SectionType.CUSTOM_TEXT,
                 title: 'Section 100',
                 content: 'Content 100',
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
               {
                 order: 200,
                 type: SectionType.CUSTOM_TEXT,
                 title: 'Section 200',
                 content: 'Content 200',
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
               {
                 order: 300,
                 type: SectionType.CUSTOM_TEXT,
                 title: 'Section 300',
                 content: 'Content 300',
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
             ],
-          },
+          } satisfies UpdateBulletinDayDto,
         ],
-      };
+      } satisfies UpdateBulletinDto;
 
       const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
       expect(updateRes.statusCode).toBe(200);
@@ -827,11 +896,15 @@ describe('PUT /bulletins/:id', () => {
                 type: SectionType.CUSTOM_TEXT,
                 title: 'New Day Section',
                 content: 'Content for new day',
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
             ],
-          },
+          } satisfies UpdateBulletinDayDto,
         ],
-      };
+      } as UpdateBulletinDto;
 
       const updateRes = await app!.bulletin.update(bulletinId, updateData as any, adminAccessToken);
       expect(updateRes.statusCode).toBe(200);
@@ -935,11 +1008,15 @@ describe('PUT /bulletins/:id', () => {
                 type: SectionType.CUSTOM_TEXT,
                 title: 'Test Section',
                 content: 'a'.repeat(VALIDATOR_SETTINGS.BULLETIN_DAY_SECTION_CONTENT_MAX_LENGTH + 1),
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
             ],
-          },
+          } satisfies UpdateBulletinDayDto,
         ],
-      };
+      } satisfies UpdateBulletinDto;
 
       const updateBulletinResponse = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
       expect(updateBulletinResponse.statusCode).toBe(400);
@@ -987,6 +1064,10 @@ describe('PUT /bulletins/:id', () => {
                 title: 'A',
                 content: 'A',
                 order: 1,
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
               } satisfies UpdateBulletinDaySectionDto,
             ],
           } satisfies UpdateBulletinDayDto,
@@ -999,6 +1080,10 @@ describe('PUT /bulletins/:id', () => {
                 title: 'B',
                 content: 'B',
                 order: 2,
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
               } satisfies UpdateBulletinDaySectionDto,
             ],
           } satisfies UpdateBulletinDayDto,
@@ -1077,11 +1162,15 @@ describe('PUT /bulletins/:id', () => {
                   order: 1,
                   type: SectionType.INTRODUCTION,
                   // Intentionally leave title/content undefined at create
-                } as CreateBulletinDaySectionDto,
+                  settings: {
+                    expanded: true,
+                    includeInPdf: false,
+                  } satisfies BulletinSectionSettingsDto,
+                } satisfies CreateBulletinDaySectionDto,
               ],
-            } as CreateBulletinDayDto,
+            } satisfies CreateBulletinDayDto,
           ],
-        } as CreateBulletinDto,
+        } satisfies CreateBulletinDto,
         adminAccessToken,
       );
       expect(createRes.statusCode).toBe(201);
@@ -1154,11 +1243,15 @@ describe('PUT /bulletins/:id', () => {
                 type: SectionType.DAILY_PRAYER,
                 title: '   ',
                 content: '\t\n  \t',
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
             ],
-          },
+          } satisfies UpdateBulletinDayDto,
         ],
-      };
+      } satisfies UpdateBulletinDto;
 
       const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
       // Unlike create, update might allow whitespace-only content but it should be trimmed
@@ -1198,17 +1291,25 @@ describe('PUT /bulletins/:id', () => {
                 type: SectionType.CUSTOM_TEXT,
                 title: 'First Section',
                 content: 'Content 1',
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
               },
               {
                 order: 1, // Duplicate order
                 type: SectionType.CUSTOM_TEXT,
                 title: 'Second Section',
                 content: 'Content 2',
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
             ],
-          },
+          } satisfies UpdateBulletinDayDto,
         ],
-      };
+      } satisfies UpdateBulletinDto;
 
       const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
       // Should succeed as orders are renumbered when saved
@@ -1336,11 +1437,15 @@ describe('PUT /bulletins/:id', () => {
                 type: SectionType.CUSTOM_TEXT,
                 title: 'Valid section',
                 content: 'Valid content',
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
             ],
-          },
+          } satisfies UpdateBulletinDayDto,
         ],
-      };
+      } satisfies UpdateBulletinDto;
 
       const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
       // Empty title might be allowed during update (but should be validated at publish)
@@ -1401,17 +1506,25 @@ describe('PUT /bulletins/:id', () => {
                 type: SectionType.CUSTOM_TEXT,
                 title: 'Section 1',
                 content: 'First content',
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
               {
                 order: 2,
                 type: SectionType.INTRODUCTION,
                 title: null,
                 content: null,
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
             ],
-          },
+          } satisfies UpdateBulletinDayDto,
         ],
-      };
+      } satisfies UpdateBulletinDto;
 
       const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
       expect(updateRes.statusCode).toBe(200);
@@ -1452,11 +1565,15 @@ describe('PUT /bulletins/:id', () => {
                 type: SectionType.CUSTOM_TEXT,
                 title: 'S', // Minimal section title
                 content: 'C', // Minimal content
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
             ],
-          },
+          } satisfies UpdateBulletinDayDto,
         ],
-      };
+      } satisfies UpdateBulletinDto;
 
       const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
       expect(updateRes.statusCode).toBe(200);
@@ -1481,16 +1598,28 @@ describe('PUT /bulletins/:id', () => {
       const { data: bulletinId }: CreateBulletinResponseDto = createRes.body;
 
       // Create 3 days with 2 sections each to avoid hitting possible limits
-      const manyDays = Array.from({ length: 3 }, (_, dayIndex) => ({
-        title: `Day ${dayIndex + 1}`,
-        date: new Date(2024, 6, dayIndex + 1), // July 1-3, 2024
-        sections: Array.from({ length: 2 }, (_, sectionIndex) => ({
-          order: sectionIndex + 1,
-          type: SectionType.CUSTOM_TEXT,
-          title: `Day ${dayIndex + 1} Section ${sectionIndex + 1}`,
-          content: `Content for day ${dayIndex + 1}, section ${sectionIndex + 1}`,
-        })),
-      }));
+      const manyDays = Array.from(
+        { length: 3 },
+        (_, dayIndex) =>
+          ({
+            title: `Day ${dayIndex + 1}`,
+            date: new Date(2024, 6, dayIndex + 1), // July 1-3, 2024
+            sections: Array.from(
+              { length: 2 },
+              (_, sectionIndex) =>
+                ({
+                  order: sectionIndex + 1,
+                  type: SectionType.CUSTOM_TEXT,
+                  title: `Day ${dayIndex + 1} Section ${sectionIndex + 1}`,
+                  content: `Content for day ${dayIndex + 1}, section ${sectionIndex + 1}`,
+                  settings: {
+                    expanded: true,
+                    includeInPdf: false,
+                  } satisfies BulletinSectionSettingsDto,
+                }) satisfies UpdateBulletinDaySectionDto,
+            ),
+          }) satisfies UpdateBulletinDayDto,
+      );
 
       const updateData = {
         title: createData.title,
@@ -1500,7 +1629,7 @@ describe('PUT /bulletins/:id', () => {
         dailyPrayer: createData.dailyPrayer,
         date: createData.date,
         days: manyDays,
-      };
+      } satisfies UpdateBulletinDto;
 
       const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
       expect(updateRes.statusCode).toBe(200);
@@ -1544,11 +1673,15 @@ describe('PUT /bulletins/:id', () => {
                 type: 'INVALID_TYPE' as any,
                 title: 'Invalid Section',
                 content: 'Invalid content',
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
             ],
-          },
+          } satisfies UpdateBulletinDayDto,
         ],
-      };
+      } satisfies UpdateBulletinDto;
 
       const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
       expect(updateRes.statusCode).toBe(400);
@@ -1579,11 +1712,15 @@ describe('PUT /bulletins/:id', () => {
                 type: SectionType.CUSTOM_TEXT,
                 title: 'Section with negative order',
                 content: 'Content',
-              },
+                settings: {
+                  expanded: true,
+                  includeInPdf: false,
+                } satisfies BulletinSectionSettingsDto,
+              } satisfies UpdateBulletinDaySectionDto,
             ],
-          },
+          } satisfies UpdateBulletinDayDto,
         ],
-      };
+      } satisfies UpdateBulletinDto;
 
       const updateRes = await app!.bulletin.update(bulletinId, updateData, adminAccessToken);
       expect(updateRes.statusCode).toBe(400);

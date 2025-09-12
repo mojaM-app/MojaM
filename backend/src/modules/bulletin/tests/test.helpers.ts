@@ -5,6 +5,7 @@ import {
   type CreateBulletinDto,
 } from '../dtos/create-bulletin.dto';
 import {
+  BulletinSectionSettingsDto,
   type UpdateBulletinDayDto,
   type UpdateBulletinDaySectionDto,
   type UpdateBulletinDto,
@@ -30,12 +31,20 @@ const generateValidBulletin = (): CreateBulletinDto => {
             type: SectionType.CUSTOM_TEXT,
             title: 'Day1 Section1',
             content: generateRandomString(100),
+            settings: {
+              expanded: true,
+              includeInPdf: false,
+            } satisfies BulletinSectionSettingsDto,
           } satisfies CreateBulletinDaySectionDto,
           {
             order: 2,
             type: SectionType.CUSTOM_TEXT,
             title: 'Day1 Section2',
             content: generateRandomString(80),
+            settings: {
+              expanded: true,
+              includeInPdf: false,
+            } satisfies BulletinSectionSettingsDto,
           } satisfies CreateBulletinDaySectionDto,
         ],
       } satisfies CreateBulletinDayDto,
@@ -48,6 +57,10 @@ const generateValidBulletin = (): CreateBulletinDto => {
             type: SectionType.CUSTOM_TEXT,
             title: 'Day2 Section1',
             content: generateRandomString(1200),
+            settings: {
+              expanded: true,
+              includeInPdf: false,
+            } satisfies BulletinSectionSettingsDto,
           } satisfies CreateBulletinDaySectionDto,
         ],
       } satisfies CreateBulletinDayDto,
@@ -74,12 +87,20 @@ const generateValidUpdateBulletin = (): UpdateBulletinDto => {
             content: generateRandomString(100),
             type: SectionType.CUSTOM_TEXT,
             order: 1,
+            settings: {
+              expanded: true,
+              includeInPdf: false,
+            } satisfies BulletinSectionSettingsDto,
           } satisfies UpdateBulletinDaySectionDto,
           {
             title: generateRandomString(40),
             content: generateRandomString(800),
             type: SectionType.CUSTOM_TEXT,
             order: 2,
+            settings: {
+              expanded: true,
+              includeInPdf: false,
+            } satisfies BulletinSectionSettingsDto,
           } satisfies UpdateBulletinDaySectionDto,
         ],
       } satisfies UpdateBulletinDayDto,

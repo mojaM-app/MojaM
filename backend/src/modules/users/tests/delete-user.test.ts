@@ -1052,6 +1052,10 @@ describe('DELETE /user', () => {
             content: `Updated ${section.content || 'Content'}`,
             type: section.type,
             order: section.order,
+            settings: {
+              expanded: true,
+              includeInPdf: false,
+            },
           })),
         })),
       };
@@ -1195,6 +1199,7 @@ describe('DELETE /user', () => {
               testEventHandlers.onPermissionAdded,
               testEventHandlers.onUserLoggedIn,
               testEventHandlers.onBulletinCreated,
+              testEventHandlers.onBulletinPublished,
               testEventHandlers.onBulletinDeleted,
             ].includes(eventHandler),
         )
@@ -1207,6 +1212,7 @@ describe('DELETE /user', () => {
       expect(testEventHandlers.onPermissionAdded).toHaveBeenCalled();
       expect(testEventHandlers.onUserLoggedIn).toHaveBeenCalled();
       expect(testEventHandlers.onBulletinCreated).toHaveBeenCalled();
+      expect(testEventHandlers.onBulletinPublished).toHaveBeenCalled();
       expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalled();
     });
   });
