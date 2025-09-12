@@ -9,8 +9,8 @@ import { Service } from 'typedi';
 import { FindOptionsWhere } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { Bulletin } from '../../../dataBase/entities/bulletin/bulletin.entity';
-import { CreateBulletinDto } from '../dtos/create-bulletin.dto';
-import { UpdateBulletinDaySectionDto, UpdateBulletinDto } from '../dtos/update-bulletin.dto';
+import { CreateBulletinDayDto, CreateBulletinDto } from '../dtos/create-bulletin.dto';
+import { UpdateBulletinDayDto, UpdateBulletinDaySectionDto, UpdateBulletinDto } from '../dtos/update-bulletin.dto';
 import { BulletinState } from '../enums/bulletin-state.enum';
 import { BulletinDaySection } from './../../../dataBase/entities/bulletin/bulletin-day-section.entity';
 import { BulletinDay } from './../../../dataBase/entities/bulletin/bulletin-day.entity';
@@ -38,17 +38,17 @@ export class BulletinRepository extends BaseBulletinRepository {
       return null;
     }
 
-    return await this._dbContext.bulletins.findOne({
-      where: { id: id! },
-      relations: {
-        days: {
-          sections: true,
-        },
-        createdBy: true,
-        updatedBy: true,
-        publishedBy: true,
-      },
-    });
+    return await this._dbContext.bulletins
+      .createQueryBuilder('bulletin')
+      .leftJoinAndSelect('bulletin.days', 'days')
+      .leftJoinAndSelect('days.sections', 'sections')
+      .leftJoinAndSelect('bulletin.createdBy', 'createdBy')
+      .leftJoinAndSelect('bulletin.updatedBy', 'updatedBy')
+      .leftJoinAndSelect('bulletin.publishedBy', 'publishedBy')
+      .where('bulletin.id = :id', { id: id! })
+      .orderBy('days.date', 'ASC')
+      .addOrderBy('sections.order', 'ASC')
+      .getOne();
   }
 
   public async create(reqDto: CreateBulletinDto, userId: number): Promise<{ id: number }> {
@@ -126,6 +126,10 @@ export class BulletinRepository extends BaseBulletinRepository {
                 } satisfies IUserId,
                 title: item.title,
                 type: item.type,
+                settings: {
+                  includeInPdf: item.settings?.includeInPdf ?? false,
+                  expanded: item.settings?.expanded ?? true,
+                },
               }) satisfies ICreateBulletinDaySection,
           );
 
@@ -240,6 +244,10 @@ export class BulletinRepository extends BaseBulletinRepository {
                       type: section.type ?? SectionType.CUSTOM_TEXT,
                       title: section.title ?? null,
                       createdBy: { id: userId } satisfies IUserId,
+                      settings: {
+                        includeInPdf: section.settings?.includeInPdf ?? false,
+                        expanded: section.settings?.expanded ?? true,
+                      },
                     }) satisfies ICreateBulletinDaySection,
                 );
 
@@ -294,6 +302,10 @@ export class BulletinRepository extends BaseBulletinRepository {
                       type: sectionDto.type ?? SectionType.CUSTOM_TEXT,
                       title: sectionDto.title ?? null,
                       createdBy: { id: userId } satisfies IUserId,
+                      settings: {
+                        includeInPdf: sectionDto.settings?.includeInPdf ?? false,
+                        expanded: sectionDto.settings?.expanded ?? true,
+                      },
                     } satisfies ICreateBulletinDaySection);
                   } else {
                     processedSectionIds.add(existingSection.uuid);
@@ -302,6 +314,10 @@ export class BulletinRepository extends BaseBulletinRepository {
                       sectionDto.content,
                       sectionDto.title,
                       order,
+                      {
+                        includeInPdf: sectionDto.settings?.includeInPdf ?? false,
+                        expanded: sectionDto.settings?.expanded ?? true,
+                      },
                     );
 
                     if (sectionUpdateData) {
@@ -379,7 +395,7 @@ export class BulletinRepository extends BaseBulletinRepository {
     });
   }
 
-  private validateUniqueBulletinDayDates(days: Array<{ date?: Date | null; id?: string }>): void {
+  private validateUniqueBulletinDayDates(days: Partial<CreateBulletinDayDto | UpdateBulletinDayDto>[]): void {
     const dateMap = new Map<string, number>();
 
     days.forEach((day, index) => {

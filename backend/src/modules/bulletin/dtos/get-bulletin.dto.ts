@@ -2,12 +2,18 @@ import { BaseReqDto, events, type IResponse } from '@core';
 import { SectionType } from '../enums/bulletin-section-type.enum';
 import { BulletinState } from '../enums/bulletin-state.enum';
 
+export interface IBulletinSectionSettings {
+  includeInPdf: boolean;
+  expanded: boolean;
+}
+
 export interface IBulletinDaySectionDto {
   id: string;
   title: string | null;
   content: string | null;
   type: SectionType;
   order: number;
+  settings: IBulletinSectionSettings;
 }
 
 export interface IBulletinDayDto {

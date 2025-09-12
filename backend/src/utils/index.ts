@@ -7,13 +7,20 @@ export {
   generateRandomString,
 } from './random.utils';
 
-export { getDateNow, getDateTimeNow, isDate } from './date.utils';
+export { getDateNow, getDateTimeNow, getMonthBounds, isDate, getISODate } from './date.utils';
 
 export { isNumber, isPositiveNumber, toNumber } from './numbers.utils';
 
 export { arraysEquals, isArray, isArrayEmpty } from './arrays.utils';
 
-export { isEmptyString, isNullOrEmptyString, isString, normalizeEmail, normalizePhone } from './strings.utils';
+export {
+  isEmptyString,
+  isNullOrEmptyString,
+  isString,
+  normalizeEmail,
+  normalizePhone,
+  isValidISODate,
+} from './strings.utils';
 
 export { isNullOrUndefined } from './object.utils';
 

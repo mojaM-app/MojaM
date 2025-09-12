@@ -57,13 +57,30 @@ export class BulletinFormBuilder {
     this._form = this.create();
   }
 
-  public addNewDay(): void {
+  public addNewDay(copySectionsFromPreviousDay: boolean): void {
     const newDay = this.getNewDayFormGroup();
     const lastDay = this.days.length > 0 ? this.days.at(this.days.length - 1) : null;
-    if (lastDay && lastDay.controls.date.value) {
-      const lastDate = new Date(lastDay.controls.date.value);
-      lastDate.setDate(lastDate.getDate() + 1);
-      newDay.controls.date.setValue(lastDate);
+    if (lastDay) {
+      if (lastDay.controls.date.value) {
+        const lastDate = new Date(lastDay.controls.date.value);
+        lastDate.setDate(lastDate.getDate() + 1);
+        newDay.controls.date.setValue(lastDate);
+      }
+
+      if (copySectionsFromPreviousDay) {
+        lastDay.controls.sections.controls.forEach(section => {
+          const newSection = this.createDaySection({
+            type: section.controls.type.value!,
+            title: section.controls.title.value,
+            content: section.controls.content.value,
+            settings: {
+              includeInPdf: section.controls.settings.controls.includeInPdf.value,
+              expanded: section.controls.settings.controls.expanded.value,
+            },
+          });
+          newDay.controls.sections.push(newSection);
+        });
+      }
     }
     this._form.controls.days.push(newDay);
   }
@@ -102,6 +119,11 @@ export class BulletinFormBuilder {
           title: section.title ?? null,
           type: section.type ?? DaySections.defaultSectionType,
           content: section.content ?? null,
+          settings: {
+            includeInPdf:
+              section.settings?.includeInPdf ?? DaySections.isIncludeInPdfByDefault(section.type),
+            expanded: section.settings?.expanded ?? DaySections.isExpandedByDefault(section.type),
+          },
         });
         sectionsArray.push(sectionGroup);
       });
@@ -127,8 +149,9 @@ export class BulletinFormBuilder {
       content: section.content ?? null,
       title: section.title ?? null,
       settings: {
-        includeInPdf: section.settings?.includeInPdf ?? false,
-        expanded: section.settings?.expanded ?? true,
+        includeInPdf:
+          section.settings?.includeInPdf ?? DaySections.isIncludeInPdfByDefault(section.type),
+        expanded: section.settings?.expanded ?? DaySections.isExpandedByDefault(section.type),
       },
     });
 
@@ -181,23 +204,23 @@ export class BulletinFormBuilder {
       Validators.maxLength(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH),
     ]);
 
-    formGroup.controls.type.valueChanges.subscribe((value: SectionType | null) => {
-      if (DaySections.isTitleReadOnly(value)) {
+    formGroup.controls.type.valueChanges.subscribe((newSectionType: SectionType | null) => {
+      if (DaySections.isTitleReadOnly(newSectionType)) {
         formGroup.controls.title.setValue(null);
       }
 
-      if (DaySections.isContentReadOnly(value)) {
+      if (DaySections.isContentReadOnly(newSectionType)) {
         formGroup.controls.content.setValue(null);
       }
 
-      const isIncludeInPdfByDefault = DaySections.isIncludeInPdfByDefault(value);
+      const isIncludeInPdfByDefault = DaySections.isIncludeInPdfByDefault(newSectionType);
       formGroup.controls.settings.controls.includeInPdf.setValue(isIncludeInPdfByDefault);
       if (!isIncludeInPdfByDefault) {
         formGroup.controls.settings.controls.includeInPdf.disable({ emitEvent: false });
       }
 
       formGroup.controls.settings.controls.expanded.setValue(
-        DaySections.isExpandedByDefault(value)
+        DaySections.isExpandedByDefault(newSectionType)
       );
       formGroup.controls.content.updateValueAndValidity();
     });

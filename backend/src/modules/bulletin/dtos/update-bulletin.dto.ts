@@ -19,6 +19,14 @@ import {
 } from 'class-validator';
 import { SectionType } from '../enums/bulletin-section-type.enum';
 
+export class BulletinSectionSettingsDto {
+  @IsNotEmpty()
+  public includeInPdf!: boolean;
+
+  @IsNotEmpty()
+  public expanded!: boolean;
+}
+
 export class UpdateBulletinDaySectionDto {
   public id?: string;
 
@@ -47,6 +55,11 @@ export class UpdateBulletinDaySectionDto {
 
   @IsBulletinSectionValid()
   public validateSection?: boolean = true;
+
+  @Type(() => BulletinSectionSettingsDto)
+  @IsNotEmpty()
+  @ValidateNested()
+  public settings!: BulletinSectionSettingsDto;
 
   constructor() {
     this.content = null;

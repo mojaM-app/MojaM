@@ -6,9 +6,17 @@ export interface IBulletinDaysMinMaxDto {
 }
 
 export interface IBulletinCalendarDayDto {
-  dayId: string;
+  id: string;
+  bulletinId: string;
+  title: string;
+  date: string;
+  isFirstDay: boolean;
+  isLastDay: boolean;
 }
 
 export interface IBulletinCalendarDay extends CalendarEvent {
-  dayId: string;
+  bulletinId: string;
+  title: string;
+  isFirstDay: boolean;
+  isLastDay: boolean;
 }

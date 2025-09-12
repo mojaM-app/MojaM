@@ -1,3 +1,5 @@
+import { isNullOrUndefined } from './../utils/object.utils';
+
 const isDate = (date: unknown): boolean => {
   return date !== null && date !== undefined && date instanceof Date && !isNaN(date.getTime());
 };
@@ -33,4 +35,16 @@ const maxDate = (dates: (Date | null | undefined)[]): Date | null => {
   return validDates.reduce((max, curr) => (curr > max ? curr : max));
 };
 
-export { getDateNow, getDateTimeNow, isDate, getMonthBounds, minDate, maxDate };
+const getISODate = (dateString: string | undefined): string | undefined => {
+  if (isNullOrUndefined(dateString) || dateString!.length === 0) {
+    return undefined;
+  }
+
+  if (!dateString!.includes('T')) {
+    dateString += 'T00:00:00.000Z';
+  }
+
+  return dateString;
+};
+
+export { getDateNow, getDateTimeNow, isDate, getMonthBounds, minDate, maxDate, getISODate };

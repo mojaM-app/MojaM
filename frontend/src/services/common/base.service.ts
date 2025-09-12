@@ -36,6 +36,8 @@ export class BaseService {
         `${environment.backendUrl}/${this.API_ROUTES.bulletin.path}/${uuid}`,
       delete: (uuid: string): string =>
         `${environment.backendUrl}/${this.API_ROUTES.bulletin.path}/${uuid}`,
+      publish: (uuid: string): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.bulletin.path}/${uuid}/publish`,
     },
     bulletinList: {
       path: 'bulletin-list',
@@ -45,6 +47,8 @@ export class BaseService {
       path: 'bulletin-calendar-view',
       getMinMaxDate: (): string =>
         `${environment.backendUrl}/${this.API_ROUTES.bulletinCalendarView.path}/min-max-date`,
+      getDays: (): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.bulletinCalendarView.path}/days`,
     },
     calendar: {
       path: 'calendar',
@@ -119,5 +123,16 @@ export class BaseService {
     }
 
     return new Date(date);
+  }
+
+  protected toDate(date: string | null | undefined | Date): Date | undefined {
+    if (!date) {
+      return undefined;
+    }
+    if (date instanceof Date) {
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    }
+    const d = new Date(date);
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
   }
 }

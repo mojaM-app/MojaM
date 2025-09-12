@@ -152,12 +152,14 @@ export class BulletinDaySection
    * @param content The new content
    * @param title The new title
    * @param order The new order
+   * @param settings The new settings
    * @returns Update model if changes detected, null otherwise
    */
   public getUpdateModel(
     content?: string | null,
     title?: string | null,
     order?: number,
+    settings?: Record<string, any> | null,
   ): Partial<IUpdateBulletinDaySection> | null {
     const result: Partial<IUpdateBulletinDaySection> = {};
     let hasChanges = false;
@@ -174,6 +176,12 @@ export class BulletinDaySection
 
     if (this.order !== order) {
       result.order = order;
+      hasChanges = true;
+    }
+
+    // Compare settings objects
+    if (JSON.stringify(this.settings) !== JSON.stringify(settings)) {
+      result.settings = settings;
       hasChanges = true;
     }
 

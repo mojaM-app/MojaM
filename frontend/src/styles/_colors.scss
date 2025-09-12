@@ -116,7 +116,7 @@ body {
       bg-active: mat.get-theme-color($light-theme, secondary-container),
       border-color: mat.get-theme-color($light-theme, primary-container),
       gray: mat.get-theme-color($light-theme, tertiary),
-      today-bg: mat.get-theme-color($light-theme, primary-container),
+      today-bg: mat.get-theme-color($light-theme, surface-container),
       event-color-primary: mat.get-theme-color($light-theme, primary),
     )
   );

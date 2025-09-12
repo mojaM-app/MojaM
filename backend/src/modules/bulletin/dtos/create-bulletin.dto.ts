@@ -16,6 +16,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
+import { BulletinSectionSettingsDto } from './update-bulletin.dto';
 import { SectionType } from '../enums/bulletin-section-type.enum';
 
 export class CreateBulletinDaySectionDto {
@@ -44,6 +45,11 @@ export class CreateBulletinDaySectionDto {
 
   @IsBulletinSectionValid()
   public validateSection?: boolean = true; // This property is just for validation trigger
+
+  @Type(() => BulletinSectionSettingsDto)
+  @IsNotEmpty()
+  @ValidateNested()
+  public settings!: BulletinSectionSettingsDto;
 }
 
 export class CreateBulletinDayDto {

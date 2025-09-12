@@ -90,14 +90,29 @@ export class BulletinFormComponent extends WithForm<IBulletinForm>() {
   }
 
   protected addDay(): void {
-    // TODO
-    // przed dodaniem nowego dnia zapytaj, czy przenieść na ten dzień jakieś dane/sekcje z dnia poprzedniego
-    // jeżeli powstaje nowy dzień i nowy biuletyn, zapytaj czy przenieść dane z poprzedniego biuletynu z ostatniego dnia
-    // podczas dodawania biuletyny pobierz ostatni biuletyn i jego ostatni dzień, jeżeli istnieje
-    //
-    const newIndex = this._formBuilder.days.length;
-    this._formBuilder.addNewDay();
-    this.selectedTabIndex.set(newIndex + 1);
+    const daysCount = this._formBuilder.days.length;
+    const addNewDay = (copySectionsFromPreviousDay: boolean = false): void => {
+      this._formBuilder.addNewDay(copySectionsFromPreviousDay);
+      this.selectedTabIndex.set(daysCount + 1);
+    };
+
+    if (daysCount === 0) {
+      addNewDay();
+      return;
+    }
+
+    this._dialogService
+      .confirm({
+        title: 'Bulletin/Form/CopySectionsFromPreviousDayDialog/Title',
+        message: {
+          text: 'Bulletin/Form/CopySectionsFromPreviousDayDialog/Description',
+        },
+        noBtnText: 'Bulletin/Form/CopySectionsFromPreviousDayDialog/BtnNo',
+        yesBtnText: 'Bulletin/Form/CopySectionsFromPreviousDayDialog/BtnYes',
+      } satisfies IDialogSettings)
+      .then((result: boolean) => {
+        addNewDay(result === true);
+      });
   }
 
   protected async confirmAndRemoveTab(index: number): Promise<void> {

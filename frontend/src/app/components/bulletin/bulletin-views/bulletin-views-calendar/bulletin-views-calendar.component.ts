@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, signal, viewChild } from '@angular/core';
 import {
   CalendarDateFormatter,
   CalendarModule,
+  CalendarMonthViewComponent,
   CalendarMonthViewDay,
   CalendarView,
   DateAdapter,
@@ -10,7 +11,10 @@ import {
 import { CustomDateFormatter } from 'src/app/components/calendar/date-formatters/custom.date.formatter';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 import { CultureService } from 'src/services/translate/culture.service';
-import { IBulletinCalendarDay } from '../../interfaces/bulletin-calendar-view.interfaces';
+import {
+  IBulletinCalendarDay,
+  IBulletinDaysMinMaxDto,
+} from '../../interfaces/bulletin-calendar-view.interfaces';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { DirectivesModule } from 'src/directives/directives.module';
@@ -31,6 +35,8 @@ import {
 } from 'date-fns';
 import { DateUtils } from 'src/utils/date.utils';
 import { BulletinCalendarViewService } from '../../services/bulletin-calendar-view.service';
+import { ViewPeriod } from 'calendar-utils';
+import { debounceTime, tap } from 'rxjs';
 
 @Component({
   selector: 'app-bulletin-views-calendar',
@@ -58,8 +64,10 @@ export class BulletinViewsCalendarComponent extends WithUnsubscribe() {
   protected readonly view = signal<CalendarView>(CalendarView.Month);
   protected readonly btnPrevDisabled = signal<boolean>(false);
   protected readonly btnNextDisabled = signal<boolean>(false);
+  private readonly _minMaxDateFetched = signal<boolean>(false);
   private readonly _minDate = signal<Date>(new Date(0));
   private readonly _maxDate = signal<Date>(new Date(0));
+  private readonly _calendarMonth = viewChild(CalendarMonthViewComponent);
 
   public constructor(
     private readonly _dateAdapter: DateAdapter,
@@ -75,14 +83,23 @@ export class BulletinViewsCalendarComponent extends WithUnsubscribe() {
     this.dateOrViewChanged();
 
     this.addSubscription(
-      this._bulletinCalendarViewService.getMinMaxDate().subscribe(resp => {
-        if (resp) {
-          this._minDate.set(resp.minDate);
-          this._maxDate.set(resp.maxDate);
-          this.dateOrViewChanged();
-        }
-      })
+      this._bulletinCalendarViewService
+        .getMinMaxDate()
+        .pipe(tap(() => this._minMaxDateFetched.set(true)))
+        .subscribe((resp: IBulletinDaysMinMaxDto) => {
+          if (resp) {
+            this._minDate.set(resp.minDate);
+            this._maxDate.set(resp.maxDate);
+            this.dateOrViewChanged();
+          }
+        })
     );
+
+    effect(() => {
+      if (this._minMaxDateFetched() && this._calendarMonth() && this.viewDate() && this.view()) {
+        setTimeout(() => this.updateCalendarEvents(this._calendarMonth()?.view?.period), 100);
+      }
+    });
   }
 
   protected viewDateChange(date: Date): void {
@@ -105,11 +122,38 @@ export class BulletinViewsCalendarComponent extends WithUnsubscribe() {
   }
 
   protected beforeMonthViewRender({ body }: { body: CalendarMonthViewDay[] }): void {
+    const bulletinIds = new Array<string>();
     body.forEach(day => {
+      day.cssClass = '';
       if (!this.dateIsValid(day.date)) {
-        day.cssClass = 'cal-disabled';
+        day.cssClass += 'cal-disabled';
+      }
+
+      const events = day.events as IBulletinCalendarDay[];
+      events?.forEach(event => {
+        if (event.bulletinId && !bulletinIds.includes(event.bulletinId)) {
+          bulletinIds.push(event.bulletinId);
+        }
+      });
+
+      const firstEvent = events.at(0);
+      if (firstEvent) {
+        if (firstEvent.isFirstDay) {
+          day.cssClass += ' cal-bulletin-day-first';
+        }
+
+        if (firstEvent.isLastDay) {
+          day.cssClass += ' cal-bulletin-day-last';
+        }
+
+        const isOdd = bulletinIds.indexOf(firstEvent.bulletinId) % 2 === 1;
+        day.cssClass += isOdd ? ' cal-bulletin-odd' : ' cal-bulletin-even';
       }
     });
+  }
+
+  protected showBulletin(day: CalendarMonthViewDay): void {
+    console.log(day);
   }
 
   private setNewViewDate(moveBack = false): void {
@@ -138,9 +182,9 @@ export class BulletinViewsCalendarComponent extends WithUnsubscribe() {
         this.startOfPeriod(this.view(), this.addPeriod(this.view(), this.viewDate(), 1))
       )
     );
-    if (this.viewDate < this._minDate) {
+    if (this.viewDate() < this._minDate()) {
       this.viewDateChange(this._minDate());
-    } else if (this.viewDate > this._maxDate) {
+    } else if (this.viewDate() > this._maxDate()) {
       this.viewDateChange(this._maxDate());
     }
   }
@@ -175,5 +219,20 @@ export class BulletinViewsCalendarComponent extends WithUnsubscribe() {
       week: subWeeks,
       month: subMonths,
     }[period](date, amount);
+  }
+
+  private updateCalendarEvents(period?: ViewPeriod): void {
+    if (!period) {
+      return;
+    }
+
+    this.addSubscription(
+      this._bulletinCalendarViewService
+        .getDays(period!.start, period!.end)
+        .pipe(debounceTime(200))
+        .subscribe((events: IBulletinCalendarDay[]) => {
+          this.events.set(events);
+        })
+    );
   }
 }

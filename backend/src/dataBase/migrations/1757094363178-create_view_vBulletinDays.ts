@@ -7,7 +7,13 @@ export class CreateViewVBulletinDays1757094363178 implements MigrationInterface 
     await queryRunner.query(`
           CREATE VIEW \`vBulletinDays\`
           AS
-          SELECT \`bulletinDay\`.\`Date\` AS \`date\`
+          SELECT
+            \`bulletinDay\`.\`Uuid\` AS \`id\`,
+            \`bulletin\`.\`Uuid\` AS \`bulletinId\`,
+            \`bulletinDay\`.\`Title\` AS \`title\`,
+            \`bulletinDay\`.\`Date\` AS \`date\`,
+            CASE WHEN \`bulletinDay\`.\`Date\` = (SELECT MIN(\`bd_min\`.\`Date\`) FROM \`bulletin_days\` \`bd_min\` WHERE \`bd_min\`.\`BulletinId\` = \`bulletinDay\`.\`BulletinId\`) THEN 1 ELSE 0 END AS \`isFirstDay\`,
+            CASE WHEN \`bulletinDay\`.\`Date\` = (SELECT MAX(\`bd_max\`.\`Date\`) FROM \`bulletin_days\` \`bd_max\` WHERE \`bd_max\`.\`BulletinId\` = \`bulletinDay\`.\`BulletinId\`) THEN 1 ELSE 0 END AS \`isLastDay\`
           FROM \`bulletin_days\` \`bulletinDay\`
           INNER JOIN \`bulletins\` \`bulletin\` ON \`bulletin\`.\`Id\` = \`bulletinDay\`.\`BulletinId\`
           INNER JOIN \`users\` \`createdBy\` ON \`createdBy\`.\`Id\` = \`bulletinDay\`.\`CreatedById\`
@@ -18,7 +24,7 @@ export class CreateViewVBulletinDays1757094363178 implements MigrationInterface 
       [
         'VIEW',
         'vBulletinDays',
-        'SELECT `bulletinDay`.`Date` AS `date` FROM `bulletin_days` `bulletinDay` INNER JOIN `bulletins` `bulletin` ON `bulletin`.`Id` = `bulletinDay`.`BulletinId`  INNER JOIN `users` `createdBy` ON `createdBy`.`Id` = `bulletinDay`.`CreatedById`  LEFT JOIN `users` `updatedBy` ON `updatedBy`.`Id` = `bulletinDay`.`UpdatedById` WHERE \`bulletin\`.\`State\` = 2`',
+        'SELECT `bulletinDay`.`Uuid` AS `id`, `bulletin`.`Uuid` AS `bulletinId`, `bulletinDay`.`Title` AS `title`, `bulletinDay`.`Date` AS `date`, CASE WHEN `bulletinDay`.`Date` = (SELECT MIN(`bd_min`.`Date`) FROM `bulletin_days` `bd_min` WHERE `bd_min`.`BulletinId` = `bulletinDay`.`BulletinId`) THEN 1 ELSE 0 END AS `isFirstDay`, CASE WHEN `bulletinDay`.`Date` = (SELECT MAX(`bd_max`.`Date`) FROM `bulletin_days` `bd_max` WHERE `bd_max`.`BulletinId` = `bulletinDay`.`BulletinId`) THEN 1 ELSE 0 END AS `isLastDay` FROM `bulletin_days` `bulletinDay` INNER JOIN `bulletins` `bulletin` ON `bulletin`.`Id` = `bulletinDay`.`BulletinId`  INNER JOIN `users` `createdBy` ON `createdBy`.`Id` = `bulletinDay`.`CreatedById`  LEFT JOIN `users` `updatedBy` ON `updatedBy`.`Id` = `bulletinDay`.`UpdatedById` WHERE `bulletin`.`State` = 2',
       ],
     );
   }

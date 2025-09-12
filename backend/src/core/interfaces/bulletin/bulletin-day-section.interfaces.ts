@@ -15,6 +15,7 @@ export interface ICreateBulletinDaySection {
   content?: string | null;
   order: number;
   type?: string;
+  settings: Record<string, any> | null;
 }
 
 export interface IUpdateBulletinDaySection {
@@ -23,4 +24,5 @@ export interface IUpdateBulletinDaySection {
   content?: string | null;
   order?: number;
   type?: string;
+  settings?: Record<string, any> | null;
 }

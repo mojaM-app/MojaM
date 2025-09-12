@@ -54,4 +54,22 @@ const normalizePhone = (value: unknown): string | null => {
   return trimmed.replace(/[\s\-()]/gu, '');
 };
 
-export { isEmptyString, isNullOrEmptyString, isString, normalizeEmail, normalizePhone };
+/**
+ * Check if a string is a valid ISO date (YYYY-MM-DDTHH:MM:SS.sssZ)
+ * @param dateString input date string to validate
+ * @returns true if valid ISO date, false otherwise
+ */
+const isValidISODate = (dateString: string | undefined): boolean => {
+  try {
+    if (isNullOrUndefined(dateString) || dateString!.length === 0) {
+      return false;
+    }
+
+    const date = new Date(dateString!);
+    return !isNaN(date.getTime()) && dateString === date.toISOString();
+  } catch {
+    return false;
+  }
+};
+
+export { isEmptyString, isNullOrEmptyString, isString, normalizeEmail, normalizePhone, isValidISODate };

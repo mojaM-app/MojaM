@@ -65,6 +65,7 @@ export const errorKeys = {
     Day_Date_Is_Required: 'Bulletin_Day_Date_Is_Required',
     Day_Title_Is_Required: 'Bulletin_Day_Title_Is_Required',
     Day_Must_Have_At_Least_One_Section: 'Bulletin_Day_Must_Have_At_Least_One_Section',
+    Section_Type_Is_Required: 'Bulletin_Section_Type_Is_Required',
     Custom_Section_Title_Is_Required: 'Bulletin_Custom_Section_Title_Is_Required',
     Custom_Section_Content_Is_Required: 'Bulletin_Custom_Section_Content_Is_Required',
     Non_Custom_Section_Should_Not_Have_Title: 'Bulletin_Non_Custom_Section_Should_Not_Have_Title',

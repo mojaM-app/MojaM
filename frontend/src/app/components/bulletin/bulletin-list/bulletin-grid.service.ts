@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SortDirection } from '@angular/material/sort';
 import { Router } from '@angular/router';
-import { firstValueFrom, Observable } from 'rxjs';
+import { firstValueFrom, map, Observable } from 'rxjs';
 import { IBulletinGridItemDto } from 'src/app/components/bulletin/interfaces/bulletin-list.interfaces';
 import { BulletinListService } from 'src/app/components/bulletin/services/bulletin-list.service';
 import {
@@ -156,13 +156,13 @@ export class BulletinGridService
       });
     }
 
-    if (this._permissionService.hasPermission(SystemPermissionValue.AddBulletin)) {
-      result.push({
-        title: this._translationService.get('Bulletin/List/ContextMenu/Copy'),
-        icon: 'content_copy',
-        action: async () => this.handleCopy(bulletin),
-      });
-    }
+    // if (this._permissionService.hasPermission(SystemPermissionValue.AddBulletin)) {
+    //   result.push({
+    //     title: this._translationService.get('Bulletin/List/ContextMenu/Copy'),
+    //     icon: 'content_copy',
+    //     action: async () => this.handleCopy(bulletin),
+    //   });
+    // }
 
     if (this._permissionService.hasPermission(SystemPermissionValue.EditBulletin)) {
       result.push({
@@ -172,13 +172,13 @@ export class BulletinGridService
       });
     }
 
-    if (this._permissionService.hasPermission(SystemPermissionValue.PreviewBulletinList)) {
-      result.push({
-        title: this._translationService.get('Bulletin/List/ContextMenu/Preview'),
-        icon: PreviewBulletinMenu.Icon,
-        action: async () => this.handlePreview(bulletin),
-      });
-    }
+    // if (this._permissionService.hasPermission(SystemPermissionValue.PreviewBulletinList)) {
+    //   result.push({
+    //     title: this._translationService.get('Bulletin/List/ContextMenu/Preview'),
+    //     icon: PreviewBulletinMenu.Icon,
+    //     action: async () => this.handlePreview(bulletin),
+    //   });
+    // }
 
     return result;
   }
@@ -220,13 +220,15 @@ export class BulletinGridService
       return;
     }
 
-    // TODO: Implement publish method in BulletinService
-    // return firstValueFrom(
-    //   this._bulletinService
-    //     .publish(bulletin.id)
-    //     .pipe(map((result: boolean) => (result ? MenuItemClickResult.REFRESH_GRID : undefined)))
-    // );
-    return MenuItemClickResult.NONE;
+    return firstValueFrom(
+      this._bulletinService
+        .publish(bulletin.id)
+        .pipe(
+          map((result: boolean) =>
+            result ? MenuItemClickResult.REFRESH_GRID : MenuItemClickResult.NONE
+          )
+        )
+    );
   }
 
   private async handleEdit(

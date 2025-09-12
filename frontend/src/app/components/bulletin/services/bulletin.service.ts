@@ -74,16 +74,16 @@ export class BulletinService extends BaseService {
       );
   }
 
-  // public publish(uuid: string): Observable<boolean> {
-  //   return this._httpClient
-  //     .request()
-  //     .withUrl(this.API_ROUTES.announcements.publish(uuid))
-  //     .post<boolean>()
-  //     .pipe(
-  //       this._spinnerService.waitForSubscription(),
-  //       map(response => response)
-  //     );
-  // }
+  public publish(uuid: string): Observable<boolean> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.bulletin.publish(uuid))
+      .post<boolean>()
+      .pipe(
+        this._spinnerService.waitForSubscription(),
+        map(response => response)
+      );
+  }
 
   public delete(uuid: string): Observable<DeleteResult> {
     return this._httpClient

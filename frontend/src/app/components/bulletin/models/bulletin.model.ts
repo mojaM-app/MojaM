@@ -10,7 +10,7 @@ import { DaySections } from '../bulletin-form/tab-bulletin-day/day-sections/day-
 
 export class BulletinSectionSettingsDto {
   public includeInPdf: boolean = false;
-  public expanded: boolean = true;
+  public expanded: boolean = false;
 }
 
 export class BulletinDaySectionDto {

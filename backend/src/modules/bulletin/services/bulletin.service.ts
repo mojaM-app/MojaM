@@ -5,9 +5,15 @@ import { Container, Service } from 'typedi';
 import { Bulletin } from '../../../dataBase/entities/bulletin/bulletin.entity';
 import { CreateBulletinReqDto } from '../dtos/create-bulletin.dto';
 import { DeleteBulletinReqDto } from '../dtos/delete-bulletin.dto';
-import { GetBulletinReqDto, IBulletinDayDto, IBulletinDaySectionDto, IBulletinDto } from '../dtos/get-bulletin.dto';
+import {
+  GetBulletinReqDto,
+  IBulletinDayDto,
+  IBulletinDaySectionDto,
+  IBulletinDto,
+  IBulletinSectionSettings,
+} from '../dtos/get-bulletin.dto';
 import { PublishBulletinReqDto } from '../dtos/publish-bulletin.dto';
-import { UpdateBulletinReqDto } from '../dtos/update-bulletin.dto';
+import { UpdateBulletinDto, UpdateBulletinReqDto } from '../dtos/update-bulletin.dto';
 import { SectionType } from '../enums/bulletin-section-type.enum';
 import { BulletinCreatedEvent } from '../events/bulletin-created-event';
 import { BulletinDeletedEvent } from '../events/bulletin-deleted-event';
@@ -115,6 +121,10 @@ export class BulletinService extends BaseService {
       });
     }
 
+    if (bulletin!.isPublished) {
+      this.validateBulletinForPublication(bulletinModel);
+    }
+
     await this._bulletinRepository.update(bulletinModel, bulletin!.id, reqDto.currentUserId!);
     const updatedBulletin = await this._bulletinRepository.get(bulletin!.id);
     const dto = this.bulletinToIBulletin(updatedBulletin!);
@@ -162,7 +172,6 @@ export class BulletinService extends BaseService {
       return true;
     }
 
-    // Validate bulletin completeness before publishing
     this.validateBulletinForPublication(bulletin!);
 
     const result = await this._bulletinRepository.publish(bulletin!, reqDto.currentUserId!);
@@ -175,7 +184,7 @@ export class BulletinService extends BaseService {
     return result;
   }
 
-  private validateBulletinForPublication(bulletin: Bulletin): void {
+  private validateBulletinForPublication(bulletin: Bulletin | UpdateBulletinDto): void {
     // Check required bulletin fields
     if (isNullOrUndefined(bulletin.title) || isEmptyString(bulletin.title)) {
       throw new BadRequestException(errorKeys.bulletin.Title_Is_Required);
@@ -189,25 +198,17 @@ export class BulletinService extends BaseService {
       throw new BadRequestException(errorKeys.bulletin.Number_Is_Required);
     }
 
-    if (isNullOrUndefined(bulletin.introduction) || isEmptyString(bulletin.introduction)) {
-      throw new BadRequestException(errorKeys.bulletin.Introduction_Is_Required);
-    }
-
-    if (isNullOrUndefined(bulletin.tipsForWork) || isEmptyString(bulletin.tipsForWork)) {
-      throw new BadRequestException(errorKeys.bulletin.Tips_For_Work_Is_Required);
-    }
-
-    if (isNullOrUndefined(bulletin.dailyPrayer) || isEmptyString(bulletin.dailyPrayer)) {
-      throw new BadRequestException(errorKeys.bulletin.Daily_Prayer_Is_Required);
-    }
-
     // Check if bulletin has at least one day
-    if (isNullOrUndefined(bulletin.days) || bulletin.days.length === 0) {
+    if (isNullOrUndefined(bulletin.days) || bulletin.days!.length === 0) {
       throw new BadRequestException(errorKeys.bulletin.Bulletin_Must_Have_At_Least_One_Day);
     }
 
+    let checkBulletinIntroduction = false;
+    let checkBulletinTipsForWork = false;
+    let checkBulletinDailyPrayer = false;
+
     // Validate each day
-    bulletin.days.forEach((day, dayIndex) => {
+    bulletin.days!.forEach((day, dayIndex) => {
       // Check day required fields
       if (!isDate(day.date)) {
         throw new BadRequestException(errorKeys.bulletin.Day_Date_Is_Required, {
@@ -222,14 +223,34 @@ export class BulletinService extends BaseService {
       }
 
       // Check if day has sections
-      if (isNullOrUndefined(day.sections) || day.sections.length === 0) {
+      if (isNullOrUndefined(day.sections) || day.sections!.length === 0) {
         throw new BadRequestException(errorKeys.bulletin.Day_Must_Have_At_Least_One_Section, {
           dayIndex: dayIndex + 1,
         });
       }
 
       // Validate sections according to business rules
-      day.sections.forEach((section, sectionIndex) => {
+      day.sections!.forEach((section, sectionIndex) => {
+        if (isNullOrUndefined(section.type)) {
+          throw new BadRequestException(errorKeys.bulletin.Section_Type_Is_Required, {
+            dayIndex: dayIndex + 1,
+            sectionIndex: sectionIndex + 1,
+          });
+        }
+
+        if (section.type === SectionType.INTRODUCTION) {
+          checkBulletinIntroduction = true;
+        }
+
+        if (section.type === SectionType.TIPS_FOR_WORK) {
+          checkBulletinTipsForWork = true;
+        }
+
+        if (section.type === SectionType.DAILY_PRAYER) {
+          checkBulletinDailyPrayer = true;
+        }
+
+        // Validate section content based on type
         if (section.type === SectionType.CUSTOM_TEXT) {
           // CUSTOM_TEXT requires title and content
           if (isNullOrUndefined(section.title) || isEmptyString(section.title)) {
@@ -263,6 +284,21 @@ export class BulletinService extends BaseService {
         }
       });
     });
+
+    if (
+      checkBulletinIntroduction &&
+      (isNullOrUndefined(bulletin.introduction) || isEmptyString(bulletin.introduction))
+    ) {
+      throw new BadRequestException(errorKeys.bulletin.Introduction_Is_Required);
+    }
+
+    if (checkBulletinTipsForWork && (isNullOrUndefined(bulletin.tipsForWork) || isEmptyString(bulletin.tipsForWork))) {
+      throw new BadRequestException(errorKeys.bulletin.Tips_For_Work_Is_Required);
+    }
+
+    if (checkBulletinDailyPrayer && (isNullOrUndefined(bulletin.dailyPrayer) || isEmptyString(bulletin.dailyPrayer))) {
+      throw new BadRequestException(errorKeys.bulletin.Daily_Prayer_Is_Required);
+    }
   }
 
   private bulletinToIBulletin(bulletin: Bulletin): IBulletinDto {
@@ -297,6 +333,7 @@ export class BulletinService extends BaseService {
                     content: section.content,
                     type: section.type as SectionType,
                     order: section.order,
+                    settings: section.settings as IBulletinSectionSettings,
                   }) satisfies IBulletinDaySectionDto,
               ),
           }) satisfies IBulletinDayDto,

@@ -2,6 +2,7 @@ import { FormGroup, FormArray, FormControl } from '@angular/forms';
 import { IBulletinForm } from '../bulletin-form/bulletin.form';
 import { IBulletin } from '../interfaces/bulletin';
 import { BulletinDayDto, BulletinDaySectionDto, BulletinDto } from './bulletin.model';
+import { DaySections } from '../bulletin-form/tab-bulletin-day/day-sections/day-sections';
 
 export class EditBulletinDto extends BulletinDto {
   public readonly id: string;
@@ -40,8 +41,11 @@ export class EditBulletinDto extends BulletinDto {
                   title: section.title ?? null,
                   content: section.content ?? null,
                   settings: {
-                    includeInPdf: section.settings?.includeInPdf ?? false,
-                    expanded: section.settings?.expanded ?? true,
+                    includeInPdf:
+                      section.settings?.includeInPdf ??
+                      DaySections.isIncludeInPdfByDefault(section.type),
+                    expanded:
+                      section.settings?.expanded ?? DaySections.isExpandedByDefault(section.type),
                   },
                 }) satisfies BulletinDaySectionDto
             ) ?? [],

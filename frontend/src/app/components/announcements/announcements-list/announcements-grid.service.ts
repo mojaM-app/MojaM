@@ -227,7 +227,11 @@ export class AnnouncementsGridService
     return firstValueFrom(
       this._announcementsService
         .publish(announcements.id)
-        .pipe(map((result: boolean) => (result ? MenuItemClickResult.REFRESH_GRID : undefined)))
+        .pipe(
+          map((result: boolean) =>
+            result ? MenuItemClickResult.REFRESH_GRID : MenuItemClickResult.NONE
+          )
+        )
     );
   }
 
