@@ -7,29 +7,25 @@
       <main>
         <div class="card-body">
           <div class="row mb-2">
-            <div class="col">
+            <div class="col mat-expansion-panel-header m-0 py-0">
               {{
                 'Bulletin/BulletinDayView/Title'
                   | gmessage: { date: bulletinDay()!.date! | gdate: 'raw:EEEE dd.MM.yyyy' }
               }}
             </div>
           </div>
-          <div class="row">
-            <div class="col">
-              <mat-accordion multi>
-                @for (section of bulletinDay()!.sections; track section) {
-                  <mat-expansion-panel [expanded]="section.settings.expanded">
-                    <mat-expansion-panel-header>
-                      <mat-panel-title>
-                        {{ section.title }}
-                      </mat-panel-title>
-                    </mat-expansion-panel-header>
-                    <app-wysiwyg-preview [content]="section.content"></app-wysiwyg-preview>
-                  </mat-expansion-panel>
-                }
-              </mat-accordion>
-            </div>
-          </div>
+          <mat-accordion multi>
+            @for (section of bulletinDay()!.sections; track section) {
+              <mat-expansion-panel [expanded]="section.settings.expanded">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    {{ section.title }}
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <app-wysiwyg-preview [content]="section.content"></app-wysiwyg-preview>
+              </mat-expansion-panel>
+            }
+          </mat-accordion>
         </div>
       </main>
       <footer class="sticky-bottom">
