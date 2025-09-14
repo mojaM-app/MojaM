@@ -24,6 +24,8 @@ cp package-lock.json "$WORKING_DIR"/package-lock.json
 echo ">>>>>>>>>> Deleting logs folder"
 rm -rf "$WORKING_DIR"/logs
 
+rm -rf "$WORKING_DIR"/jest.setup.js
+
 echo ">>>>>>>>>> Deleting all tests"
 rm -rf "$WORKING_DIR"/utils/tests-events.utils.js
 rm -rf "$WORKING_DIR"/dataBase/test-helpers
