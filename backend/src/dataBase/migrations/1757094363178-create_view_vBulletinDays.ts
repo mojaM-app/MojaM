@@ -20,7 +20,7 @@ export class CreateViewVBulletinDays1757094363178 implements MigrationInterface 
           LEFT JOIN \`users\` \`updatedBy\` ON \`updatedBy\`.\`Id\` = \`bulletinDay\`.\`UpdatedById\`
           WHERE  \`bulletin\`.\`State\` = 2`);
     await queryRunner.query(
-      `INSERT INTO \`dev\`.\`_typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, DEFAULT, DEFAULT, ?, ?, ?)`,
+      `INSERT INTO \`_typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, DEFAULT, DEFAULT, ?, ?, ?)`,
       [
         'VIEW',
         'vBulletinDays',
