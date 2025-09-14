@@ -9,8 +9,8 @@ import { ICurrentAnnouncements } from '../interfaces/current-announcements';
 import { WithUnsubscribe } from 'src/mixins/with-unsubscribe';
 
 export abstract class BasePreviewAnnouncementComponent extends WithUnsubscribe() {
-  public readonly title: WritableSignal<string | null> = signal(null);
-  public readonly announcements: WritableSignal<IAnnouncements | ICurrentAnnouncements | null> =
+  protected readonly title: WritableSignal<string | null> = signal(null);
+  protected readonly announcements: WritableSignal<IAnnouncements | ICurrentAnnouncements | null> =
     signal(null);
 
   public constructor(
