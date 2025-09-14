@@ -49,8 +49,8 @@ export const generateRandomInteger = (min: number, max: number): number => {
 };
 
 export const generateRandomDate = (): Date => {
-  const minDateOffset = -30; // 30 days ago
-  const maxDateOffset = 30; // 30 days in the future
+  const minDateOffset = -90; // 90 days ago
+  const maxDateOffset = 90; // 90 days in the future
   const day = generateRandomInteger(minDateOffset, maxDateOffset);
   return getDateNow().addDays(day);
 };
