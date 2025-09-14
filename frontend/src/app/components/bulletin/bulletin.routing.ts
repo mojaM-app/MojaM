@@ -64,7 +64,7 @@ const routes: Routes = [
       ),
     canActivate: [PermissionGuard],
     data: {
-      checkSession: true,
+      checkSession: false,
       permissions: [],
       hideFooter: true,
     } satisfies IPermissionRouteData,
