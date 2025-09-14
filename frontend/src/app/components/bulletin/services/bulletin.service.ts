@@ -8,7 +8,6 @@ import { SpinnerService } from '../../../../services/spinner/spinner.service';
 import { AddBulletinDto } from '../models/add-bulletin.model';
 import { EditBulletinDto } from '../models/edit-bulletin.model';
 import { IBulletin } from '../interfaces/bulletin';
-import { SectionType } from '../enums/section-type.enum';
 
 @Injectable({
   providedIn: 'root',

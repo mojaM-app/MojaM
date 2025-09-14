@@ -4,7 +4,12 @@ import { BulletinViewsComponent } from './bulletin-views/bulletin-views.componen
 import { PermissionGuard } from 'src/services/auth/permission.guard';
 import { SystemPermissionValue } from 'src/core/system-permission.enum';
 import { IPermissionRouteData } from 'src/core/interfaces/common/route.data';
-import { AddBulletinMenu, BulletinListMenu, EditBulletinMenu } from './bulletin.menu';
+import {
+  AddBulletinMenu,
+  BulletinListMenu,
+  EditBulletinMenu,
+  PreviewBulletinMenu,
+} from './bulletin.menu';
 
 const routes: Routes = [
   {
@@ -26,6 +31,17 @@ const routes: Routes = [
     data: {
       checkSession: true,
       permissions: [SystemPermissionValue.EditBulletin],
+      hideFooter: true,
+    } satisfies IPermissionRouteData,
+  },
+  {
+    path: PreviewBulletinMenu.Route + '/:id',
+    loadComponent: () =>
+      import('./bulletin-preview/bulletin-preview.component').then(m => m.BulletinPreviewComponent),
+    canActivate: [PermissionGuard],
+    data: {
+      checkSession: true,
+      permissions: [SystemPermissionValue.PreviewBulletinList],
       hideFooter: true,
     } satisfies IPermissionRouteData,
   },
