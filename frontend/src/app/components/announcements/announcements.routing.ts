@@ -60,7 +60,7 @@ const routes: Routes = [
     canActivate: [PermissionGuard],
     data: {
       checkSession: true,
-      permissions: [SystemPermissionValue.AddAnnouncements],
+      permissions: [SystemPermissionValue.PreviewAnnouncementsList],
       hideFooter: true,
     } satisfies IPermissionRouteData,
   },
