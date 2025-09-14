@@ -29,3 +29,8 @@ export class PreviewBulletinMenu {
   public static Route = 'preview';
   public static Path: string = BulletinMenu.Path + '/' + PreviewBulletinMenu.Route;
 }
+
+export class BulletinDayMenu {
+  public static Route = 'day';
+  public static Path: string = BulletinMenu.Path + '/' + BulletinDayMenu.Route;
+}

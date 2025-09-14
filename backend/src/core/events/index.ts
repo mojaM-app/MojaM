@@ -24,6 +24,7 @@ export const events = {
     bulletinDeleted: 'onBulletinDeleted',
     bulletinDaysMinMaxDateRetrieved: 'onBulletinDaysMinMaxDateRetrieved',
     bulletinCalendarDaysRetrieved: 'onBulletinCalendarDaysRetrieved',
+    bulletinCalendarDayRetrieved: 'onBulletinCalendarDayRetrieved',
   },
   community: {
     communityRetrieved: 'onCommunityRetrieved',

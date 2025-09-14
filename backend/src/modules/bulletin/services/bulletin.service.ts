@@ -323,6 +323,10 @@ export class BulletinService extends BaseService {
             id: day.uuid,
             date: day.date,
             title: day.title,
+            createdAt: day.createdAt,
+            createdBy: day.createdBy.getFirstLastName()!,
+            updatedAt: day.updatedAt,
+            updatedBy: day.updatedBy?.getFirstLastName() ?? day.createdBy.getFirstLastName(),
             sections: day.sections
               .sort((a, b) => a.order - b.order)
               .map(
@@ -334,6 +338,10 @@ export class BulletinService extends BaseService {
                     type: section.type as SectionType,
                     order: section.order,
                     settings: section.settings as IBulletinSectionSettings,
+                    createdAt: section.createdAt,
+                    createdBy: section.createdBy.getFirstLastName()!,
+                    updatedAt: section.updatedAt,
+                    updatedBy: section.updatedBy?.getFirstLastName() ?? section.createdBy.getFirstLastName(),
                   }) satisfies IBulletinDaySectionDto,
               ),
           }) satisfies IBulletinDayDto,

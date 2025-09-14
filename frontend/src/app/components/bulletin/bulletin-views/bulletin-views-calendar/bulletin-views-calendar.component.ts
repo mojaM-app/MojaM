@@ -37,6 +37,8 @@ import { DateUtils } from 'src/utils/date.utils';
 import { BulletinCalendarViewService } from '../../services/bulletin-calendar-view.service';
 import { ViewPeriod } from 'calendar-utils';
 import { debounceTime, tap } from 'rxjs';
+import { Router } from '@angular/router';
+import { BulletinDayMenu } from '../../bulletin.menu';
 
 @Component({
   selector: 'app-bulletin-views-calendar',
@@ -49,10 +51,6 @@ import { debounceTime, tap } from 'rxjs';
       provide: CalendarDateFormatter,
       useClass: CustomDateFormatter,
     },
-    // {
-    //   provide: CalendarEventTitleFormatter,
-    //   useClass: CustomEventTitleFormatter,
-    // },
   ],
 })
 export class BulletinViewsCalendarComponent extends WithUnsubscribe() {
@@ -72,7 +70,8 @@ export class BulletinViewsCalendarComponent extends WithUnsubscribe() {
   public constructor(
     private readonly _dateAdapter: DateAdapter,
     cultureService: CultureService,
-    private readonly _bulletinCalendarViewService: BulletinCalendarViewService
+    private readonly _bulletinCalendarViewService: BulletinCalendarViewService,
+    private readonly _router: Router
   ) {
     super();
     this.locale.set(cultureService.currentCulture);
@@ -138,22 +137,14 @@ export class BulletinViewsCalendarComponent extends WithUnsubscribe() {
 
       const firstEvent = events.at(0);
       if (firstEvent) {
-        if (firstEvent.isFirstDay) {
-          day.cssClass += ' cal-bulletin-day-first';
-        }
-
-        if (firstEvent.isLastDay) {
-          day.cssClass += ' cal-bulletin-day-last';
-        }
-
         const isOdd = bulletinIds.indexOf(firstEvent.bulletinId) % 2 === 1;
         day.cssClass += isOdd ? ' cal-bulletin-odd' : ' cal-bulletin-even';
       }
     });
   }
 
-  protected showBulletin(day: CalendarMonthViewDay): void {
-    console.log(day);
+  protected showBulletinDay(day: IBulletinCalendarDay): void {
+    this._router.navigateByUrl(BulletinDayMenu.Path + '/' + day.id);
   }
 
   private setNewViewDate(moveBack = false): void {

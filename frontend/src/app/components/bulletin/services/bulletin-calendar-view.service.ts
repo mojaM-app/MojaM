@@ -6,16 +6,21 @@ import { SpinnerService } from '../../../../services/spinner/spinner.service';
 import {
   IBulletinCalendarDay,
   IBulletinCalendarDayDto,
+  IBulletinCalendarDayWithSectionsDto,
   IBulletinDaysMinMaxDto,
 } from '../interfaces/bulletin-calendar-view.interfaces';
+import { TranslationService } from 'src/services/translate/translation.service';
+import { SectionType } from '../enums/section-type.enum';
+import { DaySections } from '../bulletin-form/tab-bulletin-day/day-sections/day-sections';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BulletinCalendarViewService extends BaseService {
   public constructor(
-    private _httpClient: HttpClientService,
-    private _spinnerService: SpinnerService
+    private readonly _httpClient: HttpClientService,
+    private readonly _spinnerService: SpinnerService,
+    private readonly _translationService: TranslationService
   ) {
     super();
   }
@@ -54,11 +59,45 @@ export class BulletinCalendarViewService extends BaseService {
               start: this.toDate(dto.date)!,
               end: this.toDate(dto.date)!,
               allDay: true,
-              isFirstDay: dto.isFirstDay,
-              isLastDay: dto.isLastDay,
             } satisfies IBulletinCalendarDay;
           });
         })
       );
+  }
+
+  public getDay(id: string): Observable<IBulletinCalendarDayWithSectionsDto> {
+    return this._httpClient
+      .request()
+      .withUrl(this.API_ROUTES.bulletinCalendarView.getDay(id))
+      .get<IBulletinCalendarDayWithSectionsDto>()
+      .pipe(
+        this._spinnerService.waitForSubscription(),
+        map((resp: IBulletinCalendarDayWithSectionsDto) => {
+          if (resp) {
+            resp.date = this.toDate(resp.date)!;
+            resp.sections = resp.sections.map(section => {
+              return {
+                ...section,
+                title: this.getSectionTitle(section),
+              };
+            });
+          }
+          return resp;
+        })
+      );
+  }
+
+  private getSectionTitle(section: { type: SectionType; title: string | null }): string {
+    const type = DaySections.getTypes().find(s => s.value === section.type);
+
+    switch (section.type) {
+      case SectionType.INTRODUCTION:
+      case SectionType.DAILY_PRAYER:
+      case SectionType.TIPS_FOR_WORK:
+        return this._translationService.get(type!.label);
+
+      default:
+        return section.title ?? this._translationService.get(type!.label);
+    }
   }
 }

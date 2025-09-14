@@ -3,6 +3,7 @@ import { getISODate } from '@utils';
 import type { NextFunction, Response } from 'express';
 import StatusCode from 'status-code-enum';
 import { Container } from 'typedi';
+import { GetBulletinDayReqDto, GetBulletinDayResponseDto } from '../dtos/get-bulletin-day.dto';
 import {
   GetBulletinDaysMinMaxDateReqDto,
   GetBulletinDaysMinMaxDateResponseDto,
@@ -35,6 +36,17 @@ export class BulletinCalendarViewController extends BaseController {
       const reqDto = new GetBulletinDaysReqDto(isoStartDate, isoEndDate, this.getCurrentUserId(req));
       const result = await this._bulletinCalendarService.getDays(reqDto);
       res.status(StatusCode.SuccessOK).json(new GetBulletinDaysResponseDto(result));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getDay = async (req: IRequestWithIdentity, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const dayId = req.params.id;
+      const reqDto = new GetBulletinDayReqDto(dayId, this.getCurrentUserId(req));
+      const result = await this._bulletinCalendarService.getDay(reqDto);
+      res.status(StatusCode.SuccessOK).json(new GetBulletinDayResponseDto(result));
     } catch (error) {
       next(error);
     }

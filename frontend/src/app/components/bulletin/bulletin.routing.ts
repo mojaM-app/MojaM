@@ -6,6 +6,7 @@ import { SystemPermissionValue } from 'src/core/system-permission.enum';
 import { IPermissionRouteData } from 'src/core/interfaces/common/route.data';
 import {
   AddBulletinMenu,
+  BulletinDayMenu,
   BulletinListMenu,
   EditBulletinMenu,
   PreviewBulletinMenu,
@@ -53,6 +54,19 @@ const routes: Routes = [
     data: {
       checkSession: true,
       permissions: [SystemPermissionValue.PreviewBulletinList],
+    } satisfies IPermissionRouteData,
+  },
+  {
+    path: BulletinDayMenu.Route + '/:id',
+    loadComponent: () =>
+      import('./bulletin-views/bulletin-day/bulletin-day.component').then(
+        m => m.BulletinDayComponent
+      ),
+    canActivate: [PermissionGuard],
+    data: {
+      checkSession: true,
+      permissions: [],
+      hideFooter: true,
     } satisfies IPermissionRouteData,
   },
   { path: '**', redirectTo: '', pathMatch: 'full' },

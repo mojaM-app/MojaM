@@ -2,6 +2,7 @@ import { DataSource, DataSourceOptions, Repository } from 'typeorm';
 import { AnnouncementItem } from './entities/announcements/announcement-item.entity';
 import { Announcement } from './entities/announcements/announcement.entity';
 import { vAnnouncement } from './entities/announcements/vAnnouncement.entity';
+import { BulletinDay } from './entities/bulletin/bulletin-day.entity';
 import { Bulletin } from './entities/bulletin/bulletin.entity';
 import { vBulletin } from './entities/bulletin/vBulletin.entity';
 import { vBulletinDay } from './entities/bulletin/vBulletinDay.entity';
@@ -55,6 +56,10 @@ export class DbContext extends DataSource {
 
   public get vBulletins(): Repository<vBulletin> {
     return this.getRepository(vBulletin);
+  }
+
+  public get bulletinDays(): Repository<BulletinDay> {
+    return this.getRepository(BulletinDay);
   }
 
   public get vBulletinDays(): Repository<vBulletinDay> {

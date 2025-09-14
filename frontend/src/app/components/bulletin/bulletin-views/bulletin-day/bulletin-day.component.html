@@ -1,0 +1,44 @@
+@if (bulletinDay()) {
+  <div class="card border-0">
+    <div class="d-grid-with-header-and-footer">
+      <header class="mat-toolbar" [ngClass]="{ mobile: isMobile }">
+        <app-card-header [title]="bulletinDay()!.title!"> </app-card-header>
+      </header>
+      <main>
+        <div class="card-body">
+          <div class="row mb-2">
+            <div class="col">
+              {{
+                'Bulletin/BulletinDayView/Title'
+                  | gmessage: { date: bulletinDay()!.date! | gdate: 'raw:EEEE dd.MM.yyyy' }
+              }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <mat-accordion multi>
+                @for (section of bulletinDay()!.sections; track section) {
+                  <mat-expansion-panel [expanded]="section.settings.expanded">
+                    <mat-expansion-panel-header>
+                      <mat-panel-title>
+                        {{ section.title }}
+                      </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <app-wysiwyg-preview [content]="section.content"></app-wysiwyg-preview>
+                  </mat-expansion-panel>
+                }
+              </mat-accordion>
+            </div>
+          </div>
+        </div>
+      </main>
+      <footer class="sticky-bottom">
+        <div class="card-footer text-body-secondary text-end">
+          <button mat-raised-button type="button" class="me-4" (click)="back()">
+            {{ 'Shared/BtnOk' | gmessage }}
+          </button>
+        </div>
+      </footer>
+    </div>
+  </div>
+}

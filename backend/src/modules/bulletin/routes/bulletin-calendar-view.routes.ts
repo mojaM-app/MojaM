@@ -18,5 +18,6 @@ export class BulletinCalendarViewRoutes implements IRoutes {
   public initializeRoutes(): void {
     this.router.get(`${BulletinCalendarViewRoutes.path}/min-max-date`, this._bulletinController.getMinMaxDate);
     this.router.get(`${BulletinCalendarViewRoutes.path}/days`, this._bulletinController.getDays);
+    this.router.get(`${BulletinCalendarViewRoutes.path}/day/:id`, this._bulletinController.getDay);
   }
 }

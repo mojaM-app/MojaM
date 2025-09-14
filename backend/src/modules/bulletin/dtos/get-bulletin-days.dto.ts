@@ -5,8 +5,6 @@ export interface IBulletinCalendarDayDto {
   bulletinId: string;
   title: string;
   date: string;
-  isFirstDay: boolean;
-  isLastDay: boolean;
 }
 
 export class GetBulletinDaysReqDto extends BaseReqDto {

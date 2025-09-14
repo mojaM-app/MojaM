@@ -318,6 +318,9 @@
     "State": {
       "1": "Nowe",
       "2": "Opublikowane"
+    },
+    "BulletinDayView": {
+      "Title": "Tekst do formacji na: {date}"
     }
   },
   "Settings": {

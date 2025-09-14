@@ -172,13 +172,13 @@ export class BulletinGridService
       });
     }
 
-    if (this._permissionService.hasPermission(SystemPermissionValue.PreviewBulletinList)) {
-      result.push({
-        title: this._translationService.get('Bulletin/List/ContextMenu/Preview'),
-        icon: PreviewBulletinMenu.Icon,
-        action: async () => this.handlePreview(bulletin),
-      });
-    }
+    // if (this._permissionService.hasPermission(SystemPermissionValue.PreviewBulletinList)) {
+    //   result.push({
+    //     title: this._translationService.get('Bulletin/List/ContextMenu/Preview'),
+    //     icon: PreviewBulletinMenu.Icon,
+    //     action: async () => this.handlePreview(bulletin),
+    //   });
+    // }
 
     return result;
   }

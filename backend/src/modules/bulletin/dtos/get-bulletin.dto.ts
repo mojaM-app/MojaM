@@ -13,6 +13,10 @@ export interface IBulletinDaySectionDto {
   content: string | null;
   type: SectionType;
   order: number;
+  createdAt?: Date;
+  createdBy?: string;
+  updatedAt?: Date;
+  updatedBy?: string | null;
   settings: IBulletinSectionSettings;
 }
 
@@ -21,6 +25,10 @@ export interface IBulletinDayDto {
   date: Date | null;
   title: string | null;
   sections: IBulletinDaySectionDto[];
+  createdAt?: Date;
+  createdBy?: string;
+  updatedAt?: Date;
+  updatedBy?: string | null;
 }
 
 export interface IBulletinDto {
@@ -33,7 +41,7 @@ export interface IBulletinDto {
   tipsForWork: string | null;
   dailyPrayer: string | null;
   createdAt: Date;
-  createdBy: string;
+  createdBy: string | null;
   updatedAt: Date;
   updatedBy: string | null;
   publishedAt: Date | null;

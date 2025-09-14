@@ -1,5 +1,6 @@
 import { BaseService } from '@core';
 import { Container, Service } from 'typedi';
+import { GetBulletinDayReqDto } from '../dtos/get-bulletin-day.dto';
 import { GetBulletinDaysMinMaxDateReqDto, IBulletinDaysMinMaxDto } from '../dtos/get-bulletin-days-min-max-date.dto';
 import { GetBulletinDaysReqDto, IBulletinCalendarDayDto } from '../dtos/get-bulletin-days.dto';
 import { BulletinDaysRepository } from '../repositories/bulletin-days.repository';
@@ -24,5 +25,9 @@ export class BulletinCalendarService extends BaseService {
 
   public async getDays(reqDto: GetBulletinDaysReqDto): Promise<IBulletinCalendarDayDto[]> {
     return await this._repository.getDays(reqDto.startDate, reqDto.endDate);
+  }
+
+  public async getDay(reqDto: GetBulletinDayReqDto): Promise<IBulletinCalendarDayDto> {
+    return await this._repository.getDayByUuid(reqDto.dayId);
   }
 }

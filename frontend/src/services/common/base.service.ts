@@ -49,6 +49,8 @@ export class BaseService {
         `${environment.backendUrl}/${this.API_ROUTES.bulletinCalendarView.path}/min-max-date`,
       getDays: (): string =>
         `${environment.backendUrl}/${this.API_ROUTES.bulletinCalendarView.path}/days`,
+      getDay: (id: string): string =>
+        `${environment.backendUrl}/${this.API_ROUTES.bulletinCalendarView.path}/day/${id}`,
     },
     calendar: {
       path: 'calendar',

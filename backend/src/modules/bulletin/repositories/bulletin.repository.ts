@@ -6,7 +6,7 @@ import {
 import { BadRequestException, errorKeys } from '@exceptions';
 import { isDate, isNullOrUndefined, isPositiveNumber } from '@utils';
 import { Service } from 'typedi';
-import { FindOptionsWhere } from 'typeorm';
+import { FindOneOptions, FindOptionsWhere } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { Bulletin } from '../../../dataBase/entities/bulletin/bulletin.entity';
 import { CreateBulletinDayDto, CreateBulletinDto } from '../dtos/create-bulletin.dto';
@@ -38,17 +38,34 @@ export class BulletinRepository extends BaseBulletinRepository {
       return null;
     }
 
-    return await this._dbContext.bulletins
-      .createQueryBuilder('bulletin')
-      .leftJoinAndSelect('bulletin.days', 'days')
-      .leftJoinAndSelect('days.sections', 'sections')
-      .leftJoinAndSelect('bulletin.createdBy', 'createdBy')
-      .leftJoinAndSelect('bulletin.updatedBy', 'updatedBy')
-      .leftJoinAndSelect('bulletin.publishedBy', 'publishedBy')
-      .where('bulletin.id = :id', { id: id! })
-      .orderBy('days.date', 'ASC')
-      .addOrderBy('sections.order', 'ASC')
-      .getOne();
+    const options: FindOneOptions<Bulletin> = {
+      where: {
+        id: id!,
+      } satisfies FindOptionsWhere<Bulletin>,
+      relations: {
+        createdBy: true,
+        updatedBy: true,
+        publishedBy: true,
+        days: {
+          createdBy: true,
+          updatedBy: true,
+          sections: {
+            createdBy: true,
+            updatedBy: true,
+          },
+        },
+      },
+      order: {
+        days: {
+          date: 'ASC',
+          sections: {
+            order: 'ASC',
+          },
+        },
+      },
+    };
+
+    return await this._dbContext.bulletins.findOne(options);
   }
 
   public async create(reqDto: CreateBulletinDto, userId: number): Promise<{ id: number }> {
