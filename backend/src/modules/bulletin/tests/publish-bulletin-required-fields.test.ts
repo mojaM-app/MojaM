@@ -4,7 +4,9 @@ import { testHelpers } from '@helpers';
 import { getAdminLoginData } from '@utils';
 import { generateValidBulletin } from './test.helpers';
 import { TestApp } from '../../../helpers/test-helpers/test.app';
-import { CreateBulletinResponseDto } from '../dtos/create-bulletin.dto';
+import { CreateBulletinDaySectionDto, CreateBulletinResponseDto } from '../dtos/create-bulletin.dto';
+import { BulletinSectionSettingsDto } from '../dtos/update-bulletin.dto';
+import { SectionType } from '../enums/bulletin-section-type.enum';
 
 describe('POST /bulletins/:id/publish - required fields validation', () => {
   let app: TestApp | undefined;
@@ -24,6 +26,14 @@ describe('POST /bulletins/:id/publish - required fields validation', () => {
   test('fails when introduction is missing', async () => {
     const data = generateValidBulletin();
     data.introduction = '' as any; // empty string should fail at publish-time
+    data.days![0].sections!.push({
+      order: data.days![0].sections!.length + 1,
+      type: SectionType.INTRODUCTION,
+      settings: {
+        expanded: true,
+        includeInPdf: false,
+      } satisfies BulletinSectionSettingsDto,
+    } satisfies CreateBulletinDaySectionDto); // Ensure at least one valid section exists
 
     const createRes = await app!.bulletin.create(data, adminAccessToken);
     expect(createRes.statusCode).toBe(201);
@@ -44,6 +54,14 @@ describe('POST /bulletins/:id/publish - required fields validation', () => {
   test('fails when tipsForWork is missing', async () => {
     const data = generateValidBulletin();
     data.tipsForWork = '' as any;
+    data.days![0].sections!.push({
+      order: data.days![0].sections!.length + 1,
+      type: SectionType.TIPS_FOR_WORK,
+      settings: {
+        expanded: true,
+        includeInPdf: false,
+      } satisfies BulletinSectionSettingsDto,
+    } satisfies CreateBulletinDaySectionDto); // Ensure at least one valid section exists
 
     const createRes = await app!.bulletin.create(data, adminAccessToken);
     expect(createRes.statusCode).toBe(201);
@@ -64,6 +82,14 @@ describe('POST /bulletins/:id/publish - required fields validation', () => {
   test('fails when dailyPrayer is missing', async () => {
     const data = generateValidBulletin();
     data.dailyPrayer = '' as any;
+    data.days![0].sections!.push({
+      order: data.days![0].sections!.length + 1,
+      type: SectionType.DAILY_PRAYER,
+      settings: {
+        expanded: true,
+        includeInPdf: false,
+      } satisfies BulletinSectionSettingsDto,
+    } satisfies CreateBulletinDaySectionDto); // Ensure at least one valid section exists
 
     const createRes = await app!.bulletin.create(data, adminAccessToken);
     expect(createRes.statusCode).toBe(201);
