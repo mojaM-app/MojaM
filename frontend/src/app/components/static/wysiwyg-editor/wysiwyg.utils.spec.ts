@@ -274,6 +274,32 @@ describe('WysiwygUtils', () => {
       const result = WysiwygUtils.fixConjunctions(input);
       expect(result).toBe('Tekst <strong>i</strong> tekst');
     });
+
+    it('should handle edge case with number', () => {
+      const input = '1 word word';
+      const result = WysiwygUtils.fixConjunctions(input);
+      expect(result).toBe('1&nbsp;word word');
+    });
+
+    it('should handle edge case with numbers', () => {
+      const input = '1 word word 2 word word 3 word word';
+      const result = WysiwygUtils.fixConjunctions(input);
+      expect(result).toBe('1&nbsp;word word 2&nbsp;word word 3&nbsp;word word');
+    });
+
+    it('should handle edge case conjunction with numbers', () => {
+      const input = '1 A word word 2 i word word 3 word word';
+      const result = WysiwygUtils.fixConjunctions(input);
+      expect(result).toBe('1&nbsp;A&nbsp;word word 2&nbsp;i&nbsp;word word 3&nbsp;word word');
+    });
+
+    it('should handle edge case conjunction with big numbers', () => {
+      const input = '1000000 A word word 2000000 i word word 3000000 word word';
+      const result = WysiwygUtils.fixConjunctions(input);
+      expect(result).toBe(
+        '1000000&nbsp;A&nbsp;word word 2000000&nbsp;i&nbsp;word word 3000000&nbsp;word word'
+      );
+    });
   });
 
   describe('isEmpty', () => {

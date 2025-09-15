@@ -45,7 +45,12 @@ export class WysiwygUtils {
         const stripped = token.replace(/^[^\p{L}\p{N}]+/u, '').replace(/[^\p{L}\p{N}]+$/u, '');
         const normalized = stripped.toLowerCase();
 
-        if (conjunctions.has(normalized)) {
+        // Check if it's a Polish conjunction, single basic letter, or any number
+        const isConjunction = conjunctions.has(normalized);
+        const isSingleBasicLetter = /^[a-zA-Z]$/u.test(stripped); // Only basic Latin letters, not Polish diacritics
+        const isNumber = /^\d+$/u.test(stripped); // Any number (one or more digits)
+
+        if (isConjunction || isSingleBasicLetter || isNumber) {
           if (i + 1 < tokens.length && /^\s+$/u.test(tokens[i + 1])) {
             const ws = tokens[i + 1];
             // replace the first space (or other whitespace) with NBSP/&#160;
