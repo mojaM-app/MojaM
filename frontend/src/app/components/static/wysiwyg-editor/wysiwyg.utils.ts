@@ -22,33 +22,48 @@ export class WysiwygUtils {
     const nbsp = useHtmlEntity ? '&nbsp;' : '\u00A0';
     const conjunctions = new Set(['i', 'a', 'o', 'u', 'w', 'z', 'św', 'ks']);
 
-    const tokens = content.match(/\S+|\s+/gu) || [];
+    // Split content into HTML tags and text segments
+    const segments = content.split(/(<[^>]*>)/g);
 
-    for (let i = 0; i < tokens.length; i++) {
-      const token = tokens[i];
-      if (/^\s+$/u.test(token)) {
-        continue; // whitespace
+    for (let segmentIndex = 0; segmentIndex < segments.length; segmentIndex++) {
+      const segment = segments[segmentIndex];
+
+      // Skip HTML tags (segments that start with '<' and end with '>')
+      if (segment.startsWith('<') && segment.endsWith('>')) {
+        continue;
       }
 
-      const stripped = token.replace(/^[^\p{L}\p{N}]+/u, '').replace(/[^\p{L}\p{N}]+$/u, '');
+      // Process text segments only
+      const tokens = segment.match(/\S+|\s+/gu) || [];
 
-      const normalized = stripped.toLowerCase();
+      for (let i = 0; i < tokens.length; i++) {
+        const token = tokens[i];
+        if (/^\s+$/u.test(token)) {
+          continue; // whitespace
+        }
 
-      if (conjunctions.has(normalized)) {
-        if (i + 1 < tokens.length && /^\s+$/u.test(tokens[i + 1])) {
-          const ws = tokens[i + 1];
-          // replace the first space (or other whitespace) with NBSP/&#160;
-          tokens[i + 1] = nbsp + ws.slice(1);
-        } else if (i + 1 >= tokens.length) {
-          // conjunction at the end of the string — nothing to do
-        } else {
-          // no whitespace (e.g. strange case) — inject NBSP as a separate token
-          tokens.splice(i + 1, 0, nbsp);
+        const stripped = token.replace(/^[^\p{L}\p{N}]+/u, '').replace(/[^\p{L}\p{N}]+$/u, '');
+        const normalized = stripped.toLowerCase();
+
+        if (conjunctions.has(normalized)) {
+          if (i + 1 < tokens.length && /^\s+$/u.test(tokens[i + 1])) {
+            const ws = tokens[i + 1];
+            // replace the first space (or other whitespace) with NBSP/&#160;
+            tokens[i + 1] = nbsp + ws.slice(1);
+          } else if (i + 1 >= tokens.length) {
+            // conjunction at the end of the string — nothing to do
+          } else {
+            // no whitespace (e.g. strange case) — inject NBSP as a separate token
+            tokens.splice(i + 1, 0, nbsp);
+          }
         }
       }
+
+      // Update the segment with processed tokens
+      segments[segmentIndex] = tokens.join('');
     }
 
-    return tokens.join('');
+    return segments.join('');
   }
 
   public static isEmpty(content: string | null | undefined): boolean {
