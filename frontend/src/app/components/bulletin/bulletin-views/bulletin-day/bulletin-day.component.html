@@ -1,5 +1,5 @@
 @if (bulletinDay()) {
-  <div class="card border-0">
+  <div class="bulletin-day card border-0">
     <div class="d-grid-with-header-and-footer">
       <header class="mat-toolbar" [ngClass]="{ mobile: isMobile }">
         <app-card-header [title]="bulletinDay()!.title!"> </app-card-header>
@@ -16,7 +16,7 @@
           </div>
           <mat-accordion multi>
             @for (section of bulletinDay()!.sections; track section) {
-              <mat-expansion-panel [expanded]="section.settings.expanded">
+              <mat-expansion-panel [expanded]="section.settings.expanded" class="">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
                     {{ section.title }}

@@ -182,6 +182,20 @@ body {
     --bs-alert-color: #{mat.get-theme-color($light-theme, on-background)};
   }
 
+  .bulletin-day {
+    .mat-expansion-panel {
+      --mat-expansion-container-background-color: var(--bs-light-bg-subtle);
+
+      .mat-expansion-panel-header {
+        padding: 0 1rem;
+      }
+
+      .mat-expansion-panel-body {
+        padding: 0 1rem 1rem;
+      }
+    }
+  }
+
   /* Dark Theme */
   &.theme-dark {
     @include mat.theme-overrides(

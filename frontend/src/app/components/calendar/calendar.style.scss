@@ -90,10 +90,10 @@ body.theme-dark {
   .calendar-container {
     .cal-month-view .cal-day-cell {
       &.cal-bulletin-even {
-        background-color: color-mix(in srgb, var(--mat-sys-on-primary-fixed) 20%, transparent);
+        background-color: color-mix(in srgb, var(--bs-primary-border-subtle) 70%, transparent);
 
         &.cal-today {
-          background-color: color-mix(in srgb, var(--mat-sys-on-primary-fixed) 20%, transparent);
+          background-color: color-mix(in srgb, var(--bs-primary-border-subtle) 70%, transparent);
 
           &:hover {
             background-color: rgb(62, 71, 89);
@@ -102,10 +102,10 @@ body.theme-dark {
       }
 
       &.cal-bulletin-odd {
-        background-color: color-mix(in srgb, var(--mat-sys-inverse-on-surface) 100%, transparent);
+        background-color: color-mix(in srgb, var(--bs-light-border-subtle) 70%, transparent);
 
         &.cal-today {
-          background-color: color-mix(in srgb, var(--mat-sys-inverse-on-surface) 100%, transparent);
+          background-color: color-mix(in srgb, var(--bs-light-border-subtle) 70%, transparent);
 
           &:hover {
             background-color: rgb(62, 71, 89);
