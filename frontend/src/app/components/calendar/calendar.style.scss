@@ -3,6 +3,21 @@
     width: 10px;
     padding: 0 0.125rem;
 
+    &.cal-today {
+      position: relative;
+
+      &::after {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        width: 100%;
+        content: '';
+        background: var(--mat-sys-primary);
+      }
+    }
+
     &.cal-out-month {
       .cal-day-number {
         opacity: 0.5;
@@ -61,26 +76,10 @@
     .cal-day-cell {
       &.cal-bulletin-even {
         background-color: color-mix(in srgb, var(--mat-sys-secondary-fixed) 40%, transparent);
-
-        &.cal-today {
-          background-color: color-mix(in srgb, var(--mat-sys-secondary-fixed) 40%, transparent);
-
-          &:hover {
-            background-color: #dae2f9;
-          }
-        }
       }
 
       &.cal-bulletin-odd {
         background-color: color-mix(in srgb, var(--mat-sys-surface-dim) 40%, transparent);
-
-        &.cal-today {
-          background-color: color-mix(in srgb, var(--mat-sys-surface-dim) 40%, transparent);
-
-          &:hover {
-            background-color: #dae2f9;
-          }
-        }
       }
     }
   }
@@ -91,26 +90,10 @@ body.theme-dark {
     .cal-month-view .cal-day-cell {
       &.cal-bulletin-even {
         background-color: color-mix(in srgb, var(--bs-primary-border-subtle) 70%, transparent);
-
-        &.cal-today {
-          background-color: color-mix(in srgb, var(--bs-primary-border-subtle) 70%, transparent);
-
-          &:hover {
-            background-color: rgb(62, 71, 89);
-          }
-        }
       }
 
       &.cal-bulletin-odd {
         background-color: color-mix(in srgb, var(--bs-light-border-subtle) 70%, transparent);
-
-        &.cal-today {
-          background-color: color-mix(in srgb, var(--bs-light-border-subtle) 70%, transparent);
-
-          &:hover {
-            background-color: rgb(62, 71, 89);
-          }
-        }
       }
     }
   }

@@ -47,10 +47,11 @@
 
         .cal-event-title {
           margin: 0 0.125rem;
-          white-space: nowrap;
+          white-space: normal;
           overflow: hidden;
-          text-overflow: ellipsis;
           text-decoration: none;
+          max-height: 100px;
+          word-wrap: break-word;
         }
       }
     }

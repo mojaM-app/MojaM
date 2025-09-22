@@ -87,9 +87,11 @@ body {
   @include mat.expansion-overrides(
     (
       header-text-size: calc(1rem * var(--font-size)),
-      header-text-line-height: calc(1.5rem * var(--font-size)),
+      header-text-line-height: calc(1rem * var(--font-size)),
       container-text-size: calc(1rem * var(--font-size)),
       container-text-line-height: calc(1.25rem * var(--font-size)),
+      header-collapsed-state-height: calc(48px * var(--font-size)),
+      header-expanded-state-height: calc(64px * var(--font-size)),
     )
   );
   @include mat.dialog-overrides(
