@@ -7,7 +7,7 @@ import { HttpClientService } from '../../../../services/common/httpClient.servic
 import { SpinnerService } from '../../../../services/spinner/spinner.service';
 import { AddBulletinDto } from '../models/add-bulletin.model';
 import { EditBulletinDto } from '../models/edit-bulletin.model';
-import { IBulletin } from '../interfaces/bulletin';
+import { IBulletin, IBulletinDaySection } from '../interfaces/bulletin';
 
 @Injectable({
   providedIn: 'root',
@@ -35,6 +35,14 @@ export class BulletinService extends BaseService {
             resp.publishedAt = this.toDateTime(resp.publishedAt) ?? null;
             resp.days = resp.days?.map(day => {
               day.date = this.toDateTime(day.date) ?? null;
+              day.sections = day.sections?.map(section => {
+                return {
+                  ...section,
+                  showInPreview: (): boolean => {
+                    return section.settings?.includeInPdf ?? true;
+                  },
+                } satisfies IBulletinDaySection;
+              });
               return day;
             });
           }

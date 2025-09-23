@@ -36,7 +36,10 @@ export class BulletinViewsHeaderComponent implements OnInit {
   ) {
     effect(() => {
       authService.onAuthStateChanged.whenUnauthenticated(() => {
-        this.ngOnInit();
+        this.setViewModels();
+      });
+      authService.onAuthStateChanged.whenAuthenticated(() => {
+        this.setViewModels();
       });
     });
   }

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { computed, Injectable, signal } from '@angular/core';
-import { map, Observable, of, skip, tap } from 'rxjs';
+import { computed, Injectable, Signal, signal } from '@angular/core';
+import { map, Observable, of, tap } from 'rxjs';
 import { ILoginResponseDto } from 'src/services/auth/interfaces/ILoginResponseDto';
 import { BaseService } from '../common/base.service';
 import { HttpClientService } from '../common/httpClient.service';
@@ -11,10 +11,16 @@ import { AccountBeforeLogIn } from './models/account-before-logIn';
 import { RefreshTokenService } from './refresh-token.service';
 
 export class AuthState {
-  public constructor(private readonly _isAuthenticated: () => boolean) {}
+  public constructor(private readonly _isAuthenticated: Signal<boolean>) {}
 
   public whenUnauthenticated(cb: () => void): void {
     if (!this._isAuthenticated()) {
+      cb();
+    }
+  }
+
+  public whenAuthenticated(cb: () => void): void {
+    if (this._isAuthenticated()) {
       cb();
     }
   }

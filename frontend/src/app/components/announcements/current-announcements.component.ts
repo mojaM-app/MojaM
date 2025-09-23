@@ -57,6 +57,10 @@ export class CurrentAnnouncementsComponent
       authService.onAuthStateChanged.whenUnauthenticated(() => {
         this.ngOnInit();
       });
+
+      authService.onAuthStateChanged.whenAuthenticated(() => {
+        this.ngOnInit();
+      });
     });
 
     effect(() => {
