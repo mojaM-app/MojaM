@@ -1,12 +1,19 @@
 import { BulletinState } from '../enums/bulletin-state.enum';
 import { SectionType } from '../enums/section-type.enum';
 
+export interface IBulletinSectionSettings {
+  includeInPdf: boolean;
+  expanded: boolean;
+}
+
 export interface IBulletinDaySection {
   id: string;
   title: string | null;
   content: string | null;
   type: SectionType;
   order: number;
+  settings: IBulletinSectionSettings | null;
+  showInPreview: () => boolean;
 }
 
 export interface IBulletinDayDto {

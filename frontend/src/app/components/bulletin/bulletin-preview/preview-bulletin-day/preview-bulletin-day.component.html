@@ -1,1 +1,10 @@
-<p>preview-bulletin-day works!</p>
+<div class="alert alert-light" role="alert">
+  <p class="day-date">{{ day().date | gdate: 'raw:EEEE dd.MM.yyyy' }}</p>
+  <p class="day-title">{{ day().title }}</p>
+  @for (section of day().sections; track section) {
+    @if (section.showInPreview()) {
+      <p class="section-title">{{ section.title }}</p>
+      <app-wysiwyg-preview [content]="section.content!"></app-wysiwyg-preview>
+    }
+  }
+</div>

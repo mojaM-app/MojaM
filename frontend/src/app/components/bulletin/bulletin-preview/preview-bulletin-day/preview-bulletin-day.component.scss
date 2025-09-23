@@ -1,0 +1,21 @@
+.day-date {
+  font-weight: bold;
+  text-transform: capitalize;
+  color: var(--mat-sys-primary);
+  margin-bottom: calc(1.5rem * var(--font-size));
+  // display: inline-block;
+  // border-bottom: 1px solid var(--mat-sys-primary);
+  // padding-bottom: 0.125rem;
+}
+
+.day-title {
+  font-weight: bolder;
+  margin: 0;
+  //margin-bottom: calc(1.25rem * var(--font-size));
+}
+
+.section-title {
+  font-weight: bold;
+  margin-top: calc(1.25rem * var(--font-size));
+  margin-bottom: calc(0.25rem * var(--font-size));
+}
