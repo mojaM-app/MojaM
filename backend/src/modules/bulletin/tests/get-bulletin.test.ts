@@ -50,7 +50,7 @@ describe('GET /bulletins/:id', () => {
       expect(bulletin.introduction).toBe(requestData.introduction);
       expect(bulletin.tipsForWork).toBe(requestData.tipsForWork);
       expect(bulletin.dailyPrayer).toBe(requestData.dailyPrayer);
-      expect(bulletin.createdBy.length).toBeGreaterThan(0);
+      expect(bulletin.createdBy?.length).toBeGreaterThan(0);
       expect(bulletin.createdAt).toBeDefined();
       expect(isDateString(bulletin.createdAt)).toBe(true);
       expect(bulletin.updatedAt).toBeDefined();

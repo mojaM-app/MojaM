@@ -59,7 +59,7 @@ describe('POST /bulletins', () => {
       expect(bulletin).toBeDefined();
       expect(bulletin.id).toBeDefined();
       expect(isGuid(bulletin.id)).toBe(true);
-      expect(bulletin.createdBy.length).toBeGreaterThan(0);
+      expect(bulletin.createdBy!.length).toBeGreaterThan(0);
       expect(bulletin.createdAt).toBeDefined();
       expect(isDateString(bulletin.createdAt)).toBe(true);
       expect(bulletin.updatedAt).toBeDefined();
@@ -144,7 +144,7 @@ describe('POST /bulletins', () => {
       expect(bulletin).toBeDefined();
       expect(bulletin.id).toBeDefined();
       expect(isGuid(bulletin.id)).toBe(true);
-      expect(bulletin.createdBy.length).toBeGreaterThan(0);
+      expect(bulletin.createdBy!.length).toBeGreaterThan(0);
       expect(bulletin.createdAt).toBeDefined();
       expect(isDateString(bulletin.createdAt)).toBe(true);
       expect(bulletin.updatedAt).toBeDefined();
