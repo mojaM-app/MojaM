@@ -14,12 +14,8 @@ import {
   CreateBulletinResponseDto,
 } from '../dtos/create-bulletin.dto';
 import { GetBulletinResponseDto } from '../dtos/get-bulletin.dto';
-import {
-  BulletinSectionSettingsDto,
-  UpdateBulletinDayDto,
-  UpdateBulletinDaySectionDto,
-  UpdateBulletinDto,
-} from '../dtos/update-bulletin.dto';
+import { BulletinSectionSettingsDto } from '../dtos/settings.dto';
+import { UpdateBulletinDayDto, UpdateBulletinDaySectionDto, UpdateBulletinDto } from '../dtos/update-bulletin.dto';
 import { SectionType } from '../enums/bulletin-section-type.enum';
 import { testEventHandlers } from './../../../helpers/event-handler-tests.helper';
 

@@ -13,10 +13,12 @@ export interface ICreateBulletinDay {
   bulletin: IBulletinId;
   date?: Date | null;
   title?: string | null;
+  settings: Record<string, any> | null;
 }
 
 export interface IUpdateBulletinDay {
   updatedBy?: IUserId;
   date?: Date | null;
   title?: string | null;
+  settings?: Record<string, any> | null;
 }

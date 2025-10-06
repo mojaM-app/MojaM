@@ -22,10 +22,15 @@ export class BulletinDaySectionDto {
   public settings: BulletinSectionSettingsDto = new BulletinSectionSettingsDto();
 }
 
+export class BulletinDaySettingsDto {
+  public showTitleInPdf: boolean = false;
+}
+
 export class BulletinDayDto {
   public id?: string;
   public date: Date | null = null;
   public title: string | null = null;
+  public settings: BulletinDaySettingsDto = new BulletinDaySettingsDto();
   public sections: BulletinDaySectionDto[] = [];
 }
 
@@ -60,6 +65,9 @@ export abstract class BulletinDto {
           id: day.controls.id?.value ?? undefined,
           date: day.controls.date?.value ?? null,
           title: day.controls.title?.value ?? null,
+          settings: {
+            showTitleInPdf: day.controls.settings?.controls.showTitleInPdf?.value ?? false,
+          },
           sections:
             sections?.controls?.map(
               (section: FormGroup<IBulletinDaySectionForm>, index: number) =>

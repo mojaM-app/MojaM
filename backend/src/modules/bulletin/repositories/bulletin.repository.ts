@@ -10,6 +10,7 @@ import { FindOneOptions, FindOptionsWhere } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { Bulletin } from '../../../dataBase/entities/bulletin/bulletin.entity';
 import { CreateBulletinDayDto, CreateBulletinDto } from '../dtos/create-bulletin.dto';
+import { BulletinDaySettingsDto } from '../dtos/settings.dto';
 import { UpdateBulletinDayDto, UpdateBulletinDaySectionDto, UpdateBulletinDto } from '../dtos/update-bulletin.dto';
 import { BulletinState } from '../enums/bulletin-state.enum';
 import { BulletinDaySection } from './../../../dataBase/entities/bulletin/bulletin-day-section.entity';
@@ -111,6 +112,9 @@ export class BulletinRepository extends BaseBulletinRepository {
           bulletin: bulletin,
           date: dayDto.date ?? null,
           title: dayDto.title ?? null,
+          settings: {
+            showTitleInPdf: dayDto.settings?.showTitleInPdf ?? false,
+          } satisfies BulletinDaySettingsDto,
           createdBy: {
             id: userId,
           } satisfies IUserId,
@@ -233,6 +237,9 @@ export class BulletinRepository extends BaseBulletinRepository {
               bulletin: { id: bulletinId },
               date: dayDto.date ?? null,
               title: dayDto.title ?? null,
+              settings: {
+                showTitleInPdf: dayDto.settings?.showTitleInPdf ?? false,
+              } satisfies BulletinDaySettingsDto,
               createdBy: { id: userId } satisfies IUserId,
             } satisfies ICreateBulletinDay;
 
@@ -274,7 +281,10 @@ export class BulletinRepository extends BaseBulletinRepository {
             processedDayIds.add(existingDay.uuid);
 
             // Update existing day if needed
-            const dayUpdateData = existingDay.getUpdateModel(dayDto.title, dayDto.date);
+            const daySettings = {
+              showTitleInPdf: dayDto.settings?.showTitleInPdf ?? false,
+            } satisfies BulletinDaySettingsDto;
+            const dayUpdateData = existingDay.getUpdateModel(dayDto.title, dayDto.date, daySettings);
 
             if (dayUpdateData) {
               dayUpdateData.updatedBy = {

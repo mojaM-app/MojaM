@@ -133,9 +133,14 @@ export class BulletinDay implements IBulletinDayEntity, ICreateBulletinDay, IUpd
    * Gets the update model for the bulletin day
    * @param title The new title
    * @param date The new date
+   * @param settings The new settings
    * @returns Update model if changes detected, null otherwise
    */
-  public getUpdateModel(title?: string | null, date?: Date | null): Partial<IUpdateBulletinDay> | null {
+  public getUpdateModel(
+    title?: string | null,
+    date?: Date | null,
+    settings?: Record<string, any> | null,
+  ): Partial<IUpdateBulletinDay> | null {
     const result: Partial<IUpdateBulletinDay> = {};
     let wasChanged = false;
 
@@ -146,6 +151,12 @@ export class BulletinDay implements IBulletinDayEntity, ICreateBulletinDay, IUpd
 
     if ((this.date ?? null) !== (date ?? null)) {
       result.date = date;
+      wasChanged = true;
+    }
+
+    // Compare settings objects
+    if (JSON.stringify(this.settings) !== JSON.stringify(settings)) {
+      result.settings = settings;
       wasChanged = true;
     }
 

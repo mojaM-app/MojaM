@@ -17,15 +17,8 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
+import { BulletinDaySettingsDto, BulletinSectionSettingsDto } from './settings.dto';
 import { SectionType } from '../enums/bulletin-section-type.enum';
-
-export class BulletinSectionSettingsDto {
-  @IsNotEmpty()
-  public includeInPdf!: boolean;
-
-  @IsNotEmpty()
-  public expanded!: boolean;
-}
 
 export class UpdateBulletinDaySectionDto {
   public id?: string;
@@ -56,8 +49,8 @@ export class UpdateBulletinDaySectionDto {
   @IsBulletinSectionValid()
   public validateSection?: boolean = true;
 
-  @Type(() => BulletinSectionSettingsDto)
   @IsNotEmpty()
+  @Type(() => BulletinSectionSettingsDto)
   @ValidateNested()
   public settings!: BulletinSectionSettingsDto;
 
@@ -79,6 +72,11 @@ export class UpdateBulletinDayDto {
   @Type(() => Date)
   @IsDate()
   public date?: Date | null;
+
+  @IsOptional()
+  @Type(() => BulletinDaySettingsDto)
+  @ValidateNested()
+  public settings?: BulletinDaySettingsDto | null;
 
   @IsOptional()
   @IsArray()

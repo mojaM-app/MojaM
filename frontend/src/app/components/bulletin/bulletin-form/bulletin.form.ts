@@ -11,6 +11,10 @@ export interface IBulletinSectionSettingsForm {
   expanded: FormControl<boolean>;
 }
 
+export interface IBulletinDaySettingsForm {
+  showTitleInPdf: FormControl<boolean>;
+}
+
 export interface IBulletinDaySectionForm {
   id: FormControl<string | undefined>;
   type: FormControl<SectionType | null>;
@@ -23,6 +27,7 @@ export interface IBulletinDayForm {
   id: FormControl<string | undefined>;
   date: FormControl<Date | null>;
   title: FormControl<string | null>;
+  settings: FormGroup<IBulletinDaySettingsForm>;
   sections: FormArray<FormGroup<IBulletinDaySectionForm>>;
 }
 
@@ -108,6 +113,9 @@ export class BulletinFormBuilder {
         id: day.id,
         date: day.date ?? null,
         title: day.title ?? null,
+        settings: {
+          showTitleInPdf: day.settings?.showTitleInPdf ?? false,
+        },
       });
 
       const sectionsArray = dayGroup.controls.sections;
@@ -168,6 +176,9 @@ export class BulletinFormBuilder {
       }),
       title: new FormControl<string | null>(null, {
         validators: [Validators.maxLength(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH)],
+      }),
+      settings: new FormGroup<IBulletinDaySettingsForm>({
+        showTitleInPdf: new FormControl<boolean>(false, { nonNullable: true }),
       }),
       sections: new FormArray<FormGroup<IBulletinDaySectionForm>>([]),
     } satisfies IBulletinDayForm);

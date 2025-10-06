@@ -4,8 +4,8 @@ import {
   type CreateBulletinDaySectionDto,
   type CreateBulletinDto,
 } from '../dtos/create-bulletin.dto';
+import { BulletinDaySettingsDto, BulletinSectionSettingsDto } from '../dtos/settings.dto';
 import {
-  BulletinSectionSettingsDto,
   type UpdateBulletinDayDto,
   type UpdateBulletinDaySectionDto,
   type UpdateBulletinDto,
@@ -25,6 +25,9 @@ const generateValidBulletin = (): CreateBulletinDto => {
       {
         date: bulletinDate,
         title: 'Day1',
+        settings: {
+          showTitleInPdf: false,
+        } satisfies BulletinDaySettingsDto,
         sections: [
           {
             order: 1,
@@ -51,6 +54,9 @@ const generateValidBulletin = (): CreateBulletinDto => {
       {
         date: bulletinDate.addDays(1),
         title: 'Day2',
+        settings: {
+          showTitleInPdf: false,
+        } satisfies BulletinDaySettingsDto,
         sections: [
           {
             order: 1,
@@ -81,6 +87,9 @@ const generateValidUpdateBulletin = (): UpdateBulletinDto => {
       {
         title: generateRandomString(30),
         date: bulletinDate,
+        settings: {
+          showTitleInPdf: false,
+        } satisfies BulletinDaySettingsDto,
         sections: [
           {
             title: generateRandomString(50),

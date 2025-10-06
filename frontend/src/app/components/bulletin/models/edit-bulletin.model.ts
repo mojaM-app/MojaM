@@ -31,6 +31,9 @@ export class EditBulletinDto extends BulletinDto {
           id: day.id,
           date: day.date ?? null,
           title: day.title ?? null,
+          settings: {
+            showTitleInPdf: day.settings?.showTitleInPdf ?? false,
+          },
           sections:
             day.sections?.map(
               (section: any) =>

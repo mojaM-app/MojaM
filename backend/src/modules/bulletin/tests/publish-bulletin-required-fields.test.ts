@@ -5,7 +5,7 @@ import { getAdminLoginData } from '@utils';
 import { generateValidBulletin } from './test.helpers';
 import { TestApp } from '../../../helpers/test-helpers/test.app';
 import { CreateBulletinDaySectionDto, CreateBulletinResponseDto } from '../dtos/create-bulletin.dto';
-import { BulletinSectionSettingsDto } from '../dtos/update-bulletin.dto';
+import { BulletinSectionSettingsDto } from '../dtos/settings.dto';
 import { SectionType } from '../enums/bulletin-section-type.enum';
 
 describe('POST /bulletins/:id/publish - required fields validation', () => {

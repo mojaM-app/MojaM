@@ -16,7 +16,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { BulletinSectionSettingsDto } from './update-bulletin.dto';
+import { BulletinDaySettingsDto, BulletinSectionSettingsDto } from './settings.dto';
 import { SectionType } from '../enums/bulletin-section-type.enum';
 
 export class CreateBulletinDaySectionDto {
@@ -46,8 +46,8 @@ export class CreateBulletinDaySectionDto {
   @IsBulletinSectionValid()
   public validateSection?: boolean = true; // This property is just for validation trigger
 
-  @Type(() => BulletinSectionSettingsDto)
   @IsNotEmpty()
+  @Type(() => BulletinSectionSettingsDto)
   @ValidateNested()
   public settings!: BulletinSectionSettingsDto;
 }
@@ -62,6 +62,11 @@ export class CreateBulletinDayDto {
   @MaxLength(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH, { message: errorKeys.bulletin.Title_Too_Long })
   @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
   public title?: string | null;
+
+  @IsOptional()
+  @Type(() => BulletinDaySettingsDto)
+  @ValidateNested()
+  public settings?: BulletinDaySettingsDto | null;
 
   @IsArray()
   @ValidateNested({ each: true })

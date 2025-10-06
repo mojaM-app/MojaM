@@ -16,10 +16,15 @@ export interface IBulletinDaySection {
   showInPreview: () => boolean;
 }
 
+export interface IBulletinDaySettings {
+  showTitleInPdf: boolean;
+}
+
 export interface IBulletinDayDto {
   id: string;
   date: Date | null;
   title: string | null;
+  settings: IBulletinDaySettings | null;
   sections: IBulletinDaySection[];
 }
 
