@@ -11,6 +11,7 @@ import {
   securityHeaders,
   securityLoggingMiddleware,
 } from '@middlewares';
+import { HealthService } from '@modules/health/health.service';
 import { getFullUrl, isNullOrUndefined } from '@utils';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
@@ -18,6 +19,7 @@ import { default as express, type Request, type Response } from 'express';
 import hpp from 'hpp';
 import morgan from 'morgan';
 import { StatusCode } from 'status-code-enum';
+import Container from 'typedi';
 import 'reflect-metadata';
 
 export class App {
@@ -58,6 +60,10 @@ export class App {
   private initializeMiddlewares(): void {
     // Trust proxy configuration - must be set before other middleware that depends on req.ip
     this.configureTrustProxy();
+
+    // Health check endpoint BEFORE any security middleware (including CORS)
+    // This allows monitoring tools to check application health without CORS restrictions
+    this.initializeHealthCheck();
 
     // Security middleware - order matters!
     this.app.use(requestIdMiddleware); // First - add request ID to all requests
@@ -112,6 +118,26 @@ export class App {
       this.app.set(trustProxyName, trustProxyEnv);
       logger.info(`Trust proxy configured with custom value: ${trustProxyEnv}`);
     }
+  }
+
+  private initializeHealthCheck(): void {
+    // Health check endpoint - accessible without CORS restrictions
+    // This MUST be registered before CORS middleware
+    const healthPath = `${BASE_PATH || ''}/health`;
+    this.app.get(healthPath, async (req: Request, res: Response) => {
+      try {
+        const healthService = Container.get(HealthService);
+        const healthData = await healthService.getHealthStatus();
+        res.status(StatusCode.SuccessOK).json(healthData);
+      } catch (error) {
+        logger.error('Health check failed:', error);
+        res.status(StatusCode.ServerErrorInternal).json({
+          status: 'unhealthy',
+          error: 'Health check failed',
+        });
+      }
+    });
+    logger.info(`Health check endpoint registered at: ${healthPath}`);
   }
 
   private initializeRoutes(routes: IRoutes[]): void {
