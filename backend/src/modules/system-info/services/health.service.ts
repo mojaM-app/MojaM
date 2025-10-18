@@ -30,6 +30,7 @@ export interface ISystemInfo extends IHealthStatus {
     name: string;
     host: string;
     type: string;
+    version?: string;
   };
   system: {
     cpus: number;
@@ -107,6 +108,7 @@ export class HealthService {
     name: string;
     host: string;
     type: string;
+    version?: string;
   }> {
     try {
       const connection = DbConnectionManager.getConnection();
@@ -124,11 +126,23 @@ export class HealthService {
       // Try to execute a simple query to verify connection
       await dbContext.query('SELECT 1');
 
+      // Get database version
+      let version: string | undefined;
+      try {
+        const versionResult = await dbContext.query('SELECT VERSION() as version');
+        if (Array.isArray(versionResult) && versionResult.length > 0) {
+          version = versionResult[0].version;
+        }
+      } catch {
+        // If version query fails, continue without version info
+      }
+
       return {
         status: 'connected',
         name: DATABASE_NAME ?? 'unknown',
         host: DATABASE_HOST ?? 'unknown',
         type: 'mysql',
+        version,
       };
     } catch {
       return {

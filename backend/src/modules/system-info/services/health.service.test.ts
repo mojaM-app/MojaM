@@ -54,7 +54,10 @@ describe('HealthService', () => {
     it('should return comprehensive system info when database is connected', async () => {
       const mockDbContext = {
         isInitialized: true,
-        query: jest.fn().mockResolvedValue([{ '1': 1 }]),
+        query: jest
+          .fn()
+          .mockResolvedValueOnce([{ '1': 1 }])
+          .mockResolvedValueOnce([{ version: '8.0.32' }]),
       };
       mockDbConnection.getDbContext.mockReturnValue(mockDbContext);
 
@@ -67,7 +70,9 @@ describe('HealthService', () => {
       expect(result.application).toBeDefined();
       expect(result.system).toBeDefined();
       expect(result.database.status).toBe('connected');
+      expect(result.database.version).toBe('8.0.32');
       expect(mockDbContext.query).toHaveBeenCalledWith('SELECT 1');
+      expect(mockDbContext.query).toHaveBeenCalledWith('SELECT VERSION() as version');
     });
 
     it('should return degraded status when database is disconnected', async () => {
@@ -157,6 +162,23 @@ describe('HealthService', () => {
 
       expect(result.status).toBe('degraded');
       expect(result.database.status).toBe('disconnected');
+    });
+
+    it('should handle database version query failure gracefully', async () => {
+      const mockDbContext = {
+        isInitialized: true,
+        query: jest
+          .fn()
+          .mockResolvedValueOnce([{ '1': 1 }])
+          .mockRejectedValueOnce(new Error('Version query failed')),
+      };
+      mockDbConnection.getDbContext.mockReturnValue(mockDbContext);
+
+      const result = await healthService.getSystemInfo();
+
+      expect(result.status).toBe('healthy');
+      expect(result.database.status).toBe('connected');
+      expect(result.database.version).toBeUndefined();
     });
   });
 });

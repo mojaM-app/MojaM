@@ -154,6 +154,12 @@
                     <strong>{{ 'Management/SystemInfo/Type' | gmessage }}:</strong>
                     {{ systemInfo()!.database.type }}
                   </p>
+                  @if (systemInfo()!.database.version) {
+                    <p>
+                      <strong>{{ 'Management/SystemInfo/DatabaseVersion' | gmessage }}:</strong>
+                      {{ systemInfo()!.database.version }}
+                    </p>
+                  }
                   <p>
                     <strong>{{ 'Management/SystemInfo/Host' | gmessage }}:</strong>
                     {{ systemInfo()!.database.host }}

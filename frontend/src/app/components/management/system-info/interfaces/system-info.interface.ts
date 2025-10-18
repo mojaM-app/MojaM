@@ -20,6 +20,7 @@ export interface ISystemInfo {
     name: string;
     host: string;
     type: string;
+    version?: string;
   };
   system: {
     cpus: number;

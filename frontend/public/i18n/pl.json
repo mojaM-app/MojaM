@@ -548,6 +548,7 @@
       "Hostname": "Nazwa hosta",
       "Database": "Baza danych",
       "Type": "Typ",
+      "DatabaseVersion": "Wersja bazy danych",
       "Host": "Host",
       "DatabaseName": "Nazwa bazy",
       "SystemResources": "Zasoby systemowe",
