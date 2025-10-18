@@ -4,10 +4,7 @@ import { map, Observable } from 'rxjs';
 import { BaseService } from '../../../../services/common/base.service';
 import { HttpClientService } from '../../../../services/common/httpClient.service';
 import { SpinnerService } from '../../../../services/spinner/spinner.service';
-import {
-  BulletinGridData,
-  IBulletinGridItemDto,
-} from '../interfaces/bulletin-list.interfaces';
+import { BulletinGridData, IBulletinGridItemDto } from '../interfaces/bulletin-list.interfaces';
 
 @Injectable({
   providedIn: 'root',
@@ -45,9 +42,6 @@ export class BulletinListService extends BaseService {
               item.createdAt = this.toDateTime(item.createdAt)!;
               item.updatedAt = this.toDateTime(item.updatedAt)!;
               item.publishedAt = this.toDateTime(item.publishedAt);
-              if (item.number) {
-                item.number = parseInt(item.number as any);
-              }
             });
           }
 

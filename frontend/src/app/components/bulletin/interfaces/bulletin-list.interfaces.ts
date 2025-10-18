@@ -2,7 +2,7 @@ import { IGridData } from '../../../../core/interfaces/common/grid.data';
 
 export interface IBulletinGridItemColumns {
   title?: string | null;
-  number?: number | null;
+  number?: string | null;
   date?: Date | null;
   state: number;
   createdAt: Date;

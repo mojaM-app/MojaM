@@ -77,7 +77,6 @@ export class BulletinGridService
       {
         propertyName: BULLETIN_LIST_COLUMNS.number!,
         title: this._translationService.get('Bulletin/List/GridColumns/Number'),
-        type: ColumnType.Number,
         mediaMinWidth: 400,
       },
       {
