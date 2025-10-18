@@ -17,6 +17,7 @@ import { CommunityMenu } from '../community/community.menu';
 import {
   ManagementMenu,
   ManagementMenuPermissions,
+  ManagementMenuSystemInfo,
   ManagementMenuUserList,
 } from '../management/management.menu';
 import { NewsMenu } from '../news/news.menu';
@@ -81,11 +82,13 @@ export class SideMenuComponent {
       name: ManagementMenu.Label,
       icon: ManagementMenu.Icon,
       isVisible: (): boolean => {
-        return this._permissionService.hasAnyPermission([
-          SystemPermissionValue.PreviewUserList,
-          SystemPermissionValue.AddPermission,
-          SystemPermissionValue.DeletePermission,
-        ]);
+        return (
+          this._permissionService.hasAnyPermission([
+            SystemPermissionValue.PreviewUserList,
+            SystemPermissionValue.AddPermission,
+            SystemPermissionValue.DeletePermission,
+          ]) || this._authTokenService.isTokenValid()
+        );
       },
       children: [
         {
@@ -110,6 +113,15 @@ export class SideMenuComponent {
             ]);
           },
         },
+
+        {
+          name: ManagementMenuSystemInfo.Label,
+          icon: ManagementMenuSystemInfo.Icon,
+          route: ManagementMenuSystemInfo.Path,
+          isVisible: (): boolean => {
+            return this._authTokenService.isTokenValid();
+          },
+        },
       ],
     },
     // {
@@ -123,9 +135,9 @@ export class SideMenuComponent {
   public constructor(
     @Inject(IS_MOBILE) public isMobile: boolean,
     private _permissionService: PermissionService,
-    authTokenService: AuthTokenService
+    private _authTokenService: AuthTokenService
   ) {
-    authTokenService.tokenChanged.subscribe(() => {
+    this._authTokenService.tokenChanged.subscribe(() => {
       const filteredMenuItems = this._menuItems.filter(item => item.isVisible());
       filteredMenuItems.forEach(menuItem => {
         if (menuItem.children) {

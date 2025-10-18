@@ -8,6 +8,9 @@ import { Service } from 'typedi';
 export interface IHealthStatus {
   status: 'healthy' | 'degraded' | 'unhealthy';
   timestamp: string;
+}
+
+export interface ISystemInfo extends IHealthStatus {
   uptime: number;
   environment: {
     nodeEnv: string;
@@ -50,6 +53,15 @@ export class HealthService {
   private startTime = Date.now();
 
   public async getHealthStatus(): Promise<IHealthStatus> {
+    const dbStatus = await this.checkDatabaseConnection();
+
+    return {
+      status: dbStatus.status === 'connected' ? 'healthy' : 'degraded',
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  public async getSystemInfo(): Promise<ISystemInfo> {
     const dbStatus = await this.checkDatabaseConnection();
     const memoryUsage = process.memoryUsage();
     const packageJson = this.getPackageJson();

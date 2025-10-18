@@ -33,3 +33,10 @@ export class ManagementMenuPermissions {
   public static Route = 'permissions';
   public static Path = ManagementMenu.Path + '/' + ManagementMenuPermissions.Route;
 }
+
+export class ManagementMenuSystemInfo {
+  public static Label = 'Management/SystemInfo/Title';
+  public static Icon = 'info';
+  public static Route = 'system-info';
+  public static Path = ManagementMenu.Path + '/' + ManagementMenuSystemInfo.Route;
+}

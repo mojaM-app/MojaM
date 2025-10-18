@@ -57,6 +57,9 @@ export const events = {
   log: {
     logListRetrieved: 'onLogListRetrieved',
   },
+  systemInfo: {
+    systemInfoRetrieved: 'onSystemInfoRetrieved',
+  },
 };
 
 export { Event } from './Event';

@@ -8,6 +8,7 @@ import {
   ManagementMenuEditUser,
   ManagementMenuMyProfile,
   ManagementMenuPermissions,
+  ManagementMenuSystemInfo,
   ManagementMenuUserList,
 } from './management.menu';
 
@@ -65,6 +66,16 @@ const routes: Routes = [
     data: {
       checkSession: true,
       permissions: [SystemPermissionValue.AddPermission, SystemPermissionValue.DeletePermission],
+    } satisfies IPermissionRouteData,
+  },
+  {
+    path: ManagementMenuSystemInfo.Route,
+    loadComponent: () =>
+      import('./system-info/system-info.component').then(m => m.SystemInfoComponent),
+    canActivate: [PermissionGuard],
+    data: {
+      checkSession: true,
+      permissions: [],
     } satisfies IPermissionRouteData,
   },
   { path: '**', redirectTo: ManagementMenuUserList.Route, pathMatch: 'full' },

@@ -113,6 +113,10 @@ export class BaseService {
       save: (uuid: string, permissionId: SystemPermissionValue): string =>
         `${environment.backendUrl}/${this.API_ROUTES.permissions.path}/${uuid}/${permissionId}`,
     },
+    systemInfo: {
+      path: 'system-info',
+      get: (): string => `${environment.backendUrl}/${this.API_ROUTES.systemInfo.path}`,
+    },
   };
 
   protected toDateTime(date: string | null | undefined | Date): Date | undefined {

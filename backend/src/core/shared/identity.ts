@@ -120,6 +120,10 @@ export class Identity {
     return this.hasPermission(SystemPermissions.AnswerBulletinQuestion);
   }
 
+  public canPreviewSystemInfo(): boolean {
+    return this.isAuthenticated();
+  }
+
   protected hasPermission(permission: SystemPermissions): boolean {
     return this.hasAnyPermission([permission]);
   }

@@ -1,5 +1,5 @@
 import { DbConnectionManager } from '@db';
-import { HealthService } from '../health.service';
+import { HealthService } from './health.service';
 
 jest.mock('@db');
 
@@ -21,7 +21,7 @@ describe('HealthService', () => {
   });
 
   describe('getHealthStatus', () => {
-    it('should return healthy status when database is connected', async () => {
+    it('should return minimal health status when database is connected', async () => {
       const mockDbContext = {
         isInitialized: true,
         query: jest.fn().mockResolvedValue([{ '1': 1 }]),
@@ -31,13 +31,10 @@ describe('HealthService', () => {
       const result = await healthService.getHealthStatus();
 
       expect(result.status).toBe('healthy');
-      expect(result.database.status).toBe('connected');
       expect(result.timestamp).toBeDefined();
-      expect(result.uptime).toBeGreaterThanOrEqual(0);
-      expect(result.environment).toBeDefined();
-      expect(result.application).toBeDefined();
-      expect(result.system).toBeDefined();
-      expect(mockDbContext.query).toHaveBeenCalledWith('SELECT 1');
+      expect(result).not.toHaveProperty('uptime');
+      expect(result).not.toHaveProperty('environment');
+      expect(result).not.toHaveProperty('system');
     });
 
     it('should return degraded status when database is disconnected', async () => {
@@ -47,6 +44,39 @@ describe('HealthService', () => {
       mockDbConnection.getDbContext.mockReturnValue(mockDbContext);
 
       const result = await healthService.getHealthStatus();
+
+      expect(result.status).toBe('degraded');
+      expect(result.timestamp).toBeDefined();
+    });
+  });
+
+  describe('getSystemInfo', () => {
+    it('should return comprehensive system info when database is connected', async () => {
+      const mockDbContext = {
+        isInitialized: true,
+        query: jest.fn().mockResolvedValue([{ '1': 1 }]),
+      };
+      mockDbConnection.getDbContext.mockReturnValue(mockDbContext);
+
+      const result = await healthService.getSystemInfo();
+
+      expect(result.status).toBe('healthy');
+      expect(result.timestamp).toBeDefined();
+      expect(result.uptime).toBeGreaterThanOrEqual(0);
+      expect(result.environment).toBeDefined();
+      expect(result.application).toBeDefined();
+      expect(result.system).toBeDefined();
+      expect(result.database.status).toBe('connected');
+      expect(mockDbContext.query).toHaveBeenCalledWith('SELECT 1');
+    });
+
+    it('should return degraded status when database is disconnected', async () => {
+      const mockDbContext = {
+        isInitialized: false,
+      };
+      mockDbConnection.getDbContext.mockReturnValue(mockDbContext);
+
+      const result = await healthService.getSystemInfo();
 
       expect(result.status).toBe('degraded');
       expect(result.database.status).toBe('disconnected');
@@ -59,7 +89,7 @@ describe('HealthService', () => {
       };
       mockDbConnection.getDbContext.mockReturnValue(mockDbContext);
 
-      const result = await healthService.getHealthStatus();
+      const result = await healthService.getSystemInfo();
 
       expect(result.status).toBe('degraded');
       expect(result.database.status).toBe('error');
@@ -72,7 +102,7 @@ describe('HealthService', () => {
       };
       mockDbConnection.getDbContext.mockReturnValue(mockDbContext);
 
-      const result = await healthService.getHealthStatus();
+      const result = await healthService.getSystemInfo();
 
       expect(result.environment).toMatchObject({
         nodeVersion: expect.any(String),
@@ -89,7 +119,7 @@ describe('HealthService', () => {
       };
       mockDbConnection.getDbContext.mockReturnValue(mockDbContext);
 
-      const result = await healthService.getHealthStatus();
+      const result = await healthService.getSystemInfo();
 
       expect(result.application).toMatchObject({
         name: expect.any(String),
@@ -106,7 +136,7 @@ describe('HealthService', () => {
       };
       mockDbConnection.getDbContext.mockReturnValue(mockDbContext);
 
-      const result = await healthService.getHealthStatus();
+      const result = await healthService.getSystemInfo();
 
       expect(result.system.cpus).toBeGreaterThan(0);
       expect(result.system.totalMemory).toMatch(/MB|GB/);
@@ -123,7 +153,7 @@ describe('HealthService', () => {
     it('should handle null dbContext gracefully', async () => {
       mockDbConnection.getDbContext.mockReturnValue(null);
 
-      const result = await healthService.getHealthStatus();
+      const result = await healthService.getSystemInfo();
 
       expect(result.status).toBe('degraded');
       expect(result.database.status).toBe('disconnected');

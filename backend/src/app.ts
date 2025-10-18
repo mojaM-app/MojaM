@@ -11,7 +11,7 @@ import {
   securityHeaders,
   securityLoggingMiddleware,
 } from '@middlewares';
-import { HealthService } from '@modules/health/health.service';
+import { HealthService } from '@modules/system-info/services/health.service';
 import { getFullUrl, isNullOrUndefined } from '@utils';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
@@ -123,6 +123,7 @@ export class App {
   private initializeHealthCheck(): void {
     // Health check endpoint - accessible without CORS restrictions
     // This MUST be registered before CORS middleware
+    // Returns minimal information: status and timestamp only
     const healthPath = `${BASE_PATH || ''}/health`;
     this.app.get(healthPath, async (req: Request, res: Response) => {
       try {

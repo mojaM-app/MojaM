@@ -1,0 +1,258 @@
+<div class="card h-100 border-0">
+  <div class="d-grid-with-header">
+    <header class="mat-toolbar">
+      <app-card-header [title]="'Management/SystemInfo/Title'">
+        <button
+          mat-icon-button
+          type="button"
+          [attr.aria-label]="'Management/SystemInfo/RefreshLabel' | gmessage"
+          [matTooltip]="'Management/SystemInfo/RefreshLabel' | gmessage"
+          (click)="refresh()"
+          [disabled]="isLoading()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </app-card-header>
+    </header>
+    <main>
+      <div class="card-body p-3">
+        @if (isLoading()) {
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        }
+
+        @if (error()) {
+          <div class="alert alert-danger" role="alert">
+            <mat-icon class="me-2">error</mat-icon>
+            {{ error() }}
+          </div>
+        }
+
+        @if (systemInfo() && !isLoading()) {
+          <div class="row g-3">
+            <!-- Application Status -->
+            <div class="col-12">
+              <mat-card>
+                <mat-card-header>
+                  <mat-card-title>
+                    <mat-icon [class]="'text-' + getStatusColor(systemInfo()!.status)">
+                      {{ getStatusIcon(systemInfo()!.status) }}
+                    </mat-icon>
+                    {{ 'Management/SystemInfo/ApplicationStatus' | gmessage }}
+                  </mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <p>
+                        <strong>{{ 'Management/SystemInfo/Status' | gmessage }}:</strong>
+                        <span
+                          [class]="'badge bg-' + getStatusColor(systemInfo()!.status) + ' ms-2'">
+                          {{ systemInfo()!.status }}
+                        </span>
+                      </p>
+                      <p>
+                        <strong>{{ 'Management/SystemInfo/Timestamp' | gmessage }}:</strong>
+                        {{ systemInfo()!.timestamp | gdate: 'medium' }}
+                      </p>
+                    </div>
+                    <div class="col-md-6">
+                      <p>
+                        <strong>{{ 'Management/SystemInfo/Uptime' | gmessage }}:</strong>
+                        {{ formatUptime(systemInfo()!.uptime) }}
+                      </p>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+
+            <!-- Application Info -->
+            <div class="col-12 col-md-6">
+              <mat-card>
+                <mat-card-header>
+                  <mat-card-title>
+                    <mat-icon>info</mat-icon>
+                    {{ 'Management/SystemInfo/ApplicationInfo' | gmessage }}
+                  </mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <p>
+                    <strong>{{ 'Management/SystemInfo/Name' | gmessage }}:</strong>
+                    {{ systemInfo()!.application.name }}
+                  </p>
+                  <p>
+                    <strong>{{ 'Management/SystemInfo/Version' | gmessage }}:</strong>
+                    {{ systemInfo()!.application.version }}
+                  </p>
+                  <p>
+                    <strong>{{ 'Management/SystemInfo/Port' | gmessage }}:</strong>
+                    {{ systemInfo()!.application.port }}
+                  </p>
+                  <p>
+                    <strong>{{ 'Management/SystemInfo/BasePath' | gmessage }}:</strong>
+                    {{ systemInfo()!.application.basePath }}
+                  </p>
+                </mat-card-content>
+              </mat-card>
+            </div>
+
+            <!-- Environment Info -->
+            <div class="col-12 col-md-6">
+              <mat-card>
+                <mat-card-header>
+                  <mat-card-title>
+                    <mat-icon>settings</mat-icon>
+                    {{ 'Management/SystemInfo/Environment' | gmessage }}
+                  </mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <p>
+                    <strong>{{ 'Management/SystemInfo/NodeEnv' | gmessage }}:</strong>
+                    {{ systemInfo()!.environment.nodeEnv }}
+                  </p>
+                  <p>
+                    <strong>{{ 'Management/SystemInfo/NodeVersion' | gmessage }}:</strong>
+                    {{ systemInfo()!.environment.nodeVersion }}
+                  </p>
+                  <p>
+                    <strong>{{ 'Management/SystemInfo/Platform' | gmessage }}:</strong>
+                    {{ systemInfo()!.environment.platform }}
+                  </p>
+                  <p>
+                    <strong>{{ 'Management/SystemInfo/Architecture' | gmessage }}:</strong>
+                    {{ systemInfo()!.environment.arch }}
+                  </p>
+                  <p>
+                    <strong>{{ 'Management/SystemInfo/Hostname' | gmessage }}:</strong>
+                    {{ systemInfo()!.environment.hostname }}
+                  </p>
+                </mat-card-content>
+              </mat-card>
+            </div>
+
+            <!-- Database Info -->
+            <div class="col-12 col-md-6">
+              <mat-card>
+                <mat-card-header>
+                  <mat-card-title>
+                    <mat-icon [class]="'text-' + getStatusColor(systemInfo()!.database.status)">
+                      {{ getStatusIcon(systemInfo()!.database.status) }}
+                    </mat-icon>
+                    {{ 'Management/SystemInfo/Database' | gmessage }}
+                  </mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <p>
+                    <strong>{{ 'Management/SystemInfo/Status' | gmessage }}:</strong>
+                    <span
+                      [class]="
+                        'badge bg-' + getStatusColor(systemInfo()!.database.status) + ' ms-2'
+                      ">
+                      {{ systemInfo()!.database.status }}
+                    </span>
+                  </p>
+                  <p>
+                    <strong>{{ 'Management/SystemInfo/Type' | gmessage }}:</strong>
+                    {{ systemInfo()!.database.type }}
+                  </p>
+                  <p>
+                    <strong>{{ 'Management/SystemInfo/Host' | gmessage }}:</strong>
+                    {{ systemInfo()!.database.host }}
+                  </p>
+                  <p>
+                    <strong>{{ 'Management/SystemInfo/DatabaseName' | gmessage }}:</strong>
+                    {{ systemInfo()!.database.name }}
+                  </p>
+                </mat-card-content>
+              </mat-card>
+            </div>
+
+            <!-- System Resources -->
+            <div class="col-12 col-md-6">
+              <mat-card>
+                <mat-card-header>
+                  <mat-card-title>
+                    <mat-icon>memory</mat-icon>
+                    {{ 'Management/SystemInfo/SystemResources' | gmessage }}
+                  </mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <p>
+                    <strong>{{ 'Management/SystemInfo/CPUs' | gmessage }}:</strong>
+                    {{ systemInfo()!.system.cpus }}
+                  </p>
+                  <p>
+                    <strong>{{ 'Management/SystemInfo/TotalMemory' | gmessage }}:</strong>
+                    {{ systemInfo()!.system.totalMemory }}
+                  </p>
+                  <p>
+                    <strong>{{ 'Management/SystemInfo/FreeMemory' | gmessage }}:</strong>
+                    {{ systemInfo()!.system.freeMemory }}
+                  </p>
+                  <mat-divider class="my-2"></mat-divider>
+                  <p class="mb-1">
+                    <strong>{{ 'Management/SystemInfo/ProcessMemory' | gmessage }}:</strong>
+                  </p>
+                  <p class="mb-1 ms-3">
+                    <small>
+                      <strong>RSS:</strong>
+                      {{ systemInfo()!.system.memoryUsage.rss }}
+                    </small>
+                  </p>
+                  <p class="mb-1 ms-3">
+                    <small>
+                      <strong>Heap Total:</strong>
+                      {{ systemInfo()!.system.memoryUsage.heapTotal }}
+                    </small>
+                  </p>
+                  <p class="mb-1 ms-3">
+                    <small>
+                      <strong>Heap Used:</strong>
+                      {{ systemInfo()!.system.memoryUsage.heapUsed }}
+                    </small>
+                  </p>
+                  <p class="mb-1 ms-3">
+                    <small>
+                      <strong>External:</strong>
+                      {{ systemInfo()!.system.memoryUsage.external }}
+                    </small>
+                  </p>
+                  <mat-divider class="my-2"></mat-divider>
+                  <p class="mb-1">
+                    <strong>{{ 'Management/SystemInfo/LoadAverage' | gmessage }}:</strong>
+                  </p>
+                  <p class="mb-0 ms-3">
+                    <small>
+                      1min: {{ systemInfo()!.system.loadAverage[0] }} | 5min:
+                      {{ systemInfo()!.system.loadAverage[1] }} | 15min:
+                      {{ systemInfo()!.system.loadAverage[2] }}
+                    </small>
+                  </p>
+                </mat-card-content>
+              </mat-card>
+            </div>
+
+            <!-- Logging Info -->
+            <div class="col-12">
+              <mat-card>
+                <mat-card-header>
+                  <mat-card-title>
+                    <mat-icon>article</mat-icon>
+                    {{ 'Management/SystemInfo/Logging' | gmessage }}
+                  </mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <p>
+                    <strong>{{ 'Management/SystemInfo/LogLevel' | gmessage }}:</strong>
+                    <span class="badge bg-info ms-2">
+                      {{ systemInfo()!.logging.level }}
+                    </span>
+                  </p>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </div>
+        }
+      </div>
+    </main>
+  </div>
+</div>
