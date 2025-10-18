@@ -337,6 +337,24 @@ npm run migration:revert       # Revert last migration
 
 ## Important Guidelines for AI
 
+### AI Tools & Documentation Resources
+
+#### Upstash Context7 Integration
+- **ALWAYS use Upstash Context7** for retrieving up-to-date library documentation
+- **When to use**: Before implementing features with external libraries (Angular, TypeORM, Express, etc.)
+- **How to use**: 
+  1. First call `resolve-library-id` to get the Context7-compatible library ID
+  2. Then call `get-library-docs` with the resolved library ID and specific topic
+- **Best practices**:
+  - Always verify current API syntax and patterns from Context7 before writing code
+  - Use Context7 for Angular Material, TypeORM, Express.js, Jest, and other major dependencies
+  - Include relevant topics when querying (e.g., 'components', 'routing', 'testing')
+  - Prefer official documentation from Context7 over assumptions
+- **Examples**:
+  - Angular routing: resolve `/angular/angular` → get docs with topic 'routing'
+  - TypeORM migrations: resolve `/typeorm/typeorm` → get docs with topic 'migrations'
+  - Express middleware: resolve `/expressjs/express` → get docs with topic 'middleware'
+
 ### Code Quality Requirements
 - **ESLint Validation**: ALL generated code must be compatible with project's ESLint configuration
 - **Module Boundaries**: Respect dependency-cruiser rules for backend module separation  
@@ -347,6 +365,7 @@ npm run migration:revert       # Revert last migration
 - **Integration Tests Priority**: Write integration tests for API endpoints instead of unit tests for services/repositories
 - **Unit Tests Scope**: Use unit tests primarily for utilities, helpers, and pure functions
 - **Type Safety**: Maintain strict TypeScript typing throughout both applications
+- **Documentation First**: ALWAYS consult Context7 for library-specific patterns before implementing
 
 ### Before Submitting Code
 1. Ensure ESLint rules are followed for both backend and frontend
