@@ -56,7 +56,7 @@ export class AddBulletinComponent implements OnInit {
           properties: {
             date: new Date(),
             title: 'Tekst do formacji od ' + new Date().toLocaleDateString(),
-            number: 700,
+            number: '700',
             introduction: 'Wprowadzenie do biuletynu...',
             tipsForWork: 'Wskazówki do pracy...',
             dailyPrayer: 'Modlitwa na dziś...',

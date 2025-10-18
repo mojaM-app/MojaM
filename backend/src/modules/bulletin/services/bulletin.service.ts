@@ -1,6 +1,6 @@
 import { BaseService, events } from '@core';
 import { BadRequestException, errorKeys } from '@exceptions';
-import { isDate, isEmptyString, isNullOrUndefined, isPositiveNumber } from '@utils';
+import { isDate, isEmptyString, isNullOrUndefined } from '@utils';
 import { Container, Service } from 'typedi';
 import { Bulletin } from '../../../dataBase/entities/bulletin/bulletin.entity';
 import { CreateBulletinReqDto } from '../dtos/create-bulletin.dto';
@@ -63,7 +63,7 @@ export class BulletinService extends BaseService {
       });
     }
 
-    if (!isPositiveNumber(bulletinModel.number)) {
+    if (isNullOrUndefined(bulletinModel.number) || isEmptyString(bulletinModel.number)) {
       throw new BadRequestException(errorKeys.bulletin.Number_Is_Required, {
         number: bulletinModel.number,
       });
@@ -194,7 +194,7 @@ export class BulletinService extends BaseService {
       throw new BadRequestException(errorKeys.bulletin.Date_Is_Required);
     }
 
-    if (!isPositiveNumber(bulletin.number)) {
+    if (isNullOrUndefined(bulletin.number) || isEmptyString(bulletin.number)) {
       throw new BadRequestException(errorKeys.bulletin.Number_Is_Required);
     }
 

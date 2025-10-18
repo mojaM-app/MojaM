@@ -216,6 +216,7 @@
         "NumberPlaceholder": "np. 710 (kolejny numer biuletynu)",
         "NumberHint": "Numer biuletynu widoczny w wersji PDF w nagłówku prawej kolumny",
         "NumberRequiredError": "Numer biuletynu jest wymagany",
+        "NumberMaxLengthError": "Numer biuletynu nie może przekraczać {maxLength} znaków",
         "Title": "Tytuł biuletynu",
         "TitlePlaceholder": "np. Teksty do formacji od dzień.miesiąc.rok",
         "TitleHint": "Tytuł biuletynu widoczny na pierwszej stronie w wersji PDF",

@@ -28,10 +28,10 @@ describe('GET /bulletins', () => {
   describe('GET should respond with a status code of 200 when data are valid and user has permission', () => {
     test('get bulletin list with default pagination', async () => {
       const requestData1 = generateValidBulletin();
-      requestData1.number = 11;
+      requestData1.number = '11';
 
       const requestData2 = generateValidBulletin();
-      requestData2.number = 12;
+      requestData2.number = '12';
 
       const createBulletinResponse1 = await app!.bulletin.create(requestData1, adminAccessToken);
       expect(createBulletinResponse1.statusCode).toBe(201);

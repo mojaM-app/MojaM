@@ -33,7 +33,7 @@ export interface IBulletin {
   date: Date | null;
   title: string | null;
   state: BulletinState;
-  number: number | null;
+  number: string | null;
   introduction: string | null;
   tipsForWork: string | null;
   dailyPrayer: string | null;

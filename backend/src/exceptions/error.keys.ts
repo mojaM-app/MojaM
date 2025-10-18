@@ -57,7 +57,6 @@ export const errorKeys = {
     Section_Content_Too_Long: 'Bulletin_Section_Content_Too_Long',
     Bulletin_Does_Not_Exist: 'Bulletin_Does_Not_Exist',
     Bulletin_With_Given_Date_Already_Exists: 'Bulletin_With_Given_Date_Already_Exists',
-    Min_Number_Greater_Than_Zero: 'Bulletin_Min_Number_Greater_Than_Zero',
     Introduction_Is_Required: 'Bulletin_Introduction_Is_Required',
     Tips_For_Work_Is_Required: 'Bulletin_Tips_For_Work_Is_Required',
     Daily_Prayer_Is_Required: 'Bulletin_Daily_Prayer_Is_Required',

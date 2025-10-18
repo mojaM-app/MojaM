@@ -47,13 +47,8 @@ export class vBulletin implements IBulletinGridItemDto {
   @ViewColumn()
   public title: string | null = null;
 
-  @ViewColumn({
-    transformer: {
-      from: EntityTransformFunctions.anyToNumber,
-      to: EntityTransformFunctions.anyToAny,
-    },
-  })
-  public number: number | null = null;
+  @ViewColumn()
+  public number: string | null = null;
 
   @ViewColumn({
     transformer: {

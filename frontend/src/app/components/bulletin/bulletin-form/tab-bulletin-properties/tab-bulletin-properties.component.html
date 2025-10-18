@@ -25,13 +25,18 @@
         <mat-label>{{ 'Bulletin/Form/TabBulletinProperties/Number' | gmessage }}</mat-label>
         <input
           matInput
-          type="number"
+          type="text"
           [placeholder]="'Bulletin/Form/TabBulletinProperties/NumberPlaceholder' | gmessage"
           [formControl]="formGroup().controls.number" />
         <mat-hint>{{ 'Bulletin/Form/TabBulletinProperties/NumberHint' | gmessage }}</mat-hint>
         @if (getControlErrors(formGroup().controls.number)[errorNames.required]) {
           <mat-error>{{
             'Bulletin/Form/TabBulletinProperties/NumberRequiredError' | gmessage
+          }}</mat-error>
+        } @else if (getControlErrors(formGroup().controls.number)[errorNames.maxLength]) {
+          <mat-error>{{
+            'Bulletin/Form/TabBulletinProperties/NumberMaxLengthError'
+              | gmessage: { maxLength: maxLengths.BULLETIN_NUMBER_MAX_LENGTH | gnumber }
           }}</mat-error>
         }
       </mat-form-field>

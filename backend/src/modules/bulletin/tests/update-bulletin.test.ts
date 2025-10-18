@@ -657,7 +657,7 @@ describe('PUT /bulletins/:id', () => {
 
       const updateData = {
         title: 'x'.repeat(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH),
-        number: 999999,
+        number: '999999',
         introduction: 'y'.repeat(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH),
         tipsForWork: 'z'.repeat(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH),
         dailyPrayer: 'a'.repeat(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH),
@@ -1145,7 +1145,7 @@ describe('PUT /bulletins/:id', () => {
         {
           title: 't',
           date: new Date(),
-          number: 1,
+          number: '1',
           introduction: 'i',
           tipsForWork: 't',
           dailyPrayer: 'd',
@@ -1322,7 +1322,7 @@ describe('PUT /bulletins/:id', () => {
       await app!.bulletin.delete(bulletinId, adminAccessToken);
     });
 
-    test('when updating with number too small', async () => {
+    test('when updating with number too long', async () => {
       const createData = generateValidBulletin();
       const createRes = await app!.bulletin.create(createData, adminAccessToken);
       expect(createRes.statusCode).toBe(201);
@@ -1330,7 +1330,7 @@ describe('PUT /bulletins/:id', () => {
 
       const updateData = {
         title: createData.title,
-        number: 0, // Below minimum
+        number: 'x'.repeat(31), // Exceeds VARCHAR(30)
         introduction: createData.introduction,
         tipsForWork: createData.tipsForWork,
         dailyPrayer: createData.dailyPrayer,
@@ -1546,7 +1546,7 @@ describe('PUT /bulletins/:id', () => {
 
       const updateData = {
         title: 'T', // Minimal title
-        number: VALIDATOR_SETTINGS.BULLETIN_MIN_NUMBER,
+        number: '1',
         introduction: 'I', // Minimal introduction
         tipsForWork: 'T', // Minimal tips
         dailyPrayer: 'D', // Minimal daily prayer
@@ -1579,7 +1579,7 @@ describe('PUT /bulletins/:id', () => {
       const { data: bulletin }: GetBulletinResponseDto = getRes.body;
 
       expect(bulletin.title).toBe('T');
-      expect(bulletin.number).toBe(VALIDATOR_SETTINGS.BULLETIN_MIN_NUMBER);
+      expect(bulletin.number).toBe('1');
       expect(bulletin.introduction).toBe('I');
       expect(bulletin.tipsForWork).toBe('T');
       expect(bulletin.dailyPrayer).toBe('D');

@@ -17,7 +17,7 @@ const generateValidBulletin = (): CreateBulletinDto => {
   return {
     title: generateRandomString(40),
     date: bulletinDate,
-    number: Math.floor(Math.random() * 999) + 1,
+    number: `${Math.floor(Math.random() * 999) + 1}`,
     introduction: generateRandomString(500),
     tipsForWork: generateRandomString(300),
     dailyPrayer: generateRandomString(200),
@@ -78,7 +78,7 @@ const generateValidUpdateBulletin = (): UpdateBulletinDto => {
   const bulletinDate = generateRandomDate();
   return {
     title: generateRandomString(40),
-    number: Math.floor(Math.random() * 999) + 1,
+    number: `${Math.floor(Math.random() * 999) + 1}`,
     date: bulletinDate,
     introduction: generateRandomString(500),
     dailyPrayer: generateRandomString(200),

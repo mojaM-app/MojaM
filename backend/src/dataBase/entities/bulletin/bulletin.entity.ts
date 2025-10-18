@@ -73,10 +73,11 @@ export class Bulletin implements IBulletinEntity, ICreateBulletin, IUpdateBullet
 
   @Column({
     name: 'Number',
-    type: 'int',
+    type: 'varchar',
+    length: 30,
     nullable: true,
   })
-  public number: number | null = null;
+  public number: string | null = null;
 
   @Index('IX_Bulletin_Introduction_Fulltext', { fulltext: true })
   @Column({
@@ -187,7 +188,7 @@ export class Bulletin implements IBulletinEntity, ICreateBulletin, IUpdateBullet
   public getUpdateModel(updates: {
     title?: string | null;
     date?: Date | null;
-    number?: number | null;
+    number?: string | null;
     introduction?: string | null;
     tipsForWork?: string | null;
     dailyPrayer?: string | null;

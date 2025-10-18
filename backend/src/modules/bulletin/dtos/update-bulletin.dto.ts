@@ -10,7 +10,6 @@ import {
   IsInt,
   IsNotEmpty,
   IsOptional,
-  IsPositive,
   IsString,
   Max,
   MaxLength,
@@ -102,8 +101,10 @@ export class UpdateBulletinDto {
   public date?: Date | null;
 
   @IsOptional()
-  @IsPositive()
-  public number?: number | null;
+  @IsString({ message: errorKeys.bulletin.Number_Is_Required })
+  @MaxLength(VALIDATOR_SETTINGS.BULLETIN_NUMBER_MAX_LENGTH)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
+  public number?: string | null;
 
   @IsOptional()
   @IsString()

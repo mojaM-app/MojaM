@@ -87,10 +87,10 @@ export class CreateBulletinDto {
   public date?: Date | null;
 
   @IsNotEmpty({ message: errorKeys.bulletin.Number_Is_Required })
-  @IsInt({ message: errorKeys.bulletin.Number_Is_Required })
-  @Min(1, { message: errorKeys.bulletin.Min_Number_Greater_Than_Zero })
-  @Max(Number.MAX_SAFE_INTEGER)
-  public number?: number | null;
+  @IsString({ message: errorKeys.bulletin.Number_Is_Required })
+  @MaxLength(VALIDATOR_SETTINGS.BULLETIN_NUMBER_MAX_LENGTH)
+  @Transform(DtoTransformFunctions.trimAndReturnNullIfEmpty)
+  public number?: string | null;
 
   @IsOptional()
   @IsString()

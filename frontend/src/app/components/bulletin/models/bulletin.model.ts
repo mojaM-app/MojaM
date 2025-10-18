@@ -37,7 +37,7 @@ export class BulletinDayDto {
 export abstract class BulletinDto {
   public date: Date | null = null;
   public title: string | null = null;
-  public number: number | null = null;
+  public number: string | null = null;
   public introduction: string | null = null;
   public tipsForWork: string | null = null;
   public dailyPrayer: string | null = null;

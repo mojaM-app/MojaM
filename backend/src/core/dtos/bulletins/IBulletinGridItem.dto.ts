@@ -1,7 +1,7 @@
 export interface IBulletinGridItemDto {
   id: string;
   title: string | null;
-  number: number | null;
+  number: string | null;
   date: Date | null;
   state: number;
   createdAt: Date;

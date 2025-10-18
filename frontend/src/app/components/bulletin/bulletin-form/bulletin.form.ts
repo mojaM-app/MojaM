@@ -33,7 +33,7 @@ export interface IBulletinDayForm {
 
 export interface IBulletinPropertiesForm {
   date: FormControl<Date | null>;
-  number: FormControl<number | null>;
+  number: FormControl<string | null>;
   title: FormControl<string | null>;
   introduction: FormControl<string | null>;
   tipsForWork: FormControl<string | null>;
@@ -246,12 +246,11 @@ export class BulletinFormBuilder {
           nonNullable: true,
           validators: [Validators.required],
         }),
-        number: new FormControl<number | null>(null, {
+        number: new FormControl<string | null>(null, {
           nonNullable: true,
           validators: [
             Validators.required,
-            Validators.min(1),
-            Validators.max(Number.MAX_SAFE_INTEGER),
+            Validators.maxLength(VALIDATOR_SETTINGS.BULLETIN_NUMBER_MAX_LENGTH),
           ],
         }),
         title: new FormControl<string | null>(null, {

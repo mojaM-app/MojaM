@@ -286,7 +286,7 @@ describe('POST /bulletins', () => {
       const requestData = {
         title: 'Minimum Title',
         date: new Date(),
-        number: 1,
+        number: '1',
         introduction: null,
         tipsForWork: null,
         dailyPrayer: null,
@@ -332,7 +332,7 @@ describe('POST /bulletins', () => {
       const requestData = {
         title: 'x'.repeat(VALIDATOR_SETTINGS.BULLETIN_TITLE_MAX_LENGTH),
         date: new Date(),
-        number: 999999, // Maksymalna praktyczna wartość
+        number: '999999', // Maksymalna praktyczna wartość
         introduction: 'y'.repeat(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH),
         tipsForWork: 'z'.repeat(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH),
         dailyPrayer: 'a'.repeat(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH),
@@ -981,7 +981,7 @@ describe('POST /bulletins', () => {
       const requestData = {
         title: 'Test Bulletin',
         date: new Date(),
-        number: 1,
+        number: '1',
         introduction: null, // Explicitly null
         tipsForWork: null, // Explicitly null
         dailyPrayer: null, // Explicitly null
@@ -1034,6 +1034,17 @@ describe('POST /bulletins', () => {
         });
       expect(testEventHandlers.onBulletinCreated).toHaveBeenCalledTimes(1);
       expect(testEventHandlers.onBulletinDeleted).toHaveBeenCalledTimes(1);
+    });
+
+    test('when bulletin number is a string with special characters', async () => {
+      const requestData = generateValidBulletin();
+      requestData.number = 'ABC-123/2025'; // String with special characters
+
+      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
+      expect(createBulletinResponse.statusCode).toBe(201); // Should succeed since number is now varchar
+
+      const { data: bulletinId }: CreateBulletinResponseDto = createBulletinResponse.body;
+      await app!.bulletin.delete(bulletinId, adminAccessToken);
     });
   });
 
@@ -1151,37 +1162,15 @@ describe('POST /bulletins', () => {
       expect(errors.some(x => x === errorKeys.bulletin.Number_Is_Required)).toBe(true);
     });
 
-    test('when number is 0', async () => {
+    test('when number exceeds maximum length', async () => {
       const requestData = generateValidBulletin();
-      requestData.number = 0;
+      requestData.number = 'x'.repeat(VALIDATOR_SETTINGS.BULLETIN_NUMBER_MAX_LENGTH + 1); // Exceeds VARCHAR(30)
 
       const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
       expect(createBulletinResponse.statusCode).toBe(400);
       const data = createBulletinResponse.body.data as BadRequestException;
       const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.bulletin.Min_Number_Greater_Than_Zero).length).toBe(0);
-    });
-
-    test('when number is negative', async () => {
-      const requestData = generateValidBulletin();
-      requestData.number = -1;
-
-      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
-      expect(createBulletinResponse.statusCode).toBe(400);
-      const data = createBulletinResponse.body.data as BadRequestException;
-      const errors = data.message.split(',');
-      expect(errors.filter(x => x !== errorKeys.bulletin.Min_Number_Greater_Than_Zero).length).toBe(0);
-    });
-
-    test('when number is greater than max', async () => {
-      const requestData = generateValidBulletin();
-      requestData.number = Number.MAX_SAFE_INTEGER + 1;
-
-      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
-      expect(createBulletinResponse.statusCode).toBe(400);
-      const data = createBulletinResponse.body.data as BadRequestException;
-      const errors = data.message.split(',');
-      expect(errors.filter(x => !x.startsWith('number must not be greater than')).length).toBe(0);
+      expect(errors.some(x => x.includes('number must be shorter'))).toBe(true);
     });
 
     test('when section content is too long', async () => {
@@ -1669,7 +1658,7 @@ describe('POST /bulletins', () => {
       const requestData = generateValidBulletin();
       // Kombinacja różnych błędów
       requestData.title = ''; // Empty title
-      requestData.number = 0; // Invalid number
+      requestData.number = 'x'.repeat(VALIDATOR_SETTINGS.BULLETIN_NUMBER_MAX_LENGTH + 1); // Too long for VARCHAR(30)
       requestData.introduction = 'x'.repeat(VALIDATOR_SETTINGS.BULLETIN_INTRODUCTION_MAX_LENGTH + 1); // Too long
       requestData.days![0].sections[0].content = 'x'.repeat(
         VALIDATOR_SETTINGS.BULLETIN_DAY_SECTION_CONTENT_MAX_LENGTH + 1,
@@ -1693,19 +1682,6 @@ describe('POST /bulletins', () => {
     test('when section type is valid but casing is different', async () => {
       const requestData = generateValidBulletin();
       requestData.days![0].sections[0].type = 'CustomText' as any; // Different case
-
-      const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
-      expect(createBulletinResponse.statusCode).toBe(400);
-
-      // checking events running via eventDispatcher
-      Object.entries(testEventHandlers).forEach(([, eventHandler]) => {
-        expect(eventHandler).not.toHaveBeenCalled();
-      });
-    });
-
-    test('when bulletin number is a float', async () => {
-      const requestData = generateValidBulletin();
-      requestData.number = 1.5; // Float instead of integer
 
       const createBulletinResponse = await app!.bulletin.create(requestData, adminAccessToken);
       expect(createBulletinResponse.statusCode).toBe(400);
