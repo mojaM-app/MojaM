@@ -1,11 +1,17 @@
 <div class="card-header" [ngClass]="{ 'with-buttons': hasButtons() }">
   <div class="d-grid align-items-center">
-    <div class="card-title">
-      {{ title() | gmessage }}
+    <div
+      #cardTitleContainer
+      class="card-title-container"
+      [class.overflowing]="isOverflowing()"
+      [class.scrollable]="isOverflowing()">
+      <div #cardTitle class="card-title mb-0">
+        <span class="scroll-content">{{ title() | gmessage }}</span>
+      </div>
     </div>
 
     <div #buttonsContainer class="buttons-container">
-      <ng-content select="[slot=buttons]"> </ng-content>
+      <ng-content select="[slot=buttons]"></ng-content>
     </div>
   </div>
 </div>

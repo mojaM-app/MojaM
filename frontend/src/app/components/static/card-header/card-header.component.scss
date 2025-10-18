@@ -1,0 +1,47 @@
+.card-title-container {
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+
+  &.overflowing {
+    // mask-image: linear-gradient(to right, transparent 0, black 10%, black 90%, transparent 100%);
+    // -webkit-mask-image: linear-gradient(
+    //   to right,
+    //   transparent 0,
+    //   black 10%,
+    //   black 90%,
+    //   transparent 100%
+    // );
+  }
+
+  &.scrollable {
+    overflow-x: auto;
+    cursor: grab;
+    -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
+    scroll-behavior: smooth;
+
+    // Hide scrollbar but keep functionality
+    scrollbar-width: none; // Firefox
+    -ms-overflow-style: none; // IE and Edge
+
+    &::-webkit-scrollbar {
+      display: none; // Chrome, Safari, Opera
+    }
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  .card-title {
+    display: inline-block;
+    white-space: nowrap;
+    min-width: 100%;
+    width: max-content;
+  }
+
+  .scroll-content {
+    display: inline-block;
+  }
+}
